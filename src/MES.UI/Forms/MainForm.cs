@@ -45,6 +45,9 @@ namespace MES.UI.Forms
                 // 初始化工具栏
                 InitializeToolBar();
 
+                // 初始化导航树
+                InitializeNavigationTree();
+
                 // 初始化主面板
                 InitializeMainPanel();
 
@@ -102,11 +105,7 @@ namespace MES.UI.Forms
         /// </summary>
         private void InitializeToolBar()
         {
-            var toolStrip = new ToolStrip
-            {
-                Dock = DockStyle.Top,
-                ImageScalingSize = new Size(32, 32)
-            };
+            toolStrip1.Items.Clear();
 
             // 物料管理工具按钮
             var materialBtn = new ToolStripButton("物料管理")
@@ -116,7 +115,7 @@ namespace MES.UI.Forms
                 ToolTipText = "物料信息管理 (L成员负责)"
             };
             materialBtn.Click += (s, e) => OpenMaterialForm();
-            toolStrip.Items.Add(materialBtn);
+            toolStrip1.Items.Add(materialBtn);
 
             // 生产管理工具按钮
             var productionBtn = new ToolStripButton("生产管理")
@@ -126,7 +125,7 @@ namespace MES.UI.Forms
                 ToolTipText = "生产订单管理 (H成员负责)"
             };
             productionBtn.Click += (s, e) => OpenProductionOrderForm();
-            toolStrip.Items.Add(productionBtn);
+            toolStrip1.Items.Add(productionBtn);
 
             // 车间管理工具按钮
             var workshopBtn = new ToolStripButton("车间管理")
@@ -136,9 +135,100 @@ namespace MES.UI.Forms
                 ToolTipText = "车间作业管理 (S成员负责)"
             };
             workshopBtn.Click += (s, e) => OpenWorkshopOperationForm();
-            toolStrip.Items.Add(workshopBtn);
+            toolStrip1.Items.Add(workshopBtn);
+        }
 
-            this.Controls.Add(toolStrip);
+        /// <summary>
+        /// 初始化导航树
+        /// </summary>
+        private void InitializeNavigationTree()
+        {
+            treeViewModules.Nodes.Clear();
+
+            // L成员 - 物料管理模块
+            var materialNode = new TreeNode("物料管理 (L成员)")
+            {
+                ForeColor = Color.FromArgb(40, 167, 69),
+                NodeFont = new Font("微软雅黑", 10, FontStyle.Bold)
+            };
+            materialNode.Nodes.Add("物料信息管理");
+            materialNode.Nodes.Add("BOM物料清单");
+            materialNode.Nodes.Add("工艺路线配置");
+            materialNode.ExpandAll();
+            treeViewModules.Nodes.Add(materialNode);
+
+            // H成员 - 生产管理模块
+            var productionNode = new TreeNode("生产管理 (H成员)")
+            {
+                ForeColor = Color.FromArgb(0, 123, 255),
+                NodeFont = new Font("微软雅黑", 10, FontStyle.Bold)
+            };
+            productionNode.Nodes.Add("生产订单管理");
+            productionNode.Nodes.Add("生产执行控制");
+            productionNode.Nodes.Add("用户权限管理");
+            productionNode.ExpandAll();
+            treeViewModules.Nodes.Add(productionNode);
+
+            // S成员 - 车间管理模块
+            var workshopNode = new TreeNode("车间管理 (S成员)")
+            {
+                ForeColor = Color.FromArgb(220, 53, 69),
+                NodeFont = new Font("微软雅黑", 10, FontStyle.Bold)
+            };
+            workshopNode.Nodes.Add("车间作业管理");
+            workshopNode.Nodes.Add("在制品管理");
+            workshopNode.Nodes.Add("设备状态管理");
+            workshopNode.ExpandAll();
+            treeViewModules.Nodes.Add(workshopNode);
+
+            // 系统管理模块
+            var systemNode = new TreeNode("系统管理")
+            {
+                ForeColor = Color.FromArgb(108, 117, 125),
+                NodeFont = new Font("微软雅黑", 10, FontStyle.Bold)
+            };
+            systemNode.Nodes.Add("系统配置");
+            systemNode.Nodes.Add("关于系统");
+            systemNode.ExpandAll();
+            treeViewModules.Nodes.Add(systemNode);
+
+            // 绑定节点点击事件
+            treeViewModules.NodeMouseDoubleClick += TreeViewModules_NodeMouseDoubleClick;
+        }
+
+        /// <summary>
+        /// 导航树节点双击事件
+        /// </summary>
+        private void TreeViewModules_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            var nodeName = e.Node.Text;
+
+            // 根据节点名称打开对应窗体
+            switch (nodeName)
+            {
+                case "物料信息管理":
+                    OpenMaterialForm();
+                    break;
+                case "BOM物料清单":
+                    OpenBOMForm();
+                    break;
+                case "生产订单管理":
+                    OpenProductionOrderForm();
+                    break;
+                case "车间作业管理":
+                    OpenWorkshopOperationForm();
+                    break;
+                case "系统配置":
+                    OpenSystemConfigForm();
+                    break;
+                case "关于系统":
+                    ShowAbout();
+                    break;
+                default:
+                    MessageBox.Show($"功能 '{nodeName}' 正在开发中...", "提示",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    break;
+            }
         }
 
         /// <summary>

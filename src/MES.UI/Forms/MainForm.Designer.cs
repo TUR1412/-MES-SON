@@ -30,37 +30,79 @@ namespace MES.UI.Forms
         {
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.panelLeft = new System.Windows.Forms.Panel();
+            this.treeViewModules = new System.Windows.Forms.TreeView();
+            this.splitter1 = new System.Windows.Forms.Splitter();
             this.panelMain = new System.Windows.Forms.Panel();
             this.labelWelcome = new System.Windows.Forms.Label();
+            this.panelLeft.SuspendLayout();
             this.panelMain.SuspendLayout();
             this.SuspendLayout();
-            // 
+            //
             // menuStrip1
-            // 
+            //
             this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1200, 28);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
-            // 
+            //
+            // toolStrip1
+            //
+            this.toolStrip1.ImageScalingSize = new System.Drawing.Size(32, 32);
+            this.toolStrip1.Location = new System.Drawing.Point(0, 28);
+            this.toolStrip1.Name = "toolStrip1";
+            this.toolStrip1.Size = new System.Drawing.Size(1200, 39);
+            this.toolStrip1.TabIndex = 1;
+            this.toolStrip1.Text = "toolStrip1";
+            //
+            // panelLeft
+            //
+            this.panelLeft.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
+            this.panelLeft.Controls.Add(this.treeViewModules);
+            this.panelLeft.Dock = System.Windows.Forms.DockStyle.Left;
+            this.panelLeft.Location = new System.Drawing.Point(0, 67);
+            this.panelLeft.Name = "panelLeft";
+            this.panelLeft.Size = new System.Drawing.Size(250, 659);
+            this.panelLeft.TabIndex = 2;
+            //
+            // treeViewModules
+            //
+            this.treeViewModules.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.treeViewModules.Font = new System.Drawing.Font("微软雅黑", 10F);
+            this.treeViewModules.Location = new System.Drawing.Point(0, 0);
+            this.treeViewModules.Name = "treeViewModules";
+            this.treeViewModules.Size = new System.Drawing.Size(250, 659);
+            this.treeViewModules.TabIndex = 0;
+            //
+            // splitter1
+            //
+            this.splitter1.Location = new System.Drawing.Point(250, 67);
+            this.splitter1.Name = "splitter1";
+            this.splitter1.Size = new System.Drawing.Size(3, 659);
+            this.splitter1.TabIndex = 3;
+            this.splitter1.TabStop = false;
+            //
             // statusStrip1
-            // 
+            //
             this.statusStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.statusStrip1.Location = new System.Drawing.Point(0, 726);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(1200, 24);
-            this.statusStrip1.TabIndex = 1;
+            this.statusStrip1.TabIndex = 4;
             this.statusStrip1.Text = "statusStrip1";
-            // 
+            //
             // panelMain
-            // 
+            //
+            this.panelMain.BackColor = System.Drawing.Color.White;
             this.panelMain.Controls.Add(this.labelWelcome);
             this.panelMain.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelMain.Location = new System.Drawing.Point(0, 28);
+            this.panelMain.Location = new System.Drawing.Point(253, 67);
             this.panelMain.Name = "panelMain";
-            this.panelMain.Size = new System.Drawing.Size(1200, 698);
-            this.panelMain.TabIndex = 2;
+            this.panelMain.Size = new System.Drawing.Size(947, 659);
+            this.panelMain.TabIndex = 5;
             // 
             // labelWelcome
             // 
@@ -81,13 +123,17 @@ namespace MES.UI.Forms
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1200, 750);
             this.Controls.Add(this.panelMain);
+            this.Controls.Add(this.splitter1);
+            this.Controls.Add(this.panelLeft);
             this.Controls.Add(this.statusStrip1);
+            this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.menuStrip1);
-            this.IsMdiContainer = true;
+            this.IsMdiContainer = false;
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "MES制造执行系统";
+            this.panelLeft.ResumeLayout(false);
             this.panelMain.ResumeLayout(false);
             this.panelMain.PerformLayout();
             this.ResumeLayout(false);
@@ -98,7 +144,11 @@ namespace MES.UI.Forms
         #endregion
 
         private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.Panel panelLeft;
+        private System.Windows.Forms.TreeView treeViewModules;
+        private System.Windows.Forms.Splitter splitter1;
         private System.Windows.Forms.Panel panelMain;
         private System.Windows.Forms.Label labelWelcome;
     }
