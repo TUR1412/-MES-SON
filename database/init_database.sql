@@ -207,7 +207,9 @@ CREATE TABLE `wip` (
   KEY `idx_is_deleted` (`is_deleted`),
   CONSTRAINT `fk_wip_create_user` FOREIGN KEY (`create_user_id`) REFERENCES `sys_user` (`id`),
   CONSTRAINT `fk_wip_update_user` FOREIGN KEY (`update_user_id`) REFERENCES `sys_user` (`id`),
-  CONSTRAINT `fk_wip_delete_user` FOREIGN KEY (`delete_user_id`) REFERENCES `sys_user` (`id`)
+  CONSTRAINT `fk_wip_delete_user` FOREIGN KEY (`delete_user_id`) REFERENCES `sys_user` (`id`),
+  CONSTRAINT `fk_wip_material` FOREIGN KEY (`material_id`) REFERENCES `material_info` (`id`) ON DELETE RESTRICT,
+  CONSTRAINT `fk_wip_workshop` FOREIGN KEY (`workshop_id`) REFERENCES `workshop` (`id`) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='在制品管理表';
 
 -- 设备信息表
