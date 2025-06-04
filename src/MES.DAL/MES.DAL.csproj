@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C3D4E5F6-G7H8-9012-CDEF-345678901234}</ProjectGuid>
+    <ProjectGuid>{C3D4E5F6-A7B8-9012-CDEF-345678901234}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MES.DAL</RootNamespace>
@@ -31,9 +31,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MySql.Data, Version=8.0.33.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\MySql.Data.8.0.33\lib\net48\MySql.Data.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -45,29 +42,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Base\BaseDAL.cs" />
-    <Compile Include="Base\IBaseDAL.cs" />
-    <Compile Include="Database\DatabaseHelper.cs" />
-    <Compile Include="Database\ConnectionManager.cs" />
-    <Compile Include="Material\MaterialDAL.cs" />
-    <Compile Include="Material\BOMDAL.cs" />
-    <Compile Include="Production\ProductionOrderDAL.cs" />
-    <Compile Include="Workshop\WorkshopDAL.cs" />
-    <Compile Include="System\UserDAL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MES.Common\MES.Common.csproj">
-      <Project>{E5F6G7H8-I9J0-1234-EF01-567890123456}</Project>
+      <Project>{E5F6A7B8-C9D0-1234-EF01-567890123456}</Project>
       <Name>MES.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\MES.Models\MES.Models.csproj">
-      <Project>{D4E5F6G7-H8I9-0123-DEF0-456789012345}</Project>
+      <Project>{D4E5F6A7-B8C9-0123-DEF0-456789012345}</Project>
       <Name>MES.Models</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

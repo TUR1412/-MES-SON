@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{B2C3D4E5-F6G7-8901-BCDE-F23456789012}</ProjectGuid>
+    <ProjectGuid>{B2C3D4E5-F6A7-8901-BCDE-F23456789012}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MES.BLL</RootNamespace>
@@ -41,25 +41,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Base\BaseBLL.cs" />
-    <Compile Include="Material\MaterialBLL.cs" />
-    <Compile Include="Material\BOMBLL.cs" />
-    <Compile Include="Production\ProductionOrderBLL.cs" />
-    <Compile Include="Workshop\WorkshopBLL.cs" />
-    <Compile Include="System\UserBLL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MES.Common\MES.Common.csproj">
-      <Project>{E5F6G7H8-I9J0-1234-EF01-567890123456}</Project>
+      <Project>{E5F6A7B8-C9D0-1234-EF01-567890123456}</Project>
       <Name>MES.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\MES.DAL\MES.DAL.csproj">
-      <Project>{C3D4E5F6-G7H8-9012-CDEF-345678901234}</Project>
+      <Project>{C3D4E5F6-A7B8-9012-CDEF-345678901234}</Project>
       <Name>MES.DAL</Name>
     </ProjectReference>
     <ProjectReference Include="..\MES.Models\MES.Models.csproj">
-      <Project>{D4E5F6G7-H8I9-0123-DEF0-456789012345}</Project>
+      <Project>{D4E5F6A7-B8C9-0123-DEF0-456789012345}</Project>
       <Name>MES.Models</Name>
     </ProjectReference>
   </ItemGroup>

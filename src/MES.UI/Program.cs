@@ -1,7 +1,6 @@
 using System;
 using System.Windows.Forms;
 using MES.Common.Logging;
-using MES.UI.Forms;
 
 namespace MES.UI
 {
@@ -26,43 +25,15 @@ namespace MES.UI
                 LogManager.Initialize();
                 LogManager.Info("MES系统启动");
 
-                // 设置全局异常处理
-                Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
-                Application.ThreadException += Application_ThreadException;
-                AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-
-                // 启动主窗体
-                Application.Run(new MainForm());
+                // 显示简单消息框确认程序可以运行
+                MessageBox.Show("MES制造执行系统启动成功！\n\n基础框架已就绪，可以开始开发各模块功能。",
+                    "MES系统", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 LogManager.Info("MES系统正常退出");
             }
             catch (Exception ex)
             {
-                LogManager.Error("系统启动失败", ex);
-                MessageBox.Show($"系统启动失败：{ex.Message}", "错误", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        /// <summary>
-        /// 处理UI线程异常
-        /// </summary>
-        private static void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
-        {
-            LogManager.Error("UI线程异常", e.Exception);
-            MessageBox.Show($"系统发生错误：{e.Exception.Message}", "错误", 
-                MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
-
-        /// <summary>
-        /// 处理非UI线程异常
-        /// </summary>
-        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
-        {
-            if (e.ExceptionObject is Exception ex)
-            {
-                LogManager.Error("应用程序域异常", ex);
-                MessageBox.Show($"系统发生严重错误：{ex.Message}", "严重错误", 
+                MessageBox.Show($"系统启动失败：{ex.Message}", "错误",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }

@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D4E5F6G7-H8I9-0123-DEF0-456789012345}</ProjectGuid>
+    <ProjectGuid>{D4E5F6A7-B8C9-0123-DEF0-456789012345}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MES.Models</RootNamespace>
@@ -44,12 +44,6 @@
     <Compile Include="Base\BaseModel.cs" />
     <Compile Include="Material\MaterialInfo.cs" />
     <Compile Include="Material\BOMInfo.cs" />
-    <Compile Include="Production\ProductionOrder.cs" />
-    <Compile Include="Production\WorkOrder.cs" />
-    <Compile Include="Workshop\WorkshopInfo.cs" />
-    <Compile Include="Workshop\WIPInfo.cs" />
-    <Compile Include="System\UserInfo.cs" />
-    <Compile Include="System\RoleInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -57,11 +51,6 @@
       <Project>{E5F6A7B8-C9D0-1234-EF01-567890123456}</Project>
       <Name>MES.Common</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Quality\" />
-    <Folder Include="Equipment\" />
-    <Folder Include="Report\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
