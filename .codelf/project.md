@@ -112,6 +112,12 @@ root
 - `docs/TEAM_QUICK_START.md`: 新成员5分钟快速上手指南
 - `docs/PROJECT_PROGRESS.md`: 实时项目进度跟踪和里程碑记录
 
+**项目记忆文件**(重要 - 本地专用):
+- `docs/PROJECT_MEMORY.md`: 项目记忆档案，记录所有重要决策、技术选择、问题解决方案 [本地]
+- `docs/DECISION_RECORDS.md`: 技术决策记录(ADR)，详细记录每个重要技术决策的背景和原因 [本地]
+- `docs/CONVERSATION_HIGHLIGHTS.md`: 对话要点记录，提取重要对话信息确保知识连续性 [本地]
+- 注意: 这些记忆文件仅保存在本地，不推送到GitHub，用于AI理解项目和保持会话连续性
+
 **开发规范**:
 - 所有业务模型继承自BaseModel
 - 统一使用LogManager进行日志记录
