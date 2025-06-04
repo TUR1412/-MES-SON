@@ -260,3 +260,8 @@ Temp/
 *.orig
 .DS_Store
 Thumbs.db
+
+# 项目记忆文件 - 本地专用，不推送到GitHub
+docs/PROJECT_MEMORY.md
+docs/DECISION_RECORDS.md
+docs/CONVERSATION_HIGHLIGHTS.md
