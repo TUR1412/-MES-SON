@@ -1,0 +1,37 @@
+name: MES项目构建检查
+
+on:
+  pull_request:
+    branches: [ develop, main ]
+  push:
+    branches: [ develop, main ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: 检出代码
+      uses: actions/checkout@v4
+
+    - name: 设置.NET Framework
+      uses: microsoft/setup-msbuild@v2
+
+    - name: 设置NuGet
+      uses: nuget/setup-nuget@v1
+
+    - name: 还原NuGet包
+      run: nuget restore MES.sln
+
+    - name: 构建解决方案
+      run: msbuild MES.sln /p:Configuration=Release /p:Platform="Any CPU"
+
+    - name: 构建状态通知
+      if: always()
+      run: |
+        if ($LASTEXITCODE -eq 0) {
+          Write-Host "✅ MES项目构建成功！" -ForegroundColor Green
+        } else {
+          Write-Host "❌ MES项目构建失败，请检查代码！" -ForegroundColor Red
+          exit 1
+        }
