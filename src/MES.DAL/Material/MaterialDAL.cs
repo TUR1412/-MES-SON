@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
+using MySql.Data.MySqlClient;
 using MES.Models.Material;
 using MES.DAL.Base;
 using MES.DAL.Core;
 using MES.Common.Logging;
 using MES.Common.Exceptions;
-using MySql.Data.MySqlClient;
 
 namespace MES.DAL.Material
 {
@@ -144,7 +143,7 @@ namespace MES.DAL.Material
                 }
 
                 string whereClause = "material_code = @materialCode";
-                var parameters = new List<SqlParameter>
+                var parameters = new List<MySqlParameter>
                 {
                     DatabaseHelper.CreateParameter("@materialCode", materialCode)
                 };
@@ -216,7 +215,7 @@ namespace MES.DAL.Material
                 }
 
                 string whereClause = "material_code = @materialCode";
-                var parameters = new List<SqlParameter>
+                var parameters = new List<MySqlParameter>
         {
             DatabaseHelper.CreateParameter("@materialCode", materialCode)
         };
@@ -227,7 +226,7 @@ namespace MES.DAL.Material
                     parameters.Add(DatabaseHelper.CreateParameter("@excludeId", excludeId));
                 }
 
-                // 使用 SQL Server 的参数化查询
+                // 使用 MySQL 的参数化查询
                 int count = GetCount(whereClause, parameters.ToArray());
                 return count > 0;
             }
@@ -247,7 +246,7 @@ namespace MES.DAL.Material
         /// </summary>
         /// <param name="entity">物料实体</param>
         /// <returns>SQL语句和参数</returns>
-        protected override (string sql, SqlParameter[] parameters) BuildInsertSql(MaterialInfo entity)
+        protected override (string sql, MySqlParameter[] parameters) BuildInsertSql(MaterialInfo entity)
         {
             string sql = @"INSERT INTO material_info
                           (material_code, material_name, material_type, category, specification, unit,
@@ -286,7 +285,7 @@ namespace MES.DAL.Material
         /// </summary>
         /// <param name="entity">物料实体</param>
         /// <returns>SQL语句和参数</returns>
-        protected override (string sql, SqlParameter[] parameters) BuildUpdateSql(MaterialInfo entity)
+        protected override (string sql, MySqlParameter[] parameters) BuildUpdateSql(MaterialInfo entity)
         {
             string sql = @"UPDATE material_info SET
                           material_code = @materialCode, material_name = @materialName,

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
+using MySql.Data.MySqlClient;
 using System.Reflection;
 using MES.Models.Base;
 using MES.DAL.Core;
@@ -87,7 +87,7 @@ namespace MES.DAL.Base
         /// <param name="whereClause">WHERE条件子句（不包含WHERE关键字）</param>
         /// <param name="parameters">查询参数</param>
         /// <returns>实体列表</returns>
-        public virtual List<T> GetByCondition(string whereClause, params SqlParameter[] parameters)
+        public virtual List<T> GetByCondition(string whereClause, params MySqlParameter[] parameters)
         {
             try
             {
@@ -220,7 +220,7 @@ namespace MES.DAL.Base
         /// <param name="whereClause">WHERE条件子句（不包含WHERE关键字）</param>
         /// <param name="parameters">查询参数</param>
         /// <returns>记录总数</returns>
-        public virtual int GetCount(string whereClause = null, params SqlParameter[] parameters)
+        public virtual int GetCount(string whereClause = null, params MySqlParameter[] parameters)
         {
             try
             {
@@ -345,7 +345,7 @@ namespace MES.DAL.Base
         /// </summary>
         /// <param name="entity">实体对象</param>
         /// <returns>SQL语句和参数</returns>
-        protected virtual (string sql, SqlParameter[] parameters) BuildInsertSql(T entity)
+        protected virtual (string sql, MySqlParameter[] parameters) BuildInsertSql(T entity)
         {
             // 子类可以重写此方法以自定义INSERT逻辑
             throw new NotImplementedException("子类必须实现BuildInsertSql方法");
@@ -356,7 +356,7 @@ namespace MES.DAL.Base
         /// </summary>
         /// <param name="entity">实体对象</param>
         /// <returns>SQL语句和参数</returns>
-        protected virtual (string sql, SqlParameter[] parameters) BuildUpdateSql(T entity)
+        protected virtual (string sql, MySqlParameter[] parameters) BuildUpdateSql(T entity)
         {
             // 子类可以重写此方法以自定义UPDATE逻辑
             throw new NotImplementedException("子类必须实现BuildUpdateSql方法");

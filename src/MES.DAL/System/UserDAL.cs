@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
+using MySql.Data.MySqlClient;
 using MES.Models.Base;
 using MES.Models.System;
 using MES.DAL.Base;
@@ -187,7 +187,7 @@ namespace MES.DAL.System
         /// </summary>
         /// <param name="entity">用户实体</param>
         /// <returns>SQL语句和参数</returns>
-        protected override (string sql, SqlParameter[] parameters) BuildInsertSql(UserInfo entity)
+        protected override (string sql, MySqlParameter[] parameters) BuildInsertSql(UserInfo entity)
         {
             string sql = @"INSERT INTO sys_user 
                           (user_code, user_name, login_name, password, department, position, 
@@ -217,7 +217,7 @@ namespace MES.DAL.System
         /// </summary>
         /// <param name="entity">用户实体</param>
         /// <returns>SQL语句和参数</returns>
-        protected override (string sql, SqlParameter[] parameters) BuildUpdateSql(UserInfo entity)
+        protected override (string sql, MySqlParameter[] parameters) BuildUpdateSql(UserInfo entity)
         {
             string sql = @"UPDATE sys_user SET 
                           user_code = @userCode, user_name = @userName, login_name = @loginName, 

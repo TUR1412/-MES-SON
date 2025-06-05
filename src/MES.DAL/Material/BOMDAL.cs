@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
+using MySql.Data.MySqlClient;
 using MES.Models.Material;
 using MES.DAL.Base;
 using MES.DAL.Core;
@@ -86,7 +86,7 @@ namespace MES.DAL.Material
         /// </summary>
         /// <param name="entity">BOM实体</param>
         /// <returns>SQL语句和参数</returns>
-        protected override (string sql, SqlParameter[] parameters) BuildInsertSql(BOMInfo entity)
+        protected override (string sql, MySqlParameter[] parameters) BuildInsertSql(BOMInfo entity)
         {
             string sql = @"INSERT INTO bom_info
                           (bom_code, product_id, bom_version, bom_type, effective_date, expire_date, status,
@@ -117,7 +117,7 @@ namespace MES.DAL.Material
         /// </summary>
         /// <param name="entity">BOM实体</param>
         /// <returns>SQL语句和参数</returns>
-        protected override (string sql, SqlParameter[] parameters) BuildUpdateSql(BOMInfo entity)
+        protected override (string sql, MySqlParameter[] parameters) BuildUpdateSql(BOMInfo entity)
         {
             string sql = @"UPDATE bom_info SET
                           bom_code = @bomCode, product_id = @productId, bom_version = @bomVersion,
