@@ -51,7 +51,8 @@ root
 ├── docs/                               # 项目文档目录(重要)
 │   ├── GIT_WORKFLOW.md                # Git工作流程指南，团队协作必读
 │   ├── PROJECT_PROGRESS.md            # 项目进度记录，实时更新开发状态
-│   └── TEAM_QUICK_START.md            # 团队快速上手指南，新成员必看
+│   ├── TEAM_QUICK_START.md            # 团队快速上手指南，新成员必看
+│   └── PR_REVIEW_6.md                 # PR #6代码审查报告，L成员物料管理模块审查
 ├── MES.sln                            # Visual Studio解决方案文件，包含所有项目引用
 ├── README.md                          # 项目说明文档，项目概览和快速开始
 └── src/                               # 源代码目录，三层架构实现
@@ -79,7 +80,10 @@ root
     │   ├── Properties/
     │   │   └── AssemblyInfo.cs        # 程序集信息
     │   └── MES.DAL.csproj             # 数据访问层项目文件，引用Common和Models
-    ├── MES.BLL/                       # 业务逻辑层(待开发)
+    ├── MES.BLL/                       # 业务逻辑层(L成员开发中)
+    │   ├── Material/                  # 物料管理业务逻辑(L成员负责)
+    │   │   ├── MaterialBLL.cs         # 物料业务逻辑类(PR #6 - 待修复)
+    │   │   └── BOMBLL.cs              # BOM业务逻辑类(PR #6 - 待修复)
     │   ├── Properties/
     │   │   └── AssemblyInfo.cs        # 程序集信息
     │   └── MES.BLL.csproj             # 业务逻辑层项目文件，引用DAL、Models、Common
@@ -111,12 +115,9 @@ root
 - `docs/GIT_WORKFLOW.md`: 详细的Git分支管理策略和团队协作流程
 - `docs/TEAM_QUICK_START.md`: 新成员5分钟快速上手指南
 - `docs/PROJECT_PROGRESS.md`: 实时项目进度跟踪和里程碑记录
+- `docs/PR_REVIEW_6.md`: L成员物料管理模块代码审查报告，包含详细问题分析和修复建议
 
-**项目记忆文件**(重要 - 本地专用):
-- `docs/PROJECT_MEMORY.md`: 项目记忆档案，记录所有重要决策、技术选择、问题解决方案 [本地]
-- `docs/DECISION_RECORDS.md`: 技术决策记录(ADR)，详细记录每个重要技术决策的背景和原因 [本地]
-- `docs/CONVERSATION_HIGHLIGHTS.md`: 对话要点记录，提取重要对话信息确保知识连续性 [本地]
-- 注意: 这些记忆文件仅保存在本地，不推送到GitHub，用于AI理解项目和保持会话连续性
+
 
 **开发规范**:
 - 所有业务模型继承自BaseModel
