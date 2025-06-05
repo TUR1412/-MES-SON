@@ -41,6 +41,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Material\BOMBLL.cs" />
+    <Compile Include="Material\MaterialBLL.cs" />
+    <Compile Include="obj\Debug\.NETFramework,Version=v4.8.AssemblyAttributes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -56,6 +59,28 @@
       <Project>{D4E5F6A7-B8C9-0123-DEF0-456789012345}</Project>
       <Name>MES.Models</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="obj\Debug\TempPE\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="obj\Debug\DesignTimeResolveAssemblyReferencesInput.cache" />
+    <None Include="obj\Debug\MES.BLL.csproj.AssemblyReference.cache" />
+    <None Include="obj\Debug\MES.BLL.csproj.CoreCompileInputs.cache" />
+    <None Include="obj\Debug\MES.BLL.csproj.Up2Date" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="bin\Debug\MES.BLL.dll" />
+    <Content Include="bin\Debug\MES.BLL.pdb" />
+    <Content Include="bin\Debug\MES.Common.dll" />
+    <Content Include="bin\Debug\MES.Common.pdb" />
+    <Content Include="bin\Debug\MES.DAL.dll" />
+    <Content Include="bin\Debug\MES.DAL.pdb" />
+    <Content Include="bin\Debug\MES.Models.dll" />
+    <Content Include="bin\Debug\MES.Models.pdb" />
+    <Content Include="obj\Debug\MES.BLL.csproj.FileListAbsolute.txt" />
+    <Content Include="obj\Debug\MES.BLL.dll" />
+    <Content Include="obj\Debug\MES.BLL.pdb" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
