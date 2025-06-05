@@ -4,7 +4,7 @@
 
 > 项目目标：为制造企业提供完整的生产管理解决方案，包括物料管理、生产管理、车间管理等核心模块
 
-> 项目状态：基础框架已完成，混合界面架构就绪，完全可运行，团队成员可开始并行开发各自模块
+> 项目状态：L成员物料管理已完成，制定三人同步开发计划，天帝开发时间至6月12日
 
 > 项目团队：天帝(组长/系统架构)、L成员(物料管理)、H成员(生产管理)、S成员(车间管理)
 
@@ -49,9 +49,10 @@ root
 ├── database/                           # 数据库相关文件
 │   └── init_database.sql              # 数据库初始化脚本，包含用户、物料、生产等基础表结构
 ├── docs/                               # 项目文档目录(重要)
-│   ├── GIT_WORKFLOW.md                # Git工作流程指南，团队协作必读
-│   ├── PROJECT_PROGRESS.md            # 项目进度记录，实时更新开发状态
-│   ├── TEAM_QUICK_START.md            # 团队快速上手指南，新成员必看
+│   ├── Git工作流程.md                  # Git工作流程指南，团队协作必读
+│   ├── 项目总览.md                     # 项目进度记录，实时更新开发状态
+│   ├── 三人同步开发详细指导.md          # 三人同步开发详细指导，无等待策略
+│   ├── 开发指南.md                     # 团队开发指南和最佳实践
 │   └── PR_REVIEW_6.md                 # PR #6代码审查报告，L成员物料管理模块审查
 ├── MES.sln                            # Visual Studio解决方案文件，包含所有项目引用
 ├── README.md                          # 项目说明文档，项目概览和快速开始
@@ -80,10 +81,12 @@ root
     │   ├── Properties/
     │   │   └── AssemblyInfo.cs        # 程序集信息
     │   └── MES.DAL.csproj             # 数据访问层项目文件，引用Common和Models
-    ├── MES.BLL/                       # 业务逻辑层(L成员开发中)
-    │   ├── Material/                  # 物料管理业务逻辑(L成员负责)
-    │   │   ├── MaterialBLL.cs         # 物料业务逻辑类(PR #6 - 待修复)
-    │   │   └── BOMBLL.cs              # BOM业务逻辑类(PR #6 - 待修复)
+    ├── MES.BLL/                       # 业务逻辑层(L成员已完成物料管理)
+    │   ├── Material/                  # 物料管理业务逻辑(L成员已完成)
+    │   │   ├── MaterialBLL.cs         # 物料业务逻辑类(已完成)
+    │   │   ├── BOMBLL.cs              # BOM业务逻辑类(已完成)
+    │   │   ├── IMaterialBLL.cs        # 物料业务接口(已完成)
+    │   │   └── IBOMBLL.cs             # BOM业务接口(已完成)
     │   ├── Properties/
     │   │   └── AssemblyInfo.cs        # 程序集信息
     │   └── MES.BLL.csproj             # 业务逻辑层项目文件，引用DAL、Models、Common
@@ -112,9 +115,10 @@ root
 - `MES.UI/Forms/MainForm.cs`: 主界面实现，采用设计器+动态代码混合架构
 
 **团队协作文件**:
-- `docs/GIT_WORKFLOW.md`: 详细的Git分支管理策略和团队协作流程
-- `docs/TEAM_QUICK_START.md`: 新成员5分钟快速上手指南
-- `docs/PROJECT_PROGRESS.md`: 实时项目进度跟踪和里程碑记录
+- `docs/Git工作流程.md`: 详细的Git分支管理策略和团队协作流程
+- `docs/项目总览.md`: 实时项目进度跟踪和里程碑记录
+- `docs/三人同步开发详细指导.md`: 三人完全同步开发计划，无等待策略
+- `docs/开发指南.md`: 团队开发指南和最佳实践
 - `docs/PR_REVIEW_6.md`: L成员物料管理模块代码审查报告，包含详细问题分析和修复建议
 
 
