@@ -41,6 +41,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Material\BOMBLL.cs" />
+    <Compile Include="Material\IBOMBLL.cs" />
+    <Compile Include="Material\IMaterialBLL.cs" />
+    <Compile Include="Material\MaterialBLL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
