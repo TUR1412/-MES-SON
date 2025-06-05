@@ -123,8 +123,8 @@ protected virtual (string sql, MySqlParameter[] parameters) BuildUpdateSql(T ent
 ## ✅ 迁移完成报告
 
 ### 迁移执行时间
-- 开始时间：2025-01-05 21:31
-- 完成时间：2025-01-05 22:15
+- 开始时间：2025-06-05 21:31
+- 完成时间：2025-06-05 22:15
 - 总耗时：约44分钟
 
 ### 迁移成果
