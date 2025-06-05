@@ -52,10 +52,14 @@
     <Compile Include="Forms\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-
+    <Compile Include="Forms\Material\MaterialManagementForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Material\MaterialManagementForm.Designer.cs">
+      <DependentUpon>MaterialManagementForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
@@ -63,7 +67,11 @@
       <Project>{E5F6A7B8-C9D0-1234-EF01-567890123456}</Project>
       <Name>MES.Common</Name>
     </ProjectReference>
-
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Forms\Material\MaterialManagementForm.resx">
+      <DependentUpon>MaterialManagementForm.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
