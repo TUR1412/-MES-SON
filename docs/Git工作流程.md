@@ -1,6 +1,26 @@
 # MES项目Git工作流程
 
-> **更新时间：2025-06-05 09:40**
+> **更新时间：2025-06-05 14:08**
+
+## 🔒 重要通知：分支保护规则已启用！
+
+### ⚠️ 紧急变更（2025-06-05 14:08）
+**从即日起，develop和main分支已启用保护规则，不能直接推送！**
+
+#### 🛡️ 分支保护详情
+- ✅ **develop分支保护**：强制PR审查 + GitHub Actions检查
+- ✅ **main分支保护**：强制PR审查 + GitHub Actions检查
+- ❌ **禁止直接推送**：`git push origin develop` 将被拒绝
+- ❌ **禁止强制推送**：`git push --force` 将被拒绝
+- ✅ **必须通过PR**：所有代码变更必须通过Pull Request
+
+#### 📋 新的工作流程
+1. 在功能分支开发 ✅
+2. 推送功能分支 ✅
+3. **创建Pull Request** ✅
+4. **等待GitHub Actions检查通过** ⏳
+5. **等待代码审查批准** ⏳
+6. **通过GitHub界面合并** ✅
 
 ## 📋 分支架构
 
@@ -154,11 +174,25 @@ git push origin feature/你的分支名
 
 ## ⚠️ 注意事项
 
-### 🚫 禁止操作
-- **禁止直接推送到main分支**
-- **禁止强制推送** (`git push -f`)
+### 🚫 禁止操作（已强制执行）
+- **禁止直接推送到develop分支** ❌ `git push origin develop`
+- **禁止直接推送到main分支** ❌ `git push origin main`
+- **禁止强制推送** ❌ `git push -f`
 - **禁止删除他人的分支**
 - **禁止修改他人负责的核心文件**
+
+### 💡 如果遇到推送被拒绝
+```bash
+# 错误示例（将被拒绝）：
+$ git push origin develop
+remote: error: GH006: Protected branch update failed for refs/heads/develop.
+
+# 正确做法：
+1. 推送到功能分支：git push origin feature/你的分支名
+2. 在GitHub上创建Pull Request
+3. 等待审查和检查通过
+4. 通过GitHub界面合并
+```
 
 ### ✅ 推荐操作
 - **经常拉取更新**
