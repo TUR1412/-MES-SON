@@ -261,7 +261,11 @@ Temp/
 .DS_Store
 Thumbs.db
 
-# 项目记忆文件 - 本地专用，不推送到GitHub
+# 项目隐私文件 - 本地专用，不推送到GitHub
+docs/项目记忆.md
+docs/重要对话记录.md
+
+# 旧的隐私文件（已重命名，保留规则以防遗留）
 docs/PROJECT_MEMORY.md
 docs/DECISION_RECORDS.md
 docs/CONVERSATION_HIGHLIGHTS.md

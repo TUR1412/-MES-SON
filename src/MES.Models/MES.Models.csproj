@@ -44,6 +44,7 @@
     <Compile Include="Base\BaseModel.cs" />
     <Compile Include="Material\MaterialInfo.cs" />
     <Compile Include="Material\BOMInfo.cs" />
+    <Compile Include="System\UserInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
