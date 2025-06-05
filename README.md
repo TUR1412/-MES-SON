@@ -1,5 +1,6 @@
 # MES制造执行系统 (Manufacturing Execution System)
 
+[![Build Status](https://github.com/TUR1412/-MES-SON/actions/workflows/build.yml/badge.svg)](https://github.com/TUR1412/-MES-SON/actions)
 [![.NET Framework](https://img.shields.io/badge/.NET%20Framework-4.8-blue.svg)](https://dotnet.microsoft.com/download/dotnet-framework)
 [![MySQL](https://img.shields.io/badge/MySQL-8.0-orange.svg)](https://www.mysql.com/)
 [![Visual Studio](https://img.shields.io/badge/Visual%20Studio-2022-purple.svg)](https://visualstudio.microsoft.com/)
