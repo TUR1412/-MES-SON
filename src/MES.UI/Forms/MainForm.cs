@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using MES.Common.Logging;
 using MES.Common.Configuration;
+using MES.UI.Forms.Material;
 // using MES.UI.Framework.Themes;
 // using MES.UI.Framework.Utilities;
 // using MES.UI.Framework.Controls;
@@ -433,7 +434,8 @@ namespace MES.UI.Forms
         #region 菜单事件处理方法 - 待各模块负责人实现
 
         // L成员负责实现的物料管理模块
-        private void OpenMaterialForm() => ShowNotImplemented("物料信息管理");
+        //private void OpenMaterialForm() => ShowNotImplemented("物料信息管理");
+        private void OpenMaterialForm() => showMMForm();
         private void OpenBOMForm() => ShowNotImplemented("BOM管理");
         private void OpenProcessRouteForm() => ShowNotImplemented("工艺路线管理");
 
@@ -502,7 +504,11 @@ namespace MES.UI.Forms
             MessageBox.Show($"{functionName}功能正在开发中，敬请期待！", "提示", 
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
-
+        private void showMMForm()
+        {
+            MaterialManagementForm mmForm = new MaterialManagementForm();
+            mmForm.Show();
+        }
         /// <summary>
         /// 显示关于对话框
         /// </summary>

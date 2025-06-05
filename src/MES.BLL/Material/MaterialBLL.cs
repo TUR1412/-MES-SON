@@ -64,17 +64,29 @@ namespace MES.BLL.Material
         {
             try
             {
+                // 1. 参数验证
                 if (material == null)
                     throw new ArgumentNullException(nameof(material));
 
-                if (string.IsNullOrEmpty(material.MaterialCode))
-                    throw new ArgumentException("物料编码不能为空");
+                if (string.IsNullOrWhiteSpace(material.MaterialCode))
+                    throw new MESException("物料编码不能为空");
 
-                if (string.IsNullOrEmpty(material.MaterialName))
-                    throw new ArgumentException("物料名称不能为空");
+                if (string.IsNullOrWhiteSpace(material.MaterialName))
+                    throw new MESException("物料名称不能为空");
 
-                // 添加更多业务规则验证...
+                // 2. 业务规则验证
+                if (_materialDAL.ExistsByMaterialCode(material.MaterialCode))
+                    throw new MESException($"物料编码 {material.MaterialCode} 已存在");
 
+                // 3. 数据完整性检查
+                if (material.MinStock.HasValue && material.MaxStock.HasValue &&
+                    material.MinStock > material.MaxStock)
+                    throw new MESException("最小库存不能大于最大库存");
+
+                // 4. 设置默认值
+                material.CreateUserName = material.CreateUserName ?? "system";
+
+                // 5. 执行添加操作
                 return _materialDAL.Add(material);
             }
             catch (Exception ex)

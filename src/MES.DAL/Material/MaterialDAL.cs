@@ -7,6 +7,7 @@ using MES.DAL.Base;
 using MES.DAL.Core;
 using MES.Common.Logging;
 using MES.Common.Exceptions;
+using MySql.Data.MySqlClient;
 
 namespace MES.DAL.Material
 {
@@ -196,6 +197,44 @@ namespace MES.DAL.Material
             {
                 LogManager.Error($"更新物料库存失败，物料ID: {materialId}", ex);
                 throw new MESException("更新物料库存失败", ex);
+            }
+        }
+
+        /// <summary>
+        /// 检查物料编码是否已存在（包括逻辑删除的记录）
+        /// </summary>
+        /// <param name="materialCode">物料编码</param>
+        /// <param name="excludeId">排除的ID（用于更新时检查）</param>
+        /// <returns>是否已存在</returns>
+        public bool ExistsByMaterialCode(string materialCode, int excludeId = 0)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(materialCode))
+                {
+                    return false;
+                }
+
+                string whereClause = "material_code = @materialCode";
+                var parameters = new List<SqlParameter>
+        {
+            DatabaseHelper.CreateParameter("@materialCode", materialCode)
+        };
+
+                if (excludeId > 0)
+                {
+                    whereClause += " AND id != @excludeId";
+                    parameters.Add(DatabaseHelper.CreateParameter("@excludeId", excludeId));
+                }
+
+                // 使用 SQL Server 的参数化查询
+                int count = GetCount(whereClause, parameters.ToArray());
+                return count > 0;
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error($"检查物料编码是否存在失败，编码: {materialCode}", ex);
+                throw new MESException("检查物料编码失败", ex);
             }
         }
 
