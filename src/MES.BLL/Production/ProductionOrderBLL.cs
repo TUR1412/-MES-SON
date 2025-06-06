@@ -407,7 +407,7 @@ namespace MES.BLL.Production
         /// <param name="id">生产订单ID</param>
         /// <param name="actualQuantity">实际完成数量</param>
         /// <returns>操作是否成功</returns>
-        public bool CompleteProductionOrder(int id, int actualQuantity)
+        public bool CompleteProductionOrder(int id, decimal actualQuantity)
         {
             try
             {
