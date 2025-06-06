@@ -54,7 +54,7 @@ namespace MES.BLL.Production
                     var existingOrder = _productionOrderDAL.GetByOrderNumber(productionOrder.OrderNumber);
                     if (existingOrder != null)
                     {
-                        LogManager.Error($"添加生产订单失败：订单号 {productionOrder.OrderNumber} 已存在");
+                        LogManager.Error(string.Format("添加生产订单失败：订单号 {0} 已存在", productionOrder.OrderNumber));
                         return false;
                     }
                 }
@@ -75,18 +75,18 @@ namespace MES.BLL.Production
                 
                 if (result)
                 {
-                    LogManager.Info($"成功添加生产订单：{productionOrder.OrderNumber}");
+                    LogManager.Info(string.Format("成功添加生产订单：{0}", productionOrder.OrderNumber));
                 }
                 else
                 {
-                    LogManager.Error($"添加生产订单失败：{productionOrder.OrderNumber}");
+                    LogManager.Error(string.Format("添加生产订单失败：{0}", productionOrder.OrderNumber));
                 }
 
                 return result;
             }
             catch (Exception ex)
             {
-                LogManager.Error($"添加生产订单异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("添加生产订单异常：{0}", ex.Message), ex);
                 throw new MESException("添加生产订单时发生异常", ex);
             }
         }
@@ -110,7 +110,7 @@ namespace MES.BLL.Production
                 var existingOrder = _productionOrderDAL.GetById(id);
                 if (existingOrder == null)
                 {
-                    LogManager.Error($"删除生产订单失败：ID为 {id} 的订单不存在");
+                    LogManager.Error(string.Format("删除生产订单失败：ID为 {0} 的订单不存在", id));
                     return false;
                 }
 
