@@ -15,6 +15,15 @@ namespace MES.Models.Production
         public string OrderNo { get; set; }
 
         /// <summary>
+        /// 订单编号（唯一标识）- BLL层兼容属性
+        /// </summary>
+        public string OrderNumber
+        {
+            get { return OrderNo; }
+            set { OrderNo = value; }
+        }
+
+        /// <summary>
         /// 物料ID（关联物料表）
         /// </summary>
         public int MaterialId { get; set; }
@@ -35,6 +44,20 @@ namespace MES.Models.Production
         public int Quantity { get; set; }
 
         /// <summary>
+        /// 计划生产数量 - BLL层兼容属性
+        /// </summary>
+        public int PlannedQuantity
+        {
+            get { return Quantity; }
+            set { Quantity = value; }
+        }
+
+        /// <summary>
+        /// 实际完成数量
+        /// </summary>
+        public int ActualQuantity { get; set; }
+
+        /// <summary>
         /// 已完成数量
         /// </summary>
         public int CompletedQuantity { get; set; }
@@ -45,9 +68,27 @@ namespace MES.Models.Production
         public DateTime PlanStartTime { get; set; }
 
         /// <summary>
+        /// 计划开始时间 - BLL层兼容属性
+        /// </summary>
+        public DateTime PlannedStartTime
+        {
+            get { return PlanStartTime; }
+            set { PlanStartTime = value; }
+        }
+
+        /// <summary>
         /// 计划完成时间
         /// </summary>
         public DateTime PlanEndTime { get; set; }
+
+        /// <summary>
+        /// 计划完成时间 - BLL层兼容属性
+        /// </summary>
+        public DateTime PlannedEndTime
+        {
+            get { return PlanEndTime; }
+            set { PlanEndTime = value; }
+        }
 
         /// <summary>
         /// 实际开始时间
@@ -101,6 +142,11 @@ namespace MES.Models.Production
         /// 质量要求
         /// </summary>
         public string QualityRequirement { get; set; }
+
+        /// <summary>
+        /// 备注信息
+        /// </summary>
+        public string Remarks { get; set; }
 
 
 
