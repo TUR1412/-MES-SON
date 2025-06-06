@@ -76,17 +76,17 @@ namespace MES.UI.Forms
         /// </summary>
         private void InitializeComboBoxes()
         {
-            // 车间类型
-            cmbWorkshopType.Items.AddRange(new string[] 
+            // 车间类型 - 使用数字编码
+            cmbWorkshopType.Items.AddRange(new object[]
             {
-                "装配车间",
-                "测试车间", 
-                "包装车间",
-                "机加工车间",
-                "注塑车间",
-                "喷涂车间",
-                "其他"
+                new { Text = "生产车间", Value = 1 },
+                new { Text = "装配车间", Value = 2 },
+                new { Text = "包装车间", Value = 3 },
+                new { Text = "质检车间", Value = 4 },
+                new { Text = "仓储车间", Value = 5 }
             });
+            cmbWorkshopType.DisplayMember = "Text";
+            cmbWorkshopType.ValueMember = "Value";
 
             // 部门
             cmbDepartment.Items.AddRange(new string[]
@@ -98,8 +98,17 @@ namespace MES.UI.Forms
                 "其他"
             });
 
-            // 状态
-            chkStatus.Checked = true; // 默认启用
+            // 状态 - 使用下拉框而不是复选框
+            cmbStatus.Items.AddRange(new object[]
+            {
+                new { Text = "正常运行", Value = "1" },
+                new { Text = "停用", Value = "0" },
+                new { Text = "维护中", Value = "2" },
+                new { Text = "故障停机", Value = "3" }
+            });
+            cmbStatus.DisplayMember = "Text";
+            cmbStatus.ValueMember = "Value";
+            cmbStatus.SelectedIndex = 0; // 默认正常运行
         }
 
         /// <summary>
@@ -120,12 +129,37 @@ namespace MES.UI.Forms
 
             txtWorkshopCode.Text = _currentWorkshop.WorkshopCode;
             txtWorkshopName.Text = _currentWorkshop.WorkshopName;
-            cmbWorkshopType.Text = _currentWorkshop.WorkshopType;
+
+            // 设置车间类型
+            for (int i = 0; i < cmbWorkshopType.Items.Count; i++)
+            {
+                var item = (dynamic)cmbWorkshopType.Items[i];
+                if (item.Value == _currentWorkshop.WorkshopType)
+                {
+                    cmbWorkshopType.SelectedIndex = i;
+                    break;
+                }
+            }
+
             cmbDepartment.Text = _currentWorkshop.Department;
-            txtCapacity.Text = _currentWorkshop.Capacity?.ToString();
-            txtLocationId.Text = _currentWorkshop.LocationId;
+            txtManager.Text = _currentWorkshop.Manager;
+            txtPhone.Text = _currentWorkshop.Phone;
+            txtLocation.Text = _currentWorkshop.Location;
+            txtArea.Text = _currentWorkshop.Area.ToString();
+            txtProductionCapacity.Text = _currentWorkshop.ProductionCapacity.ToString();
+            txtEmployeeCount.Text = _currentWorkshop.EmployeeCount.ToString();
             txtDescription.Text = _currentWorkshop.Description;
-            chkStatus.Checked = _currentWorkshop.Status;
+
+            // 设置状态
+            for (int i = 0; i < cmbStatus.Items.Count; i++)
+            {
+                var item = (dynamic)cmbStatus.Items[i];
+                if (item.Value == _currentWorkshop.Status)
+                {
+                    cmbStatus.SelectedIndex = i;
+                    break;
+                }
+            }
 
             // 编辑模式下车间编码不可修改
             if (_isEditMode)
@@ -151,11 +185,27 @@ namespace MES.UI.Forms
                 return "车间名称不能为空";
             }
 
-            if (!string.IsNullOrWhiteSpace(txtCapacity.Text))
+            if (!string.IsNullOrWhiteSpace(txtProductionCapacity.Text))
             {
-                if (!int.TryParse(txtCapacity.Text, out int capacity) || capacity <= 0)
+                if (!int.TryParse(txtProductionCapacity.Text, out int capacity) || capacity <= 0)
                 {
                     return "产能必须是大于0的整数";
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(txtArea.Text))
+            {
+                if (!decimal.TryParse(txtArea.Text, out decimal area) || area <= 0)
+                {
+                    return "车间面积必须是大于0的数字";
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(txtEmployeeCount.Text))
+            {
+                if (!int.TryParse(txtEmployeeCount.Text, out int count) || count < 0)
+                {
+                    return "员工数量必须是非负整数";
                 }
             }
 
@@ -172,18 +222,49 @@ namespace MES.UI.Forms
 
             workshop.WorkshopCode = txtWorkshopCode.Text.Trim();
             workshop.WorkshopName = txtWorkshopName.Text.Trim();
-            workshop.WorkshopType = cmbWorkshopType.Text.Trim();
+
+            // 车间类型
+            if (cmbWorkshopType.SelectedItem != null)
+            {
+                workshop.WorkshopType = ((dynamic)cmbWorkshopType.SelectedItem).Value;
+            }
+
             workshop.Department = cmbDepartment.Text.Trim();
-            workshop.LocationId = txtLocationId.Text.Trim();
+            workshop.Manager = txtManager.Text.Trim();
+            workshop.Phone = txtPhone.Text.Trim();
+            workshop.Location = txtLocation.Text.Trim();
             workshop.Description = txtDescription.Text.Trim();
-            workshop.Status = chkStatus.Checked;
+
+            // 状态
+            if (cmbStatus.SelectedItem != null)
+            {
+                workshop.Status = ((dynamic)cmbStatus.SelectedItem).Value;
+            }
+
+            // 面积
+            if (!string.IsNullOrWhiteSpace(txtArea.Text))
+            {
+                if (decimal.TryParse(txtArea.Text, out decimal area))
+                {
+                    workshop.Area = area;
+                }
+            }
 
             // 产能
-            if (!string.IsNullOrWhiteSpace(txtCapacity.Text))
+            if (!string.IsNullOrWhiteSpace(txtProductionCapacity.Text))
             {
-                if (int.TryParse(txtCapacity.Text, out int capacity))
+                if (int.TryParse(txtProductionCapacity.Text, out int capacity))
                 {
-                    workshop.Capacity = capacity;
+                    workshop.ProductionCapacity = capacity;
+                }
+            }
+
+            // 员工数量
+            if (!string.IsNullOrWhiteSpace(txtEmployeeCount.Text))
+            {
+                if (int.TryParse(txtEmployeeCount.Text, out int count))
+                {
+                    workshop.EmployeeCount = count;
                 }
             }
 

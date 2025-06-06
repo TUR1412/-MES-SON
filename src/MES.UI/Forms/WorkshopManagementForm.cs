@@ -99,27 +99,25 @@ namespace MES.UI.Forms
 
             dgvWorkshops.Columns.Add(new DataGridViewTextBoxColumn
             {
-                Name = "Capacity",
+                Name = "ProductionCapacity",
                 HeaderText = "产能(件/天)",
-                DataPropertyName = "Capacity",
+                DataPropertyName = "ProductionCapacity",
                 Width = 100
-            });
-
-            dgvWorkshops.Columns.Add(new DataGridViewCheckBoxColumn
-            {
-                Name = "Status",
-                HeaderText = "状态",
-                DataPropertyName = "Status",
-                Width = 80,
-                TrueValue = true,
-                FalseValue = false
             });
 
             dgvWorkshops.Columns.Add(new DataGridViewTextBoxColumn
             {
-                Name = "LocationId",
+                Name = "Status",
+                HeaderText = "状态",
+                DataPropertyName = "Status",
+                Width = 80
+            });
+
+            dgvWorkshops.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Location",
                 HeaderText = "位置",
-                DataPropertyName = "LocationId",
+                DataPropertyName = "Location",
                 Width = 100
             });
 
