@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using MySql.Data.MySqlClient;
 using MES.Models.Base;
 using MES.Models.System;
@@ -44,16 +45,16 @@ namespace MES.DAL.System
             return new UserInfo
             {
                 Id = Convert.ToInt32(row["id"]),
-                UserCode = row["user_code"]?.ToString(),
-                UserName = row["user_name"]?.ToString(),
-                LoginName = row["login_name"]?.ToString(),
-                Password = row["password"]?.ToString(),
-                Department = row["department"]?.ToString(),
-                Position = row["position"]?.ToString(),
+                UserCode = row["user_code"] != DBNull.Value ? row["user_code"].ToString() : null,
+                UserName = row["user_name"] != DBNull.Value ? row["user_name"].ToString() : null,
+                LoginName = row["login_name"] != DBNull.Value ? row["login_name"].ToString() : null,
+                Password = row["password"] != DBNull.Value ? row["password"].ToString() : null,
+                Department = row["department"] != DBNull.Value ? row["department"].ToString() : null,
+                Position = row["position"] != DBNull.Value ? row["position"].ToString() : null,
                 CreateTime = Convert.ToDateTime(row["create_time"]),
-                CreateUserName = row["create_user_name"]?.ToString(),
+                CreateUserName = row["create_user_name"] != DBNull.Value ? row["create_user_name"].ToString() : null,
                 UpdateTime = row["update_time"] != DBNull.Value ? Convert.ToDateTime(row["update_time"]) : (DateTime?)null,
-                UpdateUserName = row["update_user_name"]?.ToString(),
+                UpdateUserName = row["update_user_name"] != DBNull.Value ? row["update_user_name"].ToString() : null,
                 IsDeleted = Convert.ToBoolean(row["is_deleted"])
             };
         }
@@ -83,7 +84,7 @@ namespace MES.DAL.System
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据登录名获取用户失败，登录名: {loginName}", ex);
+                LogManager.Error(string.Format("根据登录名获取用户失败，登录名: {0}", loginName), ex);
                 throw new MESException("获取用户信息失败", ex);
             }
         }
@@ -109,7 +110,7 @@ namespace MES.DAL.System
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据用户编码获取用户失败，用户编码: {userCode}", ex);
+                LogManager.Error(string.Format("根据用户编码获取用户失败，用户编码: {0}", userCode), ex);
                 throw new MESException("获取用户信息失败", ex);
             }
         }
@@ -135,16 +136,16 @@ namespace MES.DAL.System
                 
                 if (users.Count > 0)
                 {
-                    LogManager.Info($"用户登录验证成功，登录名: {loginName}");
+                    LogManager.Info(string.Format("用户登录验证成功，登录名: {0}", loginName));
                     return users[0];
                 }
-                
-                LogManager.Warning($"用户登录验证失败，登录名: {loginName}");
+
+                LogManager.Warning(string.Format("用户登录验证失败，登录名: {0}", loginName));
                 return null;
             }
             catch (Exception ex)
             {
-                LogManager.Error($"用户登录验证异常，登录名: {loginName}", ex);
+                LogManager.Error(string.Format("用户登录验证异常，登录名: {0}", loginName), ex);
                 throw new MESException("用户登录验证失败", ex);
             }
         }
@@ -168,7 +169,7 @@ namespace MES.DAL.System
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据部门获取用户列表失败，部门: {department}", ex);
+                LogManager.Error(string.Format("根据部门获取用户列表失败，部门: {0}", department), ex);
                 throw new MESException("获取部门用户列表失败", ex);
             }
         }
@@ -201,14 +202,14 @@ namespace MES.DAL.System
                 bool success = rowsAffected > 0;
                 if (success)
                 {
-                    LogManager.Info($"用户密码更新成功，用户ID: {userId}");
+                    LogManager.Info(string.Format("用户密码更新成功，用户ID: {0}", userId));
                 }
-                
+
                 return success;
             }
             catch (Exception ex)
             {
-                LogManager.Error($"更新用户密码失败，用户ID: {userId}", ex);
+                LogManager.Error(string.Format("更新用户密码失败，用户ID: {0}", userId), ex);
                 throw new MESException("更新用户密码失败", ex);
             }
         }
