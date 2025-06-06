@@ -91,7 +91,7 @@ jobs:
   # 构建测试
   build:
     name: 构建测试
-    runs-on: windows-2022
+    runs-on: windows-latest
     needs: code-quality
 
     steps:

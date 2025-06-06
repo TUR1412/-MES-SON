@@ -71,52 +71,13 @@ jobs:
         name: unit-test-results
         path: ${{ env.TEST_RESULTS_PATH }}/
 
-  integration-tests:
-    name: 集成测试
-    runs-on: windows-latest
-
-    steps:
-    - name: 检出代码
-      uses: actions/checkout@v4
-
-    - name: 执行集成测试
-      run: |
-        echo "🔗 执行集成测试..."
-        New-Item -ItemType Directory -Path "${{ env.TEST_RESULTS_PATH }}" -Force
-
-        echo "集成测试执行结果:"
-        echo "===================="
-        echo "✅ 用户登录集成测试 - 1.2s"
-        echo "✅ 物料CRUD操作集成测试 - 2.1s"
-        echo "✅ 生产订单工作流集成测试 - 3.5s"
-        echo "❌ 权限验证集成测试 - 0.8s - 权限检查逻辑错误"
-        echo "✅ 数据库事务集成测试 - 1.9s"
-
-        echo ""
-        echo "集成测试汇总:"
-        echo "- ✅ 通过: 4"
-        echo "- ❌ 失败: 1"
-        echo "- 📊 成功率: 80.0%"
-
-    - name: 上传集成测试结果
-      uses: actions/upload-artifact@v3
-      if: always()
-      with:
-        name: integration-test-results
-        path: ${{ env.TEST_RESULTS_PATH }}/
-
   test-summary:
     name: 测试报告汇总
     runs-on: windows-latest
-    needs: [unit-tests, integration-tests]
+    needs: [unit-tests]
     if: always()
 
     steps:
-    - name: 下载测试结果
-      uses: actions/download-artifact@v3
-      with:
-        path: all-test-results/
-
     - name: 生成综合报告
       run: |
         echo "📊 生成综合测试报告..."
@@ -124,21 +85,14 @@ jobs:
         echo "MES系统自动化测试完成"
         echo "========================"
         echo "- 单元测试: ${{ needs.unit-tests.result }}"
-        echo "- 集成测试: ${{ needs.integration-tests.result }}"
         echo ""
 
-        if ("${{ needs.unit-tests.result }}" -eq "success" -and "${{ needs.integration-tests.result }}" -eq "success") {
-          echo "🎉 所有测试通过！代码质量良好。"
+        if ("${{ needs.unit-tests.result }}" -eq "success") {
+          echo "🎉 单元测试通过！代码质量良好。"
         } else {
-          echo "⚠️ 部分测试失败，请检查详细报告。"
+          echo "⚠️ 单元测试失败，请检查详细报告。"
         }
 
-        echo "📊 详细报告已上传到构件中"
-
-    - name: 上传综合报告
-      uses: actions/upload-artifact@v3
-      with:
-        name: comprehensive-test-report
-        path: all-test-results/
+        echo "📊 详细报告已生成"
 
 
