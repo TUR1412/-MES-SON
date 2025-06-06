@@ -45,17 +45,17 @@ namespace MES.DAL.Material
             return new BOMInfo
             {
                 Id = Convert.ToInt32(row["id"]),
-                BOMCode = row["bom_code"]?.ToString(),
+                BOMCode = row["bom_code"] != DBNull.Value ? row["bom_code"].ToString() : null,
                 ProductId = Convert.ToInt32(row["product_id"]),
-                BOMVersion = row["bom_version"]?.ToString(),
-                BOMType = row["bom_type"]?.ToString(),
+                BOMVersion = row["bom_version"] != DBNull.Value ? row["bom_version"].ToString() : null,
+                BOMType = row["bom_type"] != DBNull.Value ? row["bom_type"].ToString() : null,
                 EffectiveDate = Convert.ToDateTime(row["effective_date"]),
                 ExpireDate = row["expire_date"] != DBNull.Value ? Convert.ToDateTime(row["expire_date"]) : (DateTime?)null,
-                Status = row["status"]?.ToString(),
+                Status = row["status"] != DBNull.Value ? row["status"].ToString() : null,
                 CreateTime = Convert.ToDateTime(row["create_time"]),
-                CreateUserName = row["create_user_name"]?.ToString(),
+                CreateUserName = row["create_user_name"] != DBNull.Value ? row["create_user_name"].ToString() : null,
                 UpdateTime = row["update_time"] != DBNull.Value ? Convert.ToDateTime(row["update_time"]) : (DateTime?)null,
-                UpdateUserName = row["update_user_name"]?.ToString(),
+                UpdateUserName = row["update_user_name"] != DBNull.Value ? row["update_user_name"].ToString() : null,
                 IsDeleted = Convert.ToBoolean(row["is_deleted"])
             };
         }
@@ -94,7 +94,7 @@ namespace MES.DAL.Material
             {
                 if (string.IsNullOrEmpty(bomCode))
                 {
-                    throw new ArgumentException("BOM编码不能为空", nameof(bomCode));
+                    throw new ArgumentException("BOM编码不能为空", "bomCode");
                 }
 
                 var boms = GetByCondition("bom_code = @bomCode",

@@ -46,25 +46,25 @@ namespace MES.DAL.Production
             return new ProductionOrderInfo
             {
                 Id = Convert.ToInt32(row["id"]),
-                OrderNumber = row["order_number"]?.ToString(),
-                ProductCode = row["product_code"]?.ToString(),
-                ProductName = row["product_name"]?.ToString(),
+                OrderNumber = row["order_number"] != DBNull.Value ? row["order_number"].ToString() : null,
+                ProductCode = row["product_code"] != DBNull.Value ? row["product_code"].ToString() : null,
+                ProductName = row["product_name"] != DBNull.Value ? row["product_name"].ToString() : null,
                 PlannedQuantity = Convert.ToDecimal(row["planned_quantity"]),
                 ActualQuantity = row["actual_quantity"] != DBNull.Value ? Convert.ToDecimal(row["actual_quantity"]) : (decimal?)null,
-                Unit = row["unit"]?.ToString(),
+                Unit = row["unit"] != DBNull.Value ? row["unit"].ToString() : null,
                 PlannedStartTime = Convert.ToDateTime(row["planned_start_time"]),
                 PlannedEndTime = Convert.ToDateTime(row["planned_end_time"]),
                 ActualStartTime = row["actual_start_time"] != DBNull.Value ? Convert.ToDateTime(row["actual_start_time"]) : (DateTime?)null,
                 ActualEndTime = row["actual_end_time"] != DBNull.Value ? Convert.ToDateTime(row["actual_end_time"]) : (DateTime?)null,
-                Status = row["status"]?.ToString(),
-                Priority = row["priority"]?.ToString(),
+                Status = row["status"] != DBNull.Value ? row["status"].ToString() : null,
+                Priority = row["priority"] != DBNull.Value ? row["priority"].ToString() : null,
                 WorkshopId = row["workshop_id"] != DBNull.Value ? Convert.ToInt32(row["workshop_id"]) : (int?)null,
-                WorkshopName = row["workshop_name"]?.ToString(),
-                Customer = row["customer"]?.ToString(),
-                SalesOrderNumber = row["sales_order_number"]?.ToString(),
-                Remarks = row["remarks"]?.ToString(),
+                WorkshopName = row["workshop_name"] != DBNull.Value ? row["workshop_name"].ToString() : null,
+                Customer = row["customer"] != DBNull.Value ? row["customer"].ToString() : null,
+                SalesOrderNumber = row["sales_order_number"] != DBNull.Value ? row["sales_order_number"].ToString() : null,
+                Remarks = row["remarks"] != DBNull.Value ? row["remarks"].ToString() : null,
                 CreateTime = Convert.ToDateTime(row["create_time"]),
-                CreateUserName = row["create_user_name"]?.ToString(),
+                CreateUserName = row["create_user_name"] != DBNull.Value ? row["create_user_name"].ToString() : null,
                 IsDeleted = Convert.ToBoolean(row["is_deleted"])
             };
         }
@@ -84,7 +84,7 @@ namespace MES.DAL.Production
             {
                 if (string.IsNullOrEmpty(orderNo))
                 {
-                    throw new ArgumentException("订单编号不能为空", nameof(orderNo));
+                    throw new ArgumentException("订单编号不能为空", "orderNo");
                 }
 
                 var orders = GetByCondition("order_number = @orderNumber",
