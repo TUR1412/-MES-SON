@@ -1,6 +1,49 @@
 ## 2025-06-06 10:01:07
 
-### 1. 团队开发框架建立：解决依赖问题并完成H/S成员BLL层框架
+### 1. MES系统核心模块完善：新增系统管理、设备管理、质量管理、数据字典模块
+
+**Change Type**: major-enhancement
+
+> **Purpose**: 完善MES系统核心业务模块，新增系统管理、设备管理、质量管理、数据字典四大核心模块，形成完整的企业级制造执行系统架构
+> **Detailed Description**: 基于已有的物料、生产、车间三大模块，新增角色权限管理、设备维护管理、质量检验流程、数据字典配置四个核心模块，每个模块都包含完整的Model/DAL/BLL三层架构，统一使用MySQL API，提供企业级功能特性
+> **Reason for Change**: MES系统需要完整的业务模块覆盖，包括权限管理、设备管理、质量控制等企业级功能，为团队提供完整的开发框架和业务支撑
+> **Impact Scope**: 大幅提升MES系统的功能完整性和企业级应用能力，为所有团队成员提供更丰富的业务模块和开发参考
+> **API Changes**: 新增4个模型类、4个DAL类、1个完整BLL模块（IRoleBLL + RoleBLL），包含60+个业务方法
+> **Configuration Changes**: 更新MES.Models.csproj、MES.DAL.csproj、MES.BLL.csproj项目引用配置
+> **Performance Impact**: 提供完整的企业级功能模块，大幅提升系统业务价值和开发效率
+
+   ```
+   新增模型层 (Models):
+   ├── src/MES.Models/System/
+   │   ├── RoleInfo.cs                      // add - 角色信息模型，支持权限管理
+   │   └── DictionaryInfo.cs                // add - 数据字典模型，包含常用字典类型常量
+   ├── src/MES.Models/Equipment/
+   │   └── EquipmentInfo.cs                 // add - 设备信息模型，支持维护周期管理
+   ├── src/MES.Models/Quality/
+   │   └── QualityInspectionInfo.cs         // add - 质量检验模型，支持多类型检验流程
+
+   新增数据访问层 (DAL):
+   ├── src/MES.DAL/System/
+   │   ├── RoleDAL.cs                       // add - 角色数据访问，支持权限查询
+   │   └── DictionaryDAL.cs                 // add - 字典数据访问，支持层级查询
+   ├── src/MES.DAL/Equipment/
+   │   └── EquipmentDAL.cs                  // add - 设备数据访问，支持维护提醒
+   ├── src/MES.DAL/Quality/
+   │   └── QualityInspectionDAL.cs          // add - 质量数据访问，支持统计分析
+
+   新增业务逻辑层 (BLL):
+   ├── src/MES.BLL/System/
+   │   ├── IRoleBLL.cs                      // add - 角色业务接口（20个核心方法）
+   │   └── RoleBLL.cs                       // add - 角色业务实现（权限控制、批量操作）
+
+   企业级功能特性:
+   ├── 角色权限管理: 权限控制、角色复制、批量状态更新
+   ├── 设备维护管理: 维护周期、状态监控、维护提醒查询
+   ├── 质量检验流程: 多类型检验、审核流程、质量统计分析
+   └── 数据字典配置: 层级结构、扩展字段、批量操作支持
+   ```
+
+### 2. 团队开发框架建立：解决依赖问题并完成H/S成员BLL层框架
 
 **Change Type**: critical-framework
 

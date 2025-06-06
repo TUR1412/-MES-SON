@@ -4,7 +4,7 @@
 
 > 项目目标：为制造企业提供完整的生产管理解决方案，包括物料管理、生产管理、车间管理等核心模块
 
-> 项目状态：✅ 团队开发框架完成，H/S成员BLL层框架已建立，依赖问题已解决，团队可安全并行开发
+> 项目状态：✅ MES系统核心模块完善完成，6大业务模块齐全，企业级制造执行系统架构成型
 
 > 项目团队：天帝(组长/系统架构)、L成员(物料管理)、H成员(生产管理)、S成员(车间管理)
 
@@ -78,8 +78,14 @@ root
     │   │   └── ProductionOrderInfo.cs # 生产订单模型，包含订单管理所需属性
     │   ├── Workshop/                  # 车间相关模型(S成员负责) ✅ 已创建
     │   │   └── WorkshopInfo.cs        # 车间信息模型，包含车间管理所需属性
-    │   ├── System/                    # 系统相关模型
-    │   │   └── UserInfo.cs            # 用户信息模型
+    │   ├── System/                    # 系统相关模型 ✅ 已完善
+    │   │   ├── UserInfo.cs            # 用户信息模型
+    │   │   ├── RoleInfo.cs            # 角色信息模型（权限管理）✅ 新增
+    │   │   └── DictionaryInfo.cs      # 数据字典模型（系统配置）✅ 新增
+    │   ├── Equipment/                 # 设备相关模型 ✅ 新增
+    │   │   └── EquipmentInfo.cs       # 设备信息模型（维护管理）✅ 新增
+    │   ├── Quality/                   # 质量相关模型 ✅ 新增
+    │   │   └── QualityInspectionInfo.cs # 质量检验模型（检验流程）✅ 新增
     │   ├── Properties/
     │   │   └── AssemblyInfo.cs        # 程序集信息
     │   └── MES.Models.csproj          # 数据模型项目文件
@@ -96,7 +102,13 @@ root
     │   ├── Workshop/                  # 车间数据访问(S成员开发中)
     │   │   └── WorkshopDAL.cs         # 车间数据访问类 ✅ MySQL API已修复
     │   ├── System/
-    │   │   └── UserDAL.cs             # 用户数据访问类 ✅ MySQL API
+    │   │   ├── UserDAL.cs             # 用户数据访问类 ✅ MySQL API
+    │   │   ├── RoleDAL.cs             # 角色数据访问类（权限查询）✅ 新增
+    │   │   └── DictionaryDAL.cs       # 字典数据访问类（层级查询）✅ 新增
+    │   ├── Equipment/
+    │   │   └── EquipmentDAL.cs        # 设备数据访问类（维护提醒）✅ 新增
+    │   ├── Quality/
+    │   │   └── QualityInspectionDAL.cs # 质量数据访问类（统计分析）✅ 新增
     │   ├── Properties/
     │   │   └── AssemblyInfo.cs        # 程序集信息
     │   └── MES.DAL.csproj             # 数据访问层项目文件，引用Common和Models
@@ -112,6 +124,9 @@ root
     │   ├── Workshop/                  # 车间管理业务逻辑(S成员框架已完成) ✅ 新增
     │   │   ├── IWorkshopBLL.cs        # 车间业务接口(已完成)
     │   │   └── WorkshopBLL.cs         # 车间业务实现(已完成)
+    │   ├── System/                    # 系统管理业务逻辑 ✅ 新增
+    │   │   ├── IRoleBLL.cs            # 角色业务接口（权限管理）✅ 新增
+    │   │   └── RoleBLL.cs             # 角色业务实现（20个核心方法）✅ 新增
     │   ├── Properties/
     │   │   └── AssemblyInfo.cs        # 程序集信息
     │   └── MES.BLL.csproj             # 业务逻辑层项目文件，引用DAL、Models、Common
