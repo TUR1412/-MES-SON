@@ -188,7 +188,8 @@ namespace MES.UI.Forms
 
             if (!string.IsNullOrWhiteSpace(txtProductionCapacity.Text))
             {
-                if (!int.TryParse(txtProductionCapacity.Text, out int capacity) || capacity <= 0)
+                int capacity;
+                if (!int.TryParse(txtProductionCapacity.Text, out capacity) || capacity <= 0)
                 {
                     return "产能必须是大于0的整数";
                 }
@@ -196,7 +197,8 @@ namespace MES.UI.Forms
 
             if (!string.IsNullOrWhiteSpace(txtArea.Text))
             {
-                if (!decimal.TryParse(txtArea.Text, out decimal area) || area <= 0)
+                decimal area;
+                if (!decimal.TryParse(txtArea.Text, out area) || area <= 0)
                 {
                     return "车间面积必须是大于0的数字";
                 }
@@ -204,7 +206,8 @@ namespace MES.UI.Forms
 
             if (!string.IsNullOrWhiteSpace(txtEmployeeCount.Text))
             {
-                if (!int.TryParse(txtEmployeeCount.Text, out int count) || count < 0)
+                int count;
+                if (!int.TryParse(txtEmployeeCount.Text, out count) || count < 0)
                 {
                     return "员工数量必须是非负整数";
                 }
@@ -245,7 +248,8 @@ namespace MES.UI.Forms
             // 面积
             if (!string.IsNullOrWhiteSpace(txtArea.Text))
             {
-                if (decimal.TryParse(txtArea.Text, out decimal area))
+                decimal area;
+                if (decimal.TryParse(txtArea.Text, out area))
                 {
                     workshop.Area = area;
                 }
@@ -254,7 +258,8 @@ namespace MES.UI.Forms
             // 产能
             if (!string.IsNullOrWhiteSpace(txtProductionCapacity.Text))
             {
-                if (int.TryParse(txtProductionCapacity.Text, out int capacity))
+                int capacity;
+                if (int.TryParse(txtProductionCapacity.Text, out capacity))
                 {
                     workshop.ProductionCapacity = capacity;
                 }
@@ -263,7 +268,8 @@ namespace MES.UI.Forms
             // 员工数量
             if (!string.IsNullOrWhiteSpace(txtEmployeeCount.Text))
             {
-                if (int.TryParse(txtEmployeeCount.Text, out int count))
+                int count;
+                if (int.TryParse(txtEmployeeCount.Text, out count))
                 {
                     workshop.EmployeeCount = count;
                 }

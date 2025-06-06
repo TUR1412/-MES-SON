@@ -124,97 +124,178 @@ namespace MES.UI.Forms
             this.cmbDepartment.Size = new System.Drawing.Size(200, 20);
             this.cmbDepartment.TabIndex = 7;
             // 
-            // lblCapacity
-            // 
-            this.lblCapacity.AutoSize = true;
-            this.lblCapacity.Location = new System.Drawing.Point(30, 170);
-            this.lblCapacity.Name = "lblCapacity";
-            this.lblCapacity.Size = new System.Drawing.Size(89, 12);
-            this.lblCapacity.TabIndex = 8;
-            this.lblCapacity.Text = "产能(件/天)：";
-            // 
-            // txtCapacity
-            // 
-            this.txtCapacity.Location = new System.Drawing.Point(120, 167);
-            this.txtCapacity.Name = "txtCapacity";
-            this.txtCapacity.Size = new System.Drawing.Size(200, 21);
-            this.txtCapacity.TabIndex = 9;
-            // 
-            // lblLocationId
-            // 
-            this.lblLocationId.AutoSize = true;
-            this.lblLocationId.Location = new System.Drawing.Point(30, 205);
-            this.lblLocationId.Name = "lblLocationId";
-            this.lblLocationId.Size = new System.Drawing.Size(41, 12);
-            this.lblLocationId.TabIndex = 10;
-            this.lblLocationId.Text = "位置：";
-            // 
-            // txtLocationId
-            // 
-            this.txtLocationId.Location = new System.Drawing.Point(120, 202);
-            this.txtLocationId.Name = "txtLocationId";
-            this.txtLocationId.Size = new System.Drawing.Size(200, 21);
-            this.txtLocationId.TabIndex = 11;
+            // lblManager
+            //
+            this.lblManager.AutoSize = true;
+            this.lblManager.Location = new System.Drawing.Point(30, 170);
+            this.lblManager.Name = "lblManager";
+            this.lblManager.Size = new System.Drawing.Size(65, 12);
+            this.lblManager.TabIndex = 8;
+            this.lblManager.Text = "负责人：";
+            //
+            // txtManager
+            //
+            this.txtManager.Location = new System.Drawing.Point(120, 167);
+            this.txtManager.Name = "txtManager";
+            this.txtManager.Size = new System.Drawing.Size(200, 21);
+            this.txtManager.TabIndex = 9;
+            //
+            // lblPhone
+            //
+            this.lblPhone.AutoSize = true;
+            this.lblPhone.Location = new System.Drawing.Point(30, 205);
+            this.lblPhone.Name = "lblPhone";
+            this.lblPhone.Size = new System.Drawing.Size(65, 12);
+            this.lblPhone.TabIndex = 10;
+            this.lblPhone.Text = "联系电话：";
+            //
+            // txtPhone
+            //
+            this.txtPhone.Location = new System.Drawing.Point(120, 202);
+            this.txtPhone.Name = "txtPhone";
+            this.txtPhone.Size = new System.Drawing.Size(200, 21);
+            this.txtPhone.TabIndex = 11;
+            //
+            // lblLocation
+            //
+            this.lblLocation.AutoSize = true;
+            this.lblLocation.Location = new System.Drawing.Point(30, 240);
+            this.lblLocation.Name = "lblLocation";
+            this.lblLocation.Size = new System.Drawing.Size(41, 12);
+            this.lblLocation.TabIndex = 12;
+            this.lblLocation.Text = "位置：";
+            //
+            // txtLocation
+            //
+            this.txtLocation.Location = new System.Drawing.Point(120, 237);
+            this.txtLocation.Name = "txtLocation";
+            this.txtLocation.Size = new System.Drawing.Size(200, 21);
+            this.txtLocation.TabIndex = 13;
+            //
+            // lblArea
+            //
+            this.lblArea.AutoSize = true;
+            this.lblArea.Location = new System.Drawing.Point(30, 275);
+            this.lblArea.Name = "lblArea";
+            this.lblArea.Size = new System.Drawing.Size(65, 12);
+            this.lblArea.TabIndex = 14;
+            this.lblArea.Text = "面积(㎡)：";
+            //
+            // txtArea
+            //
+            this.txtArea.Location = new System.Drawing.Point(120, 272);
+            this.txtArea.Name = "txtArea";
+            this.txtArea.Size = new System.Drawing.Size(200, 21);
+            this.txtArea.TabIndex = 15;
+            //
+            // lblProductionCapacity
+            //
+            this.lblProductionCapacity.AutoSize = true;
+            this.lblProductionCapacity.Location = new System.Drawing.Point(30, 310);
+            this.lblProductionCapacity.Name = "lblProductionCapacity";
+            this.lblProductionCapacity.Size = new System.Drawing.Size(89, 12);
+            this.lblProductionCapacity.TabIndex = 16;
+            this.lblProductionCapacity.Text = "产能(件/天)：";
+            //
+            // txtProductionCapacity
+            //
+            this.txtProductionCapacity.Location = new System.Drawing.Point(120, 307);
+            this.txtProductionCapacity.Name = "txtProductionCapacity";
+            this.txtProductionCapacity.Size = new System.Drawing.Size(200, 21);
+            this.txtProductionCapacity.TabIndex = 17;
+            //
+            // lblEmployeeCount
+            //
+            this.lblEmployeeCount.AutoSize = true;
+            this.lblEmployeeCount.Location = new System.Drawing.Point(30, 345);
+            this.lblEmployeeCount.Name = "lblEmployeeCount";
+            this.lblEmployeeCount.Size = new System.Drawing.Size(65, 12);
+            this.lblEmployeeCount.TabIndex = 18;
+            this.lblEmployeeCount.Text = "员工数量：";
+            //
+            // txtEmployeeCount
+            //
+            this.txtEmployeeCount.Location = new System.Drawing.Point(120, 342);
+            this.txtEmployeeCount.Name = "txtEmployeeCount";
+            this.txtEmployeeCount.Size = new System.Drawing.Size(200, 21);
+            this.txtEmployeeCount.TabIndex = 19;
+            //
+            // lblStatus
+            //
+            this.lblStatus.AutoSize = true;
+            this.lblStatus.Location = new System.Drawing.Point(30, 380);
+            this.lblStatus.Name = "lblStatus";
+            this.lblStatus.Size = new System.Drawing.Size(41, 12);
+            this.lblStatus.TabIndex = 20;
+            this.lblStatus.Text = "状态：";
+            //
+            // cmbStatus
+            //
+            this.cmbStatus.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbStatus.FormattingEnabled = true;
+            this.cmbStatus.Location = new System.Drawing.Point(120, 377);
+            this.cmbStatus.Name = "cmbStatus";
+            this.cmbStatus.Size = new System.Drawing.Size(200, 20);
+            this.cmbStatus.TabIndex = 21;
             // 
             // lblDescription
-            // 
+            //
             this.lblDescription.AutoSize = true;
-            this.lblDescription.Location = new System.Drawing.Point(30, 240);
+            this.lblDescription.Location = new System.Drawing.Point(30, 415);
             this.lblDescription.Name = "lblDescription";
             this.lblDescription.Size = new System.Drawing.Size(41, 12);
-            this.lblDescription.TabIndex = 12;
+            this.lblDescription.TabIndex = 22;
             this.lblDescription.Text = "描述：";
-            // 
+            //
             // txtDescription
-            // 
-            this.txtDescription.Location = new System.Drawing.Point(120, 237);
+            //
+            this.txtDescription.Location = new System.Drawing.Point(120, 412);
             this.txtDescription.Multiline = true;
             this.txtDescription.Name = "txtDescription";
             this.txtDescription.Size = new System.Drawing.Size(200, 60);
-            this.txtDescription.TabIndex = 13;
-            // 
-            // chkStatus
-            // 
-            this.chkStatus.AutoSize = true;
-            this.chkStatus.Location = new System.Drawing.Point(120, 315);
-            this.chkStatus.Name = "chkStatus";
-            this.chkStatus.Size = new System.Drawing.Size(48, 16);
-            this.chkStatus.TabIndex = 14;
-            this.chkStatus.Text = "启用";
-            this.chkStatus.UseVisualStyleBackColor = true;
-            // 
+            this.txtDescription.TabIndex = 23;
+            //
             // btnSave
-            // 
-            this.btnSave.Location = new System.Drawing.Point(180, 350);
+            //
+            this.btnSave.Location = new System.Drawing.Point(180, 490);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(75, 25);
-            this.btnSave.TabIndex = 15;
+            this.btnSave.TabIndex = 24;
             this.btnSave.Text = "保存";
             this.btnSave.UseVisualStyleBackColor = true;
-            // 
+            //
             // btnCancel
-            // 
-            this.btnCancel.Location = new System.Drawing.Point(270, 350);
+            //
+            this.btnCancel.Location = new System.Drawing.Point(270, 490);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 25);
-            this.btnCancel.TabIndex = 16;
+            this.btnCancel.TabIndex = 25;
             this.btnCancel.Text = "取消";
             this.btnCancel.UseVisualStyleBackColor = true;
             // 
             // WorkshopEditForm
-            // 
+            //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(384, 391);
+            this.ClientSize = new System.Drawing.Size(384, 540);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnSave);
-            this.Controls.Add(this.chkStatus);
             this.Controls.Add(this.txtDescription);
             this.Controls.Add(this.lblDescription);
-            this.Controls.Add(this.txtLocationId);
-            this.Controls.Add(this.lblLocationId);
-            this.Controls.Add(this.txtCapacity);
-            this.Controls.Add(this.lblCapacity);
+            this.Controls.Add(this.cmbStatus);
+            this.Controls.Add(this.lblStatus);
+            this.Controls.Add(this.txtEmployeeCount);
+            this.Controls.Add(this.lblEmployeeCount);
+            this.Controls.Add(this.txtProductionCapacity);
+            this.Controls.Add(this.lblProductionCapacity);
+            this.Controls.Add(this.txtArea);
+            this.Controls.Add(this.lblArea);
+            this.Controls.Add(this.txtLocation);
+            this.Controls.Add(this.lblLocation);
+            this.Controls.Add(this.txtPhone);
+            this.Controls.Add(this.lblPhone);
+            this.Controls.Add(this.txtManager);
+            this.Controls.Add(this.lblManager);
             this.Controls.Add(this.cmbDepartment);
             this.Controls.Add(this.lblDepartment);
             this.Controls.Add(this.cmbWorkshopType);
@@ -240,13 +321,22 @@ namespace MES.UI.Forms
         private System.Windows.Forms.ComboBox cmbWorkshopType;
         private System.Windows.Forms.Label lblDepartment;
         private System.Windows.Forms.ComboBox cmbDepartment;
-        private System.Windows.Forms.Label lblCapacity;
-        private System.Windows.Forms.TextBox txtCapacity;
-        private System.Windows.Forms.Label lblLocationId;
-        private System.Windows.Forms.TextBox txtLocationId;
+        private System.Windows.Forms.Label lblManager;
+        private System.Windows.Forms.TextBox txtManager;
+        private System.Windows.Forms.Label lblPhone;
+        private System.Windows.Forms.TextBox txtPhone;
+        private System.Windows.Forms.Label lblLocation;
+        private System.Windows.Forms.TextBox txtLocation;
+        private System.Windows.Forms.Label lblArea;
+        private System.Windows.Forms.TextBox txtArea;
+        private System.Windows.Forms.Label lblProductionCapacity;
+        private System.Windows.Forms.TextBox txtProductionCapacity;
+        private System.Windows.Forms.Label lblEmployeeCount;
+        private System.Windows.Forms.TextBox txtEmployeeCount;
+        private System.Windows.Forms.Label lblStatus;
+        private System.Windows.Forms.ComboBox cmbStatus;
         private System.Windows.Forms.Label lblDescription;
         private System.Windows.Forms.TextBox txtDescription;
-        private System.Windows.Forms.CheckBox chkStatus;
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.Button btnCancel;
     }

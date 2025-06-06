@@ -111,10 +111,11 @@ namespace MES.UI.Forms.SystemManagement
 
             // 搜索面板
             var searchPanel = new Panel { Height = 35, Dock = DockStyle.Top };
-            var txtSearch = new TextBox 
-            { 
+            var txtSearch = new TextBox
+            {
                 Name = "txtSearch",
-                PlaceholderText = "输入角色编码或名称搜索...",
+                Text = "输入角色编码或名称搜索...",
+                ForeColor = Color.Gray,
                 Dock = DockStyle.Fill,
                 Margin = new Padding(5)
             };
