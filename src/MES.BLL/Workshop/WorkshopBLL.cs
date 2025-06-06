@@ -758,18 +758,16 @@ namespace MES.BLL.Workshop
                     return new Dictionary<string, object>();
                 }
 
-                var statistics = new Dictionary<string, object>
-                {
-                    ["WorkshopId"] = workshopId,
-                    ["WorkshopCode"] = workshop.WorkshopCode,
-                    ["WorkshopName"] = workshop.WorkshopName,
-                    ["Status"] = workshop.Status,
-                    ["ProductionCapacity"] = workshop.ProductionCapacity,
-                    ["CurrentWorkload"] = GetWorkshopWorkload(workshopId),
-                    ["EquipmentCount"] = GetWorkshopEquipments(workshopId).Count,
-                    ["CreateTime"] = workshop.CreateTime,
-                    ["UpdateTime"] = workshop.UpdateTime
-                };
+                var statistics = new Dictionary<string, object>();
+                statistics.Add("WorkshopId", workshopId);
+                statistics.Add("WorkshopCode", workshop.WorkshopCode);
+                statistics.Add("WorkshopName", workshop.WorkshopName);
+                statistics.Add("Status", workshop.Status);
+                statistics.Add("ProductionCapacity", workshop.ProductionCapacity);
+                statistics.Add("CurrentWorkload", GetWorkshopWorkload(workshopId));
+                statistics.Add("EquipmentCount", GetWorkshopEquipments(workshopId).Count);
+                statistics.Add("CreateTime", workshop.CreateTime);
+                statistics.Add("UpdateTime", workshop.UpdateTime);
 
                 // TODO: 添加更多统计信息，如生产订单数量、完成率等
 

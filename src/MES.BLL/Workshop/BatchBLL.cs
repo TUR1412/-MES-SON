@@ -669,27 +669,25 @@ namespace MES.BLL.Workshop
                     return new Dictionary<string, object>();
                 }
 
-                var statistics = new Dictionary<string, object>
-                {
-                    ["BatchId"] = batch.BatchId,
-                    ["WorkOrderId"] = batch.WorkOrderId,
-                    ["ProductMaterialId"] = batch.ProductMaterialId,
-                    ["Quantity"] = batch.Quantity,
-                    ["Status"] = batch.Status,
-                    ["CurrentStationId"] = batch.CurrentStationId,
-                    ["ProductionStartTime"] = batch.ProductionStartTime,
-                    ["ProductionEndTime"] = batch.ProductionEndTime,
-                    ["CarrierId"] = batch.CarrierId,
-                    ["CreateTime"] = batch.CreateTime,
-                    ["UpdateTime"] = batch.UpdateTime
-                };
+                var statistics = new Dictionary<string, object>();
+                statistics.Add("BatchId", batch.BatchId);
+                statistics.Add("WorkOrderId", batch.WorkOrderId);
+                statistics.Add("ProductMaterialId", batch.ProductMaterialId);
+                statistics.Add("Quantity", batch.Quantity);
+                statistics.Add("Status", batch.Status);
+                statistics.Add("CurrentStationId", batch.CurrentStationId);
+                statistics.Add("ProductionStartTime", batch.ProductionStartTime);
+                statistics.Add("ProductionEndTime", batch.ProductionEndTime);
+                statistics.Add("CarrierId", batch.CarrierId);
+                statistics.Add("CreateTime", batch.CreateTime);
+                statistics.Add("UpdateTime", batch.UpdateTime);
 
                 // 计算生产时长
                 if (batch.ProductionStartTime.HasValue)
                 {
                     var endTime = batch.ProductionEndTime ?? DateTime.Now;
                     var duration = endTime - batch.ProductionStartTime.Value;
-                    statistics["ProductionDuration"] = duration.TotalHours;
+                    statistics.Add("ProductionDuration", duration.TotalHours);
                 }
 
                 return statistics;

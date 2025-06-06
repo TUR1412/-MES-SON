@@ -591,14 +591,12 @@ namespace MES.BLL.System
             try
             {
                 var allRoles = _roleDAL.GetAll();
-                var statistics = new Dictionary<string, object>
-                {
-                    ["TotalCount"] = allRoles.Count,
-                    ["EnabledCount"] = allRoles.Count(r => r.Status == 1),
-                    ["DisabledCount"] = allRoles.Count(r => r.Status == 0),
-                    ["SystemRoleCount"] = allRoles.Count(r => r.RoleCode == "ADMIN" || r.RoleCode == "SYSTEM"),
-                    ["CustomRoleCount"] = allRoles.Count(r => r.RoleCode != "ADMIN" && r.RoleCode != "SYSTEM")
-                };
+                var statistics = new Dictionary<string, object>();
+                statistics.Add("TotalCount", allRoles.Count);
+                statistics.Add("EnabledCount", allRoles.Count(r => r.Status == 1));
+                statistics.Add("DisabledCount", allRoles.Count(r => r.Status == 0));
+                statistics.Add("SystemRoleCount", allRoles.Count(r => r.RoleCode == "ADMIN" || r.RoleCode == "SYSTEM"));
+                statistics.Add("CustomRoleCount", allRoles.Count(r => r.RoleCode != "ADMIN" && r.RoleCode != "SYSTEM"));
 
                 return statistics;
             }

@@ -320,7 +320,7 @@ namespace MES.UI.Framework.Controls
                     object value = GetFieldValue(field);
                     if (value != null)
                     {
-                        parameters[field.Name] = value;
+                        parameters.Add(field.Name, value);
                     }
                 }
                 catch (Exception ex)
