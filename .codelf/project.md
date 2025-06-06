@@ -4,7 +4,7 @@
 
 > 项目目标：为制造企业提供完整的生产管理解决方案，包括物料管理、生产管理、车间管理等核心模块
 
-> 项目状态：L成员物料管理已完成，制定三人同步开发计划，天帝开发时间至6月12日
+> 项目状态：✅ MySQL架构统一完成，H/S成员模型类已创建，团队可全速并行开发
 
 > 项目团队：天帝(组长/系统架构)、L成员(物料管理)、H成员(生产管理)、S成员(车间管理)
 
@@ -74,10 +74,29 @@ root
     │   ├── Material/                  # 物料相关模型(L成员负责)
     │   │   ├── BOMInfo.cs             # BOM物料清单模型，定义产品组成结构
     │   │   └── MaterialInfo.cs        # 物料信息模型，包含物料基本属性和分类
+    │   ├── Production/                # 生产相关模型(H成员负责) ✅ 已创建
+    │   │   └── ProductionOrderInfo.cs # 生产订单模型，包含订单管理所需属性
+    │   ├── Workshop/                  # 车间相关模型(S成员负责) ✅ 已创建
+    │   │   └── WorkshopInfo.cs        # 车间信息模型，包含车间管理所需属性
+    │   ├── System/                    # 系统相关模型
+    │   │   └── UserInfo.cs            # 用户信息模型
     │   ├── Properties/
     │   │   └── AssemblyInfo.cs        # 程序集信息
     │   └── MES.Models.csproj          # 数据模型项目文件
-    ├── MES.DAL/                       # 数据访问层(待开发)
+    ├── MES.DAL/                       # 数据访问层 ✅ MySQL架构统一完成
+    │   ├── Base/
+    │   │   └── BaseDAL.cs             # 基础DAL抽象类，提供通用CRUD操作
+    │   ├── Core/
+    │   │   └── DatabaseHelper.cs      # 数据库操作助手类，MySQL API统一
+    │   ├── Material/                  # 物料数据访问(L成员已完成)
+    │   │   ├── MaterialDAL.cs         # 物料数据访问类 ✅ MySQL API
+    │   │   └── BOMDAL.cs              # BOM数据访问类 ✅ MySQL API
+    │   ├── Production/                # 生产数据访问(H成员开发中)
+    │   │   └── ProductionOrderDAL.cs  # 生产订单数据访问类 ✅ MySQL API已修复
+    │   ├── Workshop/                  # 车间数据访问(S成员开发中)
+    │   │   └── WorkshopDAL.cs         # 车间数据访问类 ✅ MySQL API已修复
+    │   ├── System/
+    │   │   └── UserDAL.cs             # 用户数据访问类 ✅ MySQL API
     │   ├── Properties/
     │   │   └── AssemblyInfo.cs        # 程序集信息
     │   └── MES.DAL.csproj             # 数据访问层项目文件，引用Common和Models
@@ -117,6 +136,8 @@ root
 **团队协作文件**:
 - `docs/Git工作流程.md`: 详细的Git分支管理策略和团队协作流程
 - `docs/项目总览.md`: 实时项目进度跟踪和里程碑记录
+- `docs/H_S成员立即开发指导.md`: H/S成员专用开发指导，包含模板代码 ✅ 新增
+- `docs/团队开发完整指南.md`: 完整的团队开发规范和流程指导 ✅ 新增
 - `docs/三人同步开发详细指导.md`: 三人完全同步开发计划，无等待策略
 - `docs/开发指南.md`: 团队开发指南和最佳实践
 - `docs/PR_REVIEW_6.md`: L成员物料管理模块代码审查报告，包含详细问题分析和修复建议

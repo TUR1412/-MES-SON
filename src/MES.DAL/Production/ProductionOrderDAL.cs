@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
+using MySql.Data.MySqlClient;
 using MES.Models.Base;
 using MES.DAL.Base;
 using MES.DAL.Core;
@@ -94,7 +94,7 @@ namespace MES.DAL.Production
         /// </summary>
         /// <param name="entity">生产订单实体</param>
         /// <returns>SQL语句和参数</returns>
-        protected override (string sql, SqlParameter[] parameters) BuildInsertSql(ProductionOrderInfo entity)
+        protected override (string sql, MySqlParameter[] parameters) BuildInsertSql(ProductionOrderInfo entity)
         {
             // TODO: H成员需要根据实际的production_order表结构完善此SQL
             string sql = @"INSERT INTO production_order 
@@ -124,7 +124,7 @@ namespace MES.DAL.Production
         /// </summary>
         /// <param name="entity">生产订单实体</param>
         /// <returns>SQL语句和参数</returns>
-        protected override (string sql, SqlParameter[] parameters) BuildUpdateSql(ProductionOrderInfo entity)
+        protected override (string sql, MySqlParameter[] parameters) BuildUpdateSql(ProductionOrderInfo entity)
         {
             // TODO: H成员需要根据实际的production_order表结构完善此SQL
             string sql = @"UPDATE production_order SET 
