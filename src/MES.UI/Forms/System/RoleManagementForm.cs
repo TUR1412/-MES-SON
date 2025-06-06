@@ -61,8 +61,8 @@ namespace MES.UI.Forms.System
             }
             catch (Exception ex)
             {
-                LogManager.Error($"角色管理窗体初始化失败：{ex.Message}", ex);
-                MessageBox.Show($"窗体初始化失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                LogManager.Error(string.Format("角色管理窗体初始化失败：{0}", ex.Message), ex);
+                MessageBox.Show(string.Format("窗体初始化失败：{0}", ex.Message), "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -282,8 +282,8 @@ namespace MES.UI.Forms.System
             }
             catch (Exception ex)
             {
-                LogManager.Error($"加载角色数据失败：{ex.Message}", ex);
-                MessageBox.Show($"加载数据失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                LogManager.Error(string.Format("加载角色数据失败：{0}", ex.Message), ex);
+                MessageBox.Show(string.Format("加载数据失败：{0}", ex.Message), "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -315,11 +315,11 @@ namespace MES.UI.Forms.System
                     dgvRoles.DataSource = displayRoles;
                 }
 
-                LogManager.Info($"成功加载 {_currentRoles.Count} 个角色");
+                LogManager.Info(string.Format("成功加载 {0} 个角色", _currentRoles.Count));
             }
             catch (Exception ex)
             {
-                LogManager.Error($"加载角色数据失败：{ex.Message}", ex);
+                LogManager.Error(string.Format("加载角色数据失败：{0}", ex.Message), ex);
                 throw;
             }
         }
@@ -346,7 +346,7 @@ namespace MES.UI.Forms.System
             }
             catch (Exception ex)
             {
-                LogManager.Error($"显示角色详情失败：{ex.Message}", ex);
+                LogManager.Error(string.Format("显示角色详情失败：{0}", ex.Message), ex);
             }
         }
 
@@ -377,7 +377,7 @@ namespace MES.UI.Forms.System
             }
             catch (Exception ex)
             {
-                LogManager.Error($"显示角色详情失败：{ex.Message}", ex);
+                LogManager.Error(string.Format("显示角色详情失败：{0}", ex.Message), ex);
             }
         }
 
@@ -395,8 +395,8 @@ namespace MES.UI.Forms.System
             }
             catch (Exception ex)
             {
-                LogManager.Error($"新增角色失败：{ex.Message}", ex);
-                MessageBox.Show($"新增角色失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                LogManager.Error(string.Format("新增角色失败：{0}", ex.Message), ex);
+                MessageBox.Show(string.Format("新增角色失败：{0}", ex.Message), "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -414,12 +414,12 @@ namespace MES.UI.Forms.System
                 }
 
                 // TODO: 打开角色编辑对话框
-                MessageBox.Show($"编辑角色 {_selectedRole.RoleName} 功能开发中...", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(string.Format("编辑角色 {0} 功能开发中...", _selectedRole.RoleName), "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
-                LogManager.Error($"编辑角色失败：{ex.Message}", ex);
-                MessageBox.Show($"编辑角色失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                LogManager.Error(string.Format("编辑角色失败：{0}", ex.Message), ex);
+                MessageBox.Show(string.Format("编辑角色失败：{0}", ex.Message), "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -436,7 +436,7 @@ namespace MES.UI.Forms.System
                     return;
                 }
 
-                var result = MessageBox.Show($"确定要删除角色 '{_selectedRole.RoleName}' 吗？", "确认删除", 
+                var result = MessageBox.Show(string.Format("确定要删除角色 '{0}' 吗？", _selectedRole.RoleName), "确认删除",
                     MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
                 if (result == DialogResult.Yes)
@@ -454,8 +454,8 @@ namespace MES.UI.Forms.System
             }
             catch (Exception ex)
             {
-                LogManager.Error($"删除角色失败：{ex.Message}", ex);
-                MessageBox.Show($"删除角色失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                LogManager.Error(string.Format("删除角色失败：{0}", ex.Message), ex);
+                MessageBox.Show(string.Format("删除角色失败：{0}", ex.Message), "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -471,8 +471,8 @@ namespace MES.UI.Forms.System
             }
             catch (Exception ex)
             {
-                LogManager.Error($"刷新数据失败：{ex.Message}", ex);
-                MessageBox.Show($"刷新失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                LogManager.Error(string.Format("刷新数据失败：{0}", ex.Message), ex);
+                MessageBox.Show(string.Format("刷新失败：{0}", ex.Message), "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -513,8 +513,8 @@ namespace MES.UI.Forms.System
             }
             catch (Exception ex)
             {
-                LogManager.Error($"搜索角色失败：{ex.Message}", ex);
-                MessageBox.Show($"搜索失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                LogManager.Error(string.Format("搜索角色失败：{0}", ex.Message), ex);
+                MessageBox.Show(string.Format("搜索失败：{0}", ex.Message), "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -532,12 +532,12 @@ namespace MES.UI.Forms.System
                 }
 
                 // TODO: 打开权限设置对话框
-                MessageBox.Show($"设置角色 {_selectedRole.RoleName} 权限功能开发中...", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(string.Format("设置角色 {0} 权限功能开发中...", _selectedRole.RoleName), "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
-                LogManager.Error($"设置权限失败：{ex.Message}", ex);
-                MessageBox.Show($"设置权限失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                LogManager.Error(string.Format("设置权限失败：{0}", ex.Message), ex);
+                MessageBox.Show(string.Format("设置权限失败：{0}", ex.Message), "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

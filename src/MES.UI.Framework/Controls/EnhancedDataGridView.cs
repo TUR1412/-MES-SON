@@ -390,11 +390,11 @@ namespace MES.UI.Framework.Controls
                     }
                 }
                 
-                LogManager.Info($"数据已导出到CSV文件: {filePath}");
+                LogManager.Info(string.Format("数据已导出到CSV文件: {0}", filePath));
             }
             catch (Exception ex)
             {
-                LogManager.Error($"导出CSV文件失败: {filePath}", ex);
+                LogManager.Error(string.Format("导出CSV文件失败: {0}", filePath), ex);
                 throw;
             }
         }

@@ -37,7 +37,7 @@ namespace MES.UI.Forms
 
                 // 设置窗体属性
                 this.WindowState = FormWindowState.Maximized;
-                this.Text = $"{ConfigManager.SystemTitle} v{ConfigManager.SystemVersion} - 2025年6月4日";
+                this.Text = string.Format("{0} v{1} - 2025年6月4日", ConfigManager.SystemTitle, ConfigManager.SystemVersion);
                 this.Icon = SystemIcons.Application;
 
                 // 初始化状态栏
@@ -63,7 +63,7 @@ namespace MES.UI.Forms
             catch (Exception ex)
             {
                 LogManager.Error("主窗体初始化失败", ex);
-                MessageBox.Show($"主窗体初始化失败：{ex.Message}", "错误",
+                MessageBox.Show(string.Format("主窗体初始化失败：{0}", ex.Message), "错误",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -252,7 +252,7 @@ namespace MES.UI.Forms
                     ShowAbout();
                     break;
                 default:
-                    MessageBox.Show($"功能 '{nodeName}' 正在开发中...", "提示",
+                    MessageBox.Show(string.Format("功能 '{0}' 正在开发中...", nodeName), "提示",
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                     break;
             }
@@ -327,7 +327,7 @@ namespace MES.UI.Forms
             // 添加版本信息
             var versionLabel = new Label
             {
-                Text = $"版本 {ConfigManager.SystemVersion} - 基础框架已完成",
+                Text = string.Format("版本 {0} - 基础框架已完成", ConfigManager.SystemVersion),
                 Font = new Font("微软雅黑", 12),
                 ForeColor = Color.Gray,
                 AutoSize = true,
@@ -463,7 +463,7 @@ namespace MES.UI.Forms
             catch (Exception ex)
             {
                 LogManager.Error("打开车间管理窗体失败", ex);
-                MessageBox.Show($"打开车间管理窗体失败：{ex.Message}", "错误",
+                MessageBox.Show(string.Format("打开车间管理窗体失败：{0}", ex.Message), "错误",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -520,7 +520,7 @@ namespace MES.UI.Forms
         /// </summary>
         private void ShowNotImplemented(string functionName)
         {
-            MessageBox.Show($"{functionName}功能正在开发中，敬请期待！", "提示", 
+            MessageBox.Show(string.Format("{0}功能正在开发中，敬请期待！", functionName), "提示",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
         private void showMMForm()
@@ -568,7 +568,7 @@ Copyright © 2025 您的公司名称
 
                 this.BackColor = colors[themeIndex];
 
-                MessageBox.Show($"主题已切换为：{themes[themeIndex]}\n\n" +
+                MessageBox.Show(string.Format("主题已切换为：{0}\n\n", themes[themeIndex]) +
                     "这是UI框架主题切换功能的演示。\n" +
                     "完整版本支持：\n" +
                     "• 3种预设主题\n" +
@@ -577,7 +577,7 @@ Copyright © 2025 您的公司名称
                     "• 组件自适应",
                     "主题切换演示", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                LogManager.Info($"演示主题切换：{themes[themeIndex]}");
+                LogManager.Info(string.Format("演示主题切换：{0}", themes[themeIndex]));
             }
             catch (Exception ex)
             {

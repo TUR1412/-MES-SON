@@ -81,7 +81,7 @@ namespace MES.UI.Framework.Resources
             if (size == default)
                 size = new Size(16, 16);
 
-            string cacheKey = $"{iconType}_{size.Width}x{size.Height}";
+            string cacheKey = string.Format("{0}_{1}x{2}", iconType, size.Width, size.Height);
             
             if (_iconCache.ContainsKey(cacheKey))
                 return _iconCache[cacheKey];
@@ -94,7 +94,7 @@ namespace MES.UI.Framework.Resources
             }
             catch (Exception ex)
             {
-                LogManager.Error($"获取系统图标失败: {iconType}", ex);
+                LogManager.Error(string.Format("获取系统图标失败: {0}", iconType), ex);
                 return SystemIcons.Application;
             }
         }
@@ -110,7 +110,7 @@ namespace MES.UI.Framework.Resources
             if (size == default)
                 size = new Size(16, 16);
 
-            string cacheKey = $"{iconType}_bitmap_{size.Width}x{size.Height}";
+            string cacheKey = string.Format("{0}_bitmap_{1}x{2}", iconType, size.Width, size.Height);
             
             if (_imageCache.ContainsKey(cacheKey))
                 return _imageCache[cacheKey];
@@ -124,7 +124,7 @@ namespace MES.UI.Framework.Resources
             }
             catch (Exception ex)
             {
-                LogManager.Error($"获取系统图标位图失败: {iconType}", ex);
+                LogManager.Error(string.Format("获取系统图标位图失败: {0}", iconType), ex);
                 return SystemIcons.Application.ToBitmap();
             }
         }
@@ -139,13 +139,13 @@ namespace MES.UI.Framework.Resources
         {
             if (!File.Exists(filePath))
             {
-                LogManager.Warning($"图标文件不存在: {filePath}");
+                LogManager.Warning(string.Format("图标文件不存在: {0}", filePath));
                 return SystemIcons.Application;
             }
 
             try
             {
-                string cacheKey = $"file_{Path.GetFileName(filePath)}_{size.Width}x{size.Height}";
+                string cacheKey = string.Format("file_{0}_{1}x{2}", Path.GetFileName(filePath), size.Width, size.Height);
                 
                 if (_iconCache.ContainsKey(cacheKey))
                     return _iconCache[cacheKey];
@@ -156,7 +156,7 @@ namespace MES.UI.Framework.Resources
             }
             catch (Exception ex)
             {
-                LogManager.Error($"从文件加载图标失败: {filePath}", ex);
+                LogManager.Error(string.Format("从文件加载图标失败: {0}", filePath), ex);
                 return SystemIcons.Application;
             }
         }
@@ -174,7 +174,7 @@ namespace MES.UI.Framework.Resources
 
             try
             {
-                string cacheKey = $"resource_{resourceName}";
+                string cacheKey = string.Format("resource_{0}", resourceName);
                 
                 if (_iconCache.ContainsKey(cacheKey))
                     return _iconCache[cacheKey];
@@ -183,7 +183,7 @@ namespace MES.UI.Framework.Resources
                 {
                     if (stream == null)
                     {
-                        LogManager.Warning($"嵌入资源不存在: {resourceName}");
+                        LogManager.Warning(string.Format("嵌入资源不存在: {0}", resourceName));
                         return SystemIcons.Application;
                     }
 
@@ -194,7 +194,7 @@ namespace MES.UI.Framework.Resources
             }
             catch (Exception ex)
             {
-                LogManager.Error($"从嵌入资源加载图标失败: {resourceName}", ex);
+                LogManager.Error(string.Format("从嵌入资源加载图标失败: {0}", resourceName), ex);
                 return SystemIcons.Application;
             }
         }
@@ -294,7 +294,7 @@ namespace MES.UI.Framework.Resources
         /// <returns>缓存统计信息</returns>
         public static string GetCacheStatistics()
         {
-            return $"图标缓存: {_iconCache.Count} 项, 图像缓存: {_imageCache.Count} 项";
+            return string.Format("图标缓存: {0} 项, 图像缓存: {1} 项", _iconCache.Count, _imageCache.Count);
         }
 
         #endregion

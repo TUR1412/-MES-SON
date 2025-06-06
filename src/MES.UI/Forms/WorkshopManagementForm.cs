@@ -155,15 +155,15 @@ namespace MES.UI.Forms
                 _currentWorkshops = _workshopBLL.GetAllWorkshops();
                 dgvWorkshops.DataSource = _currentWorkshops;
                 
-                lblTotal.Text = $"共 {_currentWorkshops.Count} 条记录";
+                lblTotal.Text = string.Format("共 {0} 条记录", _currentWorkshops.Count);
                 
                 // 更新按钮状态
                 UpdateButtonStates();
             }
             catch (Exception ex)
             {
-                LogManager.Error($"加载车间数据失败：{ex.Message}", ex);
-                MessageBox.Show($"加载车间数据失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                LogManager.Error(string.Format("加载车间数据失败：{0}", ex.Message), ex);
+                MessageBox.Show(string.Format("加载车间数据失败：{0}", ex.Message), "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -185,15 +185,15 @@ namespace MES.UI.Forms
                 _currentWorkshops = _workshopBLL.SearchWorkshops(keyword);
                 dgvWorkshops.DataSource = _currentWorkshops;
                 
-                lblTotal.Text = $"共 {_currentWorkshops.Count} 条记录";
+                lblTotal.Text = string.Format("共 {0} 条记录", _currentWorkshops.Count);
                 
                 // 更新按钮状态
                 UpdateButtonStates();
             }
             catch (Exception ex)
             {
-                LogManager.Error($"搜索车间失败：{ex.Message}", ex);
-                MessageBox.Show($"搜索车间失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                LogManager.Error(string.Format("搜索车间失败：{0}", ex.Message), ex);
+                MessageBox.Show(string.Format("搜索车间失败：{0}", ex.Message), "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -244,8 +244,8 @@ namespace MES.UI.Forms
             }
             catch (Exception ex)
             {
-                LogManager.Error($"添加车间失败：{ex.Message}", ex);
-                MessageBox.Show($"添加车间失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                LogManager.Error(string.Format("添加车间失败：{0}", ex.Message), ex);
+                MessageBox.Show(string.Format("添加车间失败：{0}", ex.Message), "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -273,8 +273,8 @@ namespace MES.UI.Forms
             }
             catch (Exception ex)
             {
-                LogManager.Error($"编辑车间失败：{ex.Message}", ex);
-                MessageBox.Show($"编辑车间失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                LogManager.Error(string.Format("编辑车间失败：{0}", ex.Message), ex);
+                MessageBox.Show(string.Format("编辑车间失败：{0}", ex.Message), "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -292,7 +292,7 @@ namespace MES.UI.Forms
                     return;
                 }
 
-                var result = MessageBox.Show($"确定要删除车间 '{selectedWorkshop.WorkshopName}' 吗？", 
+                var result = MessageBox.Show(string.Format("确定要删除车间 '{0}' 吗？", selectedWorkshop.WorkshopName),
                     "确认删除", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 
                 if (result == DialogResult.Yes)
@@ -311,8 +311,8 @@ namespace MES.UI.Forms
             }
             catch (Exception ex)
             {
-                LogManager.Error($"删除车间失败：{ex.Message}", ex);
-                MessageBox.Show($"删除车间失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                LogManager.Error(string.Format("删除车间失败：{0}", ex.Message), ex);
+                MessageBox.Show(string.Format("删除车间失败：{0}", ex.Message), "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

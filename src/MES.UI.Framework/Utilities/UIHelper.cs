@@ -41,7 +41,7 @@ namespace MES.UI.Framework.Utilities
             }
             catch (Exception ex)
             {
-                LogManager.Error($"居中显示窗体失败: {form.Name}", ex);
+                LogManager.Error(string.Format("居中显示窗体失败: {0}", form.Name), ex);
             }
         }
 
@@ -80,11 +80,11 @@ namespace MES.UI.Framework.Utilities
                 // 设置最小尺寸
                 SetMinimumSize(form);
                 
-                LogManager.Debug($"已应用标准窗体样式: {form.Name}");
+                LogManager.Debug(string.Format("已应用标准窗体样式: {0}", form.Name));
             }
             catch (Exception ex)
             {
-                LogManager.Error($"应用标准窗体样式失败: {form.Name}", ex);
+                LogManager.Error(string.Format("应用标准窗体样式失败: {0}", form.Name), ex);
             }
         }
 

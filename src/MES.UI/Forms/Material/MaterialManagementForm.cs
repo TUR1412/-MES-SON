@@ -31,7 +31,7 @@ namespace MES.UI.Forms.Material
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"加载物料数据失败: {ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(string.Format("加载物料数据失败: {0}", ex.Message), "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -62,7 +62,7 @@ namespace MES.UI.Forms.Material
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"搜索失败: {ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(string.Format("搜索失败: {0}", ex.Message), "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -95,7 +95,7 @@ namespace MES.UI.Forms.Material
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"添加物料失败: {ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(string.Format("添加物料失败: {0}", ex.Message), "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             */
         }
@@ -141,7 +141,7 @@ namespace MES.UI.Forms.Material
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"修改物料失败: {ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(string.Format("修改物料失败: {0}", ex.Message), "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             */
         }
@@ -186,7 +186,7 @@ namespace MES.UI.Forms.Material
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"删除物料失败: {ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(string.Format("删除物料失败: {0}", ex.Message), "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             */
         }

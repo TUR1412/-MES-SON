@@ -317,8 +317,8 @@ namespace MES.UI.Forms
             }
             catch (Exception ex)
             {
-                LogManager.Error($"保存车间信息失败：{ex.Message}", ex);
-                MessageBox.Show($"保存失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                LogManager.Error(string.Format("保存车间信息失败：{0}", ex.Message), ex);
+                MessageBox.Show(string.Format("保存失败：{0}", ex.Message), "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

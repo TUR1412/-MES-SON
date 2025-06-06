@@ -68,7 +68,7 @@ namespace MES.UI.Framework.Themes
                     _currentTheme = value;
                     LoadThemeColors();
                     OnThemeChanged?.Invoke();
-                    LogManager.Info($"主题已切换为: {value}");
+                    LogManager.Info(string.Format("主题已切换为: {0}", value));
                 }
             }
         }
@@ -206,7 +206,7 @@ namespace MES.UI.Framework.Themes
             }
             catch (Exception ex)
             {
-                LogManager.Error($"应用主题到窗体失败: {form.Name}", ex);
+                LogManager.Error(string.Format("应用主题到窗体失败: {0}", form.Name), ex);
             }
         }
 
