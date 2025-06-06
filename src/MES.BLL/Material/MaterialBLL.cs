@@ -49,8 +49,8 @@ namespace MES.BLL.Material
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据名称搜索物料信息失败，名称: {materialName}", ex);
-                throw new MESException($"搜索物料信息失败，名称: {materialName}", ex);
+                LogManager.Error(string.Format("根据名称搜索物料信息失败，名称: {0}", materialName), ex);
+                throw new MESException(string.Format("搜索物料信息失败，名称: {0}", materialName), ex);
             }
 
         }
@@ -68,8 +68,8 @@ namespace MES.BLL.Material
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据ID获取物料信息失败，ID: {id}", ex);
-                throw new MESException($"获取物料信息失败，ID: {id}", ex);
+                LogManager.Error(string.Format("根据ID获取物料信息失败，ID: {0}", id), ex);
+                throw new MESException(string.Format("获取物料信息失败，ID: {0}", id), ex);
             }
         }
 
@@ -84,7 +84,7 @@ namespace MES.BLL.Material
             {
                 // 1. 参数验证
                 if (material == null)
-                    throw new ArgumentNullException(nameof(material));
+                    throw new ArgumentNullException("material");
 
                 if (string.IsNullOrWhiteSpace(material.MaterialCode))
                     throw new MESException("物料编码不能为空");
@@ -94,7 +94,7 @@ namespace MES.BLL.Material
 
                 // 2. 业务规则验证
                 if (_materialDAL.ExistsByMaterialCode(material.MaterialCode))
-                    throw new MESException($"物料编码 {material.MaterialCode} 已存在");
+                    throw new MESException(string.Format("物料编码 {0} 已存在", material.MaterialCode));
 
                 // 3. 数据完整性检查
                 if (material.MinStock.HasValue && material.MaxStock.HasValue &&
@@ -146,8 +146,8 @@ namespace MES.BLL.Material
             }
             catch (Exception ex)
             {
-                LogManager.Error($"删除物料信息失败，ID: {id}", ex);
-                throw new MESException($"删除物料信息失败，ID: {id}", ex);
+                LogManager.Error(string.Format("删除物料信息失败，ID: {0}", id), ex);
+                throw new MESException(string.Format("删除物料信息失败，ID: {0}", id), ex);
             }
         }
 

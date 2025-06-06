@@ -50,8 +50,8 @@ namespace MES.BLL.Material
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据ID获取BOM信息失败，ID: {id}", ex);
-                throw new MESException($"获取BOM信息失败，ID: {id}", ex);
+                LogManager.Error(string.Format("根据ID获取BOM信息失败，ID: {0}", id), ex);
+                throw new MESException(string.Format("获取BOM信息失败，ID: {0}", id), ex);
             }
         }
 
@@ -68,8 +68,8 @@ namespace MES.BLL.Material
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据产品ID获取BOM列表失败，产品ID: {productId}", ex);
-                throw new MESException($"获取BOM列表失败，产品ID: {productId}", ex);
+                LogManager.Error(string.Format("根据产品ID获取BOM列表失败，产品ID: {0}", productId), ex);
+                throw new MESException(string.Format("获取BOM列表失败，产品ID: {0}", productId), ex);
             }
         }
 
@@ -124,8 +124,8 @@ namespace MES.BLL.Material
             }
             catch (Exception ex)
             {
-                LogManager.Error($"删除BOM信息失败，ID: {id}", ex);
-                throw new MESException($"删除BOM信息失败，ID: {id}", ex);
+                LogManager.Error(string.Format("删除BOM信息失败，ID: {0}", id), ex);
+                throw new MESException(string.Format("删除BOM信息失败，ID: {0}", id), ex);
             }
         }
     }
