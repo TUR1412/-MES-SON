@@ -533,9 +533,9 @@ namespace MES.UI.Forms
         /// </summary>
         private void ShowAbout()
         {
-            string aboutText = $@"
-{ConfigManager.SystemTitle}
-版本：{ConfigManager.SystemVersion}
+            string aboutText = string.Format(@"
+{0}
+版本：{1}
 技术架构：C# .NET Framework 4.8 + WinForms + MySQL 8.0
 开发团队：
 - 天帝 (组长) - 架构设计与协调
@@ -544,7 +544,7 @@ namespace MES.UI.Forms
 - S成员 - 车间管理模块
 
 Copyright © 2025 您的公司名称
-";
+", ConfigManager.SystemTitle, ConfigManager.SystemVersion);
             MessageBox.Show(aboutText, "关于系统", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
