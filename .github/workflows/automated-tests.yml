@@ -31,7 +31,7 @@ jobs:
   unit-tests:
     name: 单元测试
     runs-on: windows-2022
-    if: github.event.inputs.test_type == 'unit' || github.event.inputs.test_type == 'all' || github.event.inputs.test_type == ''
+    if: github.event.inputs.test_type == 'unit' || github.event.inputs.test_type == 'all' || github.event.inputs.test_type == null
 
     steps:
     - name: 检出代码
@@ -132,7 +132,7 @@ jobs:
   integration-tests:
     name: 集成测试
     runs-on: ubuntu-latest
-    if: github.event.inputs.test_type == 'integration' || github.event.inputs.test_type == 'all' || github.event.inputs.test_type == ''
+    if: github.event.inputs.test_type == 'integration' || github.event.inputs.test_type == 'all' || github.event.inputs.test_type == null
 
     services:
       mysql:
@@ -257,7 +257,7 @@ jobs:
   performance-tests:
     name: 性能测试
     runs-on: ubuntu-latest
-    if: github.event.inputs.test_type == 'performance' || github.event.inputs.test_type == 'all' || github.event.inputs.test_type == ''
+    if: github.event.inputs.test_type == 'performance' || github.event.inputs.test_type == 'all' || github.event.inputs.test_type == null
 
     steps:
     - name: 检出代码
@@ -358,7 +358,7 @@ jobs:
   security-tests:
     name: 安全测试
     runs-on: ubuntu-latest
-    if: github.event.inputs.test_type == 'security' || github.event.inputs.test_type == 'all' || github.event.inputs.test_type == ''
+    if: github.event.inputs.test_type == 'security' || github.event.inputs.test_type == 'all' || github.event.inputs.test_type == null
 
     steps:
     - name: 检出代码
