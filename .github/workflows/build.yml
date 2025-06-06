@@ -26,14 +26,14 @@ jobs:
     - name: 构建核心业务层
       run: |
         echo "构建MES核心业务层..."
-        msbuild src/MES.Common/MES.Common.csproj /p:Configuration=Release /p:Platform="Any CPU"
-        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-        msbuild src/MES.Models/MES.Models.csproj /p:Configuration=Release /p:Platform="Any CPU"
-        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-        msbuild src/MES.DAL/MES.DAL.csproj /p:Configuration=Release /p:Platform="Any CPU"
-        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-        msbuild src/MES.BLL/MES.BLL.csproj /p:Configuration=Release /p:Platform="Any CPU"
-        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+        echo "构建MES.Common..."
+        dotnet msbuild src/MES.Common/MES.Common.csproj -p:Configuration=Release -p:Platform="Any CPU"
+        echo "构建MES.Models..."
+        dotnet msbuild src/MES.Models/MES.Models.csproj -p:Configuration=Release -p:Platform="Any CPU"
+        echo "构建MES.DAL..."
+        dotnet msbuild src/MES.DAL/MES.DAL.csproj -p:Configuration=Release -p:Platform="Any CPU"
+        echo "构建MES.BLL..."
+        dotnet msbuild src/MES.BLL/MES.BLL.csproj -p:Configuration=Release -p:Platform="Any CPU"
         echo "✅ 核心业务层构建完成"
 
     - name: 构建状态通知
