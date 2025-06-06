@@ -28,7 +28,8 @@ namespace MES.DAL.Core
             try
             {
                 // 从配置文件获取连接字符串
-                string connectionString = ConfigurationManager.ConnectionStrings["MESConnectionString"]?.ConnectionString;
+                string connectionString = ConfigurationManager.ConnectionStrings["MESConnectionString"] != null ?
+                    ConfigurationManager.ConnectionStrings["MESConnectionString"].ConnectionString : null;
 
                 if (string.IsNullOrEmpty(connectionString))
                 {

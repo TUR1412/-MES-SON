@@ -74,7 +74,7 @@ namespace MES.DAL.System
             {
                 if (string.IsNullOrEmpty(loginName))
                 {
-                    throw new ArgumentException("登录名不能为空", nameof(loginName));
+                    throw new ArgumentException("登录名不能为空", "loginName");
                 }
 
                 var users = GetByCondition("login_name = @loginName", 
@@ -100,7 +100,7 @@ namespace MES.DAL.System
             {
                 if (string.IsNullOrEmpty(userCode))
                 {
-                    throw new ArgumentException("用户编码不能为空", nameof(userCode));
+                    throw new ArgumentException("用户编码不能为空", "userCode");
                 }
 
                 var users = GetByCondition("user_code = @userCode", 
@@ -186,7 +186,7 @@ namespace MES.DAL.System
             {
                 if (string.IsNullOrEmpty(newPassword))
                 {
-                    throw new ArgumentException("新密码不能为空", nameof(newPassword));
+                    throw new ArgumentException("新密码不能为空", "newPassword");
                 }
 
                 string sql = "UPDATE sys_user SET password = @password, update_time = @updateTime WHERE id = @userId AND is_deleted = 0";

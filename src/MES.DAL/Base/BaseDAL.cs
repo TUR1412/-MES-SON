@@ -130,7 +130,7 @@ namespace MES.DAL.Base
             {
                 if (entity == null)
                 {
-                    throw new ArgumentNullException(nameof(entity));
+                    throw new ArgumentNullException("entity");
                 }
 
                 // 设置创建时间
@@ -171,7 +171,7 @@ namespace MES.DAL.Base
             {
                 if (entity == null)
                 {
-                    throw new ArgumentNullException(nameof(entity));
+                    throw new ArgumentNullException("entity");
                 }
 
                 // 设置更新时间
