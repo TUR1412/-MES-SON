@@ -201,14 +201,14 @@ namespace MES.DAL.Production
         protected override (string sql, MySqlParameter[] parameters) BuildInsertSql(ProductionOrderInfo entity)
         {
             string sql = @"INSERT INTO production_order
-                          (order_number, product_code, product_name, planned_quantity, actual_quantity,
+                          (order_number, product_code, product_name, planned_quantity, actual_quantity, unit,
                            planned_start_time, planned_end_time, actual_start_time, actual_end_time,
-                           status, priority, workshop_id, customer, remarks,
+                           status, priority, workshop_id, workshop_name, customer, sales_order_number, remarks,
                            create_time, create_user_name, is_deleted)
                           VALUES
-                          (@orderNumber, @productCode, @productName, @plannedQuantity, @actualQuantity,
+                          (@orderNumber, @productCode, @productName, @plannedQuantity, @actualQuantity, @unit,
                            @plannedStartTime, @plannedEndTime, @actualStartTime, @actualEndTime,
-                           @status, @priority, @workshopId, @customer, @remarks,
+                           @status, @priority, @workshopId, @workshopName, @customer, @salesOrderNumber, @remarks,
                            @createTime, @createUserName, @isDeleted)";
 
             var parameters = new[]
@@ -218,6 +218,7 @@ namespace MES.DAL.Production
                 DatabaseHelper.CreateParameter("@productName", entity.ProductName),
                 DatabaseHelper.CreateParameter("@plannedQuantity", entity.Quantity),
                 DatabaseHelper.CreateParameter("@actualQuantity", entity.ActualQuantity),
+                DatabaseHelper.CreateParameter("@unit", entity.Unit),
                 DatabaseHelper.CreateParameter("@plannedStartTime", entity.PlanStartTime),
                 DatabaseHelper.CreateParameter("@plannedEndTime", entity.PlanEndTime),
                 DatabaseHelper.CreateParameter("@actualStartTime", entity.ActualStartTime),
@@ -225,7 +226,9 @@ namespace MES.DAL.Production
                 DatabaseHelper.CreateParameter("@status", entity.Status),
                 DatabaseHelper.CreateParameter("@priority", entity.Priority),
                 DatabaseHelper.CreateParameter("@workshopId", entity.WorkshopId),
+                DatabaseHelper.CreateParameter("@workshopName", entity.WorkshopName),
                 DatabaseHelper.CreateParameter("@customer", entity.CustomerName),
+                DatabaseHelper.CreateParameter("@salesOrderNumber", entity.SalesOrderNumber),
                 DatabaseHelper.CreateParameter("@remarks", entity.Remarks),
                 DatabaseHelper.CreateParameter("@createTime", entity.CreateTime),
                 DatabaseHelper.CreateParameter("@createUserName", entity.CreateUserName),
@@ -244,11 +247,11 @@ namespace MES.DAL.Production
         {
             string sql = @"UPDATE production_order SET
                           order_number = @orderNumber, product_code = @productCode,
-                          product_name = @productName, planned_quantity = @plannedQuantity, actual_quantity = @actualQuantity,
+                          product_name = @productName, planned_quantity = @plannedQuantity, actual_quantity = @actualQuantity, unit = @unit,
                           planned_start_time = @plannedStartTime, planned_end_time = @plannedEndTime,
                           actual_start_time = @actualStartTime, actual_end_time = @actualEndTime,
-                          status = @status, priority = @priority, workshop_id = @workshopId,
-                          customer = @customer, remarks = @remarks,
+                          status = @status, priority = @priority, workshop_id = @workshopId, workshop_name = @workshopName,
+                          customer = @customer, sales_order_number = @salesOrderNumber, remarks = @remarks,
                           update_time = @updateTime, update_user_name = @updateUserName
                           WHERE id = @id AND is_deleted = 0";
 
@@ -259,6 +262,7 @@ namespace MES.DAL.Production
                 DatabaseHelper.CreateParameter("@productName", entity.ProductName),
                 DatabaseHelper.CreateParameter("@plannedQuantity", entity.Quantity),
                 DatabaseHelper.CreateParameter("@actualQuantity", entity.ActualQuantity),
+                DatabaseHelper.CreateParameter("@unit", entity.Unit),
                 DatabaseHelper.CreateParameter("@plannedStartTime", entity.PlanStartTime),
                 DatabaseHelper.CreateParameter("@plannedEndTime", entity.PlanEndTime),
                 DatabaseHelper.CreateParameter("@actualStartTime", entity.ActualStartTime),
@@ -266,7 +270,9 @@ namespace MES.DAL.Production
                 DatabaseHelper.CreateParameter("@status", entity.Status),
                 DatabaseHelper.CreateParameter("@priority", entity.Priority),
                 DatabaseHelper.CreateParameter("@workshopId", entity.WorkshopId),
+                DatabaseHelper.CreateParameter("@workshopName", entity.WorkshopName),
                 DatabaseHelper.CreateParameter("@customer", entity.CustomerName),
+                DatabaseHelper.CreateParameter("@salesOrderNumber", entity.SalesOrderNumber),
                 DatabaseHelper.CreateParameter("@remarks", entity.Remarks),
                 DatabaseHelper.CreateParameter("@updateTime", entity.UpdateTime),
                 DatabaseHelper.CreateParameter("@updateUserName", entity.UpdateUserName),

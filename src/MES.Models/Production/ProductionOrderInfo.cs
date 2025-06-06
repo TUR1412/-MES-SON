@@ -39,28 +39,37 @@ namespace MES.Models.Production
         public string ProductName { get; set; }
 
         /// <summary>
-        /// 计划生产数量
+        /// 计划生产数量（对应数据库planned_quantity字段）
         /// </summary>
-        public int Quantity { get; set; }
+        public decimal Quantity { get; set; }
 
         /// <summary>
         /// 计划生产数量 - BLL层兼容属性
         /// </summary>
-        public int PlannedQuantity
+        public decimal PlannedQuantity
         {
             get { return Quantity; }
             set { Quantity = value; }
         }
 
         /// <summary>
-        /// 实际完成数量
+        /// 实际完成数量（对应数据库actual_quantity字段）
         /// </summary>
-        public int ActualQuantity { get; set; }
+        public decimal ActualQuantity { get; set; }
 
         /// <summary>
-        /// 已完成数量
+        /// 已完成数量 - BLL层兼容属性
         /// </summary>
-        public int CompletedQuantity { get; set; }
+        public decimal CompletedQuantity
+        {
+            get { return ActualQuantity; }
+            set { ActualQuantity = value; }
+        }
+
+        /// <summary>
+        /// 单位（对应数据库unit字段）
+        /// </summary>
+        public string Unit { get; set; }
 
         /// <summary>
         /// 计划开始时间
@@ -107,10 +116,10 @@ namespace MES.Models.Production
         public string Status { get; set; }
 
         /// <summary>
-        /// 优先级
-        /// 1-低，2-中，3-高，4-紧急
+        /// 优先级（对应数据库priority字段）
+        /// 普通、重要、紧急等
         /// </summary>
-        public int Priority { get; set; }
+        public string Priority { get; set; }
 
         /// <summary>
         /// 负责车间ID
@@ -118,30 +127,26 @@ namespace MES.Models.Production
         public int WorkshopId { get; set; }
 
         /// <summary>
+        /// 车间名称（对应数据库workshop_name字段）
+        /// </summary>
+        public string WorkshopName { get; set; }
+
+        /// <summary>
         /// 负责人
         /// </summary>
         public string ResponsiblePerson { get; set; }
 
         /// <summary>
-        /// 客户名称
+        /// 客户名称（对应数据库customer字段）
         /// </summary>
         public string CustomerName { get; set; }
 
         /// <summary>
-        /// 交货日期
+        /// 销售订单号（对应数据库sales_order_number字段）
         /// </summary>
-        public DateTime DeliveryDate { get; set; }
+        public string SalesOrderNumber { get; set; }
 
-        /// <summary>
-        /// 订单来源
-        /// 1-销售订单，2-库存补充，3-紧急生产
-        /// </summary>
-        public int OrderSource { get; set; }
 
-        /// <summary>
-        /// 质量要求
-        /// </summary>
-        public string QualityRequirement { get; set; }
 
         /// <summary>
         /// 备注信息
@@ -155,10 +160,10 @@ namespace MES.Models.Production
         /// </summary>
         public ProductionOrderInfo()
         {
-            Status = "0"; // 默认状态为待开始
-            Priority = 2; // 默认优先级为中等
-            OrderSource = 1; // 默认来源为销售订单
-            CompletedQuantity = 0; // 默认完成数量为0
+            Status = "待开始"; // 默认状态为待开始
+            Priority = "普通"; // 默认优先级为普通
+            ActualQuantity = 0; // 默认实际完成数量为0
+            Unit = "个"; // 默认单位
         }
     }
 }
