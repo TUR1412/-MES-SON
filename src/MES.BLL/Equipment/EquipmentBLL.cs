@@ -29,7 +29,7 @@ namespace MES.BLL.Equipment
         /// </summary>
         /// <param name="id">设备ID</param>
         /// <returns>设备信息</returns>
-        public EquipmentInfo GetById(int id)
+        public EquipmentInfo GetEquipmentById(int id)
         {
             try
             {
@@ -52,7 +52,7 @@ namespace MES.BLL.Equipment
         /// </summary>
         /// <param name="equipmentCode">设备编码</param>
         /// <returns>设备信息</returns>
-        public EquipmentInfo GetByEquipmentCode(string equipmentCode)
+        public EquipmentInfo GetEquipmentByCode(string equipmentCode)
         {
             try
             {
@@ -74,7 +74,7 @@ namespace MES.BLL.Equipment
         /// 获取所有设备列表
         /// </summary>
         /// <returns>设备列表</returns>
-        public List<EquipmentInfo> GetAll()
+        public List<EquipmentInfo> GetAllEquipments()
         {
             try
             {
@@ -92,7 +92,7 @@ namespace MES.BLL.Equipment
         /// </summary>
         /// <param name="workshopId">车间ID</param>
         /// <returns>设备列表</returns>
-        public List<EquipmentInfo> GetByWorkshopId(int workshopId)
+        public List<EquipmentInfo> GetEquipmentsByWorkshopId(int workshopId)
         {
             try
             {
@@ -115,7 +115,7 @@ namespace MES.BLL.Equipment
         /// </summary>
         /// <param name="status">设备状态</param>
         /// <returns>设备列表</returns>
-        public List<EquipmentInfo> GetByStatus(int status)
+        public List<EquipmentInfo> GetEquipmentsByStatus(int status)
         {
             try
             {
@@ -132,7 +132,7 @@ namespace MES.BLL.Equipment
         /// 获取需要维护的设备列表
         /// </summary>
         /// <returns>需要维护的设备列表</returns>
-        public List<EquipmentInfo> GetMaintenanceRequired()
+        public List<EquipmentInfo> GetMaintenanceRequiredEquipments()
         {
             try
             {
@@ -150,13 +150,13 @@ namespace MES.BLL.Equipment
         /// </summary>
         /// <param name="keyword">关键词</param>
         /// <returns>设备列表</returns>
-        public List<EquipmentInfo> Search(string keyword)
+        public List<EquipmentInfo> SearchEquipments(string keyword)
         {
             try
             {
                 if (string.IsNullOrEmpty(keyword))
                 {
-                    return GetAll();
+                    return GetAllEquipments();
                 }
 
                 return _equipmentDAL.Search(keyword);
@@ -173,7 +173,7 @@ namespace MES.BLL.Equipment
         /// </summary>
         /// <param name="equipment">设备信息</param>
         /// <returns>是否添加成功</returns>
-        public bool Add(EquipmentInfo equipment)
+        public bool AddEquipment(EquipmentInfo equipment)
         {
             try
             {
@@ -183,7 +183,11 @@ namespace MES.BLL.Equipment
                 }
 
                 // 业务验证
-                ValidateEquipment(equipment);
+                string validationResult = ValidateEquipment(equipment);
+                if (!string.IsNullOrEmpty(validationResult))
+                {
+                    throw new ArgumentException(validationResult);
+                }
 
                 // 检查设备编码是否已存在
                 if (_equipmentDAL.IsEquipmentCodeExists(equipment.EquipmentCode))
@@ -205,7 +209,7 @@ namespace MES.BLL.Equipment
         /// </summary>
         /// <param name="equipment">设备信息</param>
         /// <returns>是否更新成功</returns>
-        public bool Update(EquipmentInfo equipment)
+        public bool UpdateEquipment(EquipmentInfo equipment)
         {
             try
             {
@@ -215,7 +219,11 @@ namespace MES.BLL.Equipment
                 }
 
                 // 业务验证
-                ValidateEquipment(equipment);
+                string validationResult = ValidateEquipment(equipment);
+                if (!string.IsNullOrEmpty(validationResult))
+                {
+                    throw new ArgumentException(validationResult);
+                }
 
                 // 检查设备编码是否已存在（排除当前设备）
                 if (_equipmentDAL.IsEquipmentCodeExists(equipment.EquipmentCode, equipment.Id))
@@ -237,7 +245,7 @@ namespace MES.BLL.Equipment
         /// </summary>
         /// <param name="id">设备ID</param>
         /// <returns>是否删除成功</returns>
-        public bool Delete(int id)
+        public bool DeleteEquipment(int id)
         {
             try
             {
@@ -259,26 +267,170 @@ namespace MES.BLL.Equipment
         /// 验证设备信息
         /// </summary>
         /// <param name="equipment">设备信息</param>
-        private void ValidateEquipment(EquipmentInfo equipment)
+        public string ValidateEquipment(EquipmentInfo equipment)
         {
             if (string.IsNullOrEmpty(equipment.EquipmentCode))
             {
-                throw new ArgumentException("设备编码不能为空");
+                return "设备编码不能为空";
             }
 
             if (string.IsNullOrEmpty(equipment.EquipmentName))
             {
-                throw new ArgumentException("设备名称不能为空");
+                return "设备名称不能为空";
             }
 
             if (equipment.EquipmentCode.Length > 50)
             {
-                throw new ArgumentException("设备编码长度不能超过50个字符");
+                return "设备编码长度不能超过50个字符";
             }
 
             if (equipment.EquipmentName.Length > 100)
             {
-                throw new ArgumentException("设备名称长度不能超过100个字符");
+                return "设备名称长度不能超过100个字符";
+            }
+
+            return string.Empty; // 验证通过
+        }
+
+        // 实现接口中缺失的方法
+        public List<EquipmentInfo> GetEquipmentsByPage(int pageIndex, int pageSize, out int totalCount)
+        {
+            try
+            {
+                return _equipmentDAL.GetByPage(pageIndex, pageSize, out totalCount);
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error(string.Format("分页获取设备列表失败，页码: {0}, 页大小: {1}", pageIndex, pageSize), ex);
+                totalCount = 0;
+                throw new MESException("获取设备列表失败", ex);
+            }
+        }
+
+        public bool EnableEquipment(int id)
+        {
+            try
+            {
+                return _equipmentDAL.UpdateStatus(id, 1); // 1-启用
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error(string.Format("启用设备失败，ID: {0}", id), ex);
+                throw new MESException("启用设备失败", ex);
+            }
+        }
+
+        public bool DisableEquipment(int id, string reason)
+        {
+            try
+            {
+                return _equipmentDAL.UpdateStatus(id, 0); // 0-停用
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error(string.Format("停用设备失败，ID: {0}", id), ex);
+                throw new MESException("停用设备失败", ex);
+            }
+        }
+
+        public bool SetEquipmentFault(int id, string faultDescription)
+        {
+            try
+            {
+                return _equipmentDAL.UpdateStatus(id, 3); // 3-故障
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error(string.Format("设置设备故障失败，ID: {0}", id), ex);
+                throw new MESException("设置设备故障失败", ex);
+            }
+        }
+
+        public bool SetEquipmentMaintenance(int id, string maintenanceDescription)
+        {
+            try
+            {
+                return _equipmentDAL.UpdateStatus(id, 2); // 2-维护中
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error(string.Format("设置设备维护失败，ID: {0}", id), ex);
+                throw new MESException("设置设备维护失败", ex);
+            }
+        }
+
+        public bool CompleteEquipmentMaintenance(int id)
+        {
+            try
+            {
+                return _equipmentDAL.UpdateStatus(id, 1); // 1-启用
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error(string.Format("完成设备维护失败，ID: {0}", id), ex);
+                throw new MESException("完成设备维护失败", ex);
+            }
+        }
+
+        public bool SetEquipmentResponsiblePerson(int id, int responsiblePersonId, string responsiblePersonName)
+        {
+            try
+            {
+                return _equipmentDAL.UpdateResponsiblePerson(id, responsiblePersonId, responsiblePersonName);
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error(string.Format("设置设备负责人失败，ID: {0}", id), ex);
+                throw new MESException("设置设备负责人失败", ex);
+            }
+        }
+
+        public bool TransferEquipment(int id, int targetWorkshopId)
+        {
+            try
+            {
+                return _equipmentDAL.UpdateWorkshop(id, targetWorkshopId);
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error(string.Format("转移设备失败，ID: {0}", id), ex);
+                throw new MESException("转移设备失败", ex);
+            }
+        }
+
+        public bool IsEquipmentCodeExists(string equipmentCode, int excludeId = 0)
+        {
+            try
+            {
+                return _equipmentDAL.IsEquipmentCodeExists(equipmentCode, excludeId);
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error(string.Format("检查设备编码是否存在失败，编码: {0}", equipmentCode), ex);
+                throw new MESException("检查失败", ex);
+            }
+        }
+
+        public Dictionary<string, object> GetEquipmentStatistics(int equipmentId)
+        {
+            try
+            {
+                var statistics = new Dictionary<string, object>();
+                var equipment = GetEquipmentById(equipmentId);
+                if (equipment != null)
+                {
+                    statistics["EquipmentId"] = equipmentId;
+                    statistics["EquipmentCode"] = equipment.EquipmentCode;
+                    statistics["EquipmentName"] = equipment.EquipmentName;
+                    statistics["Status"] = equipment.Status;
+                    statistics["WorkshopId"] = equipment.WorkshopId;
+                }
+                return statistics;
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error(string.Format("获取设备统计信息失败，ID: {0}", equipmentId), ex);
+                throw new MESException("获取统计信息失败", ex);
             }
         }
     }

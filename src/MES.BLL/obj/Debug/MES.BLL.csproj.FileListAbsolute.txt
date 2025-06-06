@@ -1,3 +1,2 @@
 D:\source\Mes-son\src\MES.BLL\obj\Debug\MES.BLL.csproj.AssemblyReference.cache
 D:\source\Mes-son\src\MES.BLL\obj\Debug\MES.BLL.csproj.CoreCompileInputs.cache
-D:\source\Mes-son\src\MES.BLL\obj\Debug\MES.BLL.csprojResolveAssemblyReference.cache
