@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
 using MySql.Data.MySqlClient;
 using MES.Models.Base;
 using MES.Models.System;
@@ -22,7 +21,10 @@ namespace MES.DAL.System
         /// <summary>
         /// 表名
         /// </summary>
-        protected override string TableName => "sys_user";
+        protected override string TableName
+        {
+            get { return "sys_user"; }
+        }
 
         /// <summary>
         /// 主键属性名
