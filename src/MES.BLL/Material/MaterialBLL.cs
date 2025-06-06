@@ -42,12 +42,15 @@ namespace MES.BLL.Material
         {
             try
             {
+                if (string.IsNullOrWhiteSpace(materialName))
+                    throw new ArgumentException("物料名称不能为空", nameof(materialName));
+
                 return _materialDAL.SearchByName(materialName);
             }
             catch (Exception ex)
             {
-                LogManager.Error($"获取name信息失败，name: {ex}", ex);
-                throw new MESException($"获取name信息失败，name: {ex}", ex);
+                LogManager.Error($"根据名称搜索物料信息失败，名称: {materialName}", ex);
+                throw new MESException($"搜索物料信息失败，名称: {materialName}", ex);
             }
 
         }
@@ -148,30 +151,26 @@ namespace MES.BLL.Material
             }
         }
 
+
+        // 添加私有方法
+        private MaterialDto ConvertToDto(MaterialInfo material)
+        {
+            return new MaterialDto
+            {
+                Id = material.Id,
+                MaterialCode = material.MaterialCode,
+                MaterialName = material.MaterialName,
+                // ... 其他属性
+            };
+        }
+
         /// <summary>
-        /// 更新物料信息
+        /// 获取所有物料的DTO对象列表
         /// </summary>
-        /// <param name="material">物料信息对象</param>
-        /// <returns>更新是否成功</returns>
+        /// <returns>物料DTO列表</returns>
         public List<MaterialDto> GetAllMaterialDtos()
         {
-            return GetAllMaterials().Select(m => new MaterialDto
-            {
-                Id = m.Id,
-                MaterialCode = m.MaterialCode,
-                MaterialName = m.MaterialName,
-                MaterialType = m.MaterialType,
-                Specification = m.Specification,
-                Unit = m.Unit,
-                Category = m.Category,
-                Supplier = m.Supplier,
-                StandardCost = m.StandardCost,
-                SafetyStock = m.SafetyStock,
-                MinStock = m.MinStock,
-                MaxStock = m.MaxStock,
-                LeadTime = m.LeadTime,
-                Status = m.Status
-            }).ToList();
+            return GetAllMaterials().Select(ConvertToDto).ToList();
         }
 
         /// <summary>
@@ -181,24 +180,7 @@ namespace MES.BLL.Material
         /// <returns>删除是否成功</returns>
         public List<MaterialDto> SearchMaterialDtosByName(string name)
         {
-            return SearchByName(name)
-                .Select(m => new MaterialDto
-                {
-                    Id = m.Id,
-                    MaterialCode = m.MaterialCode,
-                    MaterialName = m.MaterialName,
-                    MaterialType = m.MaterialType,
-                    Specification = m.Specification,
-                    Unit = m.Unit,
-                    Category = m.Category,
-                    Supplier = m.Supplier,
-                    StandardCost = m.StandardCost,
-                    SafetyStock = m.SafetyStock,
-                    MinStock = m.MinStock,
-                    MaxStock = m.MaxStock,
-                    LeadTime = m.LeadTime,
-                    Status = m.Status
-                }).ToList();
+            return SearchByName(name).Select(ConvertToDto).ToList();
         }
     }
 }
