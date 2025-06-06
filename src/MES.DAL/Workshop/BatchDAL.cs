@@ -45,15 +45,15 @@ namespace MES.DAL.Workshop
             return new BatchInfo
             {
                 Id = Convert.ToInt32(row["id"]),
-                BatchId = row["batch_id"]?.ToString(),
-                WorkOrderId = row["work_order_id"]?.ToString(),
-                ProductMaterialId = row["product_material_id"]?.ToString(),
+                BatchId = row["batch_id"] != DBNull.Value ? row["batch_id"].ToString() : null,
+                WorkOrderId = row["work_order_id"] != DBNull.Value ? row["work_order_id"].ToString() : null,
+                ProductMaterialId = row["product_material_id"] != DBNull.Value ? row["product_material_id"].ToString() : null,
                 Quantity = Convert.ToDecimal(row["quantity"]),
                 Status = Convert.ToInt32(row["status"]),
-                CurrentStationId = row["current_station_id"]?.ToString(),
+                CurrentStationId = row["current_station_id"] != DBNull.Value ? row["current_station_id"].ToString() : null,
                 ProductionStartTime = row["production_start_time"] != DBNull.Value ? Convert.ToDateTime(row["production_start_time"]) : (DateTime?)null,
                 ProductionEndTime = row["production_end_time"] != DBNull.Value ? Convert.ToDateTime(row["production_end_time"]) : (DateTime?)null,
-                CarrierId = row["carrier_id"]?.ToString(),
+                CarrierId = row["carrier_id"] != DBNull.Value ? row["carrier_id"].ToString() : null,
                 CreateTime = Convert.ToDateTime(row["create_time"]),
                 UpdateTime = row["update_time"] != DBNull.Value ? Convert.ToDateTime(row["update_time"]) : (DateTime?)null,
                 IsDeleted = Convert.ToBoolean(row["is_deleted"])
@@ -75,7 +75,7 @@ namespace MES.DAL.Workshop
             {
                 if (string.IsNullOrEmpty(batchId))
                 {
-                    throw new ArgumentException("批次编号不能为空", nameof(batchId));
+                    throw new ArgumentException("批次编号不能为空", "batchId");
                 }
 
                 var batches = GetByCondition("batch_id = @batchId", 

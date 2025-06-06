@@ -46,25 +46,25 @@ namespace MES.DAL.Workshop
             return new WorkshopInfo
             {
                 Id = Convert.ToInt32(row["id"]),
-                WorkshopCode = row["workshop_code"]?.ToString(),
-                WorkshopName = row["workshop_name"]?.ToString(),
-                Department = row["department"]?.ToString(),
-                Manager = row["manager"]?.ToString(),
+                WorkshopCode = row["workshop_code"] != DBNull.Value ? row["workshop_code"].ToString() : null,
+                WorkshopName = row["workshop_name"] != DBNull.Value ? row["workshop_name"].ToString() : null,
+                Department = row["department"] != DBNull.Value ? row["department"].ToString() : null,
+                Manager = row["manager"] != DBNull.Value ? row["manager"].ToString() : null,
                 ManagerId = row["manager_id"] != DBNull.Value ? Convert.ToInt32(row["manager_id"]) : (int?)null,
-                Phone = row["phone"]?.ToString(),
-                Location = row["location"]?.ToString(),
+                Phone = row["phone"] != DBNull.Value ? row["phone"].ToString() : null,
+                Location = row["location"] != DBNull.Value ? row["location"].ToString() : null,
                 Area = row["area"] != DBNull.Value ? Convert.ToDecimal(row["area"]) : (decimal?)null,
                 EquipmentCount = row["equipment_count"] != DBNull.Value ? Convert.ToInt32(row["equipment_count"]) : (int?)null,
                 EmployeeCount = row["employee_count"] != DBNull.Value ? Convert.ToInt32(row["employee_count"]) : (int?)null,
-                WorkshopType = row["workshop_type"]?.ToString(),
+                WorkshopType = row["workshop_type"] != DBNull.Value ? row["workshop_type"].ToString() : null,
                 ProductionCapacity = row["production_capacity"] != DBNull.Value ? Convert.ToDecimal(row["production_capacity"]) : (decimal?)null,
-                Status = row["status"]?.ToString(),
-                WorkShift = row["work_shift"]?.ToString(),
-                SafetyLevel = row["safety_level"]?.ToString(),
-                EnvironmentRequirement = row["environment_requirement"]?.ToString(),
-                QualityStandard = row["quality_standard"]?.ToString(),
-                Description = row["description"]?.ToString(),
-                EquipmentList = row["equipment_list"]?.ToString(),
+                Status = row["status"] != DBNull.Value ? row["status"].ToString() : null,
+                WorkShift = row["work_shift"] != DBNull.Value ? row["work_shift"].ToString() : null,
+                SafetyLevel = row["safety_level"] != DBNull.Value ? row["safety_level"].ToString() : null,
+                EnvironmentRequirement = row["environment_requirement"] != DBNull.Value ? row["environment_requirement"].ToString() : null,
+                QualityStandard = row["quality_standard"] != DBNull.Value ? row["quality_standard"].ToString() : null,
+                Description = row["description"] != DBNull.Value ? row["description"].ToString() : null,
+                EquipmentList = row["equipment_list"] != DBNull.Value ? row["equipment_list"].ToString() : null,
                 CreateTime = Convert.ToDateTime(row["create_time"]),
                 UpdateTime = row["update_time"] != DBNull.Value ? Convert.ToDateTime(row["update_time"]) : (DateTime?)null,
                 IsDeleted = Convert.ToBoolean(row["is_deleted"])
@@ -86,7 +86,7 @@ namespace MES.DAL.Workshop
             {
                 if (string.IsNullOrEmpty(workshopCode))
                 {
-                    throw new ArgumentException("车间编码不能为空", nameof(workshopCode));
+                    throw new ArgumentException("车间编码不能为空", "workshopCode");
                 }
 
                 var workshops = GetByCondition("workshop_code = @workshopCode", 

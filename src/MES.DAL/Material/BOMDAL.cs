@@ -51,7 +51,7 @@ namespace MES.DAL.Material
                 BOMType = row["bom_type"] != DBNull.Value ? row["bom_type"].ToString() : null,
                 EffectiveDate = Convert.ToDateTime(row["effective_date"]),
                 ExpireDate = row["expire_date"] != DBNull.Value ? Convert.ToDateTime(row["expire_date"]) : (DateTime?)null,
-                Status = row["status"] != DBNull.Value ? row["status"].ToString() : null,
+                Status = Convert.ToBoolean(row["status"]),
                 CreateTime = Convert.ToDateTime(row["create_time"]),
                 CreateUserName = row["create_user_name"] != DBNull.Value ? row["create_user_name"].ToString() : null,
                 UpdateTime = row["update_time"] != DBNull.Value ? Convert.ToDateTime(row["update_time"]) : (DateTime?)null,

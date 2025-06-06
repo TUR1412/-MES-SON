@@ -57,7 +57,7 @@ namespace MES.DAL.Material
                 StockQuantity = row["stock_quantity"] != DBNull.Value ? Convert.ToDecimal(row["stock_quantity"]) : 0,
                 Supplier = row["supplier"] != DBNull.Value ? row["supplier"].ToString() : null,
                 LeadTime = row["lead_time"] != DBNull.Value ? Convert.ToInt32(row["lead_time"]) : 0,
-                Status = row["status"] != DBNull.Value ? row["status"].ToString() : null,
+                Status = Convert.ToBoolean(row["status"]),
                 CreateTime = Convert.ToDateTime(row["create_time"]),
                 CreateUserName = row["create_user_name"] != DBNull.Value ? row["create_user_name"].ToString() : null,
                 UpdateTime = row["update_time"] != DBNull.Value ? Convert.ToDateTime(row["update_time"]) : (DateTime?)null,

@@ -41,37 +41,37 @@ namespace MES.DAL.Quality
             return new QualityInspectionInfo
             {
                 Id = Convert.ToInt32(row["id"]),
-                InspectionNumber = row["inspection_number"]?.ToString() ?? string.Empty,
+                InspectionNumber = row["inspection_number"] != DBNull.Value ? row["inspection_number"].ToString() : string.Empty,
                 ProductionOrderId = row["production_order_id"] != DBNull.Value ? Convert.ToInt32(row["production_order_id"]) : 0,
-                ProductionOrderNumber = row["production_order_number"]?.ToString() ?? string.Empty,
-                ProductCode = row["product_code"]?.ToString() ?? string.Empty,
-                ProductName = row["product_name"]?.ToString() ?? string.Empty,
+                ProductionOrderNumber = row["production_order_number"] != DBNull.Value ? row["production_order_number"].ToString() : string.Empty,
+                ProductCode = row["product_code"] != DBNull.Value ? row["product_code"].ToString() : string.Empty,
+                ProductName = row["product_name"] != DBNull.Value ? row["product_name"].ToString() : string.Empty,
                 InspectionType = Convert.ToInt32(row["inspection_type"]),
-                InspectionStage = row["inspection_stage"]?.ToString() ?? string.Empty,
+                InspectionStage = row["inspection_stage"] != DBNull.Value ? row["inspection_stage"].ToString() : string.Empty,
                 InspectionQuantity = row["inspection_quantity"] != DBNull.Value ? Convert.ToDecimal(row["inspection_quantity"]) : 0,
                 SampleQuantity = row["sample_quantity"] != DBNull.Value ? Convert.ToDecimal(row["sample_quantity"]) : 0,
                 QualifiedQuantity = row["qualified_quantity"] != DBNull.Value ? Convert.ToDecimal(row["qualified_quantity"]) : 0,
                 UnqualifiedQuantity = row["unqualified_quantity"] != DBNull.Value ? Convert.ToDecimal(row["unqualified_quantity"]) : 0,
                 InspectionResult = Convert.ToInt32(row["inspection_result"]),
-                InspectionStandard = row["inspection_standard"]?.ToString() ?? string.Empty,
-                InspectionItems = row["inspection_items"]?.ToString() ?? string.Empty,
-                InspectionData = row["inspection_data"]?.ToString() ?? string.Empty,
-                UnqualifiedReason = row["unqualified_reason"]?.ToString() ?? string.Empty,
-                TreatmentMeasure = row["treatment_measure"]?.ToString() ?? string.Empty,
+                InspectionStandard = row["inspection_standard"] != DBNull.Value ? row["inspection_standard"].ToString() : string.Empty,
+                InspectionItems = row["inspection_items"] != DBNull.Value ? row["inspection_items"].ToString() : string.Empty,
+                InspectionData = row["inspection_data"] != DBNull.Value ? row["inspection_data"].ToString() : string.Empty,
+                UnqualifiedReason = row["unqualified_reason"] != DBNull.Value ? row["unqualified_reason"].ToString() : string.Empty,
+                TreatmentMeasure = row["treatment_measure"] != DBNull.Value ? row["treatment_measure"].ToString() : string.Empty,
                 InspectorId = row["inspector_id"] != DBNull.Value ? Convert.ToInt32(row["inspector_id"]) : 0,
-                InspectorName = row["inspector_name"]?.ToString() ?? string.Empty,
+                InspectorName = row["inspector_name"] != DBNull.Value ? row["inspector_name"].ToString() : string.Empty,
                 InspectionTime = Convert.ToDateTime(row["inspection_time"]),
                 ReviewerId = row["reviewer_id"] != DBNull.Value ? Convert.ToInt32(row["reviewer_id"]) : 0,
-                ReviewerName = row["reviewer_name"]?.ToString() ?? string.Empty,
+                ReviewerName = row["reviewer_name"] != DBNull.Value ? row["reviewer_name"].ToString() : string.Empty,
                 ReviewTime = row["review_time"] != DBNull.Value ? Convert.ToDateTime(row["review_time"]) : (DateTime?)null,
                 ReviewStatus = Convert.ToInt32(row["review_status"]),
-                ReviewComments = row["review_comments"]?.ToString() ?? string.Empty,
+                ReviewComments = row["review_comments"] != DBNull.Value ? row["review_comments"].ToString() : string.Empty,
                 CreateTime = Convert.ToDateTime(row["create_time"]),
                 CreateUserId = row["create_user_id"] != DBNull.Value ? Convert.ToInt32(row["create_user_id"]) : 0,
-                CreateUserName = row["create_user_name"]?.ToString() ?? string.Empty,
+                CreateUserName = row["create_user_name"] != DBNull.Value ? row["create_user_name"].ToString() : string.Empty,
                 UpdateTime = row["update_time"] != DBNull.Value ? Convert.ToDateTime(row["update_time"]) : (DateTime?)null,
                 UpdateUserId = row["update_user_id"] != DBNull.Value ? Convert.ToInt32(row["update_user_id"]) : 0,
-                UpdateUserName = row["update_user_name"]?.ToString() ?? string.Empty,
+                UpdateUserName = row["update_user_name"] != DBNull.Value ? row["update_user_name"].ToString() : string.Empty,
                 IsDeleted = Convert.ToBoolean(row["is_deleted"])
             };
         }
@@ -458,18 +458,17 @@ namespace MES.DAL.Quality
                                 var totalInspectionQuantity = Convert.ToDecimal(reader["TotalInspectionQuantity"]);
                                 var totalQualifiedQuantity = Convert.ToDecimal(reader["TotalQualifiedQuantity"]);
 
-                                return new Dictionary<string, object>
-                                {
-                                    ["TotalCount"] = totalCount,
-                                    ["QualifiedCount"] = qualifiedCount,
-                                    ["UnqualifiedCount"] = Convert.ToInt32(reader["UnqualifiedCount"]),
-                                    ["ConcessionalCount"] = Convert.ToInt32(reader["ConcessionalCount"]),
-                                    ["QualifiedRate"] = totalCount > 0 ? Math.Round((decimal)qualifiedCount / totalCount * 100, 2) : 0,
-                                    ["TotalInspectionQuantity"] = totalInspectionQuantity,
-                                    ["TotalQualifiedQuantity"] = totalQualifiedQuantity,
-                                    ["TotalUnqualifiedQuantity"] = Convert.ToDecimal(reader["TotalUnqualifiedQuantity"]),
-                                    ["QuantityQualifiedRate"] = totalInspectionQuantity > 0 ? Math.Round(totalQualifiedQuantity / totalInspectionQuantity * 100, 2) : 0
-                                };
+                                var result = new Dictionary<string, object>();
+                                result.Add("TotalCount", totalCount);
+                                result.Add("QualifiedCount", qualifiedCount);
+                                result.Add("UnqualifiedCount", Convert.ToInt32(reader["UnqualifiedCount"]));
+                                result.Add("ConcessionalCount", Convert.ToInt32(reader["ConcessionalCount"]));
+                                result.Add("QualifiedRate", totalCount > 0 ? Math.Round((decimal)qualifiedCount / totalCount * 100, 2) : 0);
+                                result.Add("TotalInspectionQuantity", totalInspectionQuantity);
+                                result.Add("TotalQualifiedQuantity", totalQualifiedQuantity);
+                                result.Add("TotalUnqualifiedQuantity", Convert.ToDecimal(reader["TotalUnqualifiedQuantity"]));
+                                result.Add("QuantityQualifiedRate", totalInspectionQuantity > 0 ? Math.Round(totalQualifiedQuantity / totalInspectionQuantity * 100, 2) : 0);
+                                return result;
                             }
                         }
                     }

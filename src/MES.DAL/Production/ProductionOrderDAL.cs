@@ -60,7 +60,7 @@ namespace MES.DAL.Production
                 Priority = row["priority"] != DBNull.Value ? row["priority"].ToString() : null,
                 WorkshopId = row["workshop_id"] != DBNull.Value ? Convert.ToInt32(row["workshop_id"]) : (int?)null,
                 WorkshopName = row["workshop_name"] != DBNull.Value ? row["workshop_name"].ToString() : null,
-                Customer = row["customer"] != DBNull.Value ? row["customer"].ToString() : null,
+                CustomerName = row["customer"] != DBNull.Value ? row["customer"].ToString() : null,
                 SalesOrderNumber = row["sales_order_number"] != DBNull.Value ? row["sales_order_number"].ToString() : null,
                 Remarks = row["remarks"] != DBNull.Value ? row["remarks"].ToString() : null,
                 CreateTime = Convert.ToDateTime(row["create_time"]),
