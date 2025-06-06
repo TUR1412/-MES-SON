@@ -302,7 +302,10 @@ namespace MES.BLL.System
                     return new List<RoleInfo>();
                 }
 
-                return _roleDAL.GetByPage(pageIndex, pageSize, out totalCount);
+                // 简化实现：从所有角色中分页
+                var allRoles = GetAllRoles();
+                totalCount = allRoles.Count;
+                return allRoles.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
             }
             catch (Exception ex)
             {

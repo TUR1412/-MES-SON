@@ -1,2 +1,17 @@
 D:\source\Mes-son\src\MES.BLL\obj\Debug\MES.BLL.csproj.AssemblyReference.cache
 D:\source\Mes-son\src\MES.BLL\obj\Debug\MES.BLL.csproj.CoreCompileInputs.cache
+D:\source\Mes-son\src\MES.BLL\bin\Debug\MES.BLL.dll
+D:\source\Mes-son\src\MES.BLL\bin\Debug\MES.BLL.pdb
+D:\source\Mes-son\src\MES.BLL\bin\Debug\MES.Common.dll
+D:\source\Mes-son\src\MES.BLL\bin\Debug\MES.DAL.dll
+D:\source\Mes-son\src\MES.BLL\bin\Debug\MES.Models.dll
+D:\source\Mes-son\src\MES.BLL\bin\Debug\MySql.Data.dll
+D:\source\Mes-son\src\MES.BLL\bin\Debug\System.Memory.dll
+D:\source\Mes-son\src\MES.BLL\bin\Debug\System.Numerics.Vectors.dll
+D:\source\Mes-son\src\MES.BLL\bin\Debug\MES.Common.pdb
+D:\source\Mes-son\src\MES.BLL\bin\Debug\MES.DAL.pdb
+D:\source\Mes-son\src\MES.BLL\bin\Debug\MES.Models.pdb
+D:\source\Mes-son\src\MES.BLL\bin\Debug\MySql.Data.xml
+D:\source\Mes-son\src\MES.BLL\obj\Debug\MES.BLL.csproj.Up2Date
+D:\source\Mes-son\src\MES.BLL\obj\Debug\MES.BLL.dll
+D:\source\Mes-son\src\MES.BLL\obj\Debug\MES.BLL.pdb

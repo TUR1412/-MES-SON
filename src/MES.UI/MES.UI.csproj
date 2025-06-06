@@ -105,10 +105,10 @@
     <Compile Include="Forms\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\System\RoleManagementForm.cs">
+    <Compile Include="Forms\SystemManagement\RoleManagementForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\System\RoleManagementForm.Designer.cs">
+    <Compile Include="Forms\SystemManagement\RoleManagementForm.Designer.cs">
       <DependentUpon>RoleManagementForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\Material\MaterialManagementForm.cs">

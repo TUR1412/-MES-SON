@@ -326,7 +326,10 @@ namespace MES.BLL.Workshop
                     return new List<WorkshopInfo>();
                 }
 
-                return _workshopDAL.GetByPage(pageIndex, pageSize, out totalCount);
+                // 简化实现：从所有车间中分页
+                var allWorkshops = GetAllWorkshops();
+                totalCount = allWorkshops.Count;
+                return allWorkshops.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
             }
             catch (Exception ex)
             {
@@ -350,7 +353,9 @@ namespace MES.BLL.Workshop
                     return GetAllWorkshops();
                 }
 
-                return _workshopDAL.Search(keyword);
+                // 简化实现：从所有车间中搜索
+                var allWorkshops = GetAllWorkshops();
+                return allWorkshops.Where(w => w.WorkshopName.Contains(keyword) || w.WorkshopCode.Contains(keyword)).ToList();
             }
             catch (Exception ex)
             {

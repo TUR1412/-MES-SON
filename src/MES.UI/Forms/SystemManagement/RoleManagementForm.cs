@@ -12,7 +12,7 @@ using MES.Models.System;
 using MES.Common.Logging;
 using MES.Common.Exceptions;
 
-namespace MES.UI.Forms.System
+namespace MES.UI.Forms.SystemManagement
 {
     /// <summary>
     /// 角色管理窗体

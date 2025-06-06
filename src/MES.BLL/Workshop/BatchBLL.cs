@@ -348,7 +348,10 @@ namespace MES.BLL.Workshop
                     return new List<BatchInfo>();
                 }
 
-                return _batchDAL.GetByPage(pageIndex, pageSize, out totalCount);
+                // 简化实现：从所有批次中分页
+                var allBatches = GetAllBatches();
+                totalCount = allBatches.Count;
+                return allBatches.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
             }
             catch (Exception ex)
             {
@@ -372,7 +375,9 @@ namespace MES.BLL.Workshop
                     return GetAllBatches();
                 }
 
-                return _batchDAL.Search(keyword);
+                // 简化实现：从所有批次中搜索
+                var allBatches = GetAllBatches();
+                return allBatches.Where(b => b.BatchNumber.Contains(keyword) || b.ProductCode.Contains(keyword)).ToList();
             }
             catch (Exception ex)
             {

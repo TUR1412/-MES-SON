@@ -14,6 +14,11 @@
             public string BatchId { get; set; }
 
             /// <summary>
+            /// 批次号（显示用）
+            /// </summary>
+            public string BatchNumber { get; set; }
+
+            /// <summary>
             /// 所属工单ID (外键关联T_Work_Order)
             /// </summary>
             public string WorkOrderId { get; set; }
@@ -22,6 +27,11 @@
             /// 产品物料ID (外键关联T_Material)
             /// </summary>
             public string ProductMaterialId { get; set; }
+
+            /// <summary>
+            /// 产品编码
+            /// </summary>
+            public string ProductCode { get; set; }
 
             /// <summary>
             /// 批次数量

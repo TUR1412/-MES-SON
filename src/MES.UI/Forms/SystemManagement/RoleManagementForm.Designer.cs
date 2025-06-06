@@ -1,4 +1,4 @@
-namespace MES.UI.Forms.System
+namespace MES.UI.Forms.SystemManagement
 {
     partial class RoleManagementForm
     {

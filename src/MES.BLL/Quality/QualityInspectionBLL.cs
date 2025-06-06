@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using MES.BLL.Quality;
 using MES.DAL.Quality;
 using MES.Models.Quality;
@@ -516,7 +518,7 @@ namespace MES.BLL.Quality
                         inspection.InspectionTime.ToString("yyyy-MM-dd HH:mm:ss")));
                 }
 
-                System.IO.File.WriteAllLines(filePath, lines, System.Text.Encoding.UTF8);
+                File.WriteAllLines(filePath, lines, Encoding.UTF8);
                 return true;
             }
             catch (Exception ex)
