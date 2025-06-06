@@ -5,14 +5,11 @@ on:
     branches: [ develop, main ]
   push:
     branches: [ develop, main ]
-  schedule:
-    # 每天凌晨2点执行完整测试
-    - cron: '0 2 * * *'
   workflow_dispatch:
     inputs:
       test_type:
         description: '测试类型'
-        required: true
+        required: false
         default: 'all'
         type: choice
         options:
@@ -31,7 +28,6 @@ jobs:
   unit-tests:
     name: 单元测试
     runs-on: windows-2022
-    if: github.event.inputs.test_type == 'unit' || github.event.inputs.test_type == 'all' || github.event.inputs.test_type == null
 
     steps:
     - name: 检出代码
@@ -132,7 +128,6 @@ jobs:
   integration-tests:
     name: 集成测试
     runs-on: ubuntu-latest
-    if: github.event.inputs.test_type == 'integration' || github.event.inputs.test_type == 'all' || github.event.inputs.test_type == null
 
     services:
       mysql:
@@ -257,7 +252,6 @@ jobs:
   performance-tests:
     name: 性能测试
     runs-on: ubuntu-latest
-    if: github.event.inputs.test_type == 'performance' || github.event.inputs.test_type == 'all' || github.event.inputs.test_type == null
 
     steps:
     - name: 检出代码
@@ -358,7 +352,6 @@ jobs:
   security-tests:
     name: 安全测试
     runs-on: ubuntu-latest
-    if: github.event.inputs.test_type == 'security' || github.event.inputs.test_type == 'all' || github.event.inputs.test_type == null
 
     steps:
     - name: 检出代码
