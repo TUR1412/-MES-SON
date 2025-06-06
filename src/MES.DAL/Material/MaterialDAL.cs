@@ -81,7 +81,7 @@ namespace MES.DAL.Material
             {
                 if (string.IsNullOrEmpty(materialCode))
                 {
-                    throw new ArgumentException("物料编码不能为空", nameof(materialCode));
+                    throw new ArgumentException("物料编码不能为空", "materialCode");
                 }
 
                 var materials = GetByCondition("material_code = @materialCode", 

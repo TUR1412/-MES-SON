@@ -6,6 +6,7 @@ using MES.DAL.Base;
 using MES.DAL.Core;
 using MES.Models.System;
 using MES.Common.Logging;
+using MES.Common.Exceptions;
 
 namespace MES.DAL.System
 {
