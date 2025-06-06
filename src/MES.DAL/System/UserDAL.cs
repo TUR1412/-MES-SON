@@ -21,18 +21,12 @@ namespace MES.DAL.System
         /// <summary>
         /// 表名
         /// </summary>
-        protected override string TableName
-        {
-            get { return "sys_user"; }
-        }
+        protected override string TableName => "sys_user";
 
         /// <summary>
         /// 主键属性名
         /// </summary>
-        protected override string PrimaryKey
-        {
-            get { return "Id"; }
-        }
+        protected override string PrimaryKey => "Id";
 
         /// <summary>
         /// 将DataRow转换为UserInfo实体对象
@@ -83,7 +77,7 @@ namespace MES.DAL.System
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据登录名获取用户失败，登录名: {loginName}", ex);
+                LogManager.Error(string.Format("根据登录名获取用户失败，登录名: {0}", loginName), ex);
                 throw new MESException("获取用户信息失败", ex);
             }
         }
@@ -109,7 +103,7 @@ namespace MES.DAL.System
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据用户编码获取用户失败，用户编码: {userCode}", ex);
+                LogManager.Error(string.Format("根据用户编码获取用户失败，用户编码: {0}", userCode), ex);
                 throw new MESException("获取用户信息失败", ex);
             }
         }
@@ -135,16 +129,16 @@ namespace MES.DAL.System
                 
                 if (users.Count > 0)
                 {
-                    LogManager.Info($"用户登录验证成功，登录名: {loginName}");
+                    LogManager.Info(string.Format("用户登录验证成功，登录名: {0}", loginName));
                     return users[0];
                 }
-                
-                LogManager.Warning($"用户登录验证失败，登录名: {loginName}");
+
+                LogManager.Warning(string.Format("用户登录验证失败，登录名: {0}", loginName));
                 return null;
             }
             catch (Exception ex)
             {
-                LogManager.Error($"用户登录验证异常，登录名: {loginName}", ex);
+                LogManager.Error(string.Format("用户登录验证异常，登录名: {0}", loginName), ex);
                 throw new MESException("用户登录验证失败", ex);
             }
         }
@@ -168,7 +162,7 @@ namespace MES.DAL.System
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据部门获取用户列表失败，部门: {department}", ex);
+                LogManager.Error(string.Format("根据部门获取用户列表失败，部门: {0}", department), ex);
                 throw new MESException("获取部门用户列表失败", ex);
             }
         }
@@ -201,14 +195,14 @@ namespace MES.DAL.System
                 bool success = rowsAffected > 0;
                 if (success)
                 {
-                    LogManager.Info($"用户密码更新成功，用户ID: {userId}");
+                    LogManager.Info(string.Format("用户密码更新成功，用户ID: {0}", userId));
                 }
-                
+
                 return success;
             }
             catch (Exception ex)
             {
-                LogManager.Error($"更新用户密码失败，用户ID: {userId}", ex);
+                LogManager.Error(string.Format("更新用户密码失败，用户ID: {0}", userId), ex);
                 throw new MESException("更新用户密码失败", ex);
             }
         }
