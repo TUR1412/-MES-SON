@@ -59,21 +59,40 @@ namespace MES.DAL.Workshop
         /// </summary>
         /// <param name="status">车间状态</param>
         /// <returns>车间列表</returns>
-        public List<WorkshopInfo> GetByStatus(string status)
+        public List<WorkshopInfo> GetByStatus(bool status)
         {
             try
             {
-                if (string.IsNullOrEmpty(status))
-                {
-                    return new List<WorkshopInfo>();
-                }
-
-                return GetByCondition("status = @status", 
+                return GetByCondition("status = @status",
                     DatabaseHelper.CreateParameter("@status", status));
             }
             catch (Exception ex)
             {
                 LogManager.Error($"根据状态获取车间列表失败，状态: {status}", ex);
+                throw new MESException("获取车间列表失败", ex);
+            }
+        }
+
+        /// <summary>
+        /// 根据车间类型获取车间列表
+        /// </summary>
+        /// <param name="workshopType">车间类型</param>
+        /// <returns>车间列表</returns>
+        public List<WorkshopInfo> GetByWorkshopType(string workshopType)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(workshopType))
+                {
+                    return new List<WorkshopInfo>();
+                }
+
+                return GetByCondition("workshop_type = @workshopType",
+                    DatabaseHelper.CreateParameter("@workshopType", workshopType));
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error($"根据类型获取车间列表失败，类型: {workshopType}", ex);
                 throw new MESException("获取车间列表失败", ex);
             }
         }
@@ -98,20 +117,27 @@ namespace MES.DAL.Workshop
         /// <returns>SQL语句和参数</returns>
         protected override (string sql, MySqlParameter[] parameters) BuildInsertSql(WorkshopInfo entity)
         {
-            // TODO: S成员需要根据实际的workshop_info表结构完善此SQL
-            string sql = @"INSERT INTO workshop_info 
-                          (workshop_code, workshop_name, department, status, 
-                           create_time, create_user_name, is_deleted) 
-                          VALUES 
-                          (@workshopCode, @workshopName, @department, @status, 
+            string sql = @"INSERT INTO workshop_info
+                          (workshop_code, workshop_name, manager_id, capacity, status,
+                           location_id, workshop_type, department, description, equipment_list,
+                           create_time, create_user_name, is_deleted)
+                          VALUES
+                          (@workshopCode, @workshopName, @managerId, @capacity, @status,
+                           @locationId, @workshopType, @department, @description, @equipmentList,
                            @createTime, @createUserName, @isDeleted)";
 
             var parameters = new[]
             {
                 DatabaseHelper.CreateParameter("@workshopCode", entity.WorkshopCode),
                 DatabaseHelper.CreateParameter("@workshopName", entity.WorkshopName),
-                DatabaseHelper.CreateParameter("@department", entity.Department),
+                DatabaseHelper.CreateParameter("@managerId", entity.ManagerId),
+                DatabaseHelper.CreateParameter("@capacity", entity.Capacity),
                 DatabaseHelper.CreateParameter("@status", entity.Status),
+                DatabaseHelper.CreateParameter("@locationId", entity.LocationId),
+                DatabaseHelper.CreateParameter("@workshopType", entity.WorkshopType),
+                DatabaseHelper.CreateParameter("@department", entity.Department),
+                DatabaseHelper.CreateParameter("@description", entity.Description),
+                DatabaseHelper.CreateParameter("@equipmentList", entity.EquipmentList),
                 DatabaseHelper.CreateParameter("@createTime", entity.CreateTime),
                 DatabaseHelper.CreateParameter("@createUserName", entity.CreateUserName),
                 DatabaseHelper.CreateParameter("@isDeleted", entity.IsDeleted)
@@ -128,19 +154,27 @@ namespace MES.DAL.Workshop
         /// <returns>SQL语句和参数</returns>
         protected override (string sql, MySqlParameter[] parameters) BuildUpdateSql(WorkshopInfo entity)
         {
-            // TODO: S成员需要根据实际的workshop_info表结构完善此SQL
-            string sql = @"UPDATE workshop_info SET 
-                          workshop_code = @workshopCode, workshop_name = @workshopName, 
-                          department = @department, status = @status, 
-                          update_time = @updateTime, update_user_name = @updateUserName 
+            string sql = @"UPDATE workshop_info SET
+                          workshop_code = @workshopCode, workshop_name = @workshopName,
+                          manager_id = @managerId, capacity = @capacity, status = @status,
+                          location_id = @locationId, workshop_type = @workshopType,
+                          department = @department, description = @description,
+                          equipment_list = @equipmentList,
+                          update_time = @updateTime, update_user_name = @updateUserName
                           WHERE id = @id AND is_deleted = 0";
 
             var parameters = new[]
             {
                 DatabaseHelper.CreateParameter("@workshopCode", entity.WorkshopCode),
                 DatabaseHelper.CreateParameter("@workshopName", entity.WorkshopName),
-                DatabaseHelper.CreateParameter("@department", entity.Department),
+                DatabaseHelper.CreateParameter("@managerId", entity.ManagerId),
+                DatabaseHelper.CreateParameter("@capacity", entity.Capacity),
                 DatabaseHelper.CreateParameter("@status", entity.Status),
+                DatabaseHelper.CreateParameter("@locationId", entity.LocationId),
+                DatabaseHelper.CreateParameter("@workshopType", entity.WorkshopType),
+                DatabaseHelper.CreateParameter("@department", entity.Department),
+                DatabaseHelper.CreateParameter("@description", entity.Description),
+                DatabaseHelper.CreateParameter("@equipmentList", entity.EquipmentList),
                 DatabaseHelper.CreateParameter("@updateTime", entity.UpdateTime),
                 DatabaseHelper.CreateParameter("@updateUserName", entity.UpdateUserName),
                 DatabaseHelper.CreateParameter("@id", entity.Id)

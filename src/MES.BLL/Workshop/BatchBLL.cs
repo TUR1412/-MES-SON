@@ -1,0 +1,704 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using MES.BLL.Workshop;
+using MES.DAL.Workshop;
+using MES.Models.Workshop;
+using MES.Common.Logging;
+using MES.Common.Exceptions;
+
+namespace MES.BLL.Workshop
+{
+    /// <summary>
+    /// 批次管理业务逻辑实现类
+    /// 实现批次管理的核心业务逻辑
+    /// </summary>
+    public class BatchBLL : IBatchBLL
+    {
+        private readonly BatchDAL _batchDAL;
+
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        public BatchBLL()
+        {
+            _batchDAL = new BatchDAL();
+        }
+
+        /// <summary>
+        /// 添加批次信息
+        /// </summary>
+        /// <param name="batch">批次信息</param>
+        /// <returns>操作是否成功</returns>
+        public bool AddBatch(BatchInfo batch)
+        {
+            try
+            {
+                // 验证输入参数
+                if (batch == null)
+                {
+                    LogManager.Error("添加批次失败：批次信息不能为空");
+                    return false;
+                }
+
+                // 业务规则验证
+                string validationResult = ValidateBatch(batch);
+                if (!string.IsNullOrEmpty(validationResult))
+                {
+                    LogManager.Error($"添加批次失败：{validationResult}");
+                    return false;
+                }
+
+                // 检查批次编号是否已存在
+                if (IsBatchIdExists(batch.BatchId))
+                {
+                    LogManager.Error($"添加批次失败：批次编号 {batch.BatchId} 已存在");
+                    return false;
+                }
+
+                // 设置默认值
+                batch.CreateTime = DateTime.Now;
+                batch.UpdateTime = DateTime.Now;
+                batch.IsDeleted = false;
+
+                // 如果未设置状态，默认为创建状态
+                if (batch.Status == 0)
+                {
+                    batch.Status = 1; // 创建状态
+                }
+
+                // 调用DAL层添加
+                bool result = _batchDAL.Add(batch);
+                
+                if (result)
+                {
+                    LogManager.Info($"成功添加批次：{batch.BatchId}");
+                }
+                else
+                {
+                    LogManager.Error($"添加批次失败：{batch.BatchId}");
+                }
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error($"添加批次异常：{ex.Message}", ex);
+                throw new MESException("添加批次时发生异常", ex);
+            }
+        }
+
+        /// <summary>
+        /// 根据ID删除批次信息（逻辑删除）
+        /// </summary>
+        /// <param name="id">批次ID</param>
+        /// <returns>操作是否成功</returns>
+        public bool DeleteBatch(int id)
+        {
+            try
+            {
+                if (id <= 0)
+                {
+                    LogManager.Error("删除批次失败：ID无效");
+                    return false;
+                }
+
+                // 检查批次是否存在
+                var existingBatch = _batchDAL.GetById(id);
+                if (existingBatch == null)
+                {
+                    LogManager.Error($"删除批次失败：ID为 {id} 的批次不存在");
+                    return false;
+                }
+
+                // 检查批次是否可以删除（如果正在生产中则不能删除）
+                if (existingBatch.Status == 3) // 生产中状态
+                {
+                    LogManager.Error($"删除批次失败：批次 {existingBatch.BatchId} 正在生产中，不能删除");
+                    return false;
+                }
+                
+                bool result = _batchDAL.Delete(id);
+                
+                if (result)
+                {
+                    LogManager.Info($"成功删除批次：ID={id}, 批次编号={existingBatch.BatchId}");
+                }
+                else
+                {
+                    LogManager.Error($"删除批次失败：ID={id}");
+                }
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error($"删除批次异常：{ex.Message}", ex);
+                throw new MESException("删除批次时发生异常", ex);
+            }
+        }
+
+        /// <summary>
+        /// 更新批次信息
+        /// </summary>
+        /// <param name="batch">批次信息</param>
+        /// <returns>操作是否成功</returns>
+        public bool UpdateBatch(BatchInfo batch)
+        {
+            try
+            {
+                if (batch == null || batch.Id <= 0)
+                {
+                    LogManager.Error("更新批次失败：批次信息无效");
+                    return false;
+                }
+
+                // 验证业务规则
+                string validationResult = ValidateBatch(batch);
+                if (!string.IsNullOrEmpty(validationResult))
+                {
+                    LogManager.Error($"更新批次失败：{validationResult}");
+                    return false;
+                }
+
+                // 检查批次是否存在
+                var existingBatch = _batchDAL.GetById(batch.Id);
+                if (existingBatch == null)
+                {
+                    LogManager.Error($"更新批次失败：ID为 {batch.Id} 的批次不存在");
+                    return false;
+                }
+
+                // 检查批次编号是否与其他批次冲突
+                if (IsBatchIdExists(batch.BatchId, batch.Id))
+                {
+                    LogManager.Error($"更新批次失败：批次编号 {batch.BatchId} 已被其他批次使用");
+                    return false;
+                }
+
+                // 更新时间
+                batch.UpdateTime = DateTime.Now;
+
+                bool result = _batchDAL.Update(batch);
+                
+                if (result)
+                {
+                    LogManager.Info($"成功更新批次：{batch.BatchId}");
+                }
+                else
+                {
+                    LogManager.Error($"更新批次失败：{batch.BatchId}");
+                }
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error($"更新批次异常：{ex.Message}", ex);
+                throw new MESException("更新批次时发生异常", ex);
+            }
+        }
+
+        /// <summary>
+        /// 根据ID获取批次信息
+        /// </summary>
+        /// <param name="id">批次ID</param>
+        /// <returns>批次信息，未找到返回null</returns>
+        public BatchInfo GetBatchById(int id)
+        {
+            try
+            {
+                if (id <= 0)
+                {
+                    LogManager.Error("获取批次失败：ID无效");
+                    return null;
+                }
+
+                return _batchDAL.GetById(id);
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error($"获取批次异常：{ex.Message}", ex);
+                throw new MESException("获取批次时发生异常", ex);
+            }
+        }
+
+        /// <summary>
+        /// 根据批次编号获取批次信息
+        /// </summary>
+        /// <param name="batchId">批次编号</param>
+        /// <returns>批次信息，未找到返回null</returns>
+        public BatchInfo GetBatchByBatchId(string batchId)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(batchId))
+                {
+                    LogManager.Error("获取批次失败：批次编号不能为空");
+                    return null;
+                }
+
+                return _batchDAL.GetByBatchId(batchId);
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error($"根据批次编号获取批次异常：{ex.Message}", ex);
+                throw new MESException("根据批次编号获取批次时发生异常", ex);
+            }
+        }
+
+        /// <summary>
+        /// 获取所有批次列表
+        /// </summary>
+        /// <returns>批次列表</returns>
+        public List<BatchInfo> GetAllBatches()
+        {
+            try
+            {
+                return _batchDAL.GetAll();
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error($"获取所有批次异常：{ex.Message}", ex);
+                throw new MESException("获取所有批次时发生异常", ex);
+            }
+        }
+
+        /// <summary>
+        /// 根据工单ID获取批次列表
+        /// </summary>
+        /// <param name="workOrderId">工单ID</param>
+        /// <returns>批次列表</returns>
+        public List<BatchInfo> GetBatchesByWorkOrderId(string workOrderId)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(workOrderId))
+                {
+                    LogManager.Error("根据工单ID获取批次失败：工单ID不能为空");
+                    return new List<BatchInfo>();
+                }
+
+                return _batchDAL.GetByWorkOrderId(workOrderId);
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error($"根据工单ID获取批次异常：{ex.Message}", ex);
+                throw new MESException("根据工单ID获取批次时发生异常", ex);
+            }
+        }
+
+        /// <summary>
+        /// 根据状态获取批次列表
+        /// </summary>
+        /// <param name="status">批次状态</param>
+        /// <returns>指定状态的批次列表</returns>
+        public List<BatchInfo> GetBatchesByStatus(int status)
+        {
+            try
+            {
+                return _batchDAL.GetByStatus(status);
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error($"根据状态获取批次异常：{ex.Message}", ex);
+                throw new MESException("根据状态获取批次时发生异常", ex);
+            }
+        }
+
+        /// <summary>
+        /// 根据当前工站获取批次列表
+        /// </summary>
+        /// <param name="stationId">工站ID</param>
+        /// <returns>批次列表</returns>
+        public List<BatchInfo> GetBatchesByCurrentStation(string stationId)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(stationId))
+                {
+                    LogManager.Error("根据工站获取批次失败：工站ID不能为空");
+                    return new List<BatchInfo>();
+                }
+
+                return _batchDAL.GetByCurrentStation(stationId);
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error($"根据工站获取批次异常：{ex.Message}", ex);
+                throw new MESException("根据工站获取批次时发生异常", ex);
+            }
+        }
+
+        /// <summary>
+        /// 分页获取批次列表
+        /// </summary>
+        /// <param name="pageIndex">页码（从1开始）</param>
+        /// <param name="pageSize">每页记录数</param>
+        /// <param name="totalCount">总记录数</param>
+        /// <returns>分页的批次列表</returns>
+        public List<BatchInfo> GetBatchesByPage(int pageIndex, int pageSize, out int totalCount)
+        {
+            try
+            {
+                if (pageIndex <= 0 || pageSize <= 0)
+                {
+                    LogManager.Error("分页获取批次失败：页码和每页记录数必须大于0");
+                    totalCount = 0;
+                    return new List<BatchInfo>();
+                }
+
+                return _batchDAL.GetByPage(pageIndex, pageSize, out totalCount);
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error($"分页获取批次异常：{ex.Message}", ex);
+                totalCount = 0;
+                throw new MESException("分页获取批次时发生异常", ex);
+            }
+        }
+
+        /// <summary>
+        /// 根据条件搜索批次
+        /// </summary>
+        /// <param name="keyword">搜索关键词（批次编号、工单ID等）</param>
+        /// <returns>匹配的批次列表</returns>
+        public List<BatchInfo> SearchBatches(string keyword)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(keyword))
+                {
+                    return GetAllBatches();
+                }
+
+                return _batchDAL.Search(keyword);
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error($"搜索批次异常：{ex.Message}", ex);
+                throw new MESException("搜索批次时发生异常", ex);
+            }
+        }
+
+        /// <summary>
+        /// 验证批次数据
+        /// </summary>
+        /// <param name="batch">批次信息</param>
+        /// <returns>验证结果消息，验证通过返回空字符串</returns>
+        public string ValidateBatch(BatchInfo batch)
+        {
+            if (batch == null)
+            {
+                return "批次信息不能为空";
+            }
+
+            if (string.IsNullOrEmpty(batch.BatchId))
+            {
+                return "批次编号不能为空";
+            }
+
+            if (string.IsNullOrEmpty(batch.WorkOrderId))
+            {
+                return "工单ID不能为空";
+            }
+
+            if (string.IsNullOrEmpty(batch.ProductMaterialId))
+            {
+                return "产品物料ID不能为空";
+            }
+
+            if (batch.Quantity <= 0)
+            {
+                return "批次数量必须大于0";
+            }
+
+            return string.Empty;
+        }
+
+        /// <summary>
+        /// 检查批次编号是否已存在
+        /// </summary>
+        /// <param name="batchId">批次编号</param>
+        /// <param name="excludeId">排除的批次ID（用于更新时检查）</param>
+        /// <returns>是否已存在</returns>
+        public bool IsBatchIdExists(string batchId, int excludeId = 0)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(batchId))
+                {
+                    return false;
+                }
+
+                var existingBatch = _batchDAL.GetByBatchId(batchId);
+                if (existingBatch == null)
+                {
+                    return false;
+                }
+
+                return excludeId == 0 || existingBatch.Id != excludeId;
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error($"检查批次编号是否存在异常：{ex.Message}", ex);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 开始生产批次
+        /// </summary>
+        /// <param name="id">批次ID</param>
+        /// <param name="stationId">开始生产的工站ID</param>
+        /// <returns>操作是否成功</returns>
+        public bool StartProduction(int id, string stationId)
+        {
+            try
+            {
+                var batch = _batchDAL.GetById(id);
+                if (batch == null)
+                {
+                    LogManager.Error($"开始生产失败：ID为 {id} 的批次不存在");
+                    return false;
+                }
+
+                if (batch.Status != 2) // 待产状态
+                {
+                    LogManager.Error($"开始生产失败：批次 {batch.BatchId} 状态不是待产状态");
+                    return false;
+                }
+
+                batch.Status = 3; // 生产中状态
+                batch.CurrentStationId = stationId;
+                batch.ProductionStartTime = DateTime.Now;
+                batch.UpdateTime = DateTime.Now;
+
+                bool result = _batchDAL.Update(batch);
+
+                if (result)
+                {
+                    LogManager.Info($"成功开始生产批次：{batch.BatchId}，工站：{stationId}");
+                }
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error($"开始生产批次异常：{ex.Message}", ex);
+                throw new MESException("开始生产批次时发生异常", ex);
+            }
+        }
+
+        /// <summary>
+        /// 完成生产批次
+        /// </summary>
+        /// <param name="id">批次ID</param>
+        /// <returns>操作是否成功</returns>
+        public bool CompleteProduction(int id)
+        {
+            try
+            {
+                var batch = _batchDAL.GetById(id);
+                if (batch == null)
+                {
+                    LogManager.Error($"完成生产失败：ID为 {id} 的批次不存在");
+                    return false;
+                }
+
+                if (batch.Status != 3) // 生产中状态
+                {
+                    LogManager.Error($"完成生产失败：批次 {batch.BatchId} 状态不是生产中状态");
+                    return false;
+                }
+
+                batch.Status = 5; // 完成状态
+                batch.ProductionEndTime = DateTime.Now;
+                batch.UpdateTime = DateTime.Now;
+
+                bool result = _batchDAL.Update(batch);
+
+                if (result)
+                {
+                    LogManager.Info($"成功完成生产批次：{batch.BatchId}");
+                }
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error($"完成生产批次异常：{ex.Message}", ex);
+                throw new MESException("完成生产批次时发生异常", ex);
+            }
+        }
+
+        /// <summary>
+        /// 取消批次
+        /// </summary>
+        /// <param name="id">批次ID</param>
+        /// <param name="reason">取消原因</param>
+        /// <returns>操作是否成功</returns>
+        public bool CancelBatch(int id, string reason)
+        {
+            try
+            {
+                var batch = _batchDAL.GetById(id);
+                if (batch == null)
+                {
+                    LogManager.Error($"取消批次失败：ID为 {id} 的批次不存在");
+                    return false;
+                }
+
+                if (batch.Status == 5 || batch.Status == 6) // 已完成或已取消
+                {
+                    LogManager.Error($"取消批次失败：批次 {batch.BatchId} 已经完成或取消");
+                    return false;
+                }
+
+                batch.Status = 6; // 取消状态
+                batch.UpdateTime = DateTime.Now;
+
+                bool result = _batchDAL.Update(batch);
+
+                if (result)
+                {
+                    LogManager.Info($"成功取消批次：{batch.BatchId}，原因：{reason}");
+                }
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error($"取消批次异常：{ex.Message}", ex);
+                throw new MESException("取消批次时发生异常", ex);
+            }
+        }
+
+        /// <summary>
+        /// 转移批次到指定工站
+        /// </summary>
+        /// <param name="id">批次ID</param>
+        /// <param name="targetStationId">目标工站ID</param>
+        /// <returns>操作是否成功</returns>
+        public bool TransferBatch(int id, string targetStationId)
+        {
+            try
+            {
+                var batch = _batchDAL.GetById(id);
+                if (batch == null)
+                {
+                    LogManager.Error($"转移批次失败：ID为 {id} 的批次不存在");
+                    return false;
+                }
+
+                if (batch.Status != 3) // 生产中状态
+                {
+                    LogManager.Error($"转移批次失败：批次 {batch.BatchId} 状态不是生产中状态");
+                    return false;
+                }
+
+                string oldStationId = batch.CurrentStationId;
+                batch.CurrentStationId = targetStationId;
+                batch.UpdateTime = DateTime.Now;
+
+                bool result = _batchDAL.Update(batch);
+
+                if (result)
+                {
+                    LogManager.Info($"成功转移批次：{batch.BatchId}，从工站 {oldStationId} 转移到 {targetStationId}");
+                }
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error($"转移批次异常：{ex.Message}", ex);
+                throw new MESException("转移批次时发生异常", ex);
+            }
+        }
+
+        /// <summary>
+        /// 设置批次载具
+        /// </summary>
+        /// <param name="id">批次ID</param>
+        /// <param name="carrierId">载具ID</param>
+        /// <returns>操作是否成功</returns>
+        public bool SetBatchCarrier(int id, string carrierId)
+        {
+            try
+            {
+                var batch = _batchDAL.GetById(id);
+                if (batch == null)
+                {
+                    LogManager.Error($"设置批次载具失败：ID为 {id} 的批次不存在");
+                    return false;
+                }
+
+                batch.CarrierId = carrierId;
+                batch.UpdateTime = DateTime.Now;
+
+                bool result = _batchDAL.Update(batch);
+
+                if (result)
+                {
+                    LogManager.Info($"成功设置批次 {batch.BatchId} 的载具：{carrierId}");
+                }
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error($"设置批次载具异常：{ex.Message}", ex);
+                throw new MESException("设置批次载具时发生异常", ex);
+            }
+        }
+
+        /// <summary>
+        /// 获取批次统计信息
+        /// </summary>
+        /// <param name="batchId">批次ID</param>
+        /// <returns>统计信息字典</returns>
+        public Dictionary<string, object> GetBatchStatistics(int batchId)
+        {
+            try
+            {
+                var batch = _batchDAL.GetById(batchId);
+                if (batch == null)
+                {
+                    LogManager.Error($"获取批次统计信息失败：ID为 {batchId} 的批次不存在");
+                    return new Dictionary<string, object>();
+                }
+
+                var statistics = new Dictionary<string, object>
+                {
+                    ["BatchId"] = batch.BatchId,
+                    ["WorkOrderId"] = batch.WorkOrderId,
+                    ["ProductMaterialId"] = batch.ProductMaterialId,
+                    ["Quantity"] = batch.Quantity,
+                    ["Status"] = batch.Status,
+                    ["CurrentStationId"] = batch.CurrentStationId,
+                    ["ProductionStartTime"] = batch.ProductionStartTime,
+                    ["ProductionEndTime"] = batch.ProductionEndTime,
+                    ["CarrierId"] = batch.CarrierId,
+                    ["CreateTime"] = batch.CreateTime,
+                    ["UpdateTime"] = batch.UpdateTime
+                };
+
+                // 计算生产时长
+                if (batch.ProductionStartTime.HasValue)
+                {
+                    var endTime = batch.ProductionEndTime ?? DateTime.Now;
+                    var duration = endTime - batch.ProductionStartTime.Value;
+                    statistics["ProductionDuration"] = duration.TotalHours;
+                }
+
+                return statistics;
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error($"获取批次统计信息异常：{ex.Message}", ex);
+                throw new MESException("获取批次统计信息时发生异常", ex);
+            }
+        }
+    }
+}

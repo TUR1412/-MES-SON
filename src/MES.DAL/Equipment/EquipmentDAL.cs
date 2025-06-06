@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using MySql.Data.MySqlClient;
 using MES.DAL.Base;
-using MES.Models.Equipment;
+using MES.Models.Workshop;
 using MES.Common.Logging;
 
 namespace MES.DAL.Equipment

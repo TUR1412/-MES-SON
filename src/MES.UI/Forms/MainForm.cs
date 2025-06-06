@@ -445,9 +445,28 @@ namespace MES.UI.Forms
         private void OpenUserPermissionForm() => ShowNotImplemented("用户权限管理");
 
         // S成员负责实现的车间管理模块
-        private void OpenWorkshopOperationForm() => ShowNotImplemented("车间作业管理");
+        private void OpenWorkshopOperationForm() => OpenWorkshopManagementForm();
         private void OpenWIPForm() => ShowNotImplemented("在制品管理");
         private void OpenEquipmentForm() => ShowNotImplemented("设备管理");
+
+        /// <summary>
+        /// 打开车间管理窗体
+        /// </summary>
+        private void OpenWorkshopManagementForm()
+        {
+            try
+            {
+                var workshopForm = new WorkshopManagementForm();
+                workshopForm.ShowDialog();
+                LogManager.Info("打开车间管理窗体");
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("打开车间管理窗体失败", ex);
+                MessageBox.Show($"打开车间管理窗体失败：{ex.Message}", "错误",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
 
         // 系统管理模块
         private void OpenSystemConfigForm() => ShowNotImplemented("系统配置");

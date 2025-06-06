@@ -56,7 +56,7 @@ namespace MES.BLL.Workshop
         /// </summary>
         /// <param name="status">车间状态</param>
         /// <returns>指定状态的车间列表</returns>
-        List<WorkshopInfo> GetWorkshopsByStatus(string status);
+        List<WorkshopInfo> GetWorkshopsByStatus(bool status);
 
         /// <summary>
         /// 根据车间类型获取车间列表

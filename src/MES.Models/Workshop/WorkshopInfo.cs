@@ -21,7 +21,7 @@ namespace MES.Models.Workshop
         /// <summary>
         /// 负责人ID (关联操作员/用户)
         /// </summary>
-        public string ManagerId { get; set; }
+        public int? ManagerId { get; set; }
 
         /// <summary>
         /// 生产能力(件/天)
@@ -52,6 +52,36 @@ namespace MES.Models.Workshop
         /// 是否删除：1-已删除，0-未删除
         /// </summary>
         public bool IsDeleted { get; set; }
+
+        /// <summary>
+        /// 车间类型 (如：装配车间、测试车间、包装车间)
+        /// </summary>
+        public string WorkshopType { get; set; }
+
+        /// <summary>
+        /// 部门 (所属部门)
+        /// </summary>
+        public string Department { get; set; }
+
+        /// <summary>
+        /// 描述信息
+        /// </summary>
+        public string Description { get; set; }
+
+        /// <summary>
+        /// 设备列表 (逗号分隔的设备编码)
+        /// </summary>
+        public string EquipmentList { get; set; }
+
+        /// <summary>
+        /// 创建用户名
+        /// </summary>
+        public string CreateUserName { get; set; }
+
+        /// <summary>
+        /// 更新用户名
+        /// </summary>
+        public string UpdateUserName { get; set; }
 
         /// <summary>
         /// 构造函数
