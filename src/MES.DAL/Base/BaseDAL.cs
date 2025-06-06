@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using MySql.Data.MySqlClient;
 using System.Reflection;
 using MES.Models.Base;
@@ -29,6 +30,11 @@ namespace MES.DAL.Base
         /// </summary>
         protected virtual string PrimaryKeyField => "id";
 
+        /// <summary>
+        /// 主键属性名（为了兼容子类实现）
+        /// </summary>
+        protected abstract string PrimaryKey { get; }
+
         #endregion
 
         #region 基础CRUD操作
@@ -49,7 +55,7 @@ namespace MES.DAL.Base
                 
                 if (dataTable.Rows.Count > 0)
                 {
-                    return ConvertDataRowToEntity(dataTable.Rows[0]);
+                    return MapRowToEntity(dataTable.Rows[0]);
                 }
                 
                 return null;
@@ -243,48 +249,54 @@ namespace MES.DAL.Base
 
         #endregion
 
-        #region 数据转换方法
+        #region 抽象方法（子类必须实现）
+
+        /// <summary>
+        /// 获取插入SQL语句
+        /// </summary>
+        /// <returns>插入SQL</returns>
+        protected abstract string GetInsertSql();
+
+        /// <summary>
+        /// 获取更新SQL语句
+        /// </summary>
+        /// <returns>更新SQL</returns>
+        protected abstract string GetUpdateSql();
+
+        /// <summary>
+        /// 设置插入参数
+        /// </summary>
+        /// <param name="cmd">命令对象</param>
+        /// <param name="entity">实体对象</param>
+        protected abstract void SetInsertParameters(MySqlCommand cmd, T entity);
+
+        /// <summary>
+        /// 设置更新参数
+        /// </summary>
+        /// <param name="cmd">命令对象</param>
+        /// <param name="entity">实体对象</param>
+        protected abstract void SetUpdateParameters(MySqlCommand cmd, T entity);
 
         /// <summary>
         /// 将DataRow转换为实体对象
         /// </summary>
         /// <param name="row">数据行</param>
         /// <returns>实体对象</returns>
+        protected abstract T MapRowToEntity(DataRow row);
+
+        #endregion
+
+        #region 数据转换方法
+
+        /// <summary>
+        /// 将DataRow转换为实体对象（通用实现，子类可重写）
+        /// </summary>
+        /// <param name="row">数据行</param>
+        /// <returns>实体对象</returns>
         protected virtual T ConvertDataRowToEntity(DataRow row)
         {
-            try
-            {
-                T entity = new T();
-                Type entityType = typeof(T);
-                
-                foreach (DataColumn column in row.Table.Columns)
-                {
-                    PropertyInfo property = entityType.GetProperty(ConvertColumnNameToPropertyName(column.ColumnName));
-                    
-                    if (property != null && property.CanWrite)
-                    {
-                        object value = row[column.ColumnName];
-                        
-                        if (value != DBNull.Value)
-                        {
-                            // 处理类型转换
-                            if (property.PropertyType != value.GetType())
-                            {
-                                value = Convert.ChangeType(value, property.PropertyType);
-                            }
-                            
-                            property.SetValue(entity, value);
-                        }
-                    }
-                }
-                
-                return entity;
-            }
-            catch (Exception ex)
-            {
-                LogManager.Error($"转换DataRow到{typeof(T).Name}失败", ex);
-                throw new MESException($"数据转换失败", ex);
-            }
+            // 调用子类实现的MapRowToEntity方法
+            return MapRowToEntity(row);
         }
 
         /// <summary>
@@ -298,7 +310,7 @@ namespace MES.DAL.Base
             
             foreach (DataRow row in dataTable.Rows)
             {
-                list.Add(ConvertDataRowToEntity(row));
+                list.Add(MapRowToEntity(row));
             }
             
             return list;
@@ -347,8 +359,21 @@ namespace MES.DAL.Base
         /// <returns>SQL语句和参数</returns>
         protected virtual (string sql, MySqlParameter[] parameters) BuildInsertSql(T entity)
         {
-            // 子类可以重写此方法以自定义INSERT逻辑
-            throw new NotImplementedException("子类必须实现BuildInsertSql方法");
+            try
+            {
+                string sql = GetInsertSql();
+
+                using (var cmd = new MySqlCommand())
+                {
+                    SetInsertParameters(cmd, entity);
+                    return (sql, cmd.Parameters.Cast<MySqlParameter>().ToArray());
+                }
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error($"构建{typeof(T).Name}插入SQL失败", ex);
+                throw new MESException($"构建插入SQL失败", ex);
+            }
         }
 
         /// <summary>
@@ -358,8 +383,21 @@ namespace MES.DAL.Base
         /// <returns>SQL语句和参数</returns>
         protected virtual (string sql, MySqlParameter[] parameters) BuildUpdateSql(T entity)
         {
-            // 子类可以重写此方法以自定义UPDATE逻辑
-            throw new NotImplementedException("子类必须实现BuildUpdateSql方法");
+            try
+            {
+                string sql = GetUpdateSql();
+
+                using (var cmd = new MySqlCommand())
+                {
+                    SetUpdateParameters(cmd, entity);
+                    return (sql, cmd.Parameters.Cast<MySqlParameter>().ToArray());
+                }
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error($"构建{typeof(T).Name}更新SQL失败", ex);
+                throw new MESException($"构建更新SQL失败", ex);
+            }
         }
 
         #endregion
