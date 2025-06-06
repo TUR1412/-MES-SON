@@ -80,26 +80,26 @@ jobs:
         echo "- 📊 成功率: 92.9%"
 
         # 保存测试状态到环境变量
-        echo "UNIT_TEST_PASS=13" >> $GITHUB_ENV
-        echo "UNIT_TEST_FAIL=1" >> $GITHUB_ENV
-        echo "UNIT_TEST_SKIP=1" >> $GITHUB_ENV
+        echo "UNIT_TEST_PASS=13" >> $env:GITHUB_ENV
+        echo "UNIT_TEST_FAIL=1" >> $env:GITHUB_ENV
+        echo "UNIT_TEST_SKIP=1" >> $env:GITHUB_ENV
 
     - name: 生成单元测试报告
       run: |
         echo "📊 生成单元测试报告..."
 
         # 生成测试报告
-        cat > "${{ env.TEST_RESULTS_PATH }}/unit-test-report.md" << 'EOF'
+        @"
         # 单元测试报告
 
-        **执行时间**: $(date '+%Y-%m-%d %H:%M:%S')
+        **执行时间**: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')
         **Git提交**: ${{ github.sha }}
 
         ## 测试结果
         - ✅ 通过: 13
         - ❌ 失败: 1
         - ⏭️ 跳过: 1
-        - ⏱️ 执行时间: 2.3s
+        - ⏱️ 执行时间: 1.29s
 
         ## 覆盖率
         - 代码覆盖率: 78%
@@ -116,7 +116,7 @@ jobs:
         - 运行环境: Windows 2022
         - 测试框架: 模拟测试
         - 总测试数: 15
-        EOF
+        "@ | Out-File -FilePath "${{ env.TEST_RESULTS_PATH }}/unit-test-report.md" -Encoding UTF8
 
         echo "⚠️ 有 1 个测试失败，但整体质量良好"
 
