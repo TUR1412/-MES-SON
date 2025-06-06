@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Material\BOMBLL.cs" />
+    <Compile Include="Material\DTO\MaterialDto.cs" />
     <Compile Include="Material\IBOMBLL.cs" />
     <Compile Include="Material\IMaterialBLL.cs" />
     <Compile Include="Material\MaterialBLL.cs" />
@@ -51,6 +52,10 @@
     <Compile Include="Workshop\WorkshopBLL.cs" />
     <Compile Include="System\IRoleBLL.cs" />
     <Compile Include="System\RoleBLL.cs" />
+    <Compile Include="Equipment\IEquipmentBLL.cs" />
+    <Compile Include="Quality\IQualityInspectionBLL.cs" />
+    <Compile Include="Workshop\IBatchBLL.cs" />
+    <Compile Include="Workshop\BatchBLL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

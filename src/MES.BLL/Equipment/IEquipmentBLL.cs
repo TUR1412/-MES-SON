@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using MES.Models.Workshop;
+using MES.Models.Equipment;
 
-namespace MES.BLL.Workshop
+namespace MES.BLL.Equipment
 {
     /// <summary>
     /// 设备管理业务逻辑接口
