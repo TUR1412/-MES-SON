@@ -206,14 +206,19 @@ namespace MES.Models.Quality
         /// <returns>检验类型文本</returns>
         public string GetInspectionTypeText()
         {
-            return InspectionType switch
+            switch (InspectionType)
             {
-                1 => "进料检验",
-                2 => "过程检验",
-                3 => "成品检验",
-                4 => "出货检验",
-                _ => "未知"
-            };
+                case 1:
+                    return "进料检验";
+                case 2:
+                    return "过程检验";
+                case 3:
+                    return "成品检验";
+                case 4:
+                    return "出货检验";
+                default:
+                    return "未知";
+            }
         }
 
         /// <summary>
@@ -222,13 +227,17 @@ namespace MES.Models.Quality
         /// <returns>检验结果文本</returns>
         public string GetInspectionResultText()
         {
-            return InspectionResult switch
+            switch (InspectionResult)
             {
-                1 => "合格",
-                2 => "不合格",
-                3 => "让步接收",
-                _ => "未知"
-            };
+                case 1:
+                    return "合格";
+                case 2:
+                    return "不合格";
+                case 3:
+                    return "让步接收";
+                default:
+                    return "未知";
+            }
         }
 
         /// <summary>
@@ -237,13 +246,17 @@ namespace MES.Models.Quality
         /// <returns>审核状态文本</returns>
         public string GetReviewStatusText()
         {
-            return ReviewStatus switch
+            switch (ReviewStatus)
             {
-                1 => "待审核",
-                2 => "已审核",
-                3 => "审核不通过",
-                _ => "未知"
-            };
+                case 1:
+                    return "待审核";
+                case 2:
+                    return "已审核";
+                case 3:
+                    return "审核不通过";
+                default:
+                    return "未知";
+            }
         }
 
         /// <summary>
