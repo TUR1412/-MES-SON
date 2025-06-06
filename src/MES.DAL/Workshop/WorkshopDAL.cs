@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
+using MySql.Data.MySqlClient;
 using MES.Models.Base;
+using MES.Models.Workshop;
 using MES.DAL.Base;
 using MES.DAL.Core;
 using MES.Common.Logging;
@@ -95,7 +96,7 @@ namespace MES.DAL.Workshop
         /// </summary>
         /// <param name="entity">车间实体</param>
         /// <returns>SQL语句和参数</returns>
-        protected override (string sql, SqlParameter[] parameters) BuildInsertSql(WorkshopInfo entity)
+        protected override (string sql, MySqlParameter[] parameters) BuildInsertSql(WorkshopInfo entity)
         {
             // TODO: S成员需要根据实际的workshop_info表结构完善此SQL
             string sql = @"INSERT INTO workshop_info 
@@ -125,7 +126,7 @@ namespace MES.DAL.Workshop
         /// </summary>
         /// <param name="entity">车间实体</param>
         /// <returns>SQL语句和参数</returns>
-        protected override (string sql, SqlParameter[] parameters) BuildUpdateSql(WorkshopInfo entity)
+        protected override (string sql, MySqlParameter[] parameters) BuildUpdateSql(WorkshopInfo entity)
         {
             // TODO: S成员需要根据实际的workshop_info表结构完善此SQL
             string sql = @"UPDATE workshop_info SET 
