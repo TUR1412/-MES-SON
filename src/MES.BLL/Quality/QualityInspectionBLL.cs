@@ -35,7 +35,7 @@ namespace MES.BLL.Quality
             {
                 if (id <= 0)
                 {
-                    throw new ArgumentException("检验ID必须大于0", nameof(id));
+                    throw new ArgumentException("检验ID必须大于0", "id");
                 }
 
                 return _qualityInspectionDAL.GetById(id);
@@ -58,7 +58,7 @@ namespace MES.BLL.Quality
             {
                 if (string.IsNullOrEmpty(inspectionNumber))
                 {
-                    throw new ArgumentException("检验单号不能为空", nameof(inspectionNumber));
+                    throw new ArgumentException("检验单号不能为空", "inspectionNumber");
                 }
 
                 return _qualityInspectionDAL.GetByInspectionNumber(inspectionNumber);
@@ -98,7 +98,7 @@ namespace MES.BLL.Quality
             {
                 if (productionOrderId <= 0)
                 {
-                    throw new ArgumentException("生产订单ID必须大于0", nameof(productionOrderId));
+                    throw new ArgumentException("生产订单ID必须大于0", "productionOrderId");
                 }
 
                 return _qualityInspectionDAL.GetByProductionOrderId(productionOrderId);
@@ -204,7 +204,7 @@ namespace MES.BLL.Quality
             {
                 if (inspection == null)
                 {
-                    throw new ArgumentNullException(nameof(inspection));
+                    throw new ArgumentNullException("inspection");
                 }
 
                 // 业务验证
@@ -236,7 +236,7 @@ namespace MES.BLL.Quality
             {
                 if (inspection == null)
                 {
-                    throw new ArgumentNullException(nameof(inspection));
+                    throw new ArgumentNullException("inspection");
                 }
 
                 // 业务验证
@@ -262,7 +262,7 @@ namespace MES.BLL.Quality
             {
                 if (id <= 0)
                 {
-                    throw new ArgumentException("检验ID必须大于0", nameof(id));
+                    throw new ArgumentException("检验ID必须大于0", "id");
                 }
 
                 return _qualityInspectionDAL.Delete(id);

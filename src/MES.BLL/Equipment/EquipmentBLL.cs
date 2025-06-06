@@ -35,7 +35,7 @@ namespace MES.BLL.Equipment
             {
                 if (id <= 0)
                 {
-                    throw new ArgumentException("设备ID必须大于0", nameof(id));
+                    throw new ArgumentException("设备ID必须大于0", "id");
                 }
 
                 return _equipmentDAL.GetById(id);
@@ -58,7 +58,7 @@ namespace MES.BLL.Equipment
             {
                 if (string.IsNullOrEmpty(equipmentCode))
                 {
-                    throw new ArgumentException("设备编码不能为空", nameof(equipmentCode));
+                    throw new ArgumentException("设备编码不能为空", "equipmentCode");
                 }
 
                 return _equipmentDAL.GetByEquipmentCode(equipmentCode);
@@ -98,7 +98,7 @@ namespace MES.BLL.Equipment
             {
                 if (workshopId <= 0)
                 {
-                    throw new ArgumentException("车间ID必须大于0", nameof(workshopId));
+                    throw new ArgumentException("车间ID必须大于0", "workshopId");
                 }
 
                 return _equipmentDAL.GetByWorkshopId(workshopId);
@@ -179,7 +179,7 @@ namespace MES.BLL.Equipment
             {
                 if (equipment == null)
                 {
-                    throw new ArgumentNullException(nameof(equipment));
+                    throw new ArgumentNullException("equipment");
                 }
 
                 // 业务验证
@@ -211,7 +211,7 @@ namespace MES.BLL.Equipment
             {
                 if (equipment == null)
                 {
-                    throw new ArgumentNullException(nameof(equipment));
+                    throw new ArgumentNullException("equipment");
                 }
 
                 // 业务验证
@@ -243,7 +243,7 @@ namespace MES.BLL.Equipment
             {
                 if (id <= 0)
                 {
-                    throw new ArgumentException("设备ID必须大于0", nameof(id));
+                    throw new ArgumentException("设备ID必须大于0", "id");
                 }
 
                 return _equipmentDAL.Delete(id);

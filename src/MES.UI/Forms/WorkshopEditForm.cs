@@ -46,7 +46,8 @@ namespace MES.UI.Forms
             InitializeComponent();
             _workshopBLL = new WorkshopBLL();
             _isEditMode = true;
-            _currentWorkshop = workshop ?? throw new ArgumentNullException(nameof(workshop));
+            if (workshop == null) throw new ArgumentNullException("workshop");
+            _currentWorkshop = workshop;
             
             InitializeForm();
             LoadWorkshopData();

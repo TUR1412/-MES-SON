@@ -43,7 +43,7 @@ namespace MES.BLL.Material
             try
             {
                 if (string.IsNullOrWhiteSpace(materialName))
-                    throw new ArgumentException("物料名称不能为空", nameof(materialName));
+                    throw new ArgumentException("物料名称不能为空", "materialName");
 
                 return _materialDAL.SearchByName(materialName);
             }
