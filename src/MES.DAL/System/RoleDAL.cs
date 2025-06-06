@@ -51,74 +51,65 @@ namespace MES.DAL.System
         }
 
         /// <summary>
-        /// 获取插入SQL语句
+        /// 构建INSERT SQL语句
         /// </summary>
-        /// <returns>插入SQL</returns>
-        protected override string GetInsertSql()
+        /// <param name="entity">角色实体</param>
+        /// <returns>SQL语句和参数</returns>
+        protected override (string sql, MySqlParameter[] parameters) BuildInsertSql(RoleInfo entity)
         {
-            return @"INSERT INTO sys_role 
-                    (role_code, role_name, description, status, permissions, sort_order, 
-                     create_time, create_user_id, create_user_name, is_deleted) 
-                    VALUES 
-                    (@RoleCode, @RoleName, @Description, @Status, @Permissions, @SortOrder, 
-                     @CreateTime, @CreateUserId, @CreateUserName, @IsDeleted)";
+            string sql = @"INSERT INTO sys_role
+                          (role_code, role_name, description, status, permissions, sort_order,
+                           create_time, create_user_id, create_user_name, is_deleted)
+                          VALUES
+                          (@roleCode, @roleName, @description, @status, @permissions, @sortOrder,
+                           @createTime, @createUserId, @createUserName, @isDeleted)";
+
+            var parameters = new[]
+            {
+                DatabaseHelper.CreateParameter("@roleCode", entity.RoleCode),
+                DatabaseHelper.CreateParameter("@roleName", entity.RoleName),
+                DatabaseHelper.CreateParameter("@description", entity.Description ?? string.Empty),
+                DatabaseHelper.CreateParameter("@status", entity.Status),
+                DatabaseHelper.CreateParameter("@permissions", entity.Permissions ?? string.Empty),
+                DatabaseHelper.CreateParameter("@sortOrder", entity.SortOrder),
+                DatabaseHelper.CreateParameter("@createTime", entity.CreateTime),
+                DatabaseHelper.CreateParameter("@createUserId", entity.CreateUserId),
+                DatabaseHelper.CreateParameter("@createUserName", entity.CreateUserName ?? string.Empty),
+                DatabaseHelper.CreateParameter("@isDeleted", entity.IsDeleted)
+            };
+
+            return (sql, parameters);
         }
 
         /// <summary>
-        /// 获取更新SQL语句
+        /// 构建UPDATE SQL语句
         /// </summary>
-        /// <returns>更新SQL</returns>
-        protected override string GetUpdateSql()
+        /// <param name="entity">角色实体</param>
+        /// <returns>SQL语句和参数</returns>
+        protected override (string sql, MySqlParameter[] parameters) BuildUpdateSql(RoleInfo entity)
         {
-            return @"UPDATE sys_role SET 
-                    role_code = @RoleCode, 
-                    role_name = @RoleName, 
-                    description = @Description, 
-                    status = @Status, 
-                    permissions = @Permissions, 
-                    sort_order = @SortOrder, 
-                    update_time = @UpdateTime, 
-                    update_user_id = @UpdateUserId, 
-                    update_user_name = @UpdateUserName 
-                    WHERE id = @Id";
-        }
+            string sql = @"UPDATE sys_role SET
+                          role_code = @roleCode, role_name = @roleName, description = @description,
+                          status = @status, permissions = @permissions, sort_order = @sortOrder,
+                          update_time = @updateTime, update_user_id = @updateUserId,
+                          update_user_name = @updateUserName
+                          WHERE id = @id AND is_deleted = 0";
 
-        /// <summary>
-        /// 设置插入参数
-        /// </summary>
-        /// <param name="cmd">命令对象</param>
-        /// <param name="entity">实体对象</param>
-        protected override void SetInsertParameters(MySqlCommand cmd, RoleInfo entity)
-        {
-            cmd.Parameters.AddWithValue("@RoleCode", entity.RoleCode);
-            cmd.Parameters.AddWithValue("@RoleName", entity.RoleName);
-            cmd.Parameters.AddWithValue("@Description", entity.Description ?? string.Empty);
-            cmd.Parameters.AddWithValue("@Status", entity.Status);
-            cmd.Parameters.AddWithValue("@Permissions", entity.Permissions ?? string.Empty);
-            cmd.Parameters.AddWithValue("@SortOrder", entity.SortOrder);
-            cmd.Parameters.AddWithValue("@CreateTime", entity.CreateTime);
-            cmd.Parameters.AddWithValue("@CreateUserId", entity.CreateUserId);
-            cmd.Parameters.AddWithValue("@CreateUserName", entity.CreateUserName ?? string.Empty);
-            cmd.Parameters.AddWithValue("@IsDeleted", entity.IsDeleted);
-        }
+            var parameters = new[]
+            {
+                DatabaseHelper.CreateParameter("@roleCode", entity.RoleCode),
+                DatabaseHelper.CreateParameter("@roleName", entity.RoleName),
+                DatabaseHelper.CreateParameter("@description", entity.Description ?? string.Empty),
+                DatabaseHelper.CreateParameter("@status", entity.Status),
+                DatabaseHelper.CreateParameter("@permissions", entity.Permissions ?? string.Empty),
+                DatabaseHelper.CreateParameter("@sortOrder", entity.SortOrder),
+                DatabaseHelper.CreateParameter("@updateTime", entity.UpdateTime),
+                DatabaseHelper.CreateParameter("@updateUserId", entity.UpdateUserId),
+                DatabaseHelper.CreateParameter("@updateUserName", entity.UpdateUserName ?? string.Empty),
+                DatabaseHelper.CreateParameter("@id", entity.Id)
+            };
 
-        /// <summary>
-        /// 设置更新参数
-        /// </summary>
-        /// <param name="cmd">命令对象</param>
-        /// <param name="entity">实体对象</param>
-        protected override void SetUpdateParameters(MySqlCommand cmd, RoleInfo entity)
-        {
-            cmd.Parameters.AddWithValue("@Id", entity.Id);
-            cmd.Parameters.AddWithValue("@RoleCode", entity.RoleCode);
-            cmd.Parameters.AddWithValue("@RoleName", entity.RoleName);
-            cmd.Parameters.AddWithValue("@Description", entity.Description ?? string.Empty);
-            cmd.Parameters.AddWithValue("@Status", entity.Status);
-            cmd.Parameters.AddWithValue("@Permissions", entity.Permissions ?? string.Empty);
-            cmd.Parameters.AddWithValue("@SortOrder", entity.SortOrder);
-            cmd.Parameters.AddWithValue("@UpdateTime", entity.UpdateTime);
-            cmd.Parameters.AddWithValue("@UpdateUserId", entity.UpdateUserId);
-            cmd.Parameters.AddWithValue("@UpdateUserName", entity.UpdateUserName ?? string.Empty);
+            return (sql, parameters);
         }
 
         /// <summary>
@@ -132,17 +123,18 @@ namespace MES.DAL.System
             {
                 string sql = $"SELECT * FROM {TableName} WHERE role_code = @RoleCode AND is_deleted = 0";
                 
-                using (var connection = DatabaseHelper.GetConnection())
+                using (var connection = DatabaseHelper.CreateConnection())
                 {
+                    connection.Open();
                     using (var cmd = new MySqlCommand(sql, connection))
                     {
                         cmd.Parameters.AddWithValue("@RoleCode", roleCode);
-                        
+
                         using (var adapter = new MySqlDataAdapter(cmd))
                         {
                             var dataTable = new DataTable();
                             adapter.Fill(dataTable);
-                            
+
                             if (dataTable.Rows.Count > 0)
                             {
                                 return MapRowToEntity(dataTable.Rows[0]);
@@ -171,23 +163,24 @@ namespace MES.DAL.System
             {
                 string sql = $"SELECT * FROM {TableName} WHERE status = @Status AND is_deleted = 0 ORDER BY sort_order, create_time";
                 
-                using (var connection = DatabaseHelper.GetConnection())
+                using (var connection = DatabaseHelper.CreateConnection())
                 {
+                    connection.Open();
                     using (var cmd = new MySqlCommand(sql, connection))
                     {
                         cmd.Parameters.AddWithValue("@Status", status);
-                        
+
                         using (var adapter = new MySqlDataAdapter(cmd))
                         {
                             var dataTable = new DataTable();
                             adapter.Fill(dataTable);
-                            
+
                             var roles = new List<RoleInfo>();
                             foreach (DataRow row in dataTable.Rows)
                             {
                                 roles.Add(MapRowToEntity(row));
                             }
-                            
+
                             return roles;
                         }
                     }

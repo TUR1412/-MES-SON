@@ -24,6 +24,46 @@ namespace MES.DAL.Workshop
         /// </summary>
         protected override string TableName => "workshop_info";
 
+        /// <summary>
+        /// 主键属性名
+        /// </summary>
+        protected override string PrimaryKey => "Id";
+
+        /// <summary>
+        /// 将DataRow转换为WorkshopInfo实体对象
+        /// </summary>
+        /// <param name="row">数据行</param>
+        /// <returns>WorkshopInfo实体对象</returns>
+        protected override WorkshopInfo MapRowToEntity(DataRow row)
+        {
+            return new WorkshopInfo
+            {
+                Id = Convert.ToInt32(row["id"]),
+                WorkshopCode = row["workshop_code"]?.ToString(),
+                WorkshopName = row["workshop_name"]?.ToString(),
+                Department = row["department"]?.ToString(),
+                Manager = row["manager"]?.ToString(),
+                ManagerId = row["manager_id"] != DBNull.Value ? Convert.ToInt32(row["manager_id"]) : (int?)null,
+                Phone = row["phone"]?.ToString(),
+                Location = row["location"]?.ToString(),
+                Area = row["area"] != DBNull.Value ? Convert.ToDecimal(row["area"]) : (decimal?)null,
+                EquipmentCount = row["equipment_count"] != DBNull.Value ? Convert.ToInt32(row["equipment_count"]) : (int?)null,
+                EmployeeCount = row["employee_count"] != DBNull.Value ? Convert.ToInt32(row["employee_count"]) : (int?)null,
+                WorkshopType = row["workshop_type"]?.ToString(),
+                ProductionCapacity = row["production_capacity"] != DBNull.Value ? Convert.ToDecimal(row["production_capacity"]) : (decimal?)null,
+                Status = row["status"]?.ToString(),
+                WorkShift = row["work_shift"]?.ToString(),
+                SafetyLevel = row["safety_level"]?.ToString(),
+                EnvironmentRequirement = row["environment_requirement"]?.ToString(),
+                QualityStandard = row["quality_standard"]?.ToString(),
+                Description = row["description"]?.ToString(),
+                EquipmentList = row["equipment_list"]?.ToString(),
+                CreateTime = Convert.ToDateTime(row["create_time"]),
+                UpdateTime = row["update_time"] != DBNull.Value ? Convert.ToDateTime(row["update_time"]) : (DateTime?)null,
+                IsDeleted = Convert.ToBoolean(row["is_deleted"])
+            };
+        }
+
         #endregion
 
         #region 车间特有操作

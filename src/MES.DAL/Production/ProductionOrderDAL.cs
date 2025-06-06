@@ -24,6 +24,44 @@ namespace MES.DAL.Production
         /// </summary>
         protected override string TableName => "production_order";
 
+        /// <summary>
+        /// 主键属性名
+        /// </summary>
+        protected override string PrimaryKey => "Id";
+
+        /// <summary>
+        /// 将DataRow转换为ProductionOrderInfo实体对象
+        /// </summary>
+        /// <param name="row">数据行</param>
+        /// <returns>ProductionOrderInfo实体对象</returns>
+        protected override ProductionOrderInfo MapRowToEntity(DataRow row)
+        {
+            return new ProductionOrderInfo
+            {
+                Id = Convert.ToInt32(row["id"]),
+                OrderNumber = row["order_number"]?.ToString(),
+                ProductCode = row["product_code"]?.ToString(),
+                ProductName = row["product_name"]?.ToString(),
+                PlannedQuantity = Convert.ToDecimal(row["planned_quantity"]),
+                ActualQuantity = row["actual_quantity"] != DBNull.Value ? Convert.ToDecimal(row["actual_quantity"]) : (decimal?)null,
+                Unit = row["unit"]?.ToString(),
+                PlannedStartTime = Convert.ToDateTime(row["planned_start_time"]),
+                PlannedEndTime = Convert.ToDateTime(row["planned_end_time"]),
+                ActualStartTime = row["actual_start_time"] != DBNull.Value ? Convert.ToDateTime(row["actual_start_time"]) : (DateTime?)null,
+                ActualEndTime = row["actual_end_time"] != DBNull.Value ? Convert.ToDateTime(row["actual_end_time"]) : (DateTime?)null,
+                Status = row["status"]?.ToString(),
+                Priority = row["priority"]?.ToString(),
+                WorkshopId = row["workshop_id"] != DBNull.Value ? Convert.ToInt32(row["workshop_id"]) : (int?)null,
+                WorkshopName = row["workshop_name"]?.ToString(),
+                Customer = row["customer"]?.ToString(),
+                SalesOrderNumber = row["sales_order_number"]?.ToString(),
+                Remarks = row["remarks"]?.ToString(),
+                CreateTime = Convert.ToDateTime(row["create_time"]),
+                CreateUserName = row["create_user_name"]?.ToString(),
+                IsDeleted = Convert.ToBoolean(row["is_deleted"])
+            };
+        }
+
         #endregion
 
         #region 生产订单特有操作

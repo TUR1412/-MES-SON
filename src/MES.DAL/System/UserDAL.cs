@@ -23,6 +23,35 @@ namespace MES.DAL.System
         /// </summary>
         protected override string TableName => "sys_user";
 
+        /// <summary>
+        /// 主键属性名
+        /// </summary>
+        protected override string PrimaryKey => "Id";
+
+        /// <summary>
+        /// 将DataRow转换为UserInfo实体对象
+        /// </summary>
+        /// <param name="row">数据行</param>
+        /// <returns>UserInfo实体对象</returns>
+        protected override UserInfo MapRowToEntity(DataRow row)
+        {
+            return new UserInfo
+            {
+                Id = Convert.ToInt32(row["id"]),
+                UserCode = row["user_code"]?.ToString(),
+                UserName = row["user_name"]?.ToString(),
+                LoginName = row["login_name"]?.ToString(),
+                Password = row["password"]?.ToString(),
+                Department = row["department"]?.ToString(),
+                Position = row["position"]?.ToString(),
+                CreateTime = Convert.ToDateTime(row["create_time"]),
+                CreateUserName = row["create_user_name"]?.ToString(),
+                UpdateTime = row["update_time"] != DBNull.Value ? Convert.ToDateTime(row["update_time"]) : (DateTime?)null,
+                UpdateUserName = row["update_user_name"]?.ToString(),
+                IsDeleted = Convert.ToBoolean(row["is_deleted"])
+            };
+        }
+
         #endregion
 
         #region 用户特有操作

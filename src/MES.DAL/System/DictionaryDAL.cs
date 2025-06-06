@@ -58,97 +58,83 @@ namespace MES.DAL.System
         }
 
         /// <summary>
-        /// 获取插入SQL语句
+        /// 构建INSERT SQL语句
         /// </summary>
-        /// <returns>插入SQL</returns>
-        protected override string GetInsertSql()
+        /// <param name="entity">字典实体</param>
+        /// <returns>SQL语句和参数</returns>
+        protected override (string sql, MySqlParameter[] parameters) BuildInsertSql(DictionaryInfo entity)
         {
-            return @"INSERT INTO sys_dictionary 
-                    (dict_type, dict_type_name, dict_code, dict_name, dict_value, parent_id, sort_order, 
-                     status, is_system, description, extend_field1, extend_field2, extend_field3,
-                     create_time, create_user_id, create_user_name, is_deleted) 
-                    VALUES 
-                    (@DictType, @DictTypeName, @DictCode, @DictName, @DictValue, @ParentId, @SortOrder,
-                     @Status, @IsSystem, @Description, @ExtendField1, @ExtendField2, @ExtendField3,
-                     @CreateTime, @CreateUserId, @CreateUserName, @IsDeleted)";
+            string sql = @"INSERT INTO sys_dictionary
+                          (dict_type, dict_type_name, dict_code, dict_name, dict_value, parent_id, sort_order,
+                           status, is_system, description, extend_field1, extend_field2, extend_field3,
+                           create_time, create_user_id, create_user_name, is_deleted)
+                          VALUES
+                          (@dictType, @dictTypeName, @dictCode, @dictName, @dictValue, @parentId, @sortOrder,
+                           @status, @isSystem, @description, @extendField1, @extendField2, @extendField3,
+                           @createTime, @createUserId, @createUserName, @isDeleted)";
+
+            var parameters = new[]
+            {
+                DatabaseHelper.CreateParameter("@dictType", entity.DictType),
+                DatabaseHelper.CreateParameter("@dictTypeName", entity.DictTypeName ?? string.Empty),
+                DatabaseHelper.CreateParameter("@dictCode", entity.DictCode),
+                DatabaseHelper.CreateParameter("@dictName", entity.DictName),
+                DatabaseHelper.CreateParameter("@dictValue", entity.DictValue ?? string.Empty),
+                DatabaseHelper.CreateParameter("@parentId", entity.ParentId),
+                DatabaseHelper.CreateParameter("@sortOrder", entity.SortOrder),
+                DatabaseHelper.CreateParameter("@status", entity.Status),
+                DatabaseHelper.CreateParameter("@isSystem", entity.IsSystem),
+                DatabaseHelper.CreateParameter("@description", entity.Description ?? string.Empty),
+                DatabaseHelper.CreateParameter("@extendField1", entity.ExtendField1 ?? string.Empty),
+                DatabaseHelper.CreateParameter("@extendField2", entity.ExtendField2 ?? string.Empty),
+                DatabaseHelper.CreateParameter("@extendField3", entity.ExtendField3 ?? string.Empty),
+                DatabaseHelper.CreateParameter("@createTime", entity.CreateTime),
+                DatabaseHelper.CreateParameter("@createUserId", entity.CreateUserId),
+                DatabaseHelper.CreateParameter("@createUserName", entity.CreateUserName ?? string.Empty),
+                DatabaseHelper.CreateParameter("@isDeleted", entity.IsDeleted)
+            };
+
+            return (sql, parameters);
         }
 
         /// <summary>
-        /// 获取更新SQL语句
+        /// 构建UPDATE SQL语句
         /// </summary>
-        /// <returns>更新SQL</returns>
-        protected override string GetUpdateSql()
+        /// <param name="entity">字典实体</param>
+        /// <returns>SQL语句和参数</returns>
+        protected override (string sql, MySqlParameter[] parameters) BuildUpdateSql(DictionaryInfo entity)
         {
-            return @"UPDATE sys_dictionary SET 
-                    dict_type = @DictType, 
-                    dict_type_name = @DictTypeName, 
-                    dict_code = @DictCode, 
-                    dict_name = @DictName, 
-                    dict_value = @DictValue, 
-                    parent_id = @ParentId, 
-                    sort_order = @SortOrder,
-                    status = @Status,
-                    is_system = @IsSystem,
-                    description = @Description,
-                    extend_field1 = @ExtendField1,
-                    extend_field2 = @ExtendField2,
-                    extend_field3 = @ExtendField3,
-                    update_time = @UpdateTime, 
-                    update_user_id = @UpdateUserId, 
-                    update_user_name = @UpdateUserName 
-                    WHERE id = @Id";
-        }
+            string sql = @"UPDATE sys_dictionary SET
+                          dict_type = @dictType, dict_type_name = @dictTypeName, dict_code = @dictCode,
+                          dict_name = @dictName, dict_value = @dictValue, parent_id = @parentId,
+                          sort_order = @sortOrder, status = @status, is_system = @isSystem,
+                          description = @description, extend_field1 = @extendField1, extend_field2 = @extendField2,
+                          extend_field3 = @extendField3, update_time = @updateTime, update_user_id = @updateUserId,
+                          update_user_name = @updateUserName
+                          WHERE id = @id AND is_deleted = 0";
 
-        /// <summary>
-        /// 设置插入参数
-        /// </summary>
-        /// <param name="cmd">命令对象</param>
-        /// <param name="entity">实体对象</param>
-        protected override void SetInsertParameters(MySqlCommand cmd, DictionaryInfo entity)
-        {
-            cmd.Parameters.AddWithValue("@DictType", entity.DictType);
-            cmd.Parameters.AddWithValue("@DictTypeName", entity.DictTypeName ?? string.Empty);
-            cmd.Parameters.AddWithValue("@DictCode", entity.DictCode);
-            cmd.Parameters.AddWithValue("@DictName", entity.DictName);
-            cmd.Parameters.AddWithValue("@DictValue", entity.DictValue ?? string.Empty);
-            cmd.Parameters.AddWithValue("@ParentId", entity.ParentId);
-            cmd.Parameters.AddWithValue("@SortOrder", entity.SortOrder);
-            cmd.Parameters.AddWithValue("@Status", entity.Status);
-            cmd.Parameters.AddWithValue("@IsSystem", entity.IsSystem);
-            cmd.Parameters.AddWithValue("@Description", entity.Description ?? string.Empty);
-            cmd.Parameters.AddWithValue("@ExtendField1", entity.ExtendField1 ?? string.Empty);
-            cmd.Parameters.AddWithValue("@ExtendField2", entity.ExtendField2 ?? string.Empty);
-            cmd.Parameters.AddWithValue("@ExtendField3", entity.ExtendField3 ?? string.Empty);
-            cmd.Parameters.AddWithValue("@CreateTime", entity.CreateTime);
-            cmd.Parameters.AddWithValue("@CreateUserId", entity.CreateUserId);
-            cmd.Parameters.AddWithValue("@CreateUserName", entity.CreateUserName ?? string.Empty);
-            cmd.Parameters.AddWithValue("@IsDeleted", entity.IsDeleted);
-        }
+            var parameters = new[]
+            {
+                DatabaseHelper.CreateParameter("@dictType", entity.DictType),
+                DatabaseHelper.CreateParameter("@dictTypeName", entity.DictTypeName ?? string.Empty),
+                DatabaseHelper.CreateParameter("@dictCode", entity.DictCode),
+                DatabaseHelper.CreateParameter("@dictName", entity.DictName),
+                DatabaseHelper.CreateParameter("@dictValue", entity.DictValue ?? string.Empty),
+                DatabaseHelper.CreateParameter("@parentId", entity.ParentId),
+                DatabaseHelper.CreateParameter("@sortOrder", entity.SortOrder),
+                DatabaseHelper.CreateParameter("@status", entity.Status),
+                DatabaseHelper.CreateParameter("@isSystem", entity.IsSystem),
+                DatabaseHelper.CreateParameter("@description", entity.Description ?? string.Empty),
+                DatabaseHelper.CreateParameter("@extendField1", entity.ExtendField1 ?? string.Empty),
+                DatabaseHelper.CreateParameter("@extendField2", entity.ExtendField2 ?? string.Empty),
+                DatabaseHelper.CreateParameter("@extendField3", entity.ExtendField3 ?? string.Empty),
+                DatabaseHelper.CreateParameter("@updateTime", entity.UpdateTime),
+                DatabaseHelper.CreateParameter("@updateUserId", entity.UpdateUserId),
+                DatabaseHelper.CreateParameter("@updateUserName", entity.UpdateUserName ?? string.Empty),
+                DatabaseHelper.CreateParameter("@id", entity.Id)
+            };
 
-        /// <summary>
-        /// 设置更新参数
-        /// </summary>
-        /// <param name="cmd">命令对象</param>
-        /// <param name="entity">实体对象</param>
-        protected override void SetUpdateParameters(MySqlCommand cmd, DictionaryInfo entity)
-        {
-            cmd.Parameters.AddWithValue("@Id", entity.Id);
-            cmd.Parameters.AddWithValue("@DictType", entity.DictType);
-            cmd.Parameters.AddWithValue("@DictTypeName", entity.DictTypeName ?? string.Empty);
-            cmd.Parameters.AddWithValue("@DictCode", entity.DictCode);
-            cmd.Parameters.AddWithValue("@DictName", entity.DictName);
-            cmd.Parameters.AddWithValue("@DictValue", entity.DictValue ?? string.Empty);
-            cmd.Parameters.AddWithValue("@ParentId", entity.ParentId);
-            cmd.Parameters.AddWithValue("@SortOrder", entity.SortOrder);
-            cmd.Parameters.AddWithValue("@Status", entity.Status);
-            cmd.Parameters.AddWithValue("@IsSystem", entity.IsSystem);
-            cmd.Parameters.AddWithValue("@Description", entity.Description ?? string.Empty);
-            cmd.Parameters.AddWithValue("@ExtendField1", entity.ExtendField1 ?? string.Empty);
-            cmd.Parameters.AddWithValue("@ExtendField2", entity.ExtendField2 ?? string.Empty);
-            cmd.Parameters.AddWithValue("@ExtendField3", entity.ExtendField3 ?? string.Empty);
-            cmd.Parameters.AddWithValue("@UpdateTime", entity.UpdateTime);
-            cmd.Parameters.AddWithValue("@UpdateUserId", entity.UpdateUserId);
-            cmd.Parameters.AddWithValue("@UpdateUserName", entity.UpdateUserName ?? string.Empty);
+            return (sql, parameters);
         }
 
         /// <summary>

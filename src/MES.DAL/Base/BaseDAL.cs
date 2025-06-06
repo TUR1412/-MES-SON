@@ -252,37 +252,25 @@ namespace MES.DAL.Base
         #region 抽象方法（子类必须实现）
 
         /// <summary>
-        /// 获取插入SQL语句
-        /// </summary>
-        /// <returns>插入SQL</returns>
-        protected abstract string GetInsertSql();
-
-        /// <summary>
-        /// 获取更新SQL语句
-        /// </summary>
-        /// <returns>更新SQL</returns>
-        protected abstract string GetUpdateSql();
-
-        /// <summary>
-        /// 设置插入参数
-        /// </summary>
-        /// <param name="cmd">命令对象</param>
-        /// <param name="entity">实体对象</param>
-        protected abstract void SetInsertParameters(MySqlCommand cmd, T entity);
-
-        /// <summary>
-        /// 设置更新参数
-        /// </summary>
-        /// <param name="cmd">命令对象</param>
-        /// <param name="entity">实体对象</param>
-        protected abstract void SetUpdateParameters(MySqlCommand cmd, T entity);
-
-        /// <summary>
         /// 将DataRow转换为实体对象
         /// </summary>
         /// <param name="row">数据行</param>
         /// <returns>实体对象</returns>
         protected abstract T MapRowToEntity(DataRow row);
+
+        /// <summary>
+        /// 构建INSERT SQL语句（子类必须实现）
+        /// </summary>
+        /// <param name="entity">实体对象</param>
+        /// <returns>SQL语句和参数</returns>
+        protected abstract (string sql, MySqlParameter[] parameters) BuildInsertSql(T entity);
+
+        /// <summary>
+        /// 构建UPDATE SQL语句（子类必须实现）
+        /// </summary>
+        /// <param name="entity">实体对象</param>
+        /// <returns>SQL语句和参数</returns>
+        protected abstract (string sql, MySqlParameter[] parameters) BuildUpdateSql(T entity);
 
         #endregion
 
@@ -349,56 +337,6 @@ namespace MES.DAL.Base
         }
 
         #endregion
-
-        #region SQL构建方法
-
-        /// <summary>
-        /// 构建INSERT SQL语句
-        /// </summary>
-        /// <param name="entity">实体对象</param>
-        /// <returns>SQL语句和参数</returns>
-        protected virtual (string sql, MySqlParameter[] parameters) BuildInsertSql(T entity)
-        {
-            try
-            {
-                string sql = GetInsertSql();
-
-                using (var cmd = new MySqlCommand())
-                {
-                    SetInsertParameters(cmd, entity);
-                    return (sql, cmd.Parameters.Cast<MySqlParameter>().ToArray());
-                }
-            }
-            catch (Exception ex)
-            {
-                LogManager.Error($"构建{typeof(T).Name}插入SQL失败", ex);
-                throw new MESException($"构建插入SQL失败", ex);
-            }
-        }
-
-        /// <summary>
-        /// 构建UPDATE SQL语句
-        /// </summary>
-        /// <param name="entity">实体对象</param>
-        /// <returns>SQL语句和参数</returns>
-        protected virtual (string sql, MySqlParameter[] parameters) BuildUpdateSql(T entity)
-        {
-            try
-            {
-                string sql = GetUpdateSql();
-
-                using (var cmd = new MySqlCommand())
-                {
-                    SetUpdateParameters(cmd, entity);
-                    return (sql, cmd.Parameters.Cast<MySqlParameter>().ToArray());
-                }
-            }
-            catch (Exception ex)
-            {
-                LogManager.Error($"构建{typeof(T).Name}更新SQL失败", ex);
-                throw new MESException($"构建更新SQL失败", ex);
-            }
-        }
 
         #endregion
     }

@@ -24,6 +24,36 @@ namespace MES.DAL.Material
         /// </summary>
         protected override string TableName => "bom_info";
 
+        /// <summary>
+        /// 主键属性名
+        /// </summary>
+        protected override string PrimaryKey => "Id";
+
+        /// <summary>
+        /// 将DataRow转换为BOMInfo实体对象
+        /// </summary>
+        /// <param name="row">数据行</param>
+        /// <returns>BOMInfo实体对象</returns>
+        protected override BOMInfo MapRowToEntity(DataRow row)
+        {
+            return new BOMInfo
+            {
+                Id = Convert.ToInt32(row["id"]),
+                BOMCode = row["bom_code"]?.ToString(),
+                ProductId = Convert.ToInt32(row["product_id"]),
+                BOMVersion = row["bom_version"]?.ToString(),
+                BOMType = row["bom_type"]?.ToString(),
+                EffectiveDate = Convert.ToDateTime(row["effective_date"]),
+                ExpireDate = row["expire_date"] != DBNull.Value ? Convert.ToDateTime(row["expire_date"]) : (DateTime?)null,
+                Status = row["status"]?.ToString(),
+                CreateTime = Convert.ToDateTime(row["create_time"]),
+                CreateUserName = row["create_user_name"]?.ToString(),
+                UpdateTime = row["update_time"] != DBNull.Value ? Convert.ToDateTime(row["update_time"]) : (DateTime?)null,
+                UpdateUserName = row["update_user_name"]?.ToString(),
+                IsDeleted = Convert.ToBoolean(row["is_deleted"])
+            };
+        }
+
         #endregion
 
         #region BOM特有操作

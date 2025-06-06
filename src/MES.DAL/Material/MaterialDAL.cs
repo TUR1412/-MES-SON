@@ -23,6 +23,43 @@ namespace MES.DAL.Material
         /// </summary>
         protected override string TableName => "material_info";
 
+        /// <summary>
+        /// 主键属性名
+        /// </summary>
+        protected override string PrimaryKey => "Id";
+
+        /// <summary>
+        /// 将DataRow转换为MaterialInfo实体对象
+        /// </summary>
+        /// <param name="row">数据行</param>
+        /// <returns>MaterialInfo实体对象</returns>
+        protected override MaterialInfo MapRowToEntity(DataRow row)
+        {
+            return new MaterialInfo
+            {
+                Id = Convert.ToInt32(row["id"]),
+                MaterialCode = row["material_code"]?.ToString(),
+                MaterialName = row["material_name"]?.ToString(),
+                MaterialType = row["material_type"]?.ToString(),
+                Category = row["category"]?.ToString(),
+                Specification = row["specification"]?.ToString(),
+                Unit = row["unit"]?.ToString(),
+                StandardCost = Convert.ToDecimal(row["standard_cost"] ?? 0),
+                SafetyStock = Convert.ToDecimal(row["safety_stock"] ?? 0),
+                MinStock = Convert.ToDecimal(row["min_stock"] ?? 0),
+                MaxStock = Convert.ToDecimal(row["max_stock"] ?? 0),
+                StockQuantity = Convert.ToDecimal(row["stock_quantity"] ?? 0),
+                Supplier = row["supplier"]?.ToString(),
+                LeadTime = Convert.ToInt32(row["lead_time"] ?? 0),
+                Status = row["status"]?.ToString(),
+                CreateTime = Convert.ToDateTime(row["create_time"]),
+                CreateUserName = row["create_user_name"]?.ToString(),
+                UpdateTime = row["update_time"] != DBNull.Value ? Convert.ToDateTime(row["update_time"]) : (DateTime?)null,
+                UpdateUserName = row["update_user_name"]?.ToString(),
+                IsDeleted = Convert.ToBoolean(row["is_deleted"])
+            };
+        }
+
         #endregion
 
         #region 物料特有操作
