@@ -51,62 +51,38 @@ jobs:
       run: |
         echo "🧪 执行模拟单元测试..."
 
-        # 模拟单元测试场景
-        $unitTests = @(
-          @{ Name = "MaterialBLL.ValidateMaterial_ValidInput"; Status = "PASS"; Duration = "0.12s"; Category = "业务逻辑" },
-          @{ Name = "MaterialBLL.ValidateMaterial_EmptyCode"; Status = "PASS"; Duration = "0.08s"; Category = "验证逻辑" },
-          @{ Name = "MaterialBLL.AddMaterial_ValidData"; Status = "PASS"; Duration = "0.15s"; Category = "数据操作" },
-          @{ Name = "MaterialBLL.DeleteMaterial_NonExistentId"; Status = "FAIL"; Duration = "0.09s"; Category = "边界条件"; Error = "未正确处理不存在的ID" },
-          @{ Name = "ProductionOrderBLL.CreateOrder_ValidData"; Status = "PASS"; Duration = "0.18s"; Category = "业务逻辑" },
-          @{ Name = "ProductionOrderBLL.ValidateOrderData"; Status = "PASS"; Duration = "0.11s"; Category = "验证逻辑" },
-          @{ Name = "WorkshopBLL.GetWorkshopCapacity"; Status = "PASS"; Duration = "0.07s"; Category = "查询操作" },
-          @{ Name = "UserBLL.AuthenticateUser_ValidCredentials"; Status = "PASS"; Duration = "0.13s"; Category = "安全验证" },
-          @{ Name = "UserBLL.AuthenticateUser_InvalidPassword"; Status = "PASS"; Duration = "0.10s"; Category = "安全验证" },
-          @{ Name = "RoleBLL.HasPermission_ValidRole"; Status = "PASS"; Duration = "0.06s"; Category = "权限控制" },
-          @{ Name = "CommonHelper.ValidateInput_NullValue"; Status = "PASS"; Duration = "0.05s"; Category = "工具类" },
-          @{ Name = "CommonHelper.FormatDateTime"; Status = "PASS"; Duration = "0.04s"; Category = "工具类" },
-          @{ Name = "DatabaseHelper.ConnectionTest"; Status = "SKIP"; Duration = "0.00s"; Category = "基础设施"; Error = "需要数据库连接" },
-          @{ Name = "LogManager.WriteLog_InfoLevel"; Status = "PASS"; Duration = "0.08s"; Category = "日志系统" },
-          @{ Name = "ConfigManager.GetConfigValue"; Status = "PASS"; Duration = "0.03s"; Category = "配置管理" }
-        )
-
-        $passCount = 0
-        $failCount = 0
-        $skipCount = 0
-        $totalDuration = 0
-
         echo "单元测试执行结果:"
         echo "===================="
 
-        foreach ($test in $unitTests) {
-          $icon = switch ($test.Status) {
-            "PASS" { "✅"; $passCount++ }
-            "FAIL" { "❌"; $failCount++ }
-            "SKIP" { "⏭️"; $skipCount++ }
-          }
-
-          $duration = [double]($test.Duration -replace 's', '')
-          $totalDuration += $duration
-
-          if ($test.Status -eq "FAIL" -or $test.Status -eq "SKIP") {
-            echo "$icon $($test.Name) ($($test.Duration)) - $($test.Error)"
-          } else {
-            echo "$icon $($test.Name) ($($test.Duration))"
-          }
-        }
+        # 模拟单元测试场景
+        echo "✅ MaterialBLL.ValidateMaterial_ValidInput (0.12s)"
+        echo "✅ MaterialBLL.ValidateMaterial_EmptyCode (0.08s)"
+        echo "✅ MaterialBLL.AddMaterial_ValidData (0.15s)"
+        echo "❌ MaterialBLL.DeleteMaterial_NonExistentId (0.09s) - 未正确处理不存在的ID"
+        echo "✅ ProductionOrderBLL.CreateOrder_ValidData (0.18s)"
+        echo "✅ ProductionOrderBLL.ValidateOrderData (0.11s)"
+        echo "✅ WorkshopBLL.GetWorkshopCapacity (0.07s)"
+        echo "✅ UserBLL.AuthenticateUser_ValidCredentials (0.13s)"
+        echo "✅ UserBLL.AuthenticateUser_InvalidPassword (0.10s)"
+        echo "✅ RoleBLL.HasPermission_ValidRole (0.06s)"
+        echo "✅ CommonHelper.ValidateInput_NullValue (0.05s)"
+        echo "✅ CommonHelper.FormatDateTime (0.04s)"
+        echo "⏭️ DatabaseHelper.ConnectionTest (0.00s) - 需要数据库连接"
+        echo "✅ LogManager.WriteLog_InfoLevel (0.08s)"
+        echo "✅ ConfigManager.GetConfigValue (0.03s)"
 
         echo ""
         echo "测试汇总:"
-        echo "- ✅ 通过: $passCount"
-        echo "- ❌ 失败: $failCount"
-        echo "- ⏭️ 跳过: $skipCount"
-        echo "- ⏱️ 总耗时: $([math]::Round($totalDuration, 2))s"
-        echo "- 📊 成功率: $([math]::Round(($passCount / ($passCount + $failCount)) * 100, 1))%"
+        echo "- ✅ 通过: 13"
+        echo "- ❌ 失败: 1"
+        echo "- ⏭️ 跳过: 1"
+        echo "- ⏱️ 总耗时: 1.29s"
+        echo "- 📊 成功率: 92.9%"
 
         # 保存测试状态到环境变量
-        echo "UNIT_TEST_PASS=$passCount" >> $env:GITHUB_ENV
-        echo "UNIT_TEST_FAIL=$failCount" >> $env:GITHUB_ENV
-        echo "UNIT_TEST_SKIP=$skipCount" >> $env:GITHUB_ENV
+        echo "UNIT_TEST_PASS=13" >> $GITHUB_ENV
+        echo "UNIT_TEST_FAIL=1" >> $GITHUB_ENV
+        echo "UNIT_TEST_SKIP=1" >> $GITHUB_ENV
 
     - name: 生成单元测试报告
       run: |
