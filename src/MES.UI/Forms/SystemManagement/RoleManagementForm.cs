@@ -191,27 +191,27 @@ namespace MES.UI.Forms.SystemManagement
             tableLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
 
             // 添加控件
-            var controls = new (string label, Control control)[]
+            var controls = new[]
             {
-                ("角色编码:", new TextBox { Name = "txtRoleCode", ReadOnly = true }),
-                ("角色名称:", new TextBox { Name = "txtRoleName", ReadOnly = true }),
-                ("描述:", new TextBox { Name = "txtDescription", ReadOnly = true, Multiline = true, Height = 60 }),
-                ("状态:", new TextBox { Name = "txtStatus", ReadOnly = true }),
-                ("排序号:", new TextBox { Name = "txtSortOrder", ReadOnly = true }),
-                ("创建时间:", new TextBox { Name = "txtCreateTime", ReadOnly = true }),
-                ("更新时间:", new TextBox { Name = "txtUpdateTime", ReadOnly = true }),
-                ("权限设置:", CreatePermissionPanel())
+                new { label = "角色编码:", control = (Control)new TextBox { Name = "txtRoleCode", ReadOnly = true } },
+                new { label = "角色名称:", control = (Control)new TextBox { Name = "txtRoleName", ReadOnly = true } },
+                new { label = "描述:", control = (Control)new TextBox { Name = "txtDescription", ReadOnly = true, Multiline = true, Height = 60 } },
+                new { label = "状态:", control = (Control)new TextBox { Name = "txtStatus", ReadOnly = true } },
+                new { label = "排序号:", control = (Control)new TextBox { Name = "txtSortOrder", ReadOnly = true } },
+                new { label = "创建时间:", control = (Control)new TextBox { Name = "txtCreateTime", ReadOnly = true } },
+                new { label = "更新时间:", control = (Control)new TextBox { Name = "txtUpdateTime", ReadOnly = true } },
+                new { label = "权限设置:", control = (Control)CreatePermissionPanel() }
             };
 
             for (int i = 0; i < controls.Length; i++)
             {
-                var label = new Label 
-                { 
-                    Text = controls[i].label, 
+                var label = new Label
+                {
+                    Text = controls[i].label,
                     TextAlign = ContentAlignment.MiddleRight,
                     Dock = DockStyle.Fill
                 };
-                
+
                 tableLayout.Controls.Add(label, 0, i);
                 tableLayout.Controls.Add(controls[i].control, 1, i);
                 

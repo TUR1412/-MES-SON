@@ -434,20 +434,20 @@ namespace MES.UI.Forms
         #region 菜单事件处理方法 - 待各模块负责人实现
 
         // L成员负责实现的物料管理模块
-        //private void OpenMaterialForm() => ShowNotImplemented("物料信息管理");
-        private void OpenMaterialForm() => showMMForm();
-        private void OpenBOMForm() => ShowNotImplemented("BOM管理");
-        private void OpenProcessRouteForm() => ShowNotImplemented("工艺路线管理");
+        //private void OpenMaterialForm() { ShowNotImplemented("物料信息管理"); }
+        private void OpenMaterialForm() { showMMForm(); }
+        private void OpenBOMForm() { ShowNotImplemented("BOM管理"); }
+        private void OpenProcessRouteForm() { ShowNotImplemented("工艺路线管理"); }
 
         // H成员负责实现的生产管理模块
-        private void OpenProductionOrderForm() => ShowNotImplemented("生产订单管理");
-        private void OpenProductionExecutionForm() => ShowNotImplemented("生产执行管理");
-        private void OpenUserPermissionForm() => ShowNotImplemented("用户权限管理");
+        private void OpenProductionOrderForm() { ShowNotImplemented("生产订单管理"); }
+        private void OpenProductionExecutionForm() { ShowNotImplemented("生产执行管理"); }
+        private void OpenUserPermissionForm() { ShowNotImplemented("用户权限管理"); }
 
         // S成员负责实现的车间管理模块
-        private void OpenWorkshopOperationForm() => OpenWorkshopManagementForm();
-        private void OpenWIPForm() => ShowNotImplemented("在制品管理");
-        private void OpenEquipmentForm() => ShowNotImplemented("设备管理");
+        private void OpenWorkshopOperationForm() { OpenWorkshopManagementForm(); }
+        private void OpenWIPForm() { ShowNotImplemented("在制品管理"); }
+        private void OpenEquipmentForm() { ShowNotImplemented("设备管理"); }
 
         /// <summary>
         /// 打开车间管理窗体
@@ -469,7 +469,7 @@ namespace MES.UI.Forms
         }
 
         // 系统管理模块
-        private void OpenSystemConfigForm() => ShowNotImplemented("系统配置");
+        private void OpenSystemConfigForm() { ShowNotImplemented("系统配置"); }
 
         /// <summary>
         /// 显示UI框架信息
