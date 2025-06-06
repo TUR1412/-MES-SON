@@ -64,7 +64,7 @@ namespace MES.BLL.Workshop
                 // 如果未设置状态，默认为启用
                 if (string.IsNullOrEmpty(workshop.Status))
                 {
-                    workshop.Status = "启用";
+                    workshop.Status = "1"; // 使用数字状态码
                 }
 
                 // 调用DAL层添加
@@ -375,13 +375,13 @@ namespace MES.BLL.Workshop
                     return false;
                 }
 
-                if (workshop.Status == "启用")
+                if (workshop.Status == "1")
                 {
                     LogManager.Info($"车间 {workshop.WorkshopCode} 已经是启用状态");
                     return true;
                 }
 
-                workshop.Status = "启用";
+                workshop.Status = "1";
                 workshop.UpdateTime = DateTime.Now;
 
                 bool result = _workshopDAL.Update(workshop);
@@ -417,13 +417,13 @@ namespace MES.BLL.Workshop
                     return false;
                 }
 
-                if (workshop.Status == "禁用")
+                if (workshop.Status == "0")
                 {
                     LogManager.Info($"车间 {workshop.WorkshopCode} 已经是禁用状态");
                     return true;
                 }
 
-                workshop.Status = "禁用";
+                workshop.Status = "0";
                 workshop.Description = string.IsNullOrEmpty(workshop.Description) ? 
                     $"禁用原因：{reason}" : $"{workshop.Description}；禁用原因：{reason}";
                 workshop.UpdateTime = DateTime.Now;
@@ -462,7 +462,7 @@ namespace MES.BLL.Workshop
                 }
 
                 // TODO: 这里需要验证managerId是否为有效的用户ID
-                
+
                 workshop.ManagerId = managerId;
                 workshop.UpdateTime = DateTime.Now;
 
@@ -505,7 +505,7 @@ namespace MES.BLL.Workshop
                     return false;
                 }
 
-                workshop.Capacity = capacity;
+                workshop.ProductionCapacity = capacity;
                 workshop.UpdateTime = DateTime.Now;
 
                 bool result = _workshopDAL.Update(workshop);
@@ -704,7 +704,7 @@ namespace MES.BLL.Workshop
                 return "车间名称不能为空";
             }
 
-            if (workshop.Capacity <= 0)
+            if (workshop.ProductionCapacity <= 0)
             {
                 return "车间产能必须大于0";
             }
@@ -764,7 +764,7 @@ namespace MES.BLL.Workshop
                     ["WorkshopCode"] = workshop.WorkshopCode,
                     ["WorkshopName"] = workshop.WorkshopName,
                     ["Status"] = workshop.Status,
-                    ["Capacity"] = workshop.Capacity,
+                    ["ProductionCapacity"] = workshop.ProductionCapacity,
                     ["CurrentWorkload"] = GetWorkshopWorkload(workshopId),
                     ["EquipmentCount"] = GetWorkshopEquipments(workshopId).Count,
                     ["CreateTime"] = workshop.CreateTime,

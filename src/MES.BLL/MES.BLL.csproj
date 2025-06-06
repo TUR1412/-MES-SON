@@ -54,6 +54,8 @@
     <Compile Include="System\RoleBLL.cs" />
     <Compile Include="Equipment\IEquipmentBLL.cs" />
     <Compile Include="Quality\IQualityInspectionBLL.cs" />
+    <Compile Include="Workshop\IBatchBLL.cs" />
+    <Compile Include="Workshop\BatchBLL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -116,6 +116,18 @@
     <Compile Include="Forms\Material\MaterialManagementForm.Designer.cs">
       <DependentUpon>MaterialManagementForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\WorkshopManagementForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\WorkshopManagementForm.Designer.cs">
+      <DependentUpon>WorkshopManagementForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\WorkshopEditForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\WorkshopEditForm.Designer.cs">
+      <DependentUpon>WorkshopEditForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="App.config" />
@@ -123,12 +135,16 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MES.BLL\MES.BLL.csproj">
-      <Project>{b2c3d4e5-f6a7-8901-bcde-f23456789012}</Project>
+      <Project>{B2C3D4E5-F6A7-8901-BCDE-F23456789012}</Project>
       <Name>MES.BLL</Name>
     </ProjectReference>
     <ProjectReference Include="..\MES.Common\MES.Common.csproj">
       <Project>{E5F6A7B8-C9D0-1234-EF01-567890123456}</Project>
       <Name>MES.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MES.Models\MES.Models.csproj">
+      <Project>{C3D4E5F6-A7B8-9012-CDEF-345678901234}</Project>
+      <Name>MES.Models</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

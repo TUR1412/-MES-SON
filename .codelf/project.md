@@ -4,7 +4,7 @@
 
 > 项目目标：为制造企业提供完整的生产管理解决方案，包括物料管理、生产管理、车间管理等核心模块
 
-> 项目状态：✅ MES系统核心模块完善完成，6大业务模块齐全，企业级制造执行系统架构成型
+> 项目状态：✅ MES系统核心模块完善完成，S成员车间管理模块已完成核心功能，6大业务模块齐全，企业级制造执行系统架构成型
 
 > 项目团队：天帝(组长/系统架构)、L成员(物料管理)、H成员(生产管理)、S成员(车间管理)
 
@@ -76,8 +76,10 @@ root
     │   │   └── MaterialInfo.cs        # 物料信息模型，包含物料基本属性和分类
     │   ├── Production/                # 生产相关模型(H成员已完成) ✅ 完整实现
     │   │   └── ProductionOrderInfo.cs # 生产订单模型，完整属性+BLL兼容性
-    │   ├── Workshop/                  # 车间相关模型(S成员负责) ✅ 已创建
-    │   │   └── WorkshopInfo.cs        # 车间信息模型，包含车间管理所需属性
+    │   ├── Workshop/                  # 车间相关模型(S成员已完成) ✅ 完整实现
+    │   │   ├── WorkshopInfo.cs        # 车间信息模型，包含车间管理所需属性
+    │   │   ├── BatchInfo.cs           # 批次信息模型，支持生产批次全生命周期管理
+    │   │   └── EquipmentStatusHistory.cs # 设备状态历史记录模型
     │   ├── System/                    # 系统相关模型 ✅ 已完善
     │   │   ├── UserInfo.cs            # 用户信息模型
     │   │   ├── RoleInfo.cs            # 角色信息模型（权限管理）✅ 新增
@@ -99,8 +101,9 @@ root
     │   │   └── BOMDAL.cs              # BOM数据访问类 ✅ MySQL API
     │   ├── Production/                # 生产数据访问(H成员已完成) ✅ 完整实现
     │   │   └── ProductionOrderDAL.cs  # 生产订单数据访问类 ✅ 完整CRUD+查询功能
-    │   ├── Workshop/                  # 车间数据访问(S成员开发中)
-    │   │   └── WorkshopDAL.cs         # 车间数据访问类 ✅ MySQL API已修复
+    │   ├── Workshop/                  # 车间数据访问(S成员已完成) ✅ 完整实现
+    │   │   ├── WorkshopDAL.cs         # 车间数据访问类 ✅ MySQL API已修复
+    │   │   └── BatchDAL.cs            # 批次数据访问类 ✅ 新增完成
     │   ├── System/
     │   │   ├── UserDAL.cs             # 用户数据访问类 ✅ MySQL API
     │   │   ├── RoleDAL.cs             # 角色数据访问类（权限查询）✅ 新增
@@ -121,9 +124,12 @@ root
     │   ├── Production/                # 生产管理业务逻辑(H成员已完成) ✅ 完整实现
     │   │   ├── IProductionOrderBLL.cs # 生产订单业务接口(15个核心方法)
     │   │   └── ProductionOrderBLL.cs  # 生产订单业务实现(完整业务流程)
-    │   ├── Workshop/                  # 车间管理业务逻辑(S成员框架已完成) ✅ 新增
+    │   ├── Workshop/                  # 车间管理业务逻辑(S成员已完成) ✅ 完整实现
     │   │   ├── IWorkshopBLL.cs        # 车间业务接口(已完成)
-    │   │   └── WorkshopBLL.cs         # 车间业务实现(已完成)
+    │   │   ├── WorkshopBLL.cs         # 车间业务实现(已完成)
+    │   │   ├── IBatchBLL.cs           # 批次业务接口(已完成)
+    │   │   ├── BatchBLL.cs            # 批次业务实现(已完成)
+    │   │   └── IEquipmentBLL.cs       # 设备业务接口(已定义)
     │   ├── System/                    # 系统管理业务逻辑 ✅ 新增
     │   │   ├── IRoleBLL.cs            # 角色业务接口（权限管理）✅ 新增
     │   │   └── RoleBLL.cs             # 角色业务实现（20个核心方法）✅ 新增
@@ -134,7 +140,12 @@ root
         ├── Forms/                     # 窗体目录
         │   ├── MainForm.cs            # 主窗体代码，实现混合界面架构，包含菜单、工具栏、导航树
         │   ├── MainForm.Designer.cs   # 主窗体设计器代码，定义界面布局和控件
-        │   └── MainForm.resx          # 主窗体资源文件
+        │   ├── MainForm.resx          # 主窗体资源文件
+        │   ├── WorkshopManagementForm.cs # 车间管理主窗体 ✅ S成员新增
+        │   ├── WorkshopManagementForm.Designer.cs # 车间管理窗体设计器
+        │   ├── WorkshopEditForm.cs    # 车间编辑窗体 ✅ S成员新增
+        │   ├── WorkshopEditForm.Designer.cs # 车间编辑窗体设计器
+        │   └── Material/              # 物料管理窗体目录(L成员)
         ├── Properties/                # 应用程序属性
         │   ├── AssemblyInfo.cs        # 程序集信息
         │   ├── Resources.Designer.cs  # 资源文件设计器代码

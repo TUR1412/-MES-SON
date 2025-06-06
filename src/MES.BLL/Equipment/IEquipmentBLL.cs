@@ -11,14 +11,14 @@ namespace MES.BLL.Equipment
     public interface IEquipmentBLL
     {
         /// <summary>
-        /// 添加设备
+        /// 添加设备信息
         /// </summary>
         /// <param name="equipment">设备信息</param>
         /// <returns>操作是否成功</returns>
         bool AddEquipment(EquipmentInfo equipment);
 
         /// <summary>
-        /// 根据ID删除设备（逻辑删除）
+        /// 根据ID删除设备信息（逻辑删除）
         /// </summary>
         /// <param name="id">设备ID</param>
         /// <returns>操作是否成功</returns>
@@ -55,8 +55,8 @@ namespace MES.BLL.Equipment
         /// 根据车间ID获取设备列表
         /// </summary>
         /// <param name="workshopId">车间ID</param>
-        /// <returns>指定车间的设备列表</returns>
-        List<EquipmentInfo> GetEquipmentsByWorkshop(int workshopId);
+        /// <returns>设备列表</returns>
+        List<EquipmentInfo> GetEquipmentsByWorkshopId(int workshopId);
 
         /// <summary>
         /// 根据状态获取设备列表
@@ -64,13 +64,6 @@ namespace MES.BLL.Equipment
         /// <param name="status">设备状态</param>
         /// <returns>指定状态的设备列表</returns>
         List<EquipmentInfo> GetEquipmentsByStatus(int status);
-
-        /// <summary>
-        /// 根据设备类型获取设备列表
-        /// </summary>
-        /// <param name="equipmentType">设备类型</param>
-        /// <returns>指定类型的设备列表</returns>
-        List<EquipmentInfo> GetEquipmentsByType(string equipmentType);
 
         /// <summary>
         /// 分页获取设备列表
@@ -89,6 +82,12 @@ namespace MES.BLL.Equipment
         List<EquipmentInfo> SearchEquipments(string keyword);
 
         /// <summary>
+        /// 获取需要维护的设备列表
+        /// </summary>
+        /// <returns>需要维护的设备列表</returns>
+        List<EquipmentInfo> GetMaintenanceRequiredEquipments();
+
+        /// <summary>
         /// 启用设备
         /// </summary>
         /// <param name="id">设备ID</param>
@@ -96,65 +95,35 @@ namespace MES.BLL.Equipment
         bool EnableEquipment(int id);
 
         /// <summary>
-        /// 禁用设备
+        /// 停用设备
         /// </summary>
         /// <param name="id">设备ID</param>
-        /// <param name="reason">禁用原因</param>
+        /// <param name="reason">停用原因</param>
         /// <returns>操作是否成功</returns>
         bool DisableEquipment(int id, string reason);
 
         /// <summary>
-        /// 设备进入维护状态
-        /// </summary>
-        /// <param name="id">设备ID</param>
-        /// <param name="maintenanceReason">维护原因</param>
-        /// <returns>操作是否成功</returns>
-        bool StartMaintenance(int id, string maintenanceReason);
-
-        /// <summary>
-        /// 设备完成维护
-        /// </summary>
-        /// <param name="id">设备ID</param>
-        /// <param name="maintenanceResult">维护结果</param>
-        /// <returns>操作是否成功</returns>
-        bool CompleteMaintenance(int id, string maintenanceResult);
-
-        /// <summary>
-        /// 设备故障报告
+        /// 设备故障
         /// </summary>
         /// <param name="id">设备ID</param>
         /// <param name="faultDescription">故障描述</param>
         /// <returns>操作是否成功</returns>
-        bool ReportFault(int id, string faultDescription);
+        bool SetEquipmentFault(int id, string faultDescription);
 
         /// <summary>
-        /// 设备故障修复
+        /// 设备维护
         /// </summary>
         /// <param name="id">设备ID</param>
-        /// <param name="repairDescription">修复描述</param>
+        /// <param name="maintenanceDescription">维护描述</param>
         /// <returns>操作是否成功</returns>
-        bool RepairFault(int id, string repairDescription);
+        bool SetEquipmentMaintenance(int id, string maintenanceDescription);
 
         /// <summary>
-        /// 获取需要维护的设备列表
-        /// </summary>
-        /// <returns>需要维护的设备列表</returns>
-        List<EquipmentInfo> GetMaintenanceRequiredEquipments();
-
-        /// <summary>
-        /// 获取故障设备列表
-        /// </summary>
-        /// <returns>故障设备列表</returns>
-        List<EquipmentInfo> GetFaultEquipments();
-
-        /// <summary>
-        /// 更新设备维护计划
+        /// 完成设备维护
         /// </summary>
         /// <param name="id">设备ID</param>
-        /// <param name="maintenanceCycle">维护周期（天）</param>
-        /// <param name="nextMaintenanceDate">下次维护日期</param>
         /// <returns>操作是否成功</returns>
-        bool UpdateMaintenancePlan(int id, int maintenanceCycle, DateTime nextMaintenanceDate);
+        bool CompleteEquipmentMaintenance(int id);
 
         /// <summary>
         /// 设置设备负责人
@@ -163,7 +132,15 @@ namespace MES.BLL.Equipment
         /// <param name="responsiblePersonId">负责人ID</param>
         /// <param name="responsiblePersonName">负责人姓名</param>
         /// <returns>操作是否成功</returns>
-        bool SetResponsiblePerson(int id, int responsiblePersonId, string responsiblePersonName);
+        bool SetEquipmentResponsiblePerson(int id, int responsiblePersonId, string responsiblePersonName);
+
+        /// <summary>
+        /// 转移设备到指定车间
+        /// </summary>
+        /// <param name="id">设备ID</param>
+        /// <param name="targetWorkshopId">目标车间ID</param>
+        /// <returns>操作是否成功</returns>
+        bool TransferEquipment(int id, int targetWorkshopId);
 
         /// <summary>
         /// 验证设备数据
@@ -183,45 +160,8 @@ namespace MES.BLL.Equipment
         /// <summary>
         /// 获取设备统计信息
         /// </summary>
+        /// <param name="equipmentId">设备ID</param>
         /// <returns>统计信息字典</returns>
-        Dictionary<string, object> GetEquipmentStatistics();
-
-        /// <summary>
-        /// 获取设备运行状态统计
-        /// </summary>
-        /// <param name="workshopId">车间ID（可选）</param>
-        /// <returns>运行状态统计</returns>
-        Dictionary<string, int> GetEquipmentStatusStatistics(int? workshopId = null);
-
-        /// <summary>
-        /// 获取设备维护统计
-        /// </summary>
-        /// <param name="startDate">开始日期</param>
-        /// <param name="endDate">结束日期</param>
-        /// <returns>维护统计信息</returns>
-        Dictionary<string, object> GetMaintenanceStatistics(DateTime startDate, DateTime endDate);
-
-        /// <summary>
-        /// 批量更新设备状态
-        /// </summary>
-        /// <param name="ids">设备ID列表</param>
-        /// <param name="status">新状态</param>
-        /// <returns>操作是否成功</returns>
-        bool BatchUpdateEquipmentStatus(List<int> ids, int status);
-
-        /// <summary>
-        /// 导出设备信息
-        /// </summary>
-        /// <param name="equipments">设备列表</param>
-        /// <param name="filePath">导出文件路径</param>
-        /// <returns>操作是否成功</returns>
-        bool ExportEquipments(List<EquipmentInfo> equipments, string filePath);
-
-        /// <summary>
-        /// 导入设备信息
-        /// </summary>
-        /// <param name="filePath">导入文件路径</param>
-        /// <returns>导入结果信息</returns>
-        string ImportEquipments(string filePath);
+        Dictionary<string, object> GetEquipmentStatistics(int equipmentId);
     }
 }

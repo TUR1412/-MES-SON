@@ -5,7 +5,7 @@ namespace MES.Models.Workshop
 {
     /// <summary>
     /// 车间信息模型
-    /// 用于管理车间的基本信息和状态
+    /// 用于管理车间的基本信息和状态 - S成员负责
     /// </summary>
     public class WorkshopInfo : BaseModel
     {
@@ -28,6 +28,11 @@ namespace MES.Models.Workshop
         /// 车间负责人
         /// </summary>
         public string Manager { get; set; }
+
+        /// <summary>
+        /// 负责人ID (关联操作员/用户)
+        /// </summary>
+        public int? ManagerId { get; set; }
 
         /// <summary>
         /// 联系电话
@@ -93,7 +98,15 @@ namespace MES.Models.Workshop
         /// </summary>
         public string QualityStandard { get; set; }
 
+        /// <summary>
+        /// 描述信息
+        /// </summary>
+        public string Description { get; set; }
 
+        /// <summary>
+        /// 设备列表 (逗号分隔的设备编码)
+        /// </summary>
+        public string EquipmentList { get; set; }
 
         /// <summary>
         /// 构造函数
