@@ -1,4 +1,5 @@
-﻿using MES.Common.Exceptions;
+﻿using MES.BLL.Material.DTO;
+using MES.Common.Exceptions;
 using MES.Common.Logging;
 using MES.DAL.Material;
 using MES.Models.Material;
@@ -35,6 +36,23 @@ namespace MES.BLL.Material
                 LogManager.Error("获取所有物料信息失败", ex);
                 throw new MESException("获取物料信息失败", ex);
             }
+        }
+
+        public List<MaterialInfo> SearchByName(string materialName)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(materialName))
+                    throw new ArgumentException("物料名称不能为空", nameof(materialName));
+
+                return _materialDAL.SearchByName(materialName);
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error($"根据名称搜索物料信息失败，名称: {materialName}", ex);
+                throw new MESException($"搜索物料信息失败，名称: {materialName}", ex);
+            }
+
         }
 
         /// <summary>
@@ -131,6 +149,38 @@ namespace MES.BLL.Material
                 LogManager.Error($"删除物料信息失败，ID: {id}", ex);
                 throw new MESException($"删除物料信息失败，ID: {id}", ex);
             }
+        }
+
+
+        // 添加私有方法
+        private MaterialDto ConvertToDto(MaterialInfo material)
+        {
+            return new MaterialDto
+            {
+                Id = material.Id,
+                MaterialCode = material.MaterialCode,
+                MaterialName = material.MaterialName,
+                // ... 其他属性
+            };
+        }
+
+        /// <summary>
+        /// 获取所有物料的DTO对象列表
+        /// </summary>
+        /// <returns>物料DTO列表</returns>
+        public List<MaterialDto> GetAllMaterialDtos()
+        {
+            return GetAllMaterials().Select(ConvertToDto).ToList();
+        }
+
+        /// <summary>
+        /// 删除物料信息（逻辑删除）
+        /// </summary>
+        /// <param name="id">物料ID</param>
+        /// <returns>删除是否成功</returns>
+        public List<MaterialDto> SearchMaterialDtosByName(string name)
+        {
+            return SearchByName(name).Select(ConvertToDto).ToList();
         }
     }
 }

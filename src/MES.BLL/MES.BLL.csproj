@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Material\BOMBLL.cs" />
+    <Compile Include="Material\DTO\MaterialDto.cs" />
     <Compile Include="Material\IBOMBLL.cs" />
     <Compile Include="Material\IMaterialBLL.cs" />
     <Compile Include="Material\MaterialBLL.cs" />
