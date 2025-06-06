@@ -23,6 +23,36 @@ namespace MES.DAL.Workshop
         /// </summary>
         protected override string TableName => "batch_info";
 
+        /// <summary>
+        /// 主键属性名
+        /// </summary>
+        protected override string PrimaryKey => "Id";
+
+        /// <summary>
+        /// 将DataRow转换为BatchInfo实体对象
+        /// </summary>
+        /// <param name="row">数据行</param>
+        /// <returns>BatchInfo实体对象</returns>
+        protected override BatchInfo MapRowToEntity(DataRow row)
+        {
+            return new BatchInfo
+            {
+                Id = Convert.ToInt32(row["id"]),
+                BatchId = row["batch_id"]?.ToString(),
+                WorkOrderId = row["work_order_id"]?.ToString(),
+                ProductMaterialId = row["product_material_id"]?.ToString(),
+                Quantity = Convert.ToDecimal(row["quantity"]),
+                Status = Convert.ToInt32(row["status"]),
+                CurrentStationId = row["current_station_id"]?.ToString(),
+                ProductionStartTime = row["production_start_time"] != DBNull.Value ? Convert.ToDateTime(row["production_start_time"]) : (DateTime?)null,
+                ProductionEndTime = row["production_end_time"] != DBNull.Value ? Convert.ToDateTime(row["production_end_time"]) : (DateTime?)null,
+                CarrierId = row["carrier_id"]?.ToString(),
+                CreateTime = Convert.ToDateTime(row["create_time"]),
+                UpdateTime = row["update_time"] != DBNull.Value ? Convert.ToDateTime(row["update_time"]) : (DateTime?)null,
+                IsDeleted = Convert.ToBoolean(row["is_deleted"])
+            };
+        }
+
         #endregion
 
         #region 批次特有操作

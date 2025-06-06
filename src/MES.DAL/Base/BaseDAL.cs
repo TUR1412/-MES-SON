@@ -263,14 +263,86 @@ namespace MES.DAL.Base
         /// </summary>
         /// <param name="entity">实体对象</param>
         /// <returns>SQL语句和参数</returns>
-        protected abstract (string sql, MySqlParameter[] parameters) BuildInsertSql(T entity);
+        protected virtual (string sql, MySqlParameter[] parameters) BuildInsertSql(T entity)
+        {
+            try
+            {
+                string sql = GetInsertSql();
+
+                using (var cmd = new MySqlCommand())
+                {
+                    SetInsertParameters(cmd, entity);
+                    return (sql, cmd.Parameters.Cast<MySqlParameter>().ToArray());
+                }
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error($"构建{typeof(T).Name}插入SQL失败", ex);
+                throw new MESException($"构建插入SQL失败", ex);
+            }
+        }
 
         /// <summary>
         /// 构建UPDATE SQL语句（子类必须实现）
         /// </summary>
         /// <param name="entity">实体对象</param>
         /// <returns>SQL语句和参数</returns>
-        protected abstract (string sql, MySqlParameter[] parameters) BuildUpdateSql(T entity);
+        protected virtual (string sql, MySqlParameter[] parameters) BuildUpdateSql(T entity)
+        {
+            try
+            {
+                string sql = GetUpdateSql();
+
+                using (var cmd = new MySqlCommand())
+                {
+                    SetUpdateParameters(cmd, entity);
+                    return (sql, cmd.Parameters.Cast<MySqlParameter>().ToArray());
+                }
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error($"构建{typeof(T).Name}更新SQL失败", ex);
+                throw new MESException($"构建更新SQL失败", ex);
+            }
+        }
+
+        /// <summary>
+        /// 获取插入SQL语句（兼容旧模式）
+        /// </summary>
+        /// <returns>插入SQL</returns>
+        protected virtual string GetInsertSql()
+        {
+            throw new NotImplementedException("子类必须实现GetInsertSql方法或重写BuildInsertSql方法");
+        }
+
+        /// <summary>
+        /// 获取更新SQL语句（兼容旧模式）
+        /// </summary>
+        /// <returns>更新SQL</returns>
+        protected virtual string GetUpdateSql()
+        {
+            throw new NotImplementedException("子类必须实现GetUpdateSql方法或重写BuildUpdateSql方法");
+        }
+
+        /// <summary>
+        /// 设置插入参数（兼容旧模式）
+        /// </summary>
+        /// <param name="cmd">命令对象</param>
+        /// <param name="entity">实体对象</param>
+        protected virtual void SetInsertParameters(MySqlCommand cmd, T entity)
+        {
+            throw new NotImplementedException("子类必须实现SetInsertParameters方法或重写BuildInsertSql方法");
+        }
+
+        /// <summary>
+        /// 设置更新参数（兼容旧模式）
+        /// </summary>
+        /// <param name="cmd">命令对象</param>
+        /// <param name="entity">实体对象</param>
+        protected virtual void SetUpdateParameters(MySqlCommand cmd, T entity)
+        {
+            throw new NotImplementedException("子类必须实现SetUpdateParameters方法或重写BuildUpdateSql方法");
+        }
 
         #endregion
 
