@@ -45,14 +45,14 @@ namespace MES.BLL.System
                 string validationResult = ValidateRole(role);
                 if (!string.IsNullOrEmpty(validationResult))
                 {
-                    LogManager.Error($"添加角色失败：{validationResult}");
+                    LogManager.Error(string.Format("添加角色失败：{0}", validationResult));
                     return false;
                 }
 
                 // 检查角色编码是否已存在
                 if (IsRoleCodeExists(role.RoleCode))
                 {
-                    LogManager.Error($"添加角色失败：角色编码 {role.RoleCode} 已存在");
+                    LogManager.Error(string.Format("添加角色失败：角色编码 {0} 已存在", role.RoleCode));
                     return false;
                 }
 
@@ -72,18 +72,18 @@ namespace MES.BLL.System
                 
                 if (result)
                 {
-                    LogManager.Info($"成功添加角色：{role.RoleCode} - {role.RoleName}");
+                    LogManager.Info(string.Format("成功添加角色：{0} - {1}", role.RoleCode, role.RoleName));
                 }
                 else
                 {
-                    LogManager.Error($"添加角色失败：{role.RoleCode}");
+                    LogManager.Error(string.Format("添加角色失败：{0}", role.RoleCode));
                 }
 
                 return result;
             }
             catch (Exception ex)
             {
-                LogManager.Error($"添加角色异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("添加角色异常：{0}", ex.Message), ex);
                 throw new MESException("添加角色时发生异常", ex);
             }
         }
@@ -107,14 +107,14 @@ namespace MES.BLL.System
                 var existingRole = _roleDAL.GetById(id);
                 if (existingRole == null)
                 {
-                    LogManager.Error($"删除角色失败：ID为 {id} 的角色不存在");
+                    LogManager.Error(string.Format("删除角色失败：ID为 {0} 的角色不存在", id));
                     return false;
                 }
 
                 // 检查是否为系统内置角色
                 if (existingRole.RoleCode == "ADMIN" || existingRole.RoleCode == "SYSTEM")
                 {
-                    LogManager.Error($"删除角色失败：系统内置角色 {existingRole.RoleCode} 不能删除");
+                    LogManager.Error(string.Format("删除角色失败：系统内置角色 {0} 不能删除", existingRole.RoleCode));
                     return false;
                 }
 
@@ -124,18 +124,18 @@ namespace MES.BLL.System
                 
                 if (result)
                 {
-                    LogManager.Info($"成功删除角色：ID={id}, 角色编码={existingRole.RoleCode}");
+                    LogManager.Info(string.Format("成功删除角色：ID={0}, 角色编码={1}", id, existingRole.RoleCode));
                 }
                 else
                 {
-                    LogManager.Error($"删除角色失败：ID={id}");
+                    LogManager.Error(string.Format("删除角色失败：ID={0}", id));
                 }
 
                 return result;
             }
             catch (Exception ex)
             {
-                LogManager.Error($"删除角色异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("删除角色异常：{0}", ex.Message), ex);
                 throw new MESException("删除角色时发生异常", ex);
             }
         }
@@ -159,7 +159,7 @@ namespace MES.BLL.System
                 string validationResult = ValidateRole(role);
                 if (!string.IsNullOrEmpty(validationResult))
                 {
-                    LogManager.Error($"更新角色失败：{validationResult}");
+                    LogManager.Error(string.Format("更新角色失败：{0}", validationResult));
                     return false;
                 }
 
@@ -167,14 +167,14 @@ namespace MES.BLL.System
                 var existingRole = _roleDAL.GetById(role.Id);
                 if (existingRole == null)
                 {
-                    LogManager.Error($"更新角色失败：ID为 {role.Id} 的角色不存在");
+                    LogManager.Error(string.Format("更新角色失败：ID为 {0} 的角色不存在", role.Id));
                     return false;
                 }
 
                 // 检查角色编码是否与其他角色冲突
                 if (IsRoleCodeExists(role.RoleCode, role.Id))
                 {
-                    LogManager.Error($"更新角色失败：角色编码 {role.RoleCode} 已被其他角色使用");
+                    LogManager.Error(string.Format("更新角色失败：角色编码 {0} 已被其他角色使用", role.RoleCode));
                     return false;
                 }
 
@@ -185,18 +185,18 @@ namespace MES.BLL.System
                 
                 if (result)
                 {
-                    LogManager.Info($"成功更新角色：{role.RoleCode} - {role.RoleName}");
+                    LogManager.Info(string.Format("成功更新角色：{0} - {1}", role.RoleCode, role.RoleName));
                 }
                 else
                 {
-                    LogManager.Error($"更新角色失败：{role.RoleCode}");
+                    LogManager.Error(string.Format("更新角色失败：{0}", role.RoleCode));
                 }
 
                 return result;
             }
             catch (Exception ex)
             {
-                LogManager.Error($"更新角色异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("更新角色异常：{0}", ex.Message), ex);
                 throw new MESException("更新角色时发生异常", ex);
             }
         }
@@ -220,7 +220,7 @@ namespace MES.BLL.System
             }
             catch (Exception ex)
             {
-                LogManager.Error($"获取角色异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("获取角色异常：{0}", ex.Message), ex);
                 throw new MESException("获取角色时发生异常", ex);
             }
         }
@@ -244,7 +244,7 @@ namespace MES.BLL.System
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据角色编码获取角色异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("根据角色编码获取角色异常：{0}", ex.Message), ex);
                 throw new MESException("根据角色编码获取角色时发生异常", ex);
             }
         }
@@ -261,7 +261,7 @@ namespace MES.BLL.System
             }
             catch (Exception ex)
             {
-                LogManager.Error($"获取所有角色异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("获取所有角色异常：{0}", ex.Message), ex);
                 throw new MESException("获取所有角色时发生异常", ex);
             }
         }
@@ -279,7 +279,7 @@ namespace MES.BLL.System
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据状态获取角色异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("根据状态获取角色异常：{0}", ex.Message), ex);
                 throw new MESException("根据状态获取角色时发生异常", ex);
             }
         }
@@ -306,7 +306,7 @@ namespace MES.BLL.System
             }
             catch (Exception ex)
             {
-                LogManager.Error($"分页获取角色异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("分页获取角色异常：{0}", ex.Message), ex);
                 totalCount = 0;
                 throw new MESException("分页获取角色时发生异常", ex);
             }
@@ -330,7 +330,7 @@ namespace MES.BLL.System
             }
             catch (Exception ex)
             {
-                LogManager.Error($"搜索角色异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("搜索角色异常：{0}", ex.Message), ex);
                 throw new MESException("搜索角色时发生异常", ex);
             }
         }
@@ -347,13 +347,13 @@ namespace MES.BLL.System
                 var role = _roleDAL.GetById(id);
                 if (role == null)
                 {
-                    LogManager.Error($"启用角色失败：ID为 {id} 的角色不存在");
+                    LogManager.Error(string.Format("启用角色失败：ID为 {0} 的角色不存在", id));
                     return false;
                 }
 
                 if (role.Status == 1)
                 {
-                    LogManager.Info($"角色 {role.RoleCode} 已经是启用状态");
+                    LogManager.Info(string.Format("角色 {0} 已经是启用状态", role.RoleCode));
                     return true;
                 }
 
@@ -364,14 +364,14 @@ namespace MES.BLL.System
                 
                 if (result)
                 {
-                    LogManager.Info($"成功启用角色：{role.RoleCode}");
+                    LogManager.Info(string.Format("成功启用角色：{0}", role.RoleCode));
                 }
 
                 return result;
             }
             catch (Exception ex)
             {
-                LogManager.Error($"启用角色异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("启用角色异常：{0}", ex.Message), ex);
                 throw new MESException("启用角色时发生异常", ex);
             }
         }
@@ -388,7 +388,7 @@ namespace MES.BLL.System
                 var role = _roleDAL.GetById(id);
                 if (role == null)
                 {
-                    LogManager.Error($"禁用角色失败：ID为 {id} 的角色不存在");
+                    LogManager.Error(string.Format("禁用角色失败：ID为 {0} 的角色不存在", id));
                     return false;
                 }
 
@@ -401,7 +401,7 @@ namespace MES.BLL.System
 
                 if (role.Status == 0)
                 {
-                    LogManager.Info($"角色 {role.RoleCode} 已经是禁用状态");
+                    LogManager.Info(string.Format("角色 {0} 已经是禁用状态", role.RoleCode));
                     return true;
                 }
 
@@ -412,14 +412,14 @@ namespace MES.BLL.System
                 
                 if (result)
                 {
-                    LogManager.Info($"成功禁用角色：{role.RoleCode}");
+                    LogManager.Info(string.Format("成功禁用角色：{0}", role.RoleCode));
                 }
 
                 return result;
             }
             catch (Exception ex)
             {
-                LogManager.Error($"禁用角色异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("禁用角色异常：{0}", ex.Message), ex);
                 throw new MESException("禁用角色时发生异常", ex);
             }
         }
@@ -437,7 +437,7 @@ namespace MES.BLL.System
                 var role = _roleDAL.GetById(id);
                 if (role == null)
                 {
-                    LogManager.Error($"设置角色权限失败：ID为 {id} 的角色不存在");
+                    LogManager.Error(string.Format("设置角色权限失败：ID为 {0} 的角色不存在", id));
                     return false;
                 }
 
@@ -448,14 +448,14 @@ namespace MES.BLL.System
                 
                 if (result)
                 {
-                    LogManager.Info($"成功设置角色 {role.RoleCode} 的权限");
+                    LogManager.Info(string.Format("成功设置角色 {0} 的权限", role.RoleCode));
                 }
 
                 return result;
             }
             catch (Exception ex)
             {
-                LogManager.Error($"设置角色权限异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("设置角色权限异常：{0}", ex.Message), ex);
                 throw new MESException("设置角色权限时发生异常", ex);
             }
         }
@@ -472,7 +472,7 @@ namespace MES.BLL.System
                 var role = _roleDAL.GetById(id);
                 if (role == null)
                 {
-                    LogManager.Error($"获取角色权限失败：ID为 {id} 的角色不存在");
+                    LogManager.Error(string.Format("获取角色权限失败：ID为 {0} 的角色不存在", id));
                     return string.Empty;
                 }
 
@@ -480,7 +480,7 @@ namespace MES.BLL.System
             }
             catch (Exception ex)
             {
-                LogManager.Error($"获取角色权限异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("获取角色权限异常：{0}", ex.Message), ex);
                 throw new MESException("获取角色权限时发生异常", ex);
             }
         }
@@ -518,7 +518,7 @@ namespace MES.BLL.System
             }
             catch (Exception ex)
             {
-                LogManager.Error($"检查角色权限异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("检查角色权限异常：{0}", ex.Message), ex);
                 return false;
             }
         }
@@ -577,7 +577,7 @@ namespace MES.BLL.System
             }
             catch (Exception ex)
             {
-                LogManager.Error($"检查角色编码是否存在异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("检查角色编码是否存在异常：{0}", ex.Message), ex);
                 return false;
             }
         }
@@ -604,7 +604,7 @@ namespace MES.BLL.System
             }
             catch (Exception ex)
             {
-                LogManager.Error($"获取角色统计信息异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("获取角色统计信息异常：{0}", ex.Message), ex);
                 throw new MESException("获取角色统计信息时发生异常", ex);
             }
         }
@@ -634,12 +634,12 @@ namespace MES.BLL.System
                     }
                 }
 
-                LogManager.Info($"批量更新角色状态完成：成功 {successCount}/{ids.Count}");
+                LogManager.Info(string.Format("批量更新角色状态完成：成功 {0}/{1}", successCount, ids.Count));
                 return successCount == ids.Count;
             }
             catch (Exception ex)
             {
-                LogManager.Error($"批量更新角色状态异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("批量更新角色状态异常：{0}", ex.Message), ex);
                 throw new MESException("批量更新角色状态时发生异常", ex);
             }
         }
@@ -658,13 +658,13 @@ namespace MES.BLL.System
                 var sourceRole = _roleDAL.GetById(sourceId);
                 if (sourceRole == null)
                 {
-                    LogManager.Error($"复制角色失败：源角色ID {sourceId} 不存在");
+                    LogManager.Error(string.Format("复制角色失败：源角色ID {0} 不存在", sourceId));
                     return false;
                 }
 
                 if (IsRoleCodeExists(newRoleCode))
                 {
-                    LogManager.Error($"复制角色失败：新角色编码 {newRoleCode} 已存在");
+                    LogManager.Error(string.Format("复制角色失败：新角色编码 {0} 已存在", newRoleCode));
                     return false;
                 }
 
@@ -672,7 +672,7 @@ namespace MES.BLL.System
                 {
                     RoleCode = newRoleCode,
                     RoleName = newRoleName,
-                    Description = $"复制自 {sourceRole.RoleName}",
+                    Description = string.Format("复制自 {0}", sourceRole.RoleName),
                     Status = sourceRole.Status,
                     Permissions = sourceRole.Permissions,
                     SortOrder = sourceRole.SortOrder
@@ -682,7 +682,7 @@ namespace MES.BLL.System
             }
             catch (Exception ex)
             {
-                LogManager.Error($"复制角色异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("复制角色异常：{0}", ex.Message), ex);
                 throw new MESException("复制角色时发生异常", ex);
             }
         }

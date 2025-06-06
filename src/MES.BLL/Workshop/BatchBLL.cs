@@ -45,14 +45,14 @@ namespace MES.BLL.Workshop
                 string validationResult = ValidateBatch(batch);
                 if (!string.IsNullOrEmpty(validationResult))
                 {
-                    LogManager.Error($"添加批次失败：{validationResult}");
+                    LogManager.Error(string.Format("添加批次失败：{0}", validationResult));
                     return false;
                 }
 
                 // 检查批次编号是否已存在
                 if (IsBatchIdExists(batch.BatchId))
                 {
-                    LogManager.Error($"添加批次失败：批次编号 {batch.BatchId} 已存在");
+                    LogManager.Error(string.Format("添加批次失败：批次编号 {0} 已存在", batch.BatchId));
                     return false;
                 }
 
@@ -72,18 +72,18 @@ namespace MES.BLL.Workshop
                 
                 if (result)
                 {
-                    LogManager.Info($"成功添加批次：{batch.BatchId}");
+                    LogManager.Info(string.Format("成功添加批次：{0}", batch.BatchId));
                 }
                 else
                 {
-                    LogManager.Error($"添加批次失败：{batch.BatchId}");
+                    LogManager.Error(string.Format("添加批次失败：{0}", batch.BatchId));
                 }
 
                 return result;
             }
             catch (Exception ex)
             {
-                LogManager.Error($"添加批次异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("添加批次异常：{0}", ex.Message), ex);
                 throw new MESException("添加批次时发生异常", ex);
             }
         }
@@ -107,14 +107,14 @@ namespace MES.BLL.Workshop
                 var existingBatch = _batchDAL.GetById(id);
                 if (existingBatch == null)
                 {
-                    LogManager.Error($"删除批次失败：ID为 {id} 的批次不存在");
+                    LogManager.Error(string.Format("删除批次失败：ID为 {0} 的批次不存在", id));
                     return false;
                 }
 
                 // 检查批次是否可以删除（如果正在生产中则不能删除）
                 if (existingBatch.Status == 3) // 生产中状态
                 {
-                    LogManager.Error($"删除批次失败：批次 {existingBatch.BatchId} 正在生产中，不能删除");
+                    LogManager.Error(string.Format("删除批次失败：批次 {0} 正在生产中，不能删除", existingBatch.BatchId));
                     return false;
                 }
                 
@@ -122,18 +122,18 @@ namespace MES.BLL.Workshop
                 
                 if (result)
                 {
-                    LogManager.Info($"成功删除批次：ID={id}, 批次编号={existingBatch.BatchId}");
+                    LogManager.Info(string.Format("成功删除批次：ID={0}, 批次编号={1}", id, existingBatch.BatchId));
                 }
                 else
                 {
-                    LogManager.Error($"删除批次失败：ID={id}");
+                    LogManager.Error(string.Format("删除批次失败：ID={0}", id));
                 }
 
                 return result;
             }
             catch (Exception ex)
             {
-                LogManager.Error($"删除批次异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("删除批次异常：{0}", ex.Message), ex);
                 throw new MESException("删除批次时发生异常", ex);
             }
         }
@@ -157,7 +157,7 @@ namespace MES.BLL.Workshop
                 string validationResult = ValidateBatch(batch);
                 if (!string.IsNullOrEmpty(validationResult))
                 {
-                    LogManager.Error($"更新批次失败：{validationResult}");
+                    LogManager.Error(string.Format("更新批次失败：{0}", validationResult));
                     return false;
                 }
 
@@ -165,14 +165,14 @@ namespace MES.BLL.Workshop
                 var existingBatch = _batchDAL.GetById(batch.Id);
                 if (existingBatch == null)
                 {
-                    LogManager.Error($"更新批次失败：ID为 {batch.Id} 的批次不存在");
+                    LogManager.Error(string.Format("更新批次失败：ID为 {0} 的批次不存在", batch.Id));
                     return false;
                 }
 
                 // 检查批次编号是否与其他批次冲突
                 if (IsBatchIdExists(batch.BatchId, batch.Id))
                 {
-                    LogManager.Error($"更新批次失败：批次编号 {batch.BatchId} 已被其他批次使用");
+                    LogManager.Error(string.Format("更新批次失败：批次编号 {0} 已被其他批次使用", batch.BatchId));
                     return false;
                 }
 
@@ -183,18 +183,18 @@ namespace MES.BLL.Workshop
                 
                 if (result)
                 {
-                    LogManager.Info($"成功更新批次：{batch.BatchId}");
+                    LogManager.Info(string.Format("成功更新批次：{0}", batch.BatchId));
                 }
                 else
                 {
-                    LogManager.Error($"更新批次失败：{batch.BatchId}");
+                    LogManager.Error(string.Format("更新批次失败：{0}", batch.BatchId));
                 }
 
                 return result;
             }
             catch (Exception ex)
             {
-                LogManager.Error($"更新批次异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("更新批次异常：{0}", ex.Message), ex);
                 throw new MESException("更新批次时发生异常", ex);
             }
         }
@@ -218,7 +218,7 @@ namespace MES.BLL.Workshop
             }
             catch (Exception ex)
             {
-                LogManager.Error($"获取批次异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("获取批次异常：{0}", ex.Message), ex);
                 throw new MESException("获取批次时发生异常", ex);
             }
         }
@@ -242,7 +242,7 @@ namespace MES.BLL.Workshop
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据批次编号获取批次异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("根据批次编号获取批次异常：{0}", ex.Message), ex);
                 throw new MESException("根据批次编号获取批次时发生异常", ex);
             }
         }
@@ -259,7 +259,7 @@ namespace MES.BLL.Workshop
             }
             catch (Exception ex)
             {
-                LogManager.Error($"获取所有批次异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("获取所有批次异常：{0}", ex.Message), ex);
                 throw new MESException("获取所有批次时发生异常", ex);
             }
         }
@@ -283,7 +283,7 @@ namespace MES.BLL.Workshop
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据工单ID获取批次异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("根据工单ID获取批次异常：{0}", ex.Message), ex);
                 throw new MESException("根据工单ID获取批次时发生异常", ex);
             }
         }
@@ -301,7 +301,7 @@ namespace MES.BLL.Workshop
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据状态获取批次异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("根据状态获取批次异常：{0}", ex.Message), ex);
                 throw new MESException("根据状态获取批次时发生异常", ex);
             }
         }
@@ -325,7 +325,7 @@ namespace MES.BLL.Workshop
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据工站获取批次异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("根据工站获取批次异常：{0}", ex.Message), ex);
                 throw new MESException("根据工站获取批次时发生异常", ex);
             }
         }
@@ -352,7 +352,7 @@ namespace MES.BLL.Workshop
             }
             catch (Exception ex)
             {
-                LogManager.Error($"分页获取批次异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("分页获取批次异常：{0}", ex.Message), ex);
                 totalCount = 0;
                 throw new MESException("分页获取批次时发生异常", ex);
             }
@@ -376,7 +376,7 @@ namespace MES.BLL.Workshop
             }
             catch (Exception ex)
             {
-                LogManager.Error($"搜索批次异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("搜索批次异常：{0}", ex.Message), ex);
                 throw new MESException("搜索批次时发生异常", ex);
             }
         }
@@ -441,7 +441,7 @@ namespace MES.BLL.Workshop
             }
             catch (Exception ex)
             {
-                LogManager.Error($"检查批次编号是否存在异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("检查批次编号是否存在异常：{0}", ex.Message), ex);
                 return false;
             }
         }
@@ -459,13 +459,13 @@ namespace MES.BLL.Workshop
                 var batch = _batchDAL.GetById(id);
                 if (batch == null)
                 {
-                    LogManager.Error($"开始生产失败：ID为 {id} 的批次不存在");
+                    LogManager.Error(string.Format("开始生产失败：ID为 {0} 的批次不存在", id));
                     return false;
                 }
 
                 if (batch.Status != 2) // 待产状态
                 {
-                    LogManager.Error($"开始生产失败：批次 {batch.BatchId} 状态不是待产状态");
+                    LogManager.Error(string.Format("开始生产失败：批次 {0} 状态不是待产状态", batch.BatchId));
                     return false;
                 }
 
@@ -478,14 +478,14 @@ namespace MES.BLL.Workshop
 
                 if (result)
                 {
-                    LogManager.Info($"成功开始生产批次：{batch.BatchId}，工站：{stationId}");
+                    LogManager.Info(string.Format("成功开始生产批次：{0}，工站：{1}", batch.BatchId, stationId));
                 }
 
                 return result;
             }
             catch (Exception ex)
             {
-                LogManager.Error($"开始生产批次异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("开始生产批次异常：{0}", ex.Message), ex);
                 throw new MESException("开始生产批次时发生异常", ex);
             }
         }
@@ -502,13 +502,13 @@ namespace MES.BLL.Workshop
                 var batch = _batchDAL.GetById(id);
                 if (batch == null)
                 {
-                    LogManager.Error($"完成生产失败：ID为 {id} 的批次不存在");
+                    LogManager.Error(string.Format("完成生产失败：ID为 {0} 的批次不存在", id));
                     return false;
                 }
 
                 if (batch.Status != 3) // 生产中状态
                 {
-                    LogManager.Error($"完成生产失败：批次 {batch.BatchId} 状态不是生产中状态");
+                    LogManager.Error(string.Format("完成生产失败：批次 {0} 状态不是生产中状态", batch.BatchId));
                     return false;
                 }
 
@@ -520,14 +520,14 @@ namespace MES.BLL.Workshop
 
                 if (result)
                 {
-                    LogManager.Info($"成功完成生产批次：{batch.BatchId}");
+                    LogManager.Info(string.Format("成功完成生产批次：{0}", batch.BatchId));
                 }
 
                 return result;
             }
             catch (Exception ex)
             {
-                LogManager.Error($"完成生产批次异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("完成生产批次异常：{0}", ex.Message), ex);
                 throw new MESException("完成生产批次时发生异常", ex);
             }
         }
@@ -545,13 +545,13 @@ namespace MES.BLL.Workshop
                 var batch = _batchDAL.GetById(id);
                 if (batch == null)
                 {
-                    LogManager.Error($"取消批次失败：ID为 {id} 的批次不存在");
+                    LogManager.Error(string.Format("取消批次失败：ID为 {0} 的批次不存在", id));
                     return false;
                 }
 
                 if (batch.Status == 5 || batch.Status == 6) // 已完成或已取消
                 {
-                    LogManager.Error($"取消批次失败：批次 {batch.BatchId} 已经完成或取消");
+                    LogManager.Error(string.Format("取消批次失败：批次 {0} 已经完成或取消", batch.BatchId));
                     return false;
                 }
 
@@ -562,14 +562,14 @@ namespace MES.BLL.Workshop
 
                 if (result)
                 {
-                    LogManager.Info($"成功取消批次：{batch.BatchId}，原因：{reason}");
+                    LogManager.Info(string.Format("成功取消批次：{0}，原因：{1}", batch.BatchId, reason));
                 }
 
                 return result;
             }
             catch (Exception ex)
             {
-                LogManager.Error($"取消批次异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("取消批次异常：{0}", ex.Message), ex);
                 throw new MESException("取消批次时发生异常", ex);
             }
         }
@@ -587,13 +587,13 @@ namespace MES.BLL.Workshop
                 var batch = _batchDAL.GetById(id);
                 if (batch == null)
                 {
-                    LogManager.Error($"转移批次失败：ID为 {id} 的批次不存在");
+                    LogManager.Error(string.Format("转移批次失败：ID为 {0} 的批次不存在", id));
                     return false;
                 }
 
                 if (batch.Status != 3) // 生产中状态
                 {
-                    LogManager.Error($"转移批次失败：批次 {batch.BatchId} 状态不是生产中状态");
+                    LogManager.Error(string.Format("转移批次失败：批次 {0} 状态不是生产中状态", batch.BatchId));
                     return false;
                 }
 
@@ -605,14 +605,14 @@ namespace MES.BLL.Workshop
 
                 if (result)
                 {
-                    LogManager.Info($"成功转移批次：{batch.BatchId}，从工站 {oldStationId} 转移到 {targetStationId}");
+                    LogManager.Info(string.Format("成功转移批次：{0}，从工站 {1} 转移到 {2}", batch.BatchId, oldStationId, targetStationId));
                 }
 
                 return result;
             }
             catch (Exception ex)
             {
-                LogManager.Error($"转移批次异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("转移批次异常：{0}", ex.Message), ex);
                 throw new MESException("转移批次时发生异常", ex);
             }
         }
@@ -630,7 +630,7 @@ namespace MES.BLL.Workshop
                 var batch = _batchDAL.GetById(id);
                 if (batch == null)
                 {
-                    LogManager.Error($"设置批次载具失败：ID为 {id} 的批次不存在");
+                    LogManager.Error(string.Format("设置批次载具失败：ID为 {0} 的批次不存在", id));
                     return false;
                 }
 
@@ -641,14 +641,14 @@ namespace MES.BLL.Workshop
 
                 if (result)
                 {
-                    LogManager.Info($"成功设置批次 {batch.BatchId} 的载具：{carrierId}");
+                    LogManager.Info(string.Format("成功设置批次 {0} 的载具：{1}", batch.BatchId, carrierId));
                 }
 
                 return result;
             }
             catch (Exception ex)
             {
-                LogManager.Error($"设置批次载具异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("设置批次载具异常：{0}", ex.Message), ex);
                 throw new MESException("设置批次载具时发生异常", ex);
             }
         }
@@ -665,7 +665,7 @@ namespace MES.BLL.Workshop
                 var batch = _batchDAL.GetById(batchId);
                 if (batch == null)
                 {
-                    LogManager.Error($"获取批次统计信息失败：ID为 {batchId} 的批次不存在");
+                    LogManager.Error(string.Format("获取批次统计信息失败：ID为 {0} 的批次不存在", batchId));
                     return new Dictionary<string, object>();
                 }
 
@@ -696,7 +696,7 @@ namespace MES.BLL.Workshop
             }
             catch (Exception ex)
             {
-                LogManager.Error($"获取批次统计信息异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("获取批次统计信息异常：{0}", ex.Message), ex);
                 throw new MESException("获取批次统计信息时发生异常", ex);
             }
         }

@@ -45,14 +45,14 @@ namespace MES.BLL.Workshop
                 string validationResult = ValidateWorkshop(workshop);
                 if (!string.IsNullOrEmpty(validationResult))
                 {
-                    LogManager.Error($"添加车间失败：{validationResult}");
+                    LogManager.Error(string.Format("添加车间失败：{0}", validationResult));
                     return false;
                 }
 
                 // 检查车间编码是否已存在
                 if (IsWorkshopCodeExists(workshop.WorkshopCode))
                 {
-                    LogManager.Error($"添加车间失败：车间编码 {workshop.WorkshopCode} 已存在");
+                    LogManager.Error(string.Format("添加车间失败：车间编码 {0} 已存在", workshop.WorkshopCode));
                     return false;
                 }
 
@@ -72,18 +72,18 @@ namespace MES.BLL.Workshop
                 
                 if (result)
                 {
-                    LogManager.Info($"成功添加车间：{workshop.WorkshopCode} - {workshop.WorkshopName}");
+                    LogManager.Info(string.Format("成功添加车间：{0} - {1}", workshop.WorkshopCode, workshop.WorkshopName));
                 }
                 else
                 {
-                    LogManager.Error($"添加车间失败：{workshop.WorkshopCode}");
+                    LogManager.Error(string.Format("添加车间失败：{0}", workshop.WorkshopCode));
                 }
 
                 return result;
             }
             catch (Exception ex)
             {
-                LogManager.Error($"添加车间异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("添加车间异常：{0}", ex.Message), ex);
                 throw new MESException("添加车间时发生异常", ex);
             }
         }
@@ -107,7 +107,7 @@ namespace MES.BLL.Workshop
                 var existingWorkshop = _workshopDAL.GetById(id);
                 if (existingWorkshop == null)
                 {
-                    LogManager.Error($"删除车间失败：ID为 {id} 的车间不存在");
+                    LogManager.Error(string.Format("删除车间失败：ID为 {0} 的车间不存在", id));
                     return false;
                 }
 
@@ -118,18 +118,18 @@ namespace MES.BLL.Workshop
                 
                 if (result)
                 {
-                    LogManager.Info($"成功删除车间：ID={id}, 车间编码={existingWorkshop.WorkshopCode}");
+                    LogManager.Info(string.Format("成功删除车间：ID={0}, 车间编码={1}", id, existingWorkshop.WorkshopCode));
                 }
                 else
                 {
-                    LogManager.Error($"删除车间失败：ID={id}");
+                    LogManager.Error(string.Format("删除车间失败：ID={0}", id));
                 }
 
                 return result;
             }
             catch (Exception ex)
             {
-                LogManager.Error($"删除车间异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("删除车间异常：{0}", ex.Message), ex);
                 throw new MESException("删除车间时发生异常", ex);
             }
         }
@@ -153,7 +153,7 @@ namespace MES.BLL.Workshop
                 string validationResult = ValidateWorkshop(workshop);
                 if (!string.IsNullOrEmpty(validationResult))
                 {
-                    LogManager.Error($"更新车间失败：{validationResult}");
+                    LogManager.Error(string.Format("更新车间失败：{0}", validationResult));
                     return false;
                 }
 
@@ -161,14 +161,14 @@ namespace MES.BLL.Workshop
                 var existingWorkshop = _workshopDAL.GetById(workshop.Id);
                 if (existingWorkshop == null)
                 {
-                    LogManager.Error($"更新车间失败：ID为 {workshop.Id} 的车间不存在");
+                    LogManager.Error(string.Format("更新车间失败：ID为 {0} 的车间不存在", workshop.Id));
                     return false;
                 }
 
                 // 检查车间编码是否与其他车间冲突
                 if (IsWorkshopCodeExists(workshop.WorkshopCode, workshop.Id))
                 {
-                    LogManager.Error($"更新车间失败：车间编码 {workshop.WorkshopCode} 已被其他车间使用");
+                    LogManager.Error(string.Format("更新车间失败：车间编码 {0} 已被其他车间使用", workshop.WorkshopCode));
                     return false;
                 }
 
@@ -179,18 +179,18 @@ namespace MES.BLL.Workshop
                 
                 if (result)
                 {
-                    LogManager.Info($"成功更新车间：{workshop.WorkshopCode} - {workshop.WorkshopName}");
+                    LogManager.Info(string.Format("成功更新车间：{0} - {1}", workshop.WorkshopCode, workshop.WorkshopName));
                 }
                 else
                 {
-                    LogManager.Error($"更新车间失败：{workshop.WorkshopCode}");
+                    LogManager.Error(string.Format("更新车间失败：{0}", workshop.WorkshopCode));
                 }
 
                 return result;
             }
             catch (Exception ex)
             {
-                LogManager.Error($"更新车间异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("更新车间异常：{0}", ex.Message), ex);
                 throw new MESException("更新车间时发生异常", ex);
             }
         }
@@ -214,7 +214,7 @@ namespace MES.BLL.Workshop
             }
             catch (Exception ex)
             {
-                LogManager.Error($"获取车间异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("获取车间异常：{0}", ex.Message), ex);
                 throw new MESException("获取车间时发生异常", ex);
             }
         }
@@ -238,7 +238,7 @@ namespace MES.BLL.Workshop
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据车间编码获取车间异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("根据车间编码获取车间异常：{0}", ex.Message), ex);
                 throw new MESException("根据车间编码获取车间时发生异常", ex);
             }
         }
@@ -255,7 +255,7 @@ namespace MES.BLL.Workshop
             }
             catch (Exception ex)
             {
-                LogManager.Error($"获取所有车间异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("获取所有车间异常：{0}", ex.Message), ex);
                 throw new MESException("获取所有车间时发生异常", ex);
             }
         }
@@ -279,7 +279,7 @@ namespace MES.BLL.Workshop
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据状态获取车间异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("根据状态获取车间异常：{0}", ex.Message), ex);
                 throw new MESException("根据状态获取车间时发生异常", ex);
             }
         }
@@ -303,7 +303,7 @@ namespace MES.BLL.Workshop
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据类型获取车间异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("根据类型获取车间异常：{0}", ex.Message), ex);
                 throw new MESException("根据类型获取车间时发生异常", ex);
             }
         }
@@ -330,7 +330,7 @@ namespace MES.BLL.Workshop
             }
             catch (Exception ex)
             {
-                LogManager.Error($"分页获取车间异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("分页获取车间异常：{0}", ex.Message), ex);
                 totalCount = 0;
                 throw new MESException("分页获取车间时发生异常", ex);
             }
@@ -354,7 +354,7 @@ namespace MES.BLL.Workshop
             }
             catch (Exception ex)
             {
-                LogManager.Error($"搜索车间异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("搜索车间异常：{0}", ex.Message), ex);
                 throw new MESException("搜索车间时发生异常", ex);
             }
         }
@@ -371,13 +371,13 @@ namespace MES.BLL.Workshop
                 var workshop = _workshopDAL.GetById(id);
                 if (workshop == null)
                 {
-                    LogManager.Error($"启用车间失败：ID为 {id} 的车间不存在");
+                    LogManager.Error(string.Format("启用车间失败：ID为 {0} 的车间不存在", id));
                     return false;
                 }
 
                 if (workshop.Status == "1")
                 {
-                    LogManager.Info($"车间 {workshop.WorkshopCode} 已经是启用状态");
+                    LogManager.Info(string.Format("车间 {0} 已经是启用状态", workshop.WorkshopCode));
                     return true;
                 }
 
@@ -388,14 +388,14 @@ namespace MES.BLL.Workshop
                 
                 if (result)
                 {
-                    LogManager.Info($"成功启用车间：{workshop.WorkshopCode}");
+                    LogManager.Info(string.Format("成功启用车间：{0}", workshop.WorkshopCode));
                 }
 
                 return result;
             }
             catch (Exception ex)
             {
-                LogManager.Error($"启用车间异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("启用车间异常：{0}", ex.Message), ex);
                 throw new MESException("启用车间时发生异常", ex);
             }
         }
@@ -413,33 +413,33 @@ namespace MES.BLL.Workshop
                 var workshop = _workshopDAL.GetById(id);
                 if (workshop == null)
                 {
-                    LogManager.Error($"禁用车间失败：ID为 {id} 的车间不存在");
+                    LogManager.Error(string.Format("禁用车间失败：ID为 {0} 的车间不存在", id));
                     return false;
                 }
 
                 if (workshop.Status == "0")
                 {
-                    LogManager.Info($"车间 {workshop.WorkshopCode} 已经是禁用状态");
+                    LogManager.Info(string.Format("车间 {0} 已经是禁用状态", workshop.WorkshopCode));
                     return true;
                 }
 
                 workshop.Status = "0";
                 workshop.Description = string.IsNullOrEmpty(workshop.Description) ? 
-                    $"禁用原因：{reason}" : $"{workshop.Description}；禁用原因：{reason}";
+                    string.Format("禁用原因：{0}", reason) : string.Format("{0}；禁用原因：{1}", workshop.Description, reason);
                 workshop.UpdateTime = DateTime.Now;
 
                 bool result = _workshopDAL.Update(workshop);
                 
                 if (result)
                 {
-                    LogManager.Info($"成功禁用车间：{workshop.WorkshopCode}，原因：{reason}");
+                    LogManager.Info(string.Format("成功禁用车间：{0}，原因：{1}", workshop.WorkshopCode, reason));
                 }
 
                 return result;
             }
             catch (Exception ex)
             {
-                LogManager.Error($"禁用车间异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("禁用车间异常：{0}", ex.Message), ex);
                 throw new MESException("禁用车间时发生异常", ex);
             }
         }
@@ -457,7 +457,7 @@ namespace MES.BLL.Workshop
                 var workshop = _workshopDAL.GetById(id);
                 if (workshop == null)
                 {
-                    LogManager.Error($"设置车间负责人失败：ID为 {id} 的车间不存在");
+                    LogManager.Error(string.Format("设置车间负责人失败：ID为 {0} 的车间不存在", id));
                     return false;
                 }
 
@@ -470,14 +470,14 @@ namespace MES.BLL.Workshop
                 
                 if (result)
                 {
-                    LogManager.Info($"成功设置车间 {workshop.WorkshopCode} 的负责人：{managerId}");
+                    LogManager.Info(string.Format("成功设置车间 {0} 的负责人：{1}", workshop.WorkshopCode, managerId));
                 }
 
                 return result;
             }
             catch (Exception ex)
             {
-                LogManager.Error($"设置车间负责人异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("设置车间负责人异常：{0}", ex.Message), ex);
                 throw new MESException("设置车间负责人时发生异常", ex);
             }
         }
@@ -501,7 +501,7 @@ namespace MES.BLL.Workshop
                 var workshop = _workshopDAL.GetById(id);
                 if (workshop == null)
                 {
-                    LogManager.Error($"更新车间产能失败：ID为 {id} 的车间不存在");
+                    LogManager.Error(string.Format("更新车间产能失败：ID为 {0} 的车间不存在", id));
                     return false;
                 }
 
@@ -512,14 +512,14 @@ namespace MES.BLL.Workshop
                 
                 if (result)
                 {
-                    LogManager.Info($"成功更新车间 {workshop.WorkshopCode} 的产能：{capacity}");
+                    LogManager.Info(string.Format("成功更新车间 {0} 的产能：{1}", workshop.WorkshopCode, capacity));
                 }
 
                 return result;
             }
             catch (Exception ex)
             {
-                LogManager.Error($"更新车间产能异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("更新车间产能异常：{0}", ex.Message), ex);
                 throw new MESException("更新车间产能时发生异常", ex);
             }
         }
@@ -536,7 +536,7 @@ namespace MES.BLL.Workshop
                 var workshop = _workshopDAL.GetById(id);
                 if (workshop == null)
                 {
-                    LogManager.Error($"获取车间工作负载失败：ID为 {id} 的车间不存在");
+                    LogManager.Error(string.Format("获取车间工作负载失败：ID为 {0} 的车间不存在", id));
                     return 0;
                 }
 
@@ -546,7 +546,7 @@ namespace MES.BLL.Workshop
             }
             catch (Exception ex)
             {
-                LogManager.Error($"获取车间工作负载异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("获取车间工作负载异常：{0}", ex.Message), ex);
                 throw new MESException("获取车间工作负载时发生异常", ex);
             }
         }
@@ -563,7 +563,7 @@ namespace MES.BLL.Workshop
                 var workshop = _workshopDAL.GetById(workshopId);
                 if (workshop == null)
                 {
-                    LogManager.Error($"获取车间设备失败：ID为 {workshopId} 的车间不存在");
+                    LogManager.Error(string.Format("获取车间设备失败：ID为 {0} 的车间不存在", workshopId));
                     return new List<string>();
                 }
 
@@ -577,7 +577,7 @@ namespace MES.BLL.Workshop
             }
             catch (Exception ex)
             {
-                LogManager.Error($"获取车间设备异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("获取车间设备异常：{0}", ex.Message), ex);
                 throw new MESException("获取车间设备时发生异常", ex);
             }
         }
@@ -601,14 +601,14 @@ namespace MES.BLL.Workshop
                 var workshop = _workshopDAL.GetById(workshopId);
                 if (workshop == null)
                 {
-                    LogManager.Error($"添加车间设备失败：ID为 {workshopId} 的车间不存在");
+                    LogManager.Error(string.Format("添加车间设备失败：ID为 {0} 的车间不存在", workshopId));
                     return false;
                 }
 
                 var equipments = GetWorkshopEquipments(workshopId);
                 if (equipments.Contains(equipmentCode))
                 {
-                    LogManager.Info($"设备 {equipmentCode} 已存在于车间 {workshop.WorkshopCode} 中");
+                    LogManager.Info(string.Format("设备 {0} 已存在于车间 {1} 中", equipmentCode, workshop.WorkshopCode));
                     return true;
                 }
 
@@ -620,14 +620,14 @@ namespace MES.BLL.Workshop
                 
                 if (result)
                 {
-                    LogManager.Info($"成功为车间 {workshop.WorkshopCode} 添加设备：{equipmentCode}");
+                    LogManager.Info(string.Format("成功为车间 {0} 添加设备：{1}", workshop.WorkshopCode, equipmentCode));
                 }
 
                 return result;
             }
             catch (Exception ex)
             {
-                LogManager.Error($"添加车间设备异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("添加车间设备异常：{0}", ex.Message), ex);
                 throw new MESException("添加车间设备时发生异常", ex);
             }
         }
@@ -651,14 +651,14 @@ namespace MES.BLL.Workshop
                 var workshop = _workshopDAL.GetById(workshopId);
                 if (workshop == null)
                 {
-                    LogManager.Error($"移除车间设备失败：ID为 {workshopId} 的车间不存在");
+                    LogManager.Error(string.Format("移除车间设备失败：ID为 {0} 的车间不存在", workshopId));
                     return false;
                 }
 
                 var equipments = GetWorkshopEquipments(workshopId);
                 if (!equipments.Contains(equipmentCode))
                 {
-                    LogManager.Info($"设备 {equipmentCode} 不存在于车间 {workshop.WorkshopCode} 中");
+                    LogManager.Info(string.Format("设备 {0} 不存在于车间 {1} 中", equipmentCode, workshop.WorkshopCode));
                     return true;
                 }
 
@@ -670,14 +670,14 @@ namespace MES.BLL.Workshop
                 
                 if (result)
                 {
-                    LogManager.Info($"成功从车间 {workshop.WorkshopCode} 移除设备：{equipmentCode}");
+                    LogManager.Info(string.Format("成功从车间 {0} 移除设备：{1}", workshop.WorkshopCode, equipmentCode));
                 }
 
                 return result;
             }
             catch (Exception ex)
             {
-                LogManager.Error($"移除车间设备异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("移除车间设备异常：{0}", ex.Message), ex);
                 throw new MESException("移除车间设备时发生异常", ex);
             }
         }
@@ -737,7 +737,7 @@ namespace MES.BLL.Workshop
             }
             catch (Exception ex)
             {
-                LogManager.Error($"检查车间编码是否存在异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("检查车间编码是否存在异常：{0}", ex.Message), ex);
                 return false;
             }
         }
@@ -754,7 +754,7 @@ namespace MES.BLL.Workshop
                 var workshop = _workshopDAL.GetById(workshopId);
                 if (workshop == null)
                 {
-                    LogManager.Error($"获取车间统计信息失败：ID为 {workshopId} 的车间不存在");
+                    LogManager.Error(string.Format("获取车间统计信息失败：ID为 {0} 的车间不存在", workshopId));
                     return new Dictionary<string, object>();
                 }
 
@@ -777,7 +777,7 @@ namespace MES.BLL.Workshop
             }
             catch (Exception ex)
             {
-                LogManager.Error($"获取车间统计信息异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("获取车间统计信息异常：{0}", ex.Message), ex);
                 throw new MESException("获取车间统计信息时发生异常", ex);
             }
         }
