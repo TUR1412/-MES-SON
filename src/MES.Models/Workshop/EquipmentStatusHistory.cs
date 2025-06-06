@@ -34,24 +34,9 @@ namespace MES.Models.Workshop
         public int ChangeUserId { get; set; }
 
         /// <summary>
-        /// 备注
+        /// 变更备注
         /// </summary>
-        public string Remark { get; set; }
-
-        /// <summary>
-        /// 创建时间
-        /// </summary>
-        public DateTime CreateTime { get; set; }
-
-        /// <summary>
-        /// 更新时间
-        /// </summary>
-        public DateTime? UpdateTime { get; set; }
-
-        /// <summary>
-        /// 是否删除：1-已删除，0-未删除
-        /// </summary>
-        public bool IsDeleted { get; set; }
+        public string ChangeRemark { get; set; }
 
         /// <summary>
         /// 构造函数
@@ -59,8 +44,6 @@ namespace MES.Models.Workshop
         public EquipmentStatusHistory()
         {
             ChangeTime = DateTime.Now;
-            IsDeleted = false;
-            CreateTime = DateTime.Now;
         }
     }
 }

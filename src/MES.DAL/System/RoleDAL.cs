@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using MySql.Data.MySqlClient;
 using MES.DAL.Base;
+using MES.DAL.Core;
 using MES.Models.System;
 using MES.Common.Logging;
 
@@ -207,23 +208,24 @@ namespace MES.DAL.System
                                AND is_deleted = 0 
                                ORDER BY sort_order, create_time";
                 
-                using (var connection = DatabaseHelper.GetConnection())
+                using (var connection = DatabaseHelper.CreateConnection())
                 {
+                    connection.Open();
                     using (var cmd = new MySqlCommand(sql, connection))
                     {
                         cmd.Parameters.AddWithValue("@Keyword", $"%{keyword}%");
-                        
+
                         using (var adapter = new MySqlDataAdapter(cmd))
                         {
                             var dataTable = new DataTable();
                             adapter.Fill(dataTable);
-                            
+
                             var roles = new List<RoleInfo>();
                             foreach (DataRow row in dataTable.Rows)
                             {
                                 roles.Add(MapRowToEntity(row));
                             }
-                            
+
                             return roles;
                         }
                     }
@@ -252,8 +254,9 @@ namespace MES.DAL.System
                     sql += " AND id != @ExcludeId";
                 }
                 
-                using (var connection = DatabaseHelper.GetConnection())
+                using (var connection = DatabaseHelper.CreateConnection())
                 {
+                    connection.Open();
                     using (var cmd = new MySqlCommand(sql, connection))
                     {
                         cmd.Parameters.AddWithValue("@RoleCode", roleCode);
@@ -261,7 +264,7 @@ namespace MES.DAL.System
                         {
                             cmd.Parameters.AddWithValue("@ExcludeId", excludeId);
                         }
-                        
+
                         var count = Convert.ToInt32(cmd.ExecuteScalar());
                         return count > 0;
                     }
@@ -284,21 +287,22 @@ namespace MES.DAL.System
             {
                 string sql = $"SELECT * FROM {TableName} WHERE is_deleted = 0 ORDER BY sort_order, create_time";
                 
-                using (var connection = DatabaseHelper.GetConnection())
+                using (var connection = DatabaseHelper.CreateConnection())
                 {
+                    connection.Open();
                     using (var cmd = new MySqlCommand(sql, connection))
                     {
                         using (var adapter = new MySqlDataAdapter(cmd))
                         {
                             var dataTable = new DataTable();
                             adapter.Fill(dataTable);
-                            
+
                             var roles = new List<RoleInfo>();
                             foreach (DataRow row in dataTable.Rows)
                             {
                                 roles.Add(MapRowToEntity(row));
                             }
-                            
+
                             return roles;
                         }
                     }

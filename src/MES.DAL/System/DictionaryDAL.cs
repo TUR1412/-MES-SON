@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using MySql.Data.MySqlClient;
 using MES.DAL.Base;
+using MES.DAL.Core;
 using MES.Models.System;
 using MES.Common.Logging;
 
@@ -148,23 +149,24 @@ namespace MES.DAL.System
             {
                 string sql = $"SELECT * FROM {TableName} WHERE dict_type = @DictType AND status = 1 AND is_deleted = 0 ORDER BY sort_order, dict_code";
                 
-                using (var connection = DatabaseHelper.GetConnection())
+                using (var connection = DatabaseHelper.CreateConnection())
                 {
+                    connection.Open();
                     using (var cmd = new MySqlCommand(sql, connection))
                     {
                         cmd.Parameters.AddWithValue("@DictType", dictType);
-                        
+
                         using (var adapter = new MySqlDataAdapter(cmd))
                         {
                             var dataTable = new DataTable();
                             adapter.Fill(dataTable);
-                            
+
                             var dictionaries = new List<DictionaryInfo>();
                             foreach (DataRow row in dataTable.Rows)
                             {
                                 dictionaries.Add(MapRowToEntity(row));
                             }
-                            
+
                             return dictionaries;
                         }
                     }
@@ -189,18 +191,19 @@ namespace MES.DAL.System
             {
                 string sql = $"SELECT * FROM {TableName} WHERE dict_type = @DictType AND dict_code = @DictCode AND is_deleted = 0";
                 
-                using (var connection = DatabaseHelper.GetConnection())
+                using (var connection = DatabaseHelper.CreateConnection())
                 {
+                    connection.Open();
                     using (var cmd = new MySqlCommand(sql, connection))
                     {
                         cmd.Parameters.AddWithValue("@DictType", dictType);
                         cmd.Parameters.AddWithValue("@DictCode", dictCode);
-                        
+
                         using (var adapter = new MySqlDataAdapter(cmd))
                         {
                             var dataTable = new DataTable();
                             adapter.Fill(dataTable);
-                            
+
                             if (dataTable.Rows.Count > 0)
                             {
                                 return MapRowToEntity(dataTable.Rows[0]);
@@ -229,23 +232,24 @@ namespace MES.DAL.System
             {
                 string sql = $"SELECT * FROM {TableName} WHERE parent_id = @ParentId AND status = 1 AND is_deleted = 0 ORDER BY sort_order, dict_code";
                 
-                using (var connection = DatabaseHelper.GetConnection())
+                using (var connection = DatabaseHelper.CreateConnection())
                 {
+                    connection.Open();
                     using (var cmd = new MySqlCommand(sql, connection))
                     {
                         cmd.Parameters.AddWithValue("@ParentId", parentId);
-                        
+
                         using (var adapter = new MySqlDataAdapter(cmd))
                         {
                             var dataTable = new DataTable();
                             adapter.Fill(dataTable);
-                            
+
                             var dictionaries = new List<DictionaryInfo>();
                             foreach (DataRow row in dataTable.Rows)
                             {
                                 dictionaries.Add(MapRowToEntity(row));
                             }
-                            
+
                             return dictionaries;
                         }
                     }
@@ -268,8 +272,9 @@ namespace MES.DAL.System
             {
                 string sql = $"SELECT DISTINCT dict_type FROM {TableName} WHERE is_deleted = 0 ORDER BY dict_type";
                 
-                using (var connection = DatabaseHelper.GetConnection())
+                using (var connection = DatabaseHelper.CreateConnection())
                 {
+                    connection.Open();
                     using (var cmd = new MySqlCommand(sql, connection))
                     {
                         using (var reader = cmd.ExecuteReader())
@@ -279,7 +284,7 @@ namespace MES.DAL.System
                             {
                                 dictTypes.Add(reader["dict_type"].ToString());
                             }
-                            
+
                             return dictTypes;
                         }
                     }
@@ -308,23 +313,24 @@ namespace MES.DAL.System
                                AND is_deleted = 0 
                                ORDER BY dict_type, sort_order, dict_code";
                 
-                using (var connection = DatabaseHelper.GetConnection())
+                using (var connection = DatabaseHelper.CreateConnection())
                 {
+                    connection.Open();
                     using (var cmd = new MySqlCommand(sql, connection))
                     {
                         cmd.Parameters.AddWithValue("@Keyword", $"%{keyword}%");
-                        
+
                         using (var adapter = new MySqlDataAdapter(cmd))
                         {
                             var dataTable = new DataTable();
                             adapter.Fill(dataTable);
-                            
+
                             var dictionaries = new List<DictionaryInfo>();
                             foreach (DataRow row in dataTable.Rows)
                             {
                                 dictionaries.Add(MapRowToEntity(row));
                             }
-                            
+
                             return dictionaries;
                         }
                     }
@@ -354,8 +360,9 @@ namespace MES.DAL.System
                     sql += " AND id != @ExcludeId";
                 }
                 
-                using (var connection = DatabaseHelper.GetConnection())
+                using (var connection = DatabaseHelper.CreateConnection())
                 {
+                    connection.Open();
                     using (var cmd = new MySqlCommand(sql, connection))
                     {
                         cmd.Parameters.AddWithValue("@DictType", dictType);
@@ -364,7 +371,7 @@ namespace MES.DAL.System
                         {
                             cmd.Parameters.AddWithValue("@ExcludeId", excludeId);
                         }
-                        
+
                         var count = Convert.ToInt32(cmd.ExecuteScalar());
                         return count > 0;
                     }
@@ -391,21 +398,23 @@ namespace MES.DAL.System
                     return true;
                 }
 
-                using (var connection = DatabaseHelper.GetConnection())
+                using (var connection = DatabaseHelper.CreateConnection())
                 {
+                    connection.Open();
                     using (var transaction = connection.BeginTransaction())
                     {
                         try
                         {
                             foreach (var dict in dictionaries)
                             {
-                                using (var cmd = new MySqlCommand(GetInsertSql(), connection, transaction))
+                                var (sql, parameters) = BuildInsertSql(dict);
+                                using (var cmd = new MySqlCommand(sql, connection, transaction))
                                 {
-                                    SetInsertParameters(cmd, dict);
+                                    cmd.Parameters.AddRange(parameters);
                                     cmd.ExecuteNonQuery();
                                 }
                             }
-                            
+
                             transaction.Commit();
                             return true;
                         }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using MySql.Data.MySqlClient;
 using MES.DAL.Base;
+using MES.DAL.Core;
 using MES.Models.Quality;
 using MES.Common.Logging;
 
@@ -214,17 +215,18 @@ namespace MES.DAL.Quality
             {
                 string sql = $"SELECT * FROM {TableName} WHERE inspection_number = @InspectionNumber AND is_deleted = 0";
                 
-                using (var connection = DatabaseHelper.GetConnection())
+                using (var connection = DatabaseHelper.CreateConnection())
                 {
+                    connection.Open();
                     using (var cmd = new MySqlCommand(sql, connection))
                     {
                         cmd.Parameters.AddWithValue("@InspectionNumber", inspectionNumber);
-                        
+
                         using (var adapter = new MySqlDataAdapter(cmd))
                         {
                             var dataTable = new DataTable();
                             adapter.Fill(dataTable);
-                            
+
                             if (dataTable.Rows.Count > 0)
                             {
                                 return MapRowToEntity(dataTable.Rows[0]);
@@ -253,23 +255,24 @@ namespace MES.DAL.Quality
             {
                 string sql = $"SELECT * FROM {TableName} WHERE production_order_id = @ProductionOrderId AND is_deleted = 0 ORDER BY inspection_time DESC";
                 
-                using (var connection = DatabaseHelper.GetConnection())
+                using (var connection = DatabaseHelper.CreateConnection())
                 {
+                    connection.Open();
                     using (var cmd = new MySqlCommand(sql, connection))
                     {
                         cmd.Parameters.AddWithValue("@ProductionOrderId", productionOrderId);
-                        
+
                         using (var adapter = new MySqlDataAdapter(cmd))
                         {
                             var dataTable = new DataTable();
                             adapter.Fill(dataTable);
-                            
+
                             var inspections = new List<QualityInspectionInfo>();
                             foreach (DataRow row in dataTable.Rows)
                             {
                                 inspections.Add(MapRowToEntity(row));
                             }
-                            
+
                             return inspections;
                         }
                     }
@@ -293,23 +296,24 @@ namespace MES.DAL.Quality
             {
                 string sql = $"SELECT * FROM {TableName} WHERE inspection_type = @InspectionType AND is_deleted = 0 ORDER BY inspection_time DESC";
                 
-                using (var connection = DatabaseHelper.GetConnection())
+                using (var connection = DatabaseHelper.CreateConnection())
                 {
+                    connection.Open();
                     using (var cmd = new MySqlCommand(sql, connection))
                     {
                         cmd.Parameters.AddWithValue("@InspectionType", inspectionType);
-                        
+
                         using (var adapter = new MySqlDataAdapter(cmd))
                         {
                             var dataTable = new DataTable();
                             adapter.Fill(dataTable);
-                            
+
                             var inspections = new List<QualityInspectionInfo>();
                             foreach (DataRow row in dataTable.Rows)
                             {
                                 inspections.Add(MapRowToEntity(row));
                             }
-                            
+
                             return inspections;
                         }
                     }
@@ -333,23 +337,24 @@ namespace MES.DAL.Quality
             {
                 string sql = $"SELECT * FROM {TableName} WHERE review_status = @ReviewStatus AND is_deleted = 0 ORDER BY inspection_time DESC";
                 
-                using (var connection = DatabaseHelper.GetConnection())
+                using (var connection = DatabaseHelper.CreateConnection())
                 {
+                    connection.Open();
                     using (var cmd = new MySqlCommand(sql, connection))
                     {
                         cmd.Parameters.AddWithValue("@ReviewStatus", reviewStatus);
-                        
+
                         using (var adapter = new MySqlDataAdapter(cmd))
                         {
                             var dataTable = new DataTable();
                             adapter.Fill(dataTable);
-                            
+
                             var inspections = new List<QualityInspectionInfo>();
                             foreach (DataRow row in dataTable.Rows)
                             {
                                 inspections.Add(MapRowToEntity(row));
                             }
-                            
+
                             return inspections;
                         }
                     }
@@ -378,23 +383,24 @@ namespace MES.DAL.Quality
                                AND is_deleted = 0 
                                ORDER BY inspection_time DESC";
                 
-                using (var connection = DatabaseHelper.GetConnection())
+                using (var connection = DatabaseHelper.CreateConnection())
                 {
+                    connection.Open();
                     using (var cmd = new MySqlCommand(sql, connection))
                     {
                         cmd.Parameters.AddWithValue("@Keyword", $"%{keyword}%");
-                        
+
                         using (var adapter = new MySqlDataAdapter(cmd))
                         {
                             var dataTable = new DataTable();
                             adapter.Fill(dataTable);
-                            
+
                             var inspections = new List<QualityInspectionInfo>();
                             foreach (DataRow row in dataTable.Rows)
                             {
                                 inspections.Add(MapRowToEntity(row));
                             }
-                            
+
                             return inspections;
                         }
                     }
@@ -429,13 +435,14 @@ namespace MES.DAL.Quality
                                WHERE inspection_time BETWEEN @StartDate AND @EndDate 
                                AND is_deleted = 0";
                 
-                using (var connection = DatabaseHelper.GetConnection())
+                using (var connection = DatabaseHelper.CreateConnection())
                 {
+                    connection.Open();
                     using (var cmd = new MySqlCommand(sql, connection))
                     {
                         cmd.Parameters.AddWithValue("@StartDate", startDate);
                         cmd.Parameters.AddWithValue("@EndDate", endDate);
-                        
+
                         using (var reader = cmd.ExecuteReader())
                         {
                             if (reader.Read())
@@ -444,7 +451,7 @@ namespace MES.DAL.Quality
                                 var qualifiedCount = Convert.ToInt32(reader["QualifiedCount"]);
                                 var totalInspectionQuantity = Convert.ToDecimal(reader["TotalInspectionQuantity"]);
                                 var totalQualifiedQuantity = Convert.ToDecimal(reader["TotalQualifiedQuantity"]);
-                                
+
                                 return new Dictionary<string, object>
                                 {
                                     ["TotalCount"] = totalCount,

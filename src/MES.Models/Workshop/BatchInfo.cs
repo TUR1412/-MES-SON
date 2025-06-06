@@ -54,28 +54,11 @@
             public string CarrierId { get; set; }
 
             /// <summary>
-            /// 创建时间
-            /// </summary>
-            public DateTime CreateTime { get; set; }
-
-            /// <summary>
-            /// 更新时间
-            /// </summary>
-            public DateTime? UpdateTime { get; set; }
-
-            /// <summary>
-            /// 是否删除：1-已删除，0-未删除
-            /// </summary>
-            public bool IsDeleted { get; set; }
-
-            /// <summary>
             /// 构造函数
             /// </summary>
             public BatchInfo()
             {
                 Status = 1; // 默认创建状态
-                IsDeleted = false;
-                CreateTime = DateTime.Now;
             }
         }
     }

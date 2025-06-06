@@ -46,6 +46,8 @@
     <Compile Include="Material\BOMInfo.cs" />
     <Compile Include="Production\ProductionOrderInfo.cs" />
     <Compile Include="Workshop\WorkshopInfo.cs" />
+    <Compile Include="Workshop\BatchInfo.cs" />
+    <Compile Include="Workshop\EquipmentStatusHistory.cs" />
     <Compile Include="System\UserInfo.cs" />
     <Compile Include="System\RoleInfo.cs" />
     <Compile Include="System\DictionaryInfo.cs" />
@@ -55,7 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MES.Common\MES.Common.csproj">
-      <Project>{E5F6A7B8-C9D0-1234-EF01-567890123456}</Project>
+      <Project>{0000E5F6-0000-0000-0000-000000000000}</Project>
       <Name>MES.Common</Name>
     </ProjectReference>
   </ItemGroup>

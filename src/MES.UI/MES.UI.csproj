@@ -143,7 +143,7 @@
       <Name>MES.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\MES.Models\MES.Models.csproj">
-      <Project>{C3D4E5F6-A7B8-9012-CDEF-345678901234}</Project>
+      <Project>{D4E5F6A7-B8C9-0123-DEF0-456789012345}</Project>
       <Name>MES.Models</Name>
     </ProjectReference>
   </ItemGroup>

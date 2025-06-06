@@ -169,7 +169,7 @@ namespace MES.DAL.Production
 
                 // 计算总记录数
                 string countSql = $"SELECT COUNT(*) FROM {TableName} WHERE is_deleted = 0";
-                using (var connection = DatabaseHelper.GetConnection())
+                using (var connection = DatabaseHelper.CreateConnection())
                 {
                     connection.Open();
                     using (var command = new MySqlCommand(countSql, connection))

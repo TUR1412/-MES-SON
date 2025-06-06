@@ -50,12 +50,14 @@
     <Compile Include="Production\ProductionOrderBLL.cs" />
     <Compile Include="Workshop\IWorkshopBLL.cs" />
     <Compile Include="Workshop\WorkshopBLL.cs" />
+    <Compile Include="Workshop\IBatchBLL.cs" />
+    <Compile Include="Workshop\BatchBLL.cs" />
     <Compile Include="System\IRoleBLL.cs" />
     <Compile Include="System\RoleBLL.cs" />
     <Compile Include="Equipment\IEquipmentBLL.cs" />
+    <Compile Include="Equipment\EquipmentBLL.cs" />
     <Compile Include="Quality\IQualityInspectionBLL.cs" />
-    <Compile Include="Workshop\IBatchBLL.cs" />
-    <Compile Include="Workshop\BatchBLL.cs" />
+    <Compile Include="Quality\QualityInspectionBLL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -58,6 +58,7 @@
     <!-- H成员和S成员的模型类已创建，DAL文件已修复MySQL API -->
     <Compile Include="Production\ProductionOrderDAL.cs" />
     <Compile Include="Workshop\WorkshopDAL.cs" />
+    <Compile Include="Workshop\BatchDAL.cs" />
     <Compile Include="Equipment\EquipmentDAL.cs" />
     <Compile Include="Quality\QualityInspectionDAL.cs" />
   </ItemGroup>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using MySql.Data.MySqlClient;
 using MES.DAL.Base;
+using MES.DAL.Core;
 using MES.Models.Equipment;
 using MES.Common.Logging;
 
@@ -187,8 +188,9 @@ namespace MES.DAL.Equipment
             {
                 string sql = $"SELECT * FROM {TableName} WHERE equipment_code = @EquipmentCode AND is_deleted = 0";
                 
-                using (var connection = DatabaseHelper.GetConnection())
+                using (var connection = DatabaseHelper.CreateConnection())
                 {
+                    connection.Open();
                     using (var cmd = new MySqlCommand(sql, connection))
                     {
                         cmd.Parameters.AddWithValue("@EquipmentCode", equipmentCode);
@@ -226,23 +228,24 @@ namespace MES.DAL.Equipment
             {
                 string sql = $"SELECT * FROM {TableName} WHERE workshop_id = @WorkshopId AND is_deleted = 0 ORDER BY equipment_code";
                 
-                using (var connection = DatabaseHelper.GetConnection())
+                using (var connection = DatabaseHelper.CreateConnection())
                 {
+                    connection.Open();
                     using (var cmd = new MySqlCommand(sql, connection))
                     {
                         cmd.Parameters.AddWithValue("@WorkshopId", workshopId);
-                        
+
                         using (var adapter = new MySqlDataAdapter(cmd))
                         {
                             var dataTable = new DataTable();
                             adapter.Fill(dataTable);
-                            
+
                             var equipments = new List<EquipmentInfo>();
                             foreach (DataRow row in dataTable.Rows)
                             {
                                 equipments.Add(MapRowToEntity(row));
                             }
-                            
+
                             return equipments;
                         }
                     }
@@ -266,23 +269,24 @@ namespace MES.DAL.Equipment
             {
                 string sql = $"SELECT * FROM {TableName} WHERE status = @Status AND is_deleted = 0 ORDER BY equipment_code";
                 
-                using (var connection = DatabaseHelper.GetConnection())
+                using (var connection = DatabaseHelper.CreateConnection())
                 {
+                    connection.Open();
                     using (var cmd = new MySqlCommand(sql, connection))
                     {
                         cmd.Parameters.AddWithValue("@Status", status);
-                        
+
                         using (var adapter = new MySqlDataAdapter(cmd))
                         {
                             var dataTable = new DataTable();
                             adapter.Fill(dataTable);
-                            
+
                             var equipments = new List<EquipmentInfo>();
                             foreach (DataRow row in dataTable.Rows)
                             {
                                 equipments.Add(MapRowToEntity(row));
                             }
-                            
+
                             return equipments;
                         }
                     }
@@ -309,23 +313,24 @@ namespace MES.DAL.Equipment
                                AND is_deleted = 0 
                                ORDER BY next_maintenance_date";
                 
-                using (var connection = DatabaseHelper.GetConnection())
+                using (var connection = DatabaseHelper.CreateConnection())
                 {
+                    connection.Open();
                     using (var cmd = new MySqlCommand(sql, connection))
                     {
                         cmd.Parameters.AddWithValue("@CurrentDate", DateTime.Now.Date);
-                        
+
                         using (var adapter = new MySqlDataAdapter(cmd))
                         {
                             var dataTable = new DataTable();
                             adapter.Fill(dataTable);
-                            
+
                             var equipments = new List<EquipmentInfo>();
                             foreach (DataRow row in dataTable.Rows)
                             {
                                 equipments.Add(MapRowToEntity(row));
                             }
-                            
+
                             return equipments;
                         }
                     }
@@ -354,23 +359,24 @@ namespace MES.DAL.Equipment
                                AND is_deleted = 0 
                                ORDER BY equipment_code";
                 
-                using (var connection = DatabaseHelper.GetConnection())
+                using (var connection = DatabaseHelper.CreateConnection())
                 {
+                    connection.Open();
                     using (var cmd = new MySqlCommand(sql, connection))
                     {
                         cmd.Parameters.AddWithValue("@Keyword", $"%{keyword}%");
-                        
+
                         using (var adapter = new MySqlDataAdapter(cmd))
                         {
                             var dataTable = new DataTable();
                             adapter.Fill(dataTable);
-                            
+
                             var equipments = new List<EquipmentInfo>();
                             foreach (DataRow row in dataTable.Rows)
                             {
                                 equipments.Add(MapRowToEntity(row));
                             }
-                            
+
                             return equipments;
                         }
                     }
@@ -399,8 +405,9 @@ namespace MES.DAL.Equipment
                     sql += " AND id != @ExcludeId";
                 }
                 
-                using (var connection = DatabaseHelper.GetConnection())
+                using (var connection = DatabaseHelper.CreateConnection())
                 {
+                    connection.Open();
                     using (var cmd = new MySqlCommand(sql, connection))
                     {
                         cmd.Parameters.AddWithValue("@EquipmentCode", equipmentCode);
@@ -408,7 +415,7 @@ namespace MES.DAL.Equipment
                         {
                             cmd.Parameters.AddWithValue("@ExcludeId", excludeId);
                         }
-                        
+
                         var count = Convert.ToInt32(cmd.ExecuteScalar());
                         return count > 0;
                     }
