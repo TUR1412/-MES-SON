@@ -29,7 +29,10 @@ namespace MES.DAL.System
         /// <summary>
         /// 主键属性名
         /// </summary>
-        protected override string PrimaryKey => "Id";
+        protected override string PrimaryKey
+        {
+            get { return "Id"; }
+        }
 
         /// <summary>
         /// 将DataRow转换为UserInfo实体对象
