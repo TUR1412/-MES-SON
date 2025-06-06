@@ -22,14 +22,15 @@ foreach ($file in $files) {
     $fileFixed = 0
     
     # 修复简单的字符串插值模式
-    # 模式1: $"{var}" -> string.Format("{0}", var)
-    $content = $content -replace '\$"([^"]*)\{([^}]+)\}([^"]*)"', 'string.Format("$1{0}$3", $2)'
-    
-    # 模式2: $"{var1} - {var2}" -> string.Format("{0} - {1}", var1, var2)
-    $content = $content -replace '\$"([^"]*)\{([^}]+)\}([^"]*)\{([^}]+)\}([^"]*)"', 'string.Format("$1{0}$3{1}$5", $2, $4)'
-    
-    # 模式3: $"{var1} - {var2} ({var3})" -> string.Format("{0} - {1} ({2})", var1, var2, var3)
-    $content = $content -replace '\$"([^"]*)\{([^}]+)\}([^"]*)\{([^}]+)\}([^"]*)\{([^}]+)\}([^"]*)"', 'string.Format("$1{0}$3{1}$5{2}$7", $2, $4, $6)'
+    # 模式1: 单变量
+    $pattern1 = '\$"([^"]*)\{([^}]+)\}([^"]*)"'
+    $replacement1 = 'string.Format("$1{0}$3", $2)'
+    $content = $content -replace $pattern1, $replacement1
+
+    # 模式2: 双变量
+    $pattern2 = '\$"([^"]*)\{([^}]+)\}([^"]*)\{([^}]+)\}([^"]*)"'
+    $replacement2 = 'string.Format("$1{0}$3{1}$5", $2, $4)'
+    $content = $content -replace $pattern2, $replacement2
     
     if ($content -ne $originalContent) {
         Set-Content -Path $file.FullName -Value $content -Encoding UTF8

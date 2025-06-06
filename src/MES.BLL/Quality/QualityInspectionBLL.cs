@@ -42,7 +42,7 @@ namespace MES.BLL.Quality
             }
             catch (Exception ex)
             {
-                LogManager.Error($"获取质量检验信息失败，ID: {id}", ex);
+                LogManager.Error(string.Format("获取质量检验信息失败，ID: {0}", id), ex);
                 throw new MESException("获取质量检验信息失败", ex);
             }
         }
@@ -65,7 +65,7 @@ namespace MES.BLL.Quality
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据检验单号获取检验信息失败，单号: {inspectionNumber}", ex);
+                LogManager.Error(string.Format("根据检验单号获取检验信息失败，单号: {0}", inspectionNumber), ex);
                 throw new MESException("获取质量检验信息失败", ex);
             }
         }
@@ -105,7 +105,7 @@ namespace MES.BLL.Quality
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据生产订单ID获取检验列表失败，订单ID: {productionOrderId}", ex);
+                LogManager.Error(string.Format("根据生产订单ID获取检验列表失败，订单ID: {0}", productionOrderId), ex);
                 throw new MESException("获取质量检验列表失败", ex);
             }
         }
@@ -123,7 +123,7 @@ namespace MES.BLL.Quality
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据检验类型获取检验列表失败，类型: {inspectionType}", ex);
+                LogManager.Error(string.Format("根据检验类型获取检验列表失败，类型: {0}", inspectionType), ex);
                 throw new MESException("获取质量检验列表失败", ex);
             }
         }
@@ -141,7 +141,7 @@ namespace MES.BLL.Quality
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据审核状态获取检验列表失败，状态: {reviewStatus}", ex);
+                LogManager.Error(string.Format("根据审核状态获取检验列表失败，状态: {0}", reviewStatus), ex);
                 throw new MESException("获取质量检验列表失败", ex);
             }
         }
@@ -164,7 +164,7 @@ namespace MES.BLL.Quality
             }
             catch (Exception ex)
             {
-                LogManager.Error($"搜索质量检验记录失败，关键词: {keyword}", ex);
+                LogManager.Error(string.Format("搜索质量检验记录失败，关键词: {0}", keyword), ex);
                 throw new MESException("搜索质量检验记录失败", ex);
             }
         }
@@ -188,7 +188,7 @@ namespace MES.BLL.Quality
             }
             catch (Exception ex)
             {
-                LogManager.Error($"获取质量统计数据失败，时间范围: {startDate:yyyy-MM-dd} 到 {endDate:yyyy-MM-dd}", ex);
+                LogManager.Error(string.Format("获取质量统计数据失败，时间范围: {0:yyyy-MM-dd} 到 {1:yyyy-MM-dd}", startDate, endDate), ex);
                 throw new MESException("获取质量统计数据失败", ex);
             }
         }
@@ -246,7 +246,7 @@ namespace MES.BLL.Quality
             }
             catch (Exception ex)
             {
-                LogManager.Error($"更新质量检验记录失败，ID: {inspection?.Id}", ex);
+                LogManager.Error(string.Format("更新质量检验记录失败，ID: {0}", inspection?.Id), ex);
                 throw new MESException("更新质量检验记录失败", ex);
             }
         }
@@ -269,7 +269,7 @@ namespace MES.BLL.Quality
             }
             catch (Exception ex)
             {
-                LogManager.Error($"删除质量检验记录失败，ID: {id}", ex);
+                LogManager.Error(string.Format("删除质量检验记录失败，ID: {0}", id), ex);
                 throw new MESException("删除质量检验记录失败", ex);
             }
         }
@@ -312,7 +312,7 @@ namespace MES.BLL.Quality
         /// <returns>检验单号</returns>
         private string GenerateInspectionNumber()
         {
-            return $"QI{DateTime.Now:yyyyMMddHHmmss}{new Random().Next(100, 999)}";
+            return string.Format("QI{0}{1}", DateTime.Now.ToString("yyyyMMddHHmmss"), new Random().Next(100, 999));
         }
     }
 }

@@ -42,7 +42,7 @@ namespace MES.BLL.Equipment
             }
             catch (Exception ex)
             {
-                LogManager.Error($"获取设备信息失败，ID: {id}", ex);
+                LogManager.Error(string.Format("获取设备信息失败，ID: {0}", id), ex);
                 throw new MESException("获取设备信息失败", ex);
             }
         }
@@ -65,7 +65,7 @@ namespace MES.BLL.Equipment
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据设备编码获取设备信息失败，编码: {equipmentCode}", ex);
+                LogManager.Error(string.Format("根据设备编码获取设备信息失败，编码: {0}", equipmentCode), ex);
                 throw new MESException("获取设备信息失败", ex);
             }
         }
@@ -105,7 +105,7 @@ namespace MES.BLL.Equipment
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据车间ID获取设备列表失败，车间ID: {workshopId}", ex);
+                LogManager.Error(string.Format("根据车间ID获取设备列表失败，车间ID: {0}", workshopId), ex);
                 throw new MESException("获取设备列表失败", ex);
             }
         }
@@ -123,7 +123,7 @@ namespace MES.BLL.Equipment
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据状态获取设备列表失败，状态: {status}", ex);
+                LogManager.Error(string.Format("根据状态获取设备列表失败，状态: {0}", status), ex);
                 throw new MESException("获取设备列表失败", ex);
             }
         }
@@ -163,7 +163,7 @@ namespace MES.BLL.Equipment
             }
             catch (Exception ex)
             {
-                LogManager.Error($"搜索设备失败，关键词: {keyword}", ex);
+                LogManager.Error(string.Format("搜索设备失败，关键词: {0}", keyword), ex);
                 throw new MESException("搜索设备失败", ex);
             }
         }
@@ -188,7 +188,7 @@ namespace MES.BLL.Equipment
                 // 检查设备编码是否已存在
                 if (_equipmentDAL.IsEquipmentCodeExists(equipment.EquipmentCode))
                 {
-                    throw new MESException($"设备编码 {equipment.EquipmentCode} 已存在");
+                    throw new MESException(string.Format("设备编码 {0} 已存在", equipment.EquipmentCode));
                 }
 
                 return _equipmentDAL.Add(equipment);
@@ -220,14 +220,14 @@ namespace MES.BLL.Equipment
                 // 检查设备编码是否已存在（排除当前设备）
                 if (_equipmentDAL.IsEquipmentCodeExists(equipment.EquipmentCode, equipment.Id))
                 {
-                    throw new MESException($"设备编码 {equipment.EquipmentCode} 已存在");
+                    throw new MESException(string.Format("设备编码 {0} 已存在", equipment.EquipmentCode));
                 }
 
                 return _equipmentDAL.Update(equipment);
             }
             catch (Exception ex)
             {
-                LogManager.Error($"更新设备失败，ID: {equipment?.Id}", ex);
+                LogManager.Error(string.Format("更新设备失败，ID: {0}", equipment?.Id), ex);
                 throw new MESException("更新设备失败", ex);
             }
         }
@@ -250,7 +250,7 @@ namespace MES.BLL.Equipment
             }
             catch (Exception ex)
             {
-                LogManager.Error($"删除设备失败，ID: {id}", ex);
+                LogManager.Error(string.Format("删除设备失败，ID: {0}", id), ex);
                 throw new MESException("删除设备失败", ex);
             }
         }

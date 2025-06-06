@@ -117,7 +117,7 @@ namespace MES.BLL.Production
                 // 检查订单状态，进行中的订单不能删除
                 if (existingOrder.Status == "进行中")
                 {
-                    LogManager.Error($"删除生产订单失败：订单 {existingOrder.OrderNumber} 正在进行中，不能删除");
+                    LogManager.Error(string.Format("删除生产订单失败：订单 {0} 正在进行中，不能删除", existingOrder.OrderNumber));
                     return false;
                 }
 
@@ -125,18 +125,18 @@ namespace MES.BLL.Production
                 
                 if (result)
                 {
-                    LogManager.Info($"成功删除生产订单：ID={id}, 订单号={existingOrder.OrderNumber}");
+                    LogManager.Info(string.Format("成功删除生产订单：ID={0}, 订单号={1}", id, existingOrder.OrderNumber));
                 }
                 else
                 {
-                    LogManager.Error($"删除生产订单失败：ID={id}");
+                    LogManager.Error(string.Format("删除生产订单失败：ID={0}", id));
                 }
 
                 return result;
             }
             catch (Exception ex)
             {
-                LogManager.Error($"删除生产订单异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("删除生产订单异常：{0}", ex.Message), ex);
                 throw new MESException("删除生产订单时发生异常", ex);
             }
         }
@@ -160,7 +160,7 @@ namespace MES.BLL.Production
                 string validationResult = ValidateProductionOrder(productionOrder);
                 if (!string.IsNullOrEmpty(validationResult))
                 {
-                    LogManager.Error($"更新生产订单失败：{validationResult}");
+                    LogManager.Error(string.Format("更新生产订单失败：{0}", validationResult));
                     return false;
                 }
 
@@ -168,7 +168,7 @@ namespace MES.BLL.Production
                 var existingOrder = _productionOrderDAL.GetById(productionOrder.Id);
                 if (existingOrder == null)
                 {
-                    LogManager.Error($"更新生产订单失败：ID为 {productionOrder.Id} 的订单不存在");
+                    LogManager.Error(string.Format("更新生产订单失败：ID为 {0} 的订单不存在", productionOrder.Id));
                     return false;
                 }
 
@@ -176,21 +176,21 @@ namespace MES.BLL.Production
                 productionOrder.UpdateTime = DateTime.Now;
 
                 bool result = _productionOrderDAL.Update(productionOrder);
-                
+
                 if (result)
                 {
-                    LogManager.Info($"成功更新生产订单：{productionOrder.OrderNumber}");
+                    LogManager.Info(string.Format("成功更新生产订单：{0}", productionOrder.OrderNumber));
                 }
                 else
                 {
-                    LogManager.Error($"更新生产订单失败：{productionOrder.OrderNumber}");
+                    LogManager.Error(string.Format("更新生产订单失败：{0}", productionOrder.OrderNumber));
                 }
 
                 return result;
             }
             catch (Exception ex)
             {
-                LogManager.Error($"更新生产订单异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("更新生产订单异常：{0}", ex.Message), ex);
                 throw new MESException("更新生产订单时发生异常", ex);
             }
         }
@@ -214,7 +214,7 @@ namespace MES.BLL.Production
             }
             catch (Exception ex)
             {
-                LogManager.Error($"获取生产订单异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("获取生产订单异常：{0}", ex.Message), ex);
                 throw new MESException("获取生产订单时发生异常", ex);
             }
         }
@@ -238,7 +238,7 @@ namespace MES.BLL.Production
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据订单号获取生产订单异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("根据订单号获取生产订单异常：{0}", ex.Message), ex);
                 throw new MESException("根据订单号获取生产订单时发生异常", ex);
             }
         }
@@ -255,7 +255,7 @@ namespace MES.BLL.Production
             }
             catch (Exception ex)
             {
-                LogManager.Error($"获取所有生产订单异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("获取所有生产订单异常：{0}", ex.Message), ex);
                 throw new MESException("获取所有生产订单时发生异常", ex);
             }
         }
@@ -279,7 +279,7 @@ namespace MES.BLL.Production
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据状态获取生产订单异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("根据状态获取生产订单异常：{0}", ex.Message), ex);
                 throw new MESException("根据状态获取生产订单时发生异常", ex);
             }
         }
@@ -303,7 +303,7 @@ namespace MES.BLL.Production
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据产品编码获取生产订单异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("根据产品编码获取生产订单异常：{0}", ex.Message), ex);
                 throw new MESException("根据产品编码获取生产订单时发生异常", ex);
             }
         }
@@ -330,7 +330,7 @@ namespace MES.BLL.Production
             }
             catch (Exception ex)
             {
-                LogManager.Error($"分页获取生产订单异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("分页获取生产订单异常：{0}", ex.Message), ex);
                 totalCount = 0;
                 throw new MESException("分页获取生产订单时发生异常", ex);
             }
@@ -354,7 +354,7 @@ namespace MES.BLL.Production
             }
             catch (Exception ex)
             {
-                LogManager.Error($"搜索生产订单异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("搜索生产订单异常：{0}", ex.Message), ex);
                 throw new MESException("搜索生产订单时发生异常", ex);
             }
         }
@@ -371,13 +371,13 @@ namespace MES.BLL.Production
                 var order = _productionOrderDAL.GetById(id);
                 if (order == null)
                 {
-                    LogManager.Error($"启动生产订单失败：ID为 {id} 的订单不存在");
+                    LogManager.Error(string.Format("启动生产订单失败：ID为 {0} 的订单不存在", id));
                     return false;
                 }
 
                 if (order.Status != "待开始")
                 {
-                    LogManager.Error($"启动生产订单失败：订单 {order.OrderNumber} 状态不是待开始");
+                    LogManager.Error(string.Format("启动生产订单失败：订单 {0} 状态不是待开始", order.OrderNumber));
                     return false;
                 }
 
@@ -386,17 +386,17 @@ namespace MES.BLL.Production
                 order.UpdateTime = DateTime.Now;
 
                 bool result = _productionOrderDAL.Update(order);
-                
+
                 if (result)
                 {
-                    LogManager.Info($"成功启动生产订单：{order.OrderNumber}");
+                    LogManager.Info(string.Format("成功启动生产订单：{0}", order.OrderNumber));
                 }
 
                 return result;
             }
             catch (Exception ex)
             {
-                LogManager.Error($"启动生产订单异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("启动生产订单异常：{0}", ex.Message), ex);
                 throw new MESException("启动生产订单时发生异常", ex);
             }
         }
@@ -414,19 +414,19 @@ namespace MES.BLL.Production
                 var order = _productionOrderDAL.GetById(id);
                 if (order == null)
                 {
-                    LogManager.Error($"完成生产订单失败：ID为 {id} 的订单不存在");
+                    LogManager.Error(string.Format("完成生产订单失败：ID为 {0} 的订单不存在", id));
                     return false;
                 }
 
                 if (order.Status != "进行中")
                 {
-                    LogManager.Error($"完成生产订单失败：订单 {order.OrderNumber} 状态不是进行中");
+                    LogManager.Error(string.Format("完成生产订单失败：订单 {0} 状态不是进行中", order.OrderNumber));
                     return false;
                 }
 
                 if (actualQuantity <= 0)
                 {
-                    LogManager.Error($"完成生产订单失败：实际完成数量必须大于0");
+                    LogManager.Error("完成生产订单失败：实际完成数量必须大于0");
                     return false;
                 }
 
@@ -436,17 +436,17 @@ namespace MES.BLL.Production
                 order.UpdateTime = DateTime.Now;
 
                 bool result = _productionOrderDAL.Update(order);
-                
+
                 if (result)
                 {
-                    LogManager.Info($"成功完成生产订单：{order.OrderNumber}，实际完成数量：{actualQuantity}");
+                    LogManager.Info(string.Format("成功完成生产订单：{0}，实际完成数量：{1}", order.OrderNumber, actualQuantity));
                 }
 
                 return result;
             }
             catch (Exception ex)
             {
-                LogManager.Error($"完成生产订单异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("完成生产订单异常：{0}", ex.Message), ex);
                 throw new MESException("完成生产订单时发生异常", ex);
             }
         }
@@ -464,32 +464,32 @@ namespace MES.BLL.Production
                 var order = _productionOrderDAL.GetById(id);
                 if (order == null)
                 {
-                    LogManager.Error($"暂停生产订单失败：ID为 {id} 的订单不存在");
+                    LogManager.Error(string.Format("暂停生产订单失败：ID为 {0} 的订单不存在", id));
                     return false;
                 }
 
                 if (order.Status != "进行中")
                 {
-                    LogManager.Error($"暂停生产订单失败：订单 {order.OrderNumber} 状态不是进行中");
+                    LogManager.Error(string.Format("暂停生产订单失败：订单 {0} 状态不是进行中", order.OrderNumber));
                     return false;
                 }
 
                 order.Status = "已暂停";
-                order.Remarks = string.IsNullOrEmpty(order.Remarks) ? $"暂停原因：{reason}" : $"{order.Remarks}；暂停原因：{reason}";
+                order.Remarks = string.IsNullOrEmpty(order.Remarks) ? string.Format("暂停原因：{0}", reason) : string.Format("{0}；暂停原因：{1}", order.Remarks, reason);
                 order.UpdateTime = DateTime.Now;
 
                 bool result = _productionOrderDAL.Update(order);
-                
+
                 if (result)
                 {
-                    LogManager.Info($"成功暂停生产订单：{order.OrderNumber}，原因：{reason}");
+                    LogManager.Info(string.Format("成功暂停生产订单：{0}，原因：{1}", order.OrderNumber, reason));
                 }
 
                 return result;
             }
             catch (Exception ex)
             {
-                LogManager.Error($"暂停生产订单异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("暂停生产订单异常：{0}", ex.Message), ex);
                 throw new MESException("暂停生产订单时发生异常", ex);
             }
         }
@@ -507,32 +507,32 @@ namespace MES.BLL.Production
                 var order = _productionOrderDAL.GetById(id);
                 if (order == null)
                 {
-                    LogManager.Error($"取消生产订单失败：ID为 {id} 的订单不存在");
+                    LogManager.Error(string.Format("取消生产订单失败：ID为 {0} 的订单不存在", id));
                     return false;
                 }
 
                 if (order.Status == "已完成" || order.Status == "已取消")
                 {
-                    LogManager.Error($"取消生产订单失败：订单 {order.OrderNumber} 已经是最终状态");
+                    LogManager.Error(string.Format("取消生产订单失败：订单 {0} 已经是最终状态", order.OrderNumber));
                     return false;
                 }
 
                 order.Status = "已取消";
-                order.Remarks = string.IsNullOrEmpty(order.Remarks) ? $"取消原因：{reason}" : $"{order.Remarks}；取消原因：{reason}";
+                order.Remarks = string.IsNullOrEmpty(order.Remarks) ? string.Format("取消原因：{0}", reason) : string.Format("{0}；取消原因：{1}", order.Remarks, reason);
                 order.UpdateTime = DateTime.Now;
 
                 bool result = _productionOrderDAL.Update(order);
-                
+
                 if (result)
                 {
-                    LogManager.Info($"成功取消生产订单：{order.OrderNumber}，原因：{reason}");
+                    LogManager.Info(string.Format("成功取消生产订单：{0}，原因：{1}", order.OrderNumber, reason));
                 }
 
                 return result;
             }
             catch (Exception ex)
             {
-                LogManager.Error($"取消生产订单异常：{ex.Message}", ex);
+                LogManager.Error(string.Format("取消生产订单异常：{0}", ex.Message), ex);
                 throw new MESException("取消生产订单时发生异常", ex);
             }
         }
