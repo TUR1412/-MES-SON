@@ -22,12 +22,18 @@ namespace MES.DAL.Workshop
         /// <summary>
         /// 表名
         /// </summary>
-        protected override string TableName => "batch_info";
+        protected override string TableName
+        {
+            get { return "batch_info"; }
+        }
 
         /// <summary>
         /// 主键属性名
         /// </summary>
-        protected override string PrimaryKey => "Id";
+        protected override string PrimaryKey
+        {
+            get { return "Id"; }
+        }
 
         /// <summary>
         /// 将DataRow转换为BatchInfo实体对象
@@ -79,7 +85,7 @@ namespace MES.DAL.Workshop
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据批次编号获取批次信息失败，批次编号: {batchId}", ex);
+                LogManager.Error(string.Format("根据批次编号获取批次信息失败，批次编号: {0}", batchId), ex);
                 throw new MESException("获取批次信息失败", ex);
             }
         }
@@ -103,7 +109,7 @@ namespace MES.DAL.Workshop
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据工单ID获取批次列表失败，工单ID: {workOrderId}", ex);
+                LogManager.Error(string.Format("根据工单ID获取批次列表失败，工单ID: {0}", workOrderId), ex);
                 throw new MESException("获取批次列表失败", ex);
             }
         }
@@ -122,7 +128,7 @@ namespace MES.DAL.Workshop
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据状态获取批次列表失败，状态: {status}", ex);
+                LogManager.Error(string.Format("根据状态获取批次列表失败，状态: {0}", status), ex);
                 throw new MESException("获取批次列表失败", ex);
             }
         }
@@ -146,7 +152,7 @@ namespace MES.DAL.Workshop
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据工站获取批次列表失败，工站ID: {stationId}", ex);
+                LogManager.Error(string.Format("根据工站获取批次列表失败，工站ID: {0}", stationId), ex);
                 throw new MESException("获取批次列表失败", ex);
             }
         }
@@ -160,18 +166,18 @@ namespace MES.DAL.Workshop
         /// </summary>
         /// <param name="entity">批次实体</param>
         /// <returns>SQL语句和参数</returns>
-        protected override (string sql, MySqlParameter[] parameters) BuildInsertSql(BatchInfo entity)
+        protected override bool BuildInsertSql(BatchInfo entity, out string sql, out MySqlParameter[] parameters)
         {
-            string sql = @"INSERT INTO batch_info 
-                          (batch_id, work_order_id, product_material_id, quantity, status, 
-                           current_station_id, production_start_time, production_end_time, 
-                           carrier_id, create_time, update_time, is_deleted) 
-                          VALUES 
-                          (@batchId, @workOrderId, @productMaterialId, @quantity, @status, 
-                           @currentStationId, @productionStartTime, @productionEndTime, 
+            sql = @"INSERT INTO batch_info
+                          (batch_id, work_order_id, product_material_id, quantity, status,
+                           current_station_id, production_start_time, production_end_time,
+                           carrier_id, create_time, update_time, is_deleted)
+                          VALUES
+                          (@batchId, @workOrderId, @productMaterialId, @quantity, @status,
+                           @currentStationId, @productionStartTime, @productionEndTime,
                            @carrierId, @createTime, @updateTime, @isDeleted)";
 
-            var parameters = new[]
+            parameters = new[]
             {
                 DatabaseHelper.CreateParameter("@batchId", entity.BatchId),
                 DatabaseHelper.CreateParameter("@workOrderId", entity.WorkOrderId),
@@ -187,7 +193,7 @@ namespace MES.DAL.Workshop
                 DatabaseHelper.CreateParameter("@isDeleted", entity.IsDeleted)
             };
 
-            return (sql, parameters);
+            return true;
         }
 
         /// <summary>
@@ -195,18 +201,18 @@ namespace MES.DAL.Workshop
         /// </summary>
         /// <param name="entity">批次实体</param>
         /// <returns>SQL语句和参数</returns>
-        protected override (string sql, MySqlParameter[] parameters) BuildUpdateSql(BatchInfo entity)
+        protected override bool BuildUpdateSql(BatchInfo entity, out string sql, out MySqlParameter[] parameters)
         {
-            string sql = @"UPDATE batch_info SET 
-                          batch_id = @batchId, work_order_id = @workOrderId, 
-                          product_material_id = @productMaterialId, quantity = @quantity, 
+            sql = @"UPDATE batch_info SET
+                          batch_id = @batchId, work_order_id = @workOrderId,
+                          product_material_id = @productMaterialId, quantity = @quantity,
                           status = @status, current_station_id = @currentStationId,
-                          production_start_time = @productionStartTime, 
+                          production_start_time = @productionStartTime,
                           production_end_time = @productionEndTime, carrier_id = @carrierId,
-                          update_time = @updateTime 
+                          update_time = @updateTime
                           WHERE id = @id AND is_deleted = 0";
 
-            var parameters = new[]
+            parameters = new[]
             {
                 DatabaseHelper.CreateParameter("@batchId", entity.BatchId),
                 DatabaseHelper.CreateParameter("@workOrderId", entity.WorkOrderId),
@@ -221,7 +227,7 @@ namespace MES.DAL.Workshop
                 DatabaseHelper.CreateParameter("@id", entity.Id)
             };
 
-            return (sql, parameters);
+            return true;
         }
 
         #endregion
