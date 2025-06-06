@@ -18,12 +18,18 @@ namespace MES.DAL.Quality
         /// <summary>
         /// 表名
         /// </summary>
-        protected override string TableName => "quality_inspection";
+        protected override string TableName
+        {
+            get { return "quality_inspection"; }
+        }
 
         /// <summary>
         /// 主键字段名
         /// </summary>
-        protected override string PrimaryKey => "id";
+        protected override string PrimaryKey
+        {
+            get { return "id"; }
+        }
 
         /// <summary>
         /// 将DataRow转换为QualityInspectionInfo对象
@@ -213,7 +219,7 @@ namespace MES.DAL.Quality
         {
             try
             {
-                string sql = $"SELECT * FROM {TableName} WHERE inspection_number = @InspectionNumber AND is_deleted = 0";
+                string sql = string.Format("SELECT * FROM {0} WHERE inspection_number = @InspectionNumber AND is_deleted = 0", TableName);
                 
                 using (var connection = DatabaseHelper.CreateConnection())
                 {
@@ -239,7 +245,7 @@ namespace MES.DAL.Quality
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据检验单号获取检验信息失败：{ex.Message}", ex);
+                LogManager.Error(string.Format("根据检验单号获取检验信息失败：{0}", ex.Message), ex);
                 throw;
             }
         }
@@ -253,7 +259,7 @@ namespace MES.DAL.Quality
         {
             try
             {
-                string sql = $"SELECT * FROM {TableName} WHERE production_order_id = @ProductionOrderId AND is_deleted = 0 ORDER BY inspection_time DESC";
+                string sql = string.Format("SELECT * FROM {0} WHERE production_order_id = @ProductionOrderId AND is_deleted = 0 ORDER BY inspection_time DESC", TableName);
                 
                 using (var connection = DatabaseHelper.CreateConnection())
                 {
@@ -280,7 +286,7 @@ namespace MES.DAL.Quality
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据生产订单ID获取检验列表失败：{ex.Message}", ex);
+                LogManager.Error(string.Format("根据生产订单ID获取检验列表失败：{0}", ex.Message), ex);
                 throw;
             }
         }
@@ -294,7 +300,7 @@ namespace MES.DAL.Quality
         {
             try
             {
-                string sql = $"SELECT * FROM {TableName} WHERE inspection_type = @InspectionType AND is_deleted = 0 ORDER BY inspection_time DESC";
+                string sql = string.Format("SELECT * FROM {0} WHERE inspection_type = @InspectionType AND is_deleted = 0 ORDER BY inspection_time DESC", TableName);
                 
                 using (var connection = DatabaseHelper.CreateConnection())
                 {
@@ -321,7 +327,7 @@ namespace MES.DAL.Quality
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据检验类型获取检验列表失败：{ex.Message}", ex);
+                LogManager.Error(string.Format("根据检验类型获取检验列表失败：{0}", ex.Message), ex);
                 throw;
             }
         }
@@ -335,7 +341,7 @@ namespace MES.DAL.Quality
         {
             try
             {
-                string sql = $"SELECT * FROM {TableName} WHERE review_status = @ReviewStatus AND is_deleted = 0 ORDER BY inspection_time DESC";
+                string sql = string.Format("SELECT * FROM {0} WHERE review_status = @ReviewStatus AND is_deleted = 0 ORDER BY inspection_time DESC", TableName);
                 
                 using (var connection = DatabaseHelper.CreateConnection())
                 {
@@ -362,7 +368,7 @@ namespace MES.DAL.Quality
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据审核状态获取检验列表失败：{ex.Message}", ex);
+                LogManager.Error(string.Format("根据审核状态获取检验列表失败：{0}", ex.Message), ex);
                 throw;
             }
         }
@@ -376,19 +382,19 @@ namespace MES.DAL.Quality
         {
             try
             {
-                string sql = $@"SELECT * FROM {TableName} 
-                               WHERE (inspection_number LIKE @Keyword OR production_order_number LIKE @Keyword 
-                                      OR product_code LIKE @Keyword OR product_name LIKE @Keyword 
-                                      OR inspector_name LIKE @Keyword OR reviewer_name LIKE @Keyword) 
-                               AND is_deleted = 0 
-                               ORDER BY inspection_time DESC";
+                string sql = string.Format(@"SELECT * FROM {0}
+                               WHERE (inspection_number LIKE @Keyword OR production_order_number LIKE @Keyword
+                                      OR product_code LIKE @Keyword OR product_name LIKE @Keyword
+                                      OR inspector_name LIKE @Keyword OR reviewer_name LIKE @Keyword)
+                               AND is_deleted = 0
+                               ORDER BY inspection_time DESC", TableName);
                 
                 using (var connection = DatabaseHelper.CreateConnection())
                 {
                     connection.Open();
                     using (var cmd = new MySqlCommand(sql, connection))
                     {
-                        cmd.Parameters.AddWithValue("@Keyword", $"%{keyword}%");
+                        cmd.Parameters.AddWithValue("@Keyword", string.Format("%{0}%", keyword));
 
                         using (var adapter = new MySqlDataAdapter(cmd))
                         {
@@ -408,7 +414,7 @@ namespace MES.DAL.Quality
             }
             catch (Exception ex)
             {
-                LogManager.Error($"搜索质量检验记录失败：{ex.Message}", ex);
+                LogManager.Error(string.Format("搜索质量检验记录失败：{0}", ex.Message), ex);
                 throw;
             }
         }
@@ -423,7 +429,7 @@ namespace MES.DAL.Quality
         {
             try
             {
-                string sql = $@"SELECT 
+                string sql = string.Format(@"SELECT
                                COUNT(*) as TotalCount,
                                SUM(CASE WHEN inspection_result = 1 THEN 1 ELSE 0 END) as QualifiedCount,
                                SUM(CASE WHEN inspection_result = 2 THEN 1 ELSE 0 END) as UnqualifiedCount,
@@ -431,9 +437,9 @@ namespace MES.DAL.Quality
                                SUM(inspection_quantity) as TotalInspectionQuantity,
                                SUM(qualified_quantity) as TotalQualifiedQuantity,
                                SUM(unqualified_quantity) as TotalUnqualifiedQuantity
-                               FROM {TableName} 
-                               WHERE inspection_time BETWEEN @StartDate AND @EndDate 
-                               AND is_deleted = 0";
+                               FROM {0}
+                               WHERE inspection_time BETWEEN @StartDate AND @EndDate
+                               AND is_deleted = 0", TableName);
                 
                 using (var connection = DatabaseHelper.CreateConnection())
                 {
@@ -473,7 +479,7 @@ namespace MES.DAL.Quality
             }
             catch (Exception ex)
             {
-                LogManager.Error($"获取质量统计数据失败：{ex.Message}", ex);
+                LogManager.Error(string.Format("获取质量统计数据失败：{0}", ex.Message), ex);
                 throw;
             }
         }

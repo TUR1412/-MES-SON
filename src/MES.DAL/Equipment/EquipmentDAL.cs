@@ -18,12 +18,18 @@ namespace MES.DAL.Equipment
         /// <summary>
         /// 表名
         /// </summary>
-        protected override string TableName => "equipment";
+        protected override string TableName
+        {
+            get { return "equipment"; }
+        }
 
         /// <summary>
         /// 主键字段名
         /// </summary>
-        protected override string PrimaryKey => "id";
+        protected override string PrimaryKey
+        {
+            get { return "id"; }
+        }
 
         /// <summary>
         /// 将DataRow转换为EquipmentInfo对象
@@ -186,7 +192,7 @@ namespace MES.DAL.Equipment
         {
             try
             {
-                string sql = $"SELECT * FROM {TableName} WHERE equipment_code = @EquipmentCode AND is_deleted = 0";
+                string sql = string.Format("SELECT * FROM {0} WHERE equipment_code = @EquipmentCode AND is_deleted = 0", TableName);
                 
                 using (var connection = DatabaseHelper.CreateConnection())
                 {
@@ -212,7 +218,7 @@ namespace MES.DAL.Equipment
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据设备编码获取设备信息失败：{ex.Message}", ex);
+                LogManager.Error(string.Format("根据设备编码获取设备信息失败：{0}", ex.Message), ex);
                 throw;
             }
         }
@@ -226,7 +232,7 @@ namespace MES.DAL.Equipment
         {
             try
             {
-                string sql = $"SELECT * FROM {TableName} WHERE workshop_id = @WorkshopId AND is_deleted = 0 ORDER BY equipment_code";
+                string sql = string.Format("SELECT * FROM {0} WHERE workshop_id = @WorkshopId AND is_deleted = 0 ORDER BY equipment_code", TableName);
                 
                 using (var connection = DatabaseHelper.CreateConnection())
                 {
@@ -253,7 +259,7 @@ namespace MES.DAL.Equipment
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据车间ID获取设备列表失败：{ex.Message}", ex);
+                LogManager.Error(string.Format("根据车间ID获取设备列表失败：{0}", ex.Message), ex);
                 throw;
             }
         }
@@ -267,7 +273,7 @@ namespace MES.DAL.Equipment
         {
             try
             {
-                string sql = $"SELECT * FROM {TableName} WHERE status = @Status AND is_deleted = 0 ORDER BY equipment_code";
+                string sql = string.Format("SELECT * FROM {0} WHERE status = @Status AND is_deleted = 0 ORDER BY equipment_code", TableName);
                 
                 using (var connection = DatabaseHelper.CreateConnection())
                 {
@@ -294,7 +300,7 @@ namespace MES.DAL.Equipment
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据状态获取设备列表失败：{ex.Message}", ex);
+                LogManager.Error(string.Format("根据状态获取设备列表失败：{0}", ex.Message), ex);
                 throw;
             }
         }
@@ -307,11 +313,11 @@ namespace MES.DAL.Equipment
         {
             try
             {
-                string sql = $@"SELECT * FROM {TableName} 
-                               WHERE next_maintenance_date <= @CurrentDate 
-                               AND status = 1 
-                               AND is_deleted = 0 
-                               ORDER BY next_maintenance_date";
+                string sql = string.Format(@"SELECT * FROM {0}
+                               WHERE next_maintenance_date <= @CurrentDate
+                               AND status = 1
+                               AND is_deleted = 0
+                               ORDER BY next_maintenance_date", TableName);
                 
                 using (var connection = DatabaseHelper.CreateConnection())
                 {
@@ -338,7 +344,7 @@ namespace MES.DAL.Equipment
             }
             catch (Exception ex)
             {
-                LogManager.Error($"获取需要维护的设备列表失败：{ex.Message}", ex);
+                LogManager.Error(string.Format("获取需要维护的设备列表失败：{0}", ex.Message), ex);
                 throw;
             }
         }
@@ -352,19 +358,19 @@ namespace MES.DAL.Equipment
         {
             try
             {
-                string sql = $@"SELECT * FROM {TableName} 
-                               WHERE (equipment_code LIKE @Keyword OR equipment_name LIKE @Keyword 
-                                      OR equipment_type LIKE @Keyword OR manufacturer LIKE @Keyword 
-                                      OR model LIKE @Keyword OR location LIKE @Keyword) 
-                               AND is_deleted = 0 
-                               ORDER BY equipment_code";
+                string sql = string.Format(@"SELECT * FROM {0}
+                               WHERE (equipment_code LIKE @Keyword OR equipment_name LIKE @Keyword
+                                      OR equipment_type LIKE @Keyword OR manufacturer LIKE @Keyword
+                                      OR model LIKE @Keyword OR location LIKE @Keyword)
+                               AND is_deleted = 0
+                               ORDER BY equipment_code", TableName);
                 
                 using (var connection = DatabaseHelper.CreateConnection())
                 {
                     connection.Open();
                     using (var cmd = new MySqlCommand(sql, connection))
                     {
-                        cmd.Parameters.AddWithValue("@Keyword", $"%{keyword}%");
+                        cmd.Parameters.AddWithValue("@Keyword", string.Format("%{0}%", keyword));
 
                         using (var adapter = new MySqlDataAdapter(cmd))
                         {
@@ -384,7 +390,7 @@ namespace MES.DAL.Equipment
             }
             catch (Exception ex)
             {
-                LogManager.Error($"搜索设备失败：{ex.Message}", ex);
+                LogManager.Error(string.Format("搜索设备失败：{0}", ex.Message), ex);
                 throw;
             }
         }
@@ -399,7 +405,7 @@ namespace MES.DAL.Equipment
         {
             try
             {
-                string sql = $"SELECT COUNT(1) FROM {TableName} WHERE equipment_code = @EquipmentCode AND is_deleted = 0";
+                string sql = string.Format("SELECT COUNT(1) FROM {0} WHERE equipment_code = @EquipmentCode AND is_deleted = 0", TableName);
                 if (excludeId > 0)
                 {
                     sql += " AND id != @ExcludeId";
@@ -423,7 +429,7 @@ namespace MES.DAL.Equipment
             }
             catch (Exception ex)
             {
-                LogManager.Error($"检查设备编码是否存在失败：{ex.Message}", ex);
+                LogManager.Error(string.Format("检查设备编码是否存在失败：{0}", ex.Message), ex);
                 throw;
             }
         }

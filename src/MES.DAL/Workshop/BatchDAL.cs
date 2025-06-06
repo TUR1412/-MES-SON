@@ -21,12 +21,18 @@ namespace MES.DAL.Workshop
         /// <summary>
         /// 表名
         /// </summary>
-        protected override string TableName => "batch_info";
+        protected override string TableName
+        {
+            get { return "batch_info"; }
+        }
 
         /// <summary>
         /// 主键属性名
         /// </summary>
-        protected override string PrimaryKey => "Id";
+        protected override string PrimaryKey
+        {
+            get { return "Id"; }
+        }
 
         /// <summary>
         /// 将DataRow转换为BatchInfo实体对象
@@ -38,15 +44,15 @@ namespace MES.DAL.Workshop
             return new BatchInfo
             {
                 Id = Convert.ToInt32(row["id"]),
-                BatchId = row["batch_id"]?.ToString(),
-                WorkOrderId = row["work_order_id"]?.ToString(),
-                ProductMaterialId = row["product_material_id"]?.ToString(),
+                BatchId = row["batch_id"] != DBNull.Value ? row["batch_id"].ToString() : null,
+                WorkOrderId = row["work_order_id"] != DBNull.Value ? row["work_order_id"].ToString() : null,
+                ProductMaterialId = row["product_material_id"] != DBNull.Value ? row["product_material_id"].ToString() : null,
                 Quantity = Convert.ToDecimal(row["quantity"]),
                 Status = Convert.ToInt32(row["status"]),
-                CurrentStationId = row["current_station_id"]?.ToString(),
+                CurrentStationId = row["current_station_id"] != DBNull.Value ? row["current_station_id"].ToString() : null,
                 ProductionStartTime = row["production_start_time"] != DBNull.Value ? Convert.ToDateTime(row["production_start_time"]) : (DateTime?)null,
                 ProductionEndTime = row["production_end_time"] != DBNull.Value ? Convert.ToDateTime(row["production_end_time"]) : (DateTime?)null,
-                CarrierId = row["carrier_id"]?.ToString(),
+                CarrierId = row["carrier_id"] != DBNull.Value ? row["carrier_id"].ToString() : null,
                 CreateTime = Convert.ToDateTime(row["create_time"]),
                 UpdateTime = row["update_time"] != DBNull.Value ? Convert.ToDateTime(row["update_time"]) : (DateTime?)null,
                 IsDeleted = Convert.ToBoolean(row["is_deleted"])
@@ -158,19 +164,21 @@ namespace MES.DAL.Workshop
         /// 构建INSERT SQL语句
         /// </summary>
         /// <param name="entity">批次实体</param>
-        /// <returns>SQL语句和参数</returns>
-        protected override (string sql, MySqlParameter[] parameters) BuildInsertSql(BatchInfo entity)
+        /// <param name="sql">输出SQL语句</param>
+        /// <param name="parameters">输出参数数组</param>
+        /// <returns>操作是否成功</returns>
+        protected override bool BuildInsertSql(BatchInfo entity, out string sql, out MySqlParameter[] parameters)
         {
-            string sql = @"INSERT INTO batch_info 
-                          (batch_id, work_order_id, product_material_id, quantity, status, 
-                           current_station_id, production_start_time, production_end_time, 
-                           carrier_id, create_time, update_time, is_deleted) 
-                          VALUES 
-                          (@batchId, @workOrderId, @productMaterialId, @quantity, @status, 
-                           @currentStationId, @productionStartTime, @productionEndTime, 
+            sql = @"INSERT INTO batch_info
+                          (batch_id, work_order_id, product_material_id, quantity, status,
+                           current_station_id, production_start_time, production_end_time,
+                           carrier_id, create_time, update_time, is_deleted)
+                          VALUES
+                          (@batchId, @workOrderId, @productMaterialId, @quantity, @status,
+                           @currentStationId, @productionStartTime, @productionEndTime,
                            @carrierId, @createTime, @updateTime, @isDeleted)";
 
-            var parameters = new[]
+            parameters = new[]
             {
                 DatabaseHelper.CreateParameter("@batchId", entity.BatchId),
                 DatabaseHelper.CreateParameter("@workOrderId", entity.WorkOrderId),
@@ -186,26 +194,28 @@ namespace MES.DAL.Workshop
                 DatabaseHelper.CreateParameter("@isDeleted", entity.IsDeleted)
             };
 
-            return (sql, parameters);
+            return true;
         }
 
         /// <summary>
         /// 构建UPDATE SQL语句
         /// </summary>
         /// <param name="entity">批次实体</param>
-        /// <returns>SQL语句和参数</returns>
-        protected override (string sql, MySqlParameter[] parameters) BuildUpdateSql(BatchInfo entity)
+        /// <param name="sql">输出SQL语句</param>
+        /// <param name="parameters">输出参数数组</param>
+        /// <returns>操作是否成功</returns>
+        protected override bool BuildUpdateSql(BatchInfo entity, out string sql, out MySqlParameter[] parameters)
         {
-            string sql = @"UPDATE batch_info SET 
-                          batch_id = @batchId, work_order_id = @workOrderId, 
-                          product_material_id = @productMaterialId, quantity = @quantity, 
+            sql = @"UPDATE batch_info SET
+                          batch_id = @batchId, work_order_id = @workOrderId,
+                          product_material_id = @productMaterialId, quantity = @quantity,
                           status = @status, current_station_id = @currentStationId,
-                          production_start_time = @productionStartTime, 
+                          production_start_time = @productionStartTime,
                           production_end_time = @productionEndTime, carrier_id = @carrierId,
-                          update_time = @updateTime 
+                          update_time = @updateTime
                           WHERE id = @id AND is_deleted = 0";
 
-            var parameters = new[]
+            parameters = new[]
             {
                 DatabaseHelper.CreateParameter("@batchId", entity.BatchId),
                 DatabaseHelper.CreateParameter("@workOrderId", entity.WorkOrderId),
@@ -220,7 +230,7 @@ namespace MES.DAL.Workshop
                 DatabaseHelper.CreateParameter("@id", entity.Id)
             };
 
-            return (sql, parameters);
+            return true;
         }
 
         #endregion

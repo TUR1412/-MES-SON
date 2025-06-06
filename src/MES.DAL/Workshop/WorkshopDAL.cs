@@ -22,12 +22,18 @@ namespace MES.DAL.Workshop
         /// <summary>
         /// 表名
         /// </summary>
-        protected override string TableName => "workshop_info";
+        protected override string TableName
+        {
+            get { return "workshop_info"; }
+        }
 
         /// <summary>
         /// 主键属性名
         /// </summary>
-        protected override string PrimaryKey => "Id";
+        protected override string PrimaryKey
+        {
+            get { return "Id"; }
+        }
 
         /// <summary>
         /// 将DataRow转换为WorkshopInfo实体对象
@@ -39,25 +45,25 @@ namespace MES.DAL.Workshop
             return new WorkshopInfo
             {
                 Id = Convert.ToInt32(row["id"]),
-                WorkshopCode = row["workshop_code"]?.ToString(),
-                WorkshopName = row["workshop_name"]?.ToString(),
-                Department = row["department"]?.ToString(),
-                Manager = row["manager"]?.ToString(),
+                WorkshopCode = row["workshop_code"] != DBNull.Value ? row["workshop_code"].ToString() : null,
+                WorkshopName = row["workshop_name"] != DBNull.Value ? row["workshop_name"].ToString() : null,
+                Department = row["department"] != DBNull.Value ? row["department"].ToString() : null,
+                Manager = row["manager"] != DBNull.Value ? row["manager"].ToString() : null,
                 ManagerId = row["manager_id"] != DBNull.Value ? Convert.ToInt32(row["manager_id"]) : (int?)null,
-                Phone = row["phone"]?.ToString(),
-                Location = row["location"]?.ToString(),
+                Phone = row["phone"] != DBNull.Value ? row["phone"].ToString() : null,
+                Location = row["location"] != DBNull.Value ? row["location"].ToString() : null,
                 Area = row["area"] != DBNull.Value ? Convert.ToDecimal(row["area"]) : (decimal?)null,
                 EquipmentCount = row["equipment_count"] != DBNull.Value ? Convert.ToInt32(row["equipment_count"]) : (int?)null,
                 EmployeeCount = row["employee_count"] != DBNull.Value ? Convert.ToInt32(row["employee_count"]) : (int?)null,
-                WorkshopType = row["workshop_type"]?.ToString(),
+                WorkshopType = row["workshop_type"] != DBNull.Value ? row["workshop_type"].ToString() : null,
                 ProductionCapacity = row["production_capacity"] != DBNull.Value ? Convert.ToDecimal(row["production_capacity"]) : (decimal?)null,
-                Status = row["status"]?.ToString(),
-                WorkShift = row["work_shift"]?.ToString(),
-                SafetyLevel = row["safety_level"]?.ToString(),
-                EnvironmentRequirement = row["environment_requirement"]?.ToString(),
-                QualityStandard = row["quality_standard"]?.ToString(),
-                Description = row["description"]?.ToString(),
-                EquipmentList = row["equipment_list"]?.ToString(),
+                Status = row["status"] != DBNull.Value ? row["status"].ToString() : null,
+                WorkShift = row["work_shift"] != DBNull.Value ? row["work_shift"].ToString() : null,
+                SafetyLevel = row["safety_level"] != DBNull.Value ? row["safety_level"].ToString() : null,
+                EnvironmentRequirement = row["environment_requirement"] != DBNull.Value ? row["environment_requirement"].ToString() : null,
+                QualityStandard = row["quality_standard"] != DBNull.Value ? row["quality_standard"].ToString() : null,
+                Description = row["description"] != DBNull.Value ? row["description"].ToString() : null,
+                EquipmentList = row["equipment_list"] != DBNull.Value ? row["equipment_list"].ToString() : null,
                 CreateTime = Convert.ToDateTime(row["create_time"]),
                 UpdateTime = row["update_time"] != DBNull.Value ? Convert.ToDateTime(row["update_time"]) : (DateTime?)null,
                 IsDeleted = Convert.ToBoolean(row["is_deleted"])
@@ -154,10 +160,12 @@ namespace MES.DAL.Workshop
         /// 注意：S成员需要根据实际表结构完善此方法
         /// </summary>
         /// <param name="entity">车间实体</param>
-        /// <returns>SQL语句和参数</returns>
-        protected override (string sql, MySqlParameter[] parameters) BuildInsertSql(WorkshopInfo entity)
+        /// <param name="sql">输出SQL语句</param>
+        /// <param name="parameters">输出参数数组</param>
+        /// <returns>操作是否成功</returns>
+        protected override bool BuildInsertSql(WorkshopInfo entity, out string sql, out MySqlParameter[] parameters)
         {
-            string sql = @"INSERT INTO workshop_info
+            sql = @"INSERT INTO workshop_info
                           (workshop_code, workshop_name, department, manager, manager_id, phone,
                            location, area, equipment_count, employee_count, workshop_type,
                            production_capacity, status, work_shift, safety_level,
@@ -170,7 +178,7 @@ namespace MES.DAL.Workshop
                            @environmentRequirement, @qualityStandard, @description, @equipmentList,
                            @createTime, @updateTime, @isDeleted)";
 
-            var parameters = new[]
+            parameters = new[]
             {
                 DatabaseHelper.CreateParameter("@workshopCode", entity.WorkshopCode),
                 DatabaseHelper.CreateParameter("@workshopName", entity.WorkshopName),
@@ -196,7 +204,7 @@ namespace MES.DAL.Workshop
                 DatabaseHelper.CreateParameter("@isDeleted", entity.IsDeleted)
             };
 
-            return (sql, parameters);
+            return true;
         }
 
         /// <summary>
@@ -204,10 +212,12 @@ namespace MES.DAL.Workshop
         /// 注意：S成员需要根据实际表结构完善此方法
         /// </summary>
         /// <param name="entity">车间实体</param>
-        /// <returns>SQL语句和参数</returns>
-        protected override (string sql, MySqlParameter[] parameters) BuildUpdateSql(WorkshopInfo entity)
+        /// <param name="sql">输出SQL语句</param>
+        /// <param name="parameters">输出参数数组</param>
+        /// <returns>操作是否成功</returns>
+        protected override bool BuildUpdateSql(WorkshopInfo entity, out string sql, out MySqlParameter[] parameters)
         {
-            string sql = @"UPDATE workshop_info SET
+            sql = @"UPDATE workshop_info SET
                           workshop_code = @workshopCode, workshop_name = @workshopName,
                           department = @department, manager = @manager, manager_id = @managerId,
                           phone = @phone, location = @location, area = @area,
@@ -219,7 +229,7 @@ namespace MES.DAL.Workshop
                           update_time = @updateTime
                           WHERE id = @id AND is_deleted = 0";
 
-            var parameters = new[]
+            parameters = new[]
             {
                 DatabaseHelper.CreateParameter("@workshopCode", entity.WorkshopCode),
                 DatabaseHelper.CreateParameter("@workshopName", entity.WorkshopName),
@@ -244,7 +254,7 @@ namespace MES.DAL.Workshop
                 DatabaseHelper.CreateParameter("@id", entity.Id)
             };
 
-            return (sql, parameters);
+            return true;
         }
 
         #endregion
