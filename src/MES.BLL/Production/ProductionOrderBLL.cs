@@ -44,7 +44,7 @@ namespace MES.BLL.Production
                 string validationResult = ValidateProductionOrder(productionOrder);
                 if (!string.IsNullOrEmpty(validationResult))
                 {
-                    LogManager.Error($"添加生产订单失败：{validationResult}");
+                    LogManager.Error(string.Format("添加生产订单失败：{0}", validationResult));
                     return false;
                 }
 
