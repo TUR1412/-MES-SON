@@ -156,14 +156,19 @@ namespace MES.Models.Equipment
         /// <returns>状态文本</returns>
         public string GetStatusText()
         {
-            return Status switch
+            switch (Status)
             {
-                1 => "正常",
-                2 => "维护中",
-                3 => "故障",
-                4 => "停用",
-                _ => "未知"
-            };
+                case 1:
+                    return "正常";
+                case 2:
+                    return "维护中";
+                case 3:
+                    return "故障";
+                case 4:
+                    return "停用";
+                default:
+                    return "未知";
+            }
         }
 
         /// <summary>
