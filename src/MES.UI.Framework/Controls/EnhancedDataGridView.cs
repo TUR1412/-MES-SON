@@ -383,7 +383,7 @@ namespace MES.UI.Framework.Controls
                             string[] values = new string[Columns.Count];
                             for (int i = 0; i < Columns.Count; i++)
                             {
-                                values[i] = row.Cells[i].Value?.ToString() ?? "";
+                                values[i] = row.Cells[i].Value != null ? row.Cells[i].Value.ToString() : "";
                             }
                             writer.WriteLine(string.Join(",", values));
                         }
@@ -406,7 +406,7 @@ namespace MES.UI.Framework.Controls
         {
             try
             {
-                int selectedIndex = CurrentRow?.Index ?? -1;
+                int selectedIndex = CurrentRow != null ? CurrentRow.Index : -1;
                 
                 // 刷新数据源
                 if (DataSource is BindingSource bindingSource)
@@ -441,7 +441,7 @@ namespace MES.UI.Framework.Controls
             if (disposing)
             {
                 UIThemeManager.OnThemeChanged -= OnThemeChanged;
-                _emptyDataFont?.Dispose();
+                if (_emptyDataFont != null) _emptyDataFont.Dispose();
             }
             base.Dispose(disposing);
         }

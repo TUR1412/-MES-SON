@@ -67,7 +67,7 @@ namespace MES.UI.Framework.Themes
                 {
                     _currentTheme = value;
                     LoadThemeColors();
-                    OnThemeChanged?.Invoke();
+                    if (OnThemeChanged != null) OnThemeChanged.Invoke();
                     LogManager.Info(string.Format("主题已切换为: {0}", value));
                 }
             }

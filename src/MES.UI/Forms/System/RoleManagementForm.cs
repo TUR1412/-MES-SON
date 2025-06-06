@@ -332,7 +332,7 @@ namespace MES.UI.Forms.System
             try
             {
                 var dgv = sender as DataGridView;
-                if (dgv?.CurrentRow?.DataBoundItem != null)
+                if (dgv != null && dgv.CurrentRow != null && dgv.CurrentRow.DataBoundItem != null)
                 {
                     var selectedData = dgv.CurrentRow.DataBoundItem;
                     var roleId = (int)selectedData.GetType().GetProperty("Id").GetValue(selectedData);
@@ -372,7 +372,7 @@ namespace MES.UI.Forms.System
                 if (txtStatus != null) txtStatus.Text = role.GetStatusText();
                 if (txtSortOrder != null) txtSortOrder.Text = role.SortOrder.ToString();
                 if (txtCreateTime != null) txtCreateTime.Text = role.CreateTime.ToString("yyyy-MM-dd HH:mm:ss");
-                if (txtUpdateTime != null) txtUpdateTime.Text = role.UpdateTime?.ToString("yyyy-MM-dd HH:mm:ss") ?? "";
+                if (txtUpdateTime != null) txtUpdateTime.Text = role.UpdateTime.HasValue ? role.UpdateTime.Value.ToString("yyyy-MM-dd HH:mm:ss") : "";
                 if (txtPermissions != null) txtPermissions.Text = role.Permissions ?? "未设置权限";
             }
             catch (Exception ex)

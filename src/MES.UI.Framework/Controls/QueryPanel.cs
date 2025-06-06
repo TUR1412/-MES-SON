@@ -581,7 +581,7 @@ namespace MES.UI.Framework.Controls
             try
             {
                 var parameters = GetQueryParameters();
-                SearchClicked?.Invoke(this, new QueryEventArgs { QueryParameters = parameters });
+                if (SearchClicked != null) SearchClicked.Invoke(this, new QueryEventArgs { QueryParameters = parameters });
                 LogManager.Debug("查询按钮被点击");
             }
             catch (Exception ex)
@@ -595,7 +595,7 @@ namespace MES.UI.Framework.Controls
             try
             {
                 ResetFields();
-                ResetClicked?.Invoke(this, EventArgs.Empty);
+                if (ResetClicked != null) ResetClicked.Invoke(this, EventArgs.Empty);
                 LogManager.Debug("重置按钮被点击");
             }
             catch (Exception ex)

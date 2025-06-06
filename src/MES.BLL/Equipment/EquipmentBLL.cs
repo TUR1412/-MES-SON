@@ -227,7 +227,7 @@ namespace MES.BLL.Equipment
             }
             catch (Exception ex)
             {
-                LogManager.Error(string.Format("更新设备失败，ID: {0}", equipment?.Id), ex);
+                LogManager.Error(string.Format("更新设备失败，ID: {0}", equipment != null ? equipment.Id.ToString() : "null"), ex);
                 throw new MESException("更新设备失败", ex);
             }
         }

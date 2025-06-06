@@ -246,7 +246,7 @@ namespace MES.BLL.Quality
             }
             catch (Exception ex)
             {
-                LogManager.Error(string.Format("更新质量检验记录失败，ID: {0}", inspection?.Id), ex);
+                LogManager.Error(string.Format("更新质量检验记录失败，ID: {0}", inspection != null ? inspection.Id.ToString() : "null"), ex);
                 throw new MESException("更新质量检验记录失败", ex);
             }
         }

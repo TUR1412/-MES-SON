@@ -270,13 +270,13 @@ namespace MES.UI.Framework.Resources
             {
                 foreach (var icon in _iconCache.Values)
                 {
-                    icon?.Dispose();
+                    if (icon != null) icon.Dispose();
                 }
                 _iconCache.Clear();
 
                 foreach (var image in _imageCache.Values)
                 {
-                    image?.Dispose();
+                    if (image != null) image.Dispose();
                 }
                 _imageCache.Clear();
 
