@@ -25,16 +25,20 @@ jobs:
 
     - name: 构建核心业务层
       run: |
-        Write-Host "构建MES核心业务层..." -ForegroundColor Yellow
+        echo "构建MES核心业务层..."
         msbuild src/MES.Common/MES.Common.csproj /p:Configuration=Release /p:Platform="Any CPU"
+        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
         msbuild src/MES.Models/MES.Models.csproj /p:Configuration=Release /p:Platform="Any CPU"
+        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
         msbuild src/MES.DAL/MES.DAL.csproj /p:Configuration=Release /p:Platform="Any CPU"
+        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
         msbuild src/MES.BLL/MES.BLL.csproj /p:Configuration=Release /p:Platform="Any CPU"
-        Write-Host "✅ 核心业务层构建完成" -ForegroundColor Green
+        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+        echo "✅ 核心业务层构建完成"
 
     - name: 构建状态通知
       if: always()
       run: |
-        Write-Host "✅ MES核心业务层构建流程完成！" -ForegroundColor Green
-        Write-Host "Common/Models/DAL/BLL层构建成功，架构验证通过" -ForegroundColor Green
-        Write-Host "注意：UI层因GitHub Actions环境兼容性问题暂时跳过" -ForegroundColor Yellow
+        echo "✅ MES核心业务层构建流程完成！"
+        echo "Common/Models/DAL/BLL层构建成功，架构验证通过"
+        echo "注意：UI层因GitHub Actions环境兼容性问题暂时跳过"
