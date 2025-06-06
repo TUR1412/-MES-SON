@@ -59,7 +59,8 @@ namespace MES.UI
         /// </summary>
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            if (e.ExceptionObject is Exception ex)
+            var ex = e.ExceptionObject as Exception;
+            if (ex != null)
             {
                 LogManager.Error("应用程序域异常", ex);
                 MessageBox.Show(string.Format("系统发生严重错误：{0}", ex.Message), "严重错误",
