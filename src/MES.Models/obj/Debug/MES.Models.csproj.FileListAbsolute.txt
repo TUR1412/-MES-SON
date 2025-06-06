@@ -1,9 +1,0 @@
-D:\Personal data\V\MES\MES-SON\src\MES.Models\bin\Debug\MES.Models.dll
-D:\Personal data\V\MES\MES-SON\src\MES.Models\bin\Debug\MES.Models.pdb
-D:\Personal data\V\MES\MES-SON\src\MES.Models\bin\Debug\MES.Common.dll
-D:\Personal data\V\MES\MES-SON\src\MES.Models\bin\Debug\MES.Common.pdb
-D:\Personal data\V\MES\MES-SON\src\MES.Models\obj\Debug\MES.Models.csproj.AssemblyReference.cache
-D:\Personal data\V\MES\MES-SON\src\MES.Models\obj\Debug\MES.Models.csproj.CoreCompileInputs.cache
-D:\Personal data\V\MES\MES-SON\src\MES.Models\obj\Debug\MES.Models.csproj.Up2Date
-D:\Personal data\V\MES\MES-SON\src\MES.Models\obj\Debug\MES.Models.dll
-D:\Personal data\V\MES\MES-SON\src\MES.Models\obj\Debug\MES.Models.pdb
