@@ -1,0 +1,6 @@
+D:\Personal data\V\MES\MES-SON\src\MES.Common\bin\Debug\MES.Common.dll
+D:\Personal data\V\MES\MES-SON\src\MES.Common\bin\Debug\MES.Common.pdb
+D:\Personal data\V\MES\MES-SON\src\MES.Common\obj\Debug\MES.Common.csproj.AssemblyReference.cache
+D:\Personal data\V\MES\MES-SON\src\MES.Common\obj\Debug\MES.Common.csproj.CoreCompileInputs.cache
+D:\Personal data\V\MES\MES-SON\src\MES.Common\obj\Debug\MES.Common.dll
+D:\Personal data\V\MES\MES-SON\src\MES.Common\obj\Debug\MES.Common.pdb

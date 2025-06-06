@@ -1,4 +1,5 @@
-﻿using MES.Common.Exceptions;
+﻿using MES.BLL.Material.DTO;
+using MES.Common.Exceptions;
 using MES.Common.Logging;
 using MES.DAL.Material;
 using MES.Models.Material;
@@ -35,6 +36,20 @@ namespace MES.BLL.Material
                 LogManager.Error("获取所有物料信息失败", ex);
                 throw new MESException("获取物料信息失败", ex);
             }
+        }
+
+        public List<MaterialInfo> SearchByName(string materialName)
+        {
+            try
+            {
+                return _materialDAL.SearchByName(materialName);
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error($"获取name信息失败，name: {ex}", ex);
+                throw new MESException($"获取name信息失败，name: {ex}", ex);
+            }
+
         }
 
         /// <summary>
@@ -131,6 +146,59 @@ namespace MES.BLL.Material
                 LogManager.Error($"删除物料信息失败，ID: {id}", ex);
                 throw new MESException($"删除物料信息失败，ID: {id}", ex);
             }
+        }
+
+        /// <summary>
+        /// 更新物料信息
+        /// </summary>
+        /// <param name="material">物料信息对象</param>
+        /// <returns>更新是否成功</returns>
+        public List<MaterialDto> GetAllMaterialDtos()
+        {
+            return GetAllMaterials().Select(m => new MaterialDto
+            {
+                Id = m.Id,
+                MaterialCode = m.MaterialCode,
+                MaterialName = m.MaterialName,
+                MaterialType = m.MaterialType,
+                Specification = m.Specification,
+                Unit = m.Unit,
+                Category = m.Category,
+                Supplier = m.Supplier,
+                StandardCost = m.StandardCost,
+                SafetyStock = m.SafetyStock,
+                MinStock = m.MinStock,
+                MaxStock = m.MaxStock,
+                LeadTime = m.LeadTime,
+                Status = m.Status
+            }).ToList();
+        }
+
+        /// <summary>
+        /// 删除物料信息（逻辑删除）
+        /// </summary>
+        /// <param name="id">物料ID</param>
+        /// <returns>删除是否成功</returns>
+        public List<MaterialDto> SearchMaterialDtosByName(string name)
+        {
+            return SearchByName(name)
+                .Select(m => new MaterialDto
+                {
+                    Id = m.Id,
+                    MaterialCode = m.MaterialCode,
+                    MaterialName = m.MaterialName,
+                    MaterialType = m.MaterialType,
+                    Specification = m.Specification,
+                    Unit = m.Unit,
+                    Category = m.Category,
+                    Supplier = m.Supplier,
+                    StandardCost = m.StandardCost,
+                    SafetyStock = m.SafetyStock,
+                    MinStock = m.MinStock,
+                    MaxStock = m.MaxStock,
+                    LeadTime = m.LeadTime,
+                    Status = m.Status
+                }).ToList();
         }
     }
 }

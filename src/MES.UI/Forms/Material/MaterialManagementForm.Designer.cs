@@ -63,11 +63,11 @@
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.panelMain = new System.Windows.Forms.Panel();
-            this.buttonSel = new System.Windows.Forms.Button();
             this.textBox10 = new System.Windows.Forms.TextBox();
-            this.buttonIns = new System.Windows.Forms.Button();
-            this.buttonAlt = new System.Windows.Forms.Button();
             this.buttonDel = new System.Windows.Forms.Button();
+            this.buttonAlt = new System.Windows.Forms.Button();
+            this.buttonIns = new System.Windows.Forms.Button();
+            this.buttonSel = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.panel1.SuspendLayout();
             this.panelExtendedFields.SuspendLayout();
@@ -417,15 +417,6 @@
             this.panelMain.Size = new System.Drawing.Size(1608, 669);
             this.panelMain.TabIndex = 3;
             // 
-            // buttonSel
-            // 
-            this.buttonSel.Location = new System.Drawing.Point(248, 65);
-            this.buttonSel.Name = "buttonSel";
-            this.buttonSel.Size = new System.Drawing.Size(116, 42);
-            this.buttonSel.TabIndex = 3;
-            this.buttonSel.Text = "查询";
-            this.buttonSel.UseVisualStyleBackColor = true;
-            // 
             // textBox10
             // 
             this.textBox10.Font = new System.Drawing.Font("宋体", 12F);
@@ -433,24 +424,7 @@
             this.textBox10.Name = "textBox10";
             this.textBox10.Size = new System.Drawing.Size(214, 35);
             this.textBox10.TabIndex = 4;
-            // 
-            // buttonIns
-            // 
-            this.buttonIns.Location = new System.Drawing.Point(394, 65);
-            this.buttonIns.Name = "buttonIns";
-            this.buttonIns.Size = new System.Drawing.Size(116, 42);
-            this.buttonIns.TabIndex = 3;
-            this.buttonIns.Text = "增加";
-            this.buttonIns.UseVisualStyleBackColor = true;
-            // 
-            // buttonAlt
-            // 
-            this.buttonAlt.Location = new System.Drawing.Point(551, 65);
-            this.buttonAlt.Name = "buttonAlt";
-            this.buttonAlt.Size = new System.Drawing.Size(116, 42);
-            this.buttonAlt.TabIndex = 3;
-            this.buttonAlt.Text = "修改";
-            this.buttonAlt.UseVisualStyleBackColor = true;
+            this.textBox10.TextChanged += new System.EventHandler(this.textBox10_TextChanged);
             // 
             // buttonDel
             // 
@@ -460,6 +434,36 @@
             this.buttonDel.TabIndex = 3;
             this.buttonDel.Text = "删除";
             this.buttonDel.UseVisualStyleBackColor = true;
+            this.buttonDel.Click += new System.EventHandler(this.buttonDel_Click);
+            // 
+            // buttonAlt
+            // 
+            this.buttonAlt.Location = new System.Drawing.Point(551, 65);
+            this.buttonAlt.Name = "buttonAlt";
+            this.buttonAlt.Size = new System.Drawing.Size(116, 42);
+            this.buttonAlt.TabIndex = 3;
+            this.buttonAlt.Text = "修改";
+            this.buttonAlt.UseVisualStyleBackColor = true;
+            this.buttonAlt.Click += new System.EventHandler(this.buttonAlt_Click);
+            // 
+            // buttonIns
+            // 
+            this.buttonIns.Location = new System.Drawing.Point(394, 65);
+            this.buttonIns.Name = "buttonIns";
+            this.buttonIns.Size = new System.Drawing.Size(116, 42);
+            this.buttonIns.TabIndex = 3;
+            this.buttonIns.Text = "增加";
+            this.buttonIns.UseVisualStyleBackColor = true;
+            this.buttonIns.Click += new System.EventHandler(this.buttonIns_Click);
+            // 
+            // buttonSel
+            // 
+            this.buttonSel.Location = new System.Drawing.Point(248, 65);
+            this.buttonSel.Name = "buttonSel";
+            this.buttonSel.Size = new System.Drawing.Size(116, 42);
+            this.buttonSel.TabIndex = 3;
+            this.buttonSel.Text = "查询";
+            this.buttonSel.UseVisualStyleBackColor = true;
             // 
             // MaterialManagementForm
             // 
@@ -469,6 +473,7 @@
             this.Controls.Add(this.panelMain);
             this.Name = "MaterialManagementForm";
             this.Text = "Frm_Material";
+            this.Load += new System.EventHandler(this.MaterialManagementForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();

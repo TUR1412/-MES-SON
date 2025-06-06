@@ -116,6 +116,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MES.BLL\MES.BLL.csproj">
+      <Project>{b2c3d4e5-f6a7-8901-bcde-f23456789012}</Project>
+      <Name>MES.BLL</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MES.Common\MES.Common.csproj">
       <Project>{E5F6A7B8-C9D0-1234-EF01-567890123456}</Project>
       <Name>MES.Common</Name>
