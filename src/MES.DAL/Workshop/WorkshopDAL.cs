@@ -23,12 +23,18 @@ namespace MES.DAL.Workshop
         /// <summary>
         /// 表名
         /// </summary>
-        protected override string TableName => "workshop_info";
+        protected override string TableName
+        {
+            get { return "workshop_info"; }
+        }
 
         /// <summary>
         /// 主键属性名
         /// </summary>
-        protected override string PrimaryKey => "Id";
+        protected override string PrimaryKey
+        {
+            get { return "Id"; }
+        }
 
         /// <summary>
         /// 将DataRow转换为WorkshopInfo实体对象
@@ -90,7 +96,7 @@ namespace MES.DAL.Workshop
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据车间编码获取车间信息失败，车间编码: {workshopCode}", ex);
+                LogManager.Error(string.Format("根据车间编码获取车间信息失败，车间编码: {0}", workshopCode), ex);
                 throw new MESException("获取车间信息失败", ex);
             }
         }
@@ -109,7 +115,7 @@ namespace MES.DAL.Workshop
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据状态获取车间列表失败，状态: {status}", ex);
+                LogManager.Error(string.Format("根据状态获取车间列表失败，状态: {0}", status), ex);
                 throw new MESException("获取车间列表失败", ex);
             }
         }
@@ -133,7 +139,7 @@ namespace MES.DAL.Workshop
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据类型获取车间列表失败，类型: {workshopType}", ex);
+                LogManager.Error(string.Format("根据类型获取车间列表失败，类型: {0}", workshopType), ex);
                 throw new MESException("获取车间列表失败", ex);
             }
         }
@@ -156,9 +162,9 @@ namespace MES.DAL.Workshop
         /// </summary>
         /// <param name="entity">车间实体</param>
         /// <returns>SQL语句和参数</returns>
-        protected override (string sql, MySqlParameter[] parameters) BuildInsertSql(WorkshopInfo entity)
+        protected override bool BuildInsertSql(WorkshopInfo entity, out string sql, out MySqlParameter[] parameters)
         {
-            string sql = @"INSERT INTO workshop_info
+            sql = @"INSERT INTO workshop_info
                           (workshop_code, workshop_name, department, manager, manager_id, phone,
                            location, area, equipment_count, employee_count, workshop_type,
                            production_capacity, status, work_shift, safety_level,
@@ -171,7 +177,7 @@ namespace MES.DAL.Workshop
                            @environmentRequirement, @qualityStandard, @description, @equipmentList,
                            @createTime, @updateTime, @isDeleted)";
 
-            var parameters = new[]
+            parameters = new[]
             {
                 DatabaseHelper.CreateParameter("@workshopCode", entity.WorkshopCode),
                 DatabaseHelper.CreateParameter("@workshopName", entity.WorkshopName),
@@ -197,7 +203,7 @@ namespace MES.DAL.Workshop
                 DatabaseHelper.CreateParameter("@isDeleted", entity.IsDeleted)
             };
 
-            return (sql, parameters);
+            return true;
         }
 
         /// <summary>
@@ -206,9 +212,9 @@ namespace MES.DAL.Workshop
         /// </summary>
         /// <param name="entity">车间实体</param>
         /// <returns>SQL语句和参数</returns>
-        protected override (string sql, MySqlParameter[] parameters) BuildUpdateSql(WorkshopInfo entity)
+        protected override bool BuildUpdateSql(WorkshopInfo entity, out string sql, out MySqlParameter[] parameters)
         {
-            string sql = @"UPDATE workshop_info SET
+            sql = @"UPDATE workshop_info SET
                           workshop_code = @workshopCode, workshop_name = @workshopName,
                           department = @department, manager = @manager, manager_id = @managerId,
                           phone = @phone, location = @location, area = @area,
@@ -220,7 +226,7 @@ namespace MES.DAL.Workshop
                           update_time = @updateTime
                           WHERE id = @id AND is_deleted = 0";
 
-            var parameters = new[]
+            parameters = new[]
             {
                 DatabaseHelper.CreateParameter("@workshopCode", entity.WorkshopCode),
                 DatabaseHelper.CreateParameter("@workshopName", entity.WorkshopName),
@@ -245,7 +251,7 @@ namespace MES.DAL.Workshop
                 DatabaseHelper.CreateParameter("@id", entity.Id)
             };
 
-            return (sql, parameters);
+            return true;
         }
 
         #endregion
