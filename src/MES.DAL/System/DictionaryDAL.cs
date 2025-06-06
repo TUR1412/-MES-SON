@@ -18,12 +18,18 @@ namespace MES.DAL.System
         /// <summary>
         /// 表名
         /// </summary>
-        protected override string TableName => "sys_dictionary";
+        protected override string TableName
+        {
+            get { return "sys_dictionary"; }
+        }
 
         /// <summary>
         /// 主键字段名
         /// </summary>
-        protected override string PrimaryKey => "id";
+        protected override string PrimaryKey
+        {
+            get { return "id"; }
+        }
 
         /// <summary>
         /// 将DataRow转换为DictionaryInfo对象
@@ -35,25 +41,25 @@ namespace MES.DAL.System
             return new DictionaryInfo
             {
                 Id = Convert.ToInt32(row["id"]),
-                DictType = row["dict_type"]?.ToString() ?? string.Empty,
-                DictTypeName = row["dict_type_name"]?.ToString() ?? string.Empty,
-                DictCode = row["dict_code"]?.ToString() ?? string.Empty,
-                DictName = row["dict_name"]?.ToString() ?? string.Empty,
-                DictValue = row["dict_value"]?.ToString() ?? string.Empty,
+                DictType = row["dict_type"] != DBNull.Value ? row["dict_type"].ToString() : string.Empty,
+                DictTypeName = row["dict_type_name"] != DBNull.Value ? row["dict_type_name"].ToString() : string.Empty,
+                DictCode = row["dict_code"] != DBNull.Value ? row["dict_code"].ToString() : string.Empty,
+                DictName = row["dict_name"] != DBNull.Value ? row["dict_name"].ToString() : string.Empty,
+                DictValue = row["dict_value"] != DBNull.Value ? row["dict_value"].ToString() : string.Empty,
                 ParentId = row["parent_id"] != DBNull.Value ? Convert.ToInt32(row["parent_id"]) : 0,
                 SortOrder = row["sort_order"] != DBNull.Value ? Convert.ToInt32(row["sort_order"]) : 0,
                 Status = Convert.ToInt32(row["status"]),
                 IsSystem = row["is_system"] != DBNull.Value ? Convert.ToInt32(row["is_system"]) : 0,
-                Description = row["description"]?.ToString() ?? string.Empty,
-                ExtendField1 = row["extend_field1"]?.ToString() ?? string.Empty,
-                ExtendField2 = row["extend_field2"]?.ToString() ?? string.Empty,
-                ExtendField3 = row["extend_field3"]?.ToString() ?? string.Empty,
+                Description = row["description"] != DBNull.Value ? row["description"].ToString() : string.Empty,
+                ExtendField1 = row["extend_field1"] != DBNull.Value ? row["extend_field1"].ToString() : string.Empty,
+                ExtendField2 = row["extend_field2"] != DBNull.Value ? row["extend_field2"].ToString() : string.Empty,
+                ExtendField3 = row["extend_field3"] != DBNull.Value ? row["extend_field3"].ToString() : string.Empty,
                 CreateTime = Convert.ToDateTime(row["create_time"]),
                 CreateUserId = row["create_user_id"] != DBNull.Value ? Convert.ToInt32(row["create_user_id"]) : 0,
-                CreateUserName = row["create_user_name"]?.ToString() ?? string.Empty,
+                CreateUserName = row["create_user_name"] != DBNull.Value ? row["create_user_name"].ToString() : string.Empty,
                 UpdateTime = row["update_time"] != DBNull.Value ? Convert.ToDateTime(row["update_time"]) : (DateTime?)null,
                 UpdateUserId = row["update_user_id"] != DBNull.Value ? Convert.ToInt32(row["update_user_id"]) : 0,
-                UpdateUserName = row["update_user_name"]?.ToString() ?? string.Empty,
+                UpdateUserName = row["update_user_name"] != DBNull.Value ? row["update_user_name"].ToString() : string.Empty,
                 IsDeleted = Convert.ToBoolean(row["is_deleted"])
             };
         }
@@ -62,10 +68,12 @@ namespace MES.DAL.System
         /// 构建INSERT SQL语句
         /// </summary>
         /// <param name="entity">字典实体</param>
-        /// <returns>SQL语句和参数</returns>
-        protected override (string sql, MySqlParameter[] parameters) BuildInsertSql(DictionaryInfo entity)
+        /// <param name="sql">输出SQL语句</param>
+        /// <param name="parameters">输出参数数组</param>
+        /// <returns>操作是否成功</returns>
+        protected override bool BuildInsertSql(DictionaryInfo entity, out string sql, out MySqlParameter[] parameters)
         {
-            string sql = @"INSERT INTO sys_dictionary
+            sql = @"INSERT INTO sys_dictionary
                           (dict_type, dict_type_name, dict_code, dict_name, dict_value, parent_id, sort_order,
                            status, is_system, description, extend_field1, extend_field2, extend_field3,
                            create_time, create_user_id, create_user_name, is_deleted)
@@ -74,7 +82,7 @@ namespace MES.DAL.System
                            @status, @isSystem, @description, @extendField1, @extendField2, @extendField3,
                            @createTime, @createUserId, @createUserName, @isDeleted)";
 
-            var parameters = new[]
+            parameters = new[]
             {
                 DatabaseHelper.CreateParameter("@dictType", entity.DictType),
                 DatabaseHelper.CreateParameter("@dictTypeName", entity.DictTypeName ?? string.Empty),
@@ -95,17 +103,19 @@ namespace MES.DAL.System
                 DatabaseHelper.CreateParameter("@isDeleted", entity.IsDeleted)
             };
 
-            return (sql, parameters);
+            return true;
         }
 
         /// <summary>
         /// 构建UPDATE SQL语句
         /// </summary>
         /// <param name="entity">字典实体</param>
-        /// <returns>SQL语句和参数</returns>
-        protected override (string sql, MySqlParameter[] parameters) BuildUpdateSql(DictionaryInfo entity)
+        /// <param name="sql">输出SQL语句</param>
+        /// <param name="parameters">输出参数数组</param>
+        /// <returns>操作是否成功</returns>
+        protected override bool BuildUpdateSql(DictionaryInfo entity, out string sql, out MySqlParameter[] parameters)
         {
-            string sql = @"UPDATE sys_dictionary SET
+            sql = @"UPDATE sys_dictionary SET
                           dict_type = @dictType, dict_type_name = @dictTypeName, dict_code = @dictCode,
                           dict_name = @dictName, dict_value = @dictValue, parent_id = @parentId,
                           sort_order = @sortOrder, status = @status, is_system = @isSystem,
@@ -114,7 +124,7 @@ namespace MES.DAL.System
                           update_user_name = @updateUserName
                           WHERE id = @id AND is_deleted = 0";
 
-            var parameters = new[]
+            parameters = new[]
             {
                 DatabaseHelper.CreateParameter("@dictType", entity.DictType),
                 DatabaseHelper.CreateParameter("@dictTypeName", entity.DictTypeName ?? string.Empty),
@@ -135,7 +145,7 @@ namespace MES.DAL.System
                 DatabaseHelper.CreateParameter("@id", entity.Id)
             };
 
-            return (sql, parameters);
+            return true;
         }
 
         /// <summary>
@@ -147,7 +157,7 @@ namespace MES.DAL.System
         {
             try
             {
-                string sql = $"SELECT * FROM {TableName} WHERE dict_type = @DictType AND status = 1 AND is_deleted = 0 ORDER BY sort_order, dict_code";
+                string sql = string.Format("SELECT * FROM {0} WHERE dict_type = @DictType AND status = 1 AND is_deleted = 0 ORDER BY sort_order, dict_code", TableName);
                 
                 using (var connection = DatabaseHelper.CreateConnection())
                 {
@@ -174,7 +184,7 @@ namespace MES.DAL.System
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据字典类型获取字典列表失败：{ex.Message}", ex);
+                LogManager.Error(string.Format("根据字典类型获取字典列表失败：{0}", ex.Message), ex);
                 throw;
             }
         }
@@ -189,7 +199,7 @@ namespace MES.DAL.System
         {
             try
             {
-                string sql = $"SELECT * FROM {TableName} WHERE dict_type = @DictType AND dict_code = @DictCode AND is_deleted = 0";
+                string sql = string.Format("SELECT * FROM {0} WHERE dict_type = @DictType AND dict_code = @DictCode AND is_deleted = 0", TableName);
                 
                 using (var connection = DatabaseHelper.CreateConnection())
                 {
@@ -216,7 +226,7 @@ namespace MES.DAL.System
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据字典类型和编码获取字典项失败：{ex.Message}", ex);
+                LogManager.Error(string.Format("根据字典类型和编码获取字典项失败：{0}", ex.Message), ex);
                 throw;
             }
         }
@@ -230,7 +240,7 @@ namespace MES.DAL.System
         {
             try
             {
-                string sql = $"SELECT * FROM {TableName} WHERE parent_id = @ParentId AND status = 1 AND is_deleted = 0 ORDER BY sort_order, dict_code";
+                string sql = string.Format("SELECT * FROM {0} WHERE parent_id = @ParentId AND status = 1 AND is_deleted = 0 ORDER BY sort_order, dict_code", TableName);
                 
                 using (var connection = DatabaseHelper.CreateConnection())
                 {
@@ -257,7 +267,7 @@ namespace MES.DAL.System
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据父级ID获取子字典列表失败：{ex.Message}", ex);
+                LogManager.Error(string.Format("根据父级ID获取子字典列表失败：{0}", ex.Message), ex);
                 throw;
             }
         }
@@ -270,7 +280,7 @@ namespace MES.DAL.System
         {
             try
             {
-                string sql = $"SELECT DISTINCT dict_type FROM {TableName} WHERE is_deleted = 0 ORDER BY dict_type";
+                string sql = string.Format("SELECT DISTINCT dict_type FROM {0} WHERE is_deleted = 0 ORDER BY dict_type", TableName);
                 
                 using (var connection = DatabaseHelper.CreateConnection())
                 {
@@ -292,7 +302,7 @@ namespace MES.DAL.System
             }
             catch (Exception ex)
             {
-                LogManager.Error($"获取所有字典类型失败：{ex.Message}", ex);
+                LogManager.Error(string.Format("获取所有字典类型失败：{0}", ex.Message), ex);
                 throw;
             }
         }
@@ -306,19 +316,19 @@ namespace MES.DAL.System
         {
             try
             {
-                string sql = $@"SELECT * FROM {TableName} 
-                               WHERE (dict_type LIKE @Keyword OR dict_code LIKE @Keyword 
-                                      OR dict_name LIKE @Keyword OR dict_value LIKE @Keyword 
-                                      OR description LIKE @Keyword) 
-                               AND is_deleted = 0 
-                               ORDER BY dict_type, sort_order, dict_code";
+                string sql = string.Format(@"SELECT * FROM {0}
+                               WHERE (dict_type LIKE @Keyword OR dict_code LIKE @Keyword
+                                      OR dict_name LIKE @Keyword OR dict_value LIKE @Keyword
+                                      OR description LIKE @Keyword)
+                               AND is_deleted = 0
+                               ORDER BY dict_type, sort_order, dict_code", TableName);
                 
                 using (var connection = DatabaseHelper.CreateConnection())
                 {
                     connection.Open();
                     using (var cmd = new MySqlCommand(sql, connection))
                     {
-                        cmd.Parameters.AddWithValue("@Keyword", $"%{keyword}%");
+                        cmd.Parameters.AddWithValue("@Keyword", string.Format("%{0}%", keyword));
 
                         using (var adapter = new MySqlDataAdapter(cmd))
                         {
@@ -338,7 +348,7 @@ namespace MES.DAL.System
             }
             catch (Exception ex)
             {
-                LogManager.Error($"搜索字典项失败：{ex.Message}", ex);
+                LogManager.Error(string.Format("搜索字典项失败：{0}", ex.Message), ex);
                 throw;
             }
         }
@@ -354,7 +364,7 @@ namespace MES.DAL.System
         {
             try
             {
-                string sql = $"SELECT COUNT(1) FROM {TableName} WHERE dict_type = @DictType AND dict_code = @DictCode AND is_deleted = 0";
+                string sql = string.Format("SELECT COUNT(1) FROM {0} WHERE dict_type = @DictType AND dict_code = @DictCode AND is_deleted = 0", TableName);
                 if (excludeId > 0)
                 {
                     sql += " AND id != @ExcludeId";
@@ -379,7 +389,7 @@ namespace MES.DAL.System
             }
             catch (Exception ex)
             {
-                LogManager.Error($"检查字典项是否存在失败：{ex.Message}", ex);
+                LogManager.Error(string.Format("检查字典项是否存在失败：{0}", ex.Message), ex);
                 throw;
             }
         }
@@ -407,7 +417,12 @@ namespace MES.DAL.System
                         {
                             foreach (var dict in dictionaries)
                             {
-                                var (sql, parameters) = BuildInsertSql(dict);
+                                string sql;
+                                MySqlParameter[] parameters;
+                                if (!BuildInsertSql(dict, out sql, out parameters))
+                                {
+                                    throw new MESException(string.Format("构建{0}插入SQL失败", typeof(DictionaryInfo).Name));
+                                }
                                 using (var cmd = new MySqlCommand(sql, connection, transaction))
                                 {
                                     cmd.Parameters.AddRange(parameters);
@@ -428,7 +443,7 @@ namespace MES.DAL.System
             }
             catch (Exception ex)
             {
-                LogManager.Error($"批量插入字典项失败：{ex.Message}", ex);
+                LogManager.Error(string.Format("批量插入字典项失败：{0}", ex.Message), ex);
                 throw;
             }
         }
@@ -454,7 +469,7 @@ namespace MES.DAL.System
             }
             catch (Exception ex)
             {
-                LogManager.Error($"获取字典值失败：{ex.Message}", ex);
+                LogManager.Error(string.Format("获取字典值失败：{0}", ex.Message), ex);
                 return defaultValue;
             }
         }
@@ -480,7 +495,7 @@ namespace MES.DAL.System
             }
             catch (Exception ex)
             {
-                LogManager.Error($"获取字典名称失败：{ex.Message}", ex);
+                LogManager.Error(string.Format("获取字典名称失败：{0}", ex.Message), ex);
                 return defaultValue;
             }
         }

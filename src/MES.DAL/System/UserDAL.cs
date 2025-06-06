@@ -215,17 +215,19 @@ namespace MES.DAL.System
         /// 构建INSERT SQL语句
         /// </summary>
         /// <param name="entity">用户实体</param>
-        /// <returns>SQL语句和参数</returns>
-        protected override (string sql, MySqlParameter[] parameters) BuildInsertSql(UserInfo entity)
+        /// <param name="sql">输出SQL语句</param>
+        /// <param name="parameters">输出参数数组</param>
+        /// <returns>操作是否成功</returns>
+        protected override bool BuildInsertSql(UserInfo entity, out string sql, out MySqlParameter[] parameters)
         {
-            string sql = @"INSERT INTO sys_user 
-                          (user_code, user_name, login_name, password, department, position, 
-                           create_time, create_user_name, is_deleted) 
-                          VALUES 
-                          (@userCode, @userName, @loginName, @password, @department, @position, 
+            sql = @"INSERT INTO sys_user
+                          (user_code, user_name, login_name, password, department, position,
+                           create_time, create_user_name, is_deleted)
+                          VALUES
+                          (@userCode, @userName, @loginName, @password, @department, @position,
                            @createTime, @createUserName, @isDeleted)";
 
-            var parameters = new[]
+            parameters = new[]
             {
                 DatabaseHelper.CreateParameter("@userCode", entity.UserCode),
                 DatabaseHelper.CreateParameter("@userName", entity.UserName),
@@ -238,23 +240,25 @@ namespace MES.DAL.System
                 DatabaseHelper.CreateParameter("@isDeleted", entity.IsDeleted)
             };
 
-            return (sql, parameters);
+            return true;
         }
 
         /// <summary>
         /// 构建UPDATE SQL语句
         /// </summary>
         /// <param name="entity">用户实体</param>
-        /// <returns>SQL语句和参数</returns>
-        protected override (string sql, MySqlParameter[] parameters) BuildUpdateSql(UserInfo entity)
+        /// <param name="sql">输出SQL语句</param>
+        /// <param name="parameters">输出参数数组</param>
+        /// <returns>操作是否成功</returns>
+        protected override bool BuildUpdateSql(UserInfo entity, out string sql, out MySqlParameter[] parameters)
         {
-            string sql = @"UPDATE sys_user SET 
-                          user_code = @userCode, user_name = @userName, login_name = @loginName, 
-                          department = @department, position = @position, 
-                          update_time = @updateTime, update_user_name = @updateUserName 
+            sql = @"UPDATE sys_user SET
+                          user_code = @userCode, user_name = @userName, login_name = @loginName,
+                          department = @department, position = @position,
+                          update_time = @updateTime, update_user_name = @updateUserName
                           WHERE id = @id AND is_deleted = 0";
 
-            var parameters = new[]
+            parameters = new[]
             {
                 DatabaseHelper.CreateParameter("@userCode", entity.UserCode),
                 DatabaseHelper.CreateParameter("@userName", entity.UserName),
@@ -266,7 +270,7 @@ namespace MES.DAL.System
                 DatabaseHelper.CreateParameter("@id", entity.Id)
             };
 
-            return (sql, parameters);
+            return true;
         }
 
         #endregion

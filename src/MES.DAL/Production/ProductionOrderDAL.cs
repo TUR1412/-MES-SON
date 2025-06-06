@@ -87,7 +87,7 @@ namespace MES.DAL.Production
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据订单编号获取生产订单失败，订单编号: {orderNo}", ex);
+                LogManager.Error(string.Format("根据订单编号获取生产订单失败，订单编号: {0}", orderNo), ex);
                 throw new MESException("获取生产订单失败", ex);
             }
         }
@@ -111,7 +111,7 @@ namespace MES.DAL.Production
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据状态获取生产订单列表失败，状态: {status}", ex);
+                LogManager.Error(string.Format("根据状态获取生产订单列表失败，状态: {0}", status), ex);
                 throw new MESException("获取生产订单列表失败", ex);
             }
         }
@@ -145,7 +145,7 @@ namespace MES.DAL.Production
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据产品编码获取生产订单列表失败，产品编码: {productCode}", ex);
+                LogManager.Error(string.Format("根据产品编码获取生产订单列表失败，产品编码: {0}", productCode), ex);
                 throw new MESException("获取生产订单列表失败", ex);
             }
         }
@@ -168,7 +168,7 @@ namespace MES.DAL.Production
                 }
 
                 // 计算总记录数
-                string countSql = $"SELECT COUNT(*) FROM {TableName} WHERE is_deleted = 0";
+                string countSql = string.Format("SELECT COUNT(*) FROM {0} WHERE is_deleted = 0", TableName);
                 using (var connection = DatabaseHelper.CreateConnection())
                 {
                     connection.Open();
@@ -180,7 +180,7 @@ namespace MES.DAL.Production
 
                 // 分页查询
                 int offset = (pageIndex - 1) * pageSize;
-                string sql = $"SELECT * FROM {TableName} WHERE is_deleted = 0 ORDER BY create_time DESC LIMIT @offset, @pageSize";
+                string sql = string.Format("SELECT * FROM {0} WHERE is_deleted = 0 ORDER BY create_time DESC LIMIT @offset, @pageSize", TableName);
 
                 var parameters = new[]
                 {
@@ -188,12 +188,12 @@ namespace MES.DAL.Production
                     DatabaseHelper.CreateParameter("@pageSize", pageSize)
                 };
 
-                return GetByCondition(sql.Replace($"SELECT * FROM {TableName} WHERE is_deleted = 0 ORDER BY create_time DESC LIMIT @offset, @pageSize",
+                return GetByCondition(sql.Replace(string.Format("SELECT * FROM {0} WHERE is_deleted = 0 ORDER BY create_time DESC LIMIT @offset, @pageSize", TableName),
                     "1=1 ORDER BY create_time DESC LIMIT @offset, @pageSize"), parameters);
             }
             catch (Exception ex)
             {
-                LogManager.Error($"分页获取生产订单列表失败，页码: {pageIndex}, 每页记录数: {pageSize}", ex);
+                LogManager.Error(string.Format("分页获取生产订单列表失败，页码: {0}, 每页记录数: {1}", pageIndex, pageSize), ex);
                 totalCount = 0;
                 throw new MESException("分页获取生产订单列表失败", ex);
             }
@@ -216,13 +216,13 @@ namespace MES.DAL.Production
                 string condition = @"(order_number LIKE @keyword OR product_code LIKE @keyword
                                    OR product_name LIKE @keyword OR customer LIKE @keyword)";
 
-                var parameter = DatabaseHelper.CreateParameter("@keyword", $"%{keyword}%");
+                var parameter = DatabaseHelper.CreateParameter("@keyword", string.Format("%{0}%", keyword));
 
                 return GetByCondition(condition, parameter);
             }
             catch (Exception ex)
             {
-                LogManager.Error($"搜索生产订单失败，关键词: {keyword}", ex);
+                LogManager.Error(string.Format("搜索生产订单失败，关键词: {0}", keyword), ex);
                 throw new MESException("搜索生产订单失败", ex);
             }
         }
@@ -235,10 +235,12 @@ namespace MES.DAL.Production
         /// 构建INSERT SQL语句
         /// </summary>
         /// <param name="entity">生产订单实体</param>
-        /// <returns>SQL语句和参数</returns>
-        protected override (string sql, MySqlParameter[] parameters) BuildInsertSql(ProductionOrderInfo entity)
+        /// <param name="sql">输出SQL语句</param>
+        /// <param name="parameters">输出参数数组</param>
+        /// <returns>操作是否成功</returns>
+        protected override bool BuildInsertSql(ProductionOrderInfo entity, out string sql, out MySqlParameter[] parameters)
         {
-            string sql = @"INSERT INTO production_order
+            sql = @"INSERT INTO production_order
                           (order_number, product_code, product_name, planned_quantity, actual_quantity, unit,
                            planned_start_time, planned_end_time, actual_start_time, actual_end_time,
                            status, priority, workshop_id, workshop_name, customer, sales_order_number, remarks,
@@ -249,7 +251,7 @@ namespace MES.DAL.Production
                            @status, @priority, @workshopId, @workshopName, @customer, @salesOrderNumber, @remarks,
                            @createTime, @createUserName, @isDeleted)";
 
-            var parameters = new[]
+            parameters = new[]
             {
                 DatabaseHelper.CreateParameter("@orderNumber", entity.OrderNo),
                 DatabaseHelper.CreateParameter("@productCode", entity.ProductCode),
@@ -273,17 +275,19 @@ namespace MES.DAL.Production
                 DatabaseHelper.CreateParameter("@isDeleted", entity.IsDeleted)
             };
 
-            return (sql, parameters);
+            return true;
         }
 
         /// <summary>
         /// 构建UPDATE SQL语句
         /// </summary>
         /// <param name="entity">生产订单实体</param>
-        /// <returns>SQL语句和参数</returns>
-        protected override (string sql, MySqlParameter[] parameters) BuildUpdateSql(ProductionOrderInfo entity)
+        /// <param name="sql">输出SQL语句</param>
+        /// <param name="parameters">输出参数数组</param>
+        /// <returns>操作是否成功</returns>
+        protected override bool BuildUpdateSql(ProductionOrderInfo entity, out string sql, out MySqlParameter[] parameters)
         {
-            string sql = @"UPDATE production_order SET
+            sql = @"UPDATE production_order SET
                           order_number = @orderNumber, product_code = @productCode,
                           product_name = @productName, planned_quantity = @plannedQuantity, actual_quantity = @actualQuantity, unit = @unit,
                           planned_start_time = @plannedStartTime, planned_end_time = @plannedEndTime,
@@ -293,7 +297,7 @@ namespace MES.DAL.Production
                           update_time = @updateTime, update_user_name = @updateUserName
                           WHERE id = @id AND is_deleted = 0";
 
-            var parameters = new[]
+            parameters = new[]
             {
                 DatabaseHelper.CreateParameter("@orderNumber", entity.OrderNo),
                 DatabaseHelper.CreateParameter("@productCode", entity.ProductCode),
@@ -317,7 +321,7 @@ namespace MES.DAL.Production
                 DatabaseHelper.CreateParameter("@id", entity.Id)
             };
 
-            return (sql, parameters);
+            return true;
         }
 
         #endregion

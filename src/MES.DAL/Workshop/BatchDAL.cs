@@ -78,7 +78,7 @@ namespace MES.DAL.Workshop
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据批次编号获取批次信息失败，批次编号: {batchId}", ex);
+                LogManager.Error(string.Format("根据批次编号获取批次信息失败，批次编号: {0}", batchId), ex);
                 throw new MESException("获取批次信息失败", ex);
             }
         }
@@ -102,7 +102,7 @@ namespace MES.DAL.Workshop
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据工单ID获取批次列表失败，工单ID: {workOrderId}", ex);
+                LogManager.Error(string.Format("根据工单ID获取批次列表失败，工单ID: {0}", workOrderId), ex);
                 throw new MESException("获取批次列表失败", ex);
             }
         }
@@ -121,7 +121,7 @@ namespace MES.DAL.Workshop
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据状态获取批次列表失败，状态: {status}", ex);
+                LogManager.Error(string.Format("根据状态获取批次列表失败，状态: {0}", status), ex);
                 throw new MESException("获取批次列表失败", ex);
             }
         }
@@ -145,7 +145,7 @@ namespace MES.DAL.Workshop
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据工站获取批次列表失败，工站ID: {stationId}", ex);
+                LogManager.Error(string.Format("根据工站获取批次列表失败，工站ID: {0}", stationId), ex);
                 throw new MESException("获取批次列表失败", ex);
             }
         }

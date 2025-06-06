@@ -308,7 +308,7 @@ namespace MES.Models.Quality
         /// <returns>检验信息字符串</returns>
         public override string ToString()
         {
-            return $"{InspectionNumber} - {ProductName} ({GetInspectionResultText()})";
+            return string.Format("{0} - {1} ({2})", InspectionNumber, ProductName, GetInspectionResultText());
         }
     }
 }

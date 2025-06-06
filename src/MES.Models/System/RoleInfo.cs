@@ -101,7 +101,7 @@ namespace MES.Models.System
         /// <returns>角色信息字符串</returns>
         public override string ToString()
         {
-            return $"{RoleCode} - {RoleName}";
+            return string.Format("{0} - {1}", RoleCode, RoleName);
         }
     }
 }

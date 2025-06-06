@@ -60,7 +60,7 @@ namespace MES.Common.Configuration
             try
             {
                 var connectionString = ConfigurationManager.ConnectionStrings[name];
-                return connectionString?.ConnectionString ?? string.Empty;
+                return connectionString != null ? connectionString.ConnectionString : string.Empty;
             }
             catch (Exception)
             {
@@ -92,46 +92,73 @@ namespace MES.Common.Configuration
         /// <summary>
         /// 获取系统标题
         /// </summary>
-        public static string SystemTitle => GetAppSetting("SystemTitle", "MES制造执行系统");
+        public static string SystemTitle
+        {
+            get { return GetAppSetting("SystemTitle", "MES制造执行系统"); }
+        }
 
         /// <summary>
         /// 获取系统版本
         /// </summary>
-        public static string SystemVersion => GetAppSetting("SystemVersion", "1.0.0");
+        public static string SystemVersion
+        {
+            get { return GetAppSetting("SystemVersion", "1.0.0"); }
+        }
 
         /// <summary>
         /// 获取公司名称
         /// </summary>
-        public static string CompanyName => GetAppSetting("CompanyName", "您的公司名称");
+        public static string CompanyName
+        {
+            get { return GetAppSetting("CompanyName", "您的公司名称"); }
+        }
 
         /// <summary>
         /// 是否启用调试模式
         /// </summary>
-        public static bool IsDebugMode => GetAppSetting<bool>("EnableDebugMode", false);
+        public static bool IsDebugMode
+        {
+            get { return GetAppSetting<bool>("EnableDebugMode", false); }
+        }
 
         /// <summary>
         /// 获取页面大小
         /// </summary>
-        public static int PageSize => GetAppSetting<int>("PageSize", 20);
+        public static int PageSize
+        {
+            get { return GetAppSetting<int>("PageSize", 20); }
+        }
 
         /// <summary>
         /// 获取会话超时时间（分钟）
         /// </summary>
-        public static int SessionTimeout => GetAppSetting<int>("SessionTimeout", 30);
+        public static int SessionTimeout
+        {
+            get { return GetAppSetting<int>("SessionTimeout", 30); }
+        }
 
         /// <summary>
         /// 获取最大登录尝试次数
         /// </summary>
-        public static int MaxLoginAttempts => GetAppSetting<int>("MaxLoginAttempts", 5);
+        public static int MaxLoginAttempts
+        {
+            get { return GetAppSetting<int>("MaxLoginAttempts", 5); }
+        }
 
         /// <summary>
         /// 获取密码最小长度
         /// </summary>
-        public static int PasswordMinLength => GetAppSetting<int>("PasswordMinLength", 6);
+        public static int PasswordMinLength
+        {
+            get { return GetAppSetting<int>("PasswordMinLength", 6); }
+        }
 
         /// <summary>
         /// 获取最大导出记录数
         /// </summary>
-        public static int MaxExportRecords => GetAppSetting<int>("MaxExportRecords", 10000);
+        public static int MaxExportRecords
+        {
+            get { return GetAppSetting<int>("MaxExportRecords", 10000); }
+        }
     }
 }

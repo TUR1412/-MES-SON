@@ -238,7 +238,7 @@ namespace MES.Models.Equipment
         /// <returns>设备信息字符串</returns>
         public override string ToString()
         {
-            return $"{EquipmentCode} - {EquipmentName} ({GetStatusText()})";
+            return string.Format("{0} - {1} ({2})", EquipmentCode, EquipmentName, GetStatusText());
         }
     }
 }

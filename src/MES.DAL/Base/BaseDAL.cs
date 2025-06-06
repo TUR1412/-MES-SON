@@ -28,7 +28,10 @@ namespace MES.DAL.Base
         /// <summary>
         /// 主键字段名，默认为"id"
         /// </summary>
-        protected virtual string PrimaryKeyField => "id";
+        protected virtual string PrimaryKeyField
+        {
+            get { return "id"; }
+        }
 
         /// <summary>
         /// 主键属性名（为了兼容子类实现）
@@ -48,7 +51,7 @@ namespace MES.DAL.Base
         {
             try
             {
-                string sql = $"SELECT * FROM {TableName} WHERE {PrimaryKeyField} = @id AND is_deleted = 0";
+                string sql = string.Format("SELECT * FROM {0} WHERE {1} = @id AND is_deleted = 0", TableName, PrimaryKeyField);
                 var parameters = new[] { DatabaseHelper.CreateParameter("@id", id) };
                 
                 DataTable dataTable = DatabaseHelper.ExecuteQuery(sql, parameters);
@@ -62,8 +65,8 @@ namespace MES.DAL.Base
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据ID获取{typeof(T).Name}失败，ID: {id}", ex);
-                throw new MESException($"获取{typeof(T).Name}数据失败", ex);
+                LogManager.Error(string.Format("根据ID获取{0}失败，ID: {1}", typeof(T).Name, id), ex);
+                throw new MESException(string.Format("获取{0}数据失败", typeof(T).Name), ex);
             }
         }
 
@@ -75,15 +78,15 @@ namespace MES.DAL.Base
         {
             try
             {
-                string sql = $"SELECT * FROM {TableName} WHERE is_deleted = 0 ORDER BY {PrimaryKeyField}";
+                string sql = string.Format("SELECT * FROM {0} WHERE is_deleted = 0 ORDER BY {1}", TableName, PrimaryKeyField);
                 DataTable dataTable = DatabaseHelper.ExecuteQuery(sql);
                 
                 return ConvertDataTableToList(dataTable);
             }
             catch (Exception ex)
             {
-                LogManager.Error($"获取所有{typeof(T).Name}失败", ex);
-                throw new MESException($"获取{typeof(T).Name}列表失败", ex);
+                LogManager.Error(string.Format("获取所有{0}失败", typeof(T).Name), ex);
+                throw new MESException(string.Format("获取{0}列表失败", typeof(T).Name), ex);
             }
         }
 
@@ -97,22 +100,22 @@ namespace MES.DAL.Base
         {
             try
             {
-                string sql = $"SELECT * FROM {TableName} WHERE is_deleted = 0";
-                
+                string sql = string.Format("SELECT * FROM {0} WHERE is_deleted = 0", TableName);
+
                 if (!string.IsNullOrEmpty(whereClause))
                 {
-                    sql += $" AND ({whereClause})";
+                    sql += string.Format(" AND ({0})", whereClause);
                 }
-                
-                sql += $" ORDER BY {PrimaryKeyField}";
+
+                sql += string.Format(" ORDER BY {0}", PrimaryKeyField);
                 
                 DataTable dataTable = DatabaseHelper.ExecuteQuery(sql, parameters);
                 return ConvertDataTableToList(dataTable);
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据条件查询{typeof(T).Name}失败，条件: {whereClause}", ex);
-                throw new MESException($"查询{typeof(T).Name}数据失败", ex);
+                LogManager.Error(string.Format("根据条件查询{0}失败，条件: {1}", typeof(T).Name, whereClause), ex);
+                throw new MESException(string.Format("查询{0}数据失败", typeof(T).Name), ex);
             }
         }
 
@@ -134,21 +137,26 @@ namespace MES.DAL.Base
                 entity.CreateTime = DateTime.Now;
                 entity.IsDeleted = false;
 
-                var (sql, parameters) = BuildInsertSql(entity);
+                string sql;
+                MySqlParameter[] parameters;
+                if (!BuildInsertSql(entity, out sql, out parameters))
+                {
+                    throw new MESException(string.Format("构建{0}插入SQL失败", typeof(T).Name));
+                }
                 int rowsAffected = DatabaseHelper.ExecuteNonQuery(sql, parameters);
                 
                 bool success = rowsAffected > 0;
                 if (success)
                 {
-                    LogManager.Info($"添加{typeof(T).Name}成功");
+                    LogManager.Info(string.Format("添加{0}成功", typeof(T).Name));
                 }
                 
                 return success;
             }
             catch (Exception ex)
             {
-                LogManager.Error($"添加{typeof(T).Name}失败", ex);
-                throw new MESException($"添加{typeof(T).Name}失败", ex);
+                LogManager.Error(string.Format("添加{0}失败", typeof(T).Name), ex);
+                throw new MESException(string.Format("添加{0}失败", typeof(T).Name), ex);
             }
         }
 
@@ -169,21 +177,26 @@ namespace MES.DAL.Base
                 // 设置更新时间
                 entity.UpdateTime = DateTime.Now;
 
-                var (sql, parameters) = BuildUpdateSql(entity);
+                string sql;
+                MySqlParameter[] parameters;
+                if (!BuildUpdateSql(entity, out sql, out parameters))
+                {
+                    throw new MESException(string.Format("构建{0}更新SQL失败", typeof(T).Name));
+                }
                 int rowsAffected = DatabaseHelper.ExecuteNonQuery(sql, parameters);
                 
                 bool success = rowsAffected > 0;
                 if (success)
                 {
-                    LogManager.Info($"更新{typeof(T).Name}成功，ID: {entity.Id}");
+                    LogManager.Info(string.Format("更新{0}成功，ID: {1}", typeof(T).Name, entity.Id));
                 }
                 
                 return success;
             }
             catch (Exception ex)
             {
-                LogManager.Error($"更新{typeof(T).Name}失败，ID: {entity.Id}", ex);
-                throw new MESException($"更新{typeof(T).Name}失败", ex);
+                LogManager.Error(string.Format("更新{0}失败，ID: {1}", typeof(T).Name, entity.Id), ex);
+                throw new MESException(string.Format("更新{0}失败", typeof(T).Name), ex);
             }
         }
 
@@ -196,7 +209,7 @@ namespace MES.DAL.Base
         {
             try
             {
-                string sql = $"UPDATE {TableName} SET is_deleted = 1, update_time = @updateTime WHERE {PrimaryKeyField} = @id";
+                string sql = string.Format("UPDATE {0} SET is_deleted = 1, update_time = @updateTime WHERE {1} = @id", TableName, PrimaryKeyField);
                 var parameters = new[]
                 {
                     DatabaseHelper.CreateParameter("@updateTime", DateTime.Now),
@@ -208,15 +221,15 @@ namespace MES.DAL.Base
                 bool success = rowsAffected > 0;
                 if (success)
                 {
-                    LogManager.Info($"删除{typeof(T).Name}成功，ID: {id}");
+                    LogManager.Info(string.Format("删除{0}成功，ID: {1}", typeof(T).Name, id));
                 }
                 
                 return success;
             }
             catch (Exception ex)
             {
-                LogManager.Error($"删除{typeof(T).Name}失败，ID: {id}", ex);
-                throw new MESException($"删除{typeof(T).Name}失败", ex);
+                LogManager.Error(string.Format("删除{0}失败，ID: {1}", typeof(T).Name, id), ex);
+                throw new MESException(string.Format("删除{0}失败", typeof(T).Name), ex);
             }
         }
 
@@ -230,11 +243,11 @@ namespace MES.DAL.Base
         {
             try
             {
-                string sql = $"SELECT COUNT(*) FROM {TableName} WHERE is_deleted = 0";
-                
+                string sql = string.Format("SELECT COUNT(*) FROM {0} WHERE is_deleted = 0", TableName);
+
                 if (!string.IsNullOrEmpty(whereClause))
                 {
-                    sql += $" AND ({whereClause})";
+                    sql += string.Format(" AND ({0})", whereClause);
                 }
                 
                 object result = DatabaseHelper.ExecuteScalar(sql, parameters);
@@ -242,8 +255,8 @@ namespace MES.DAL.Base
             }
             catch (Exception ex)
             {
-                LogManager.Error($"获取{typeof(T).Name}记录数失败", ex);
-                throw new MESException($"获取{typeof(T).Name}记录数失败", ex);
+                LogManager.Error(string.Format("获取{0}记录数失败", typeof(T).Name), ex);
+                throw new MESException(string.Format("获取{0}记录数失败", typeof(T).Name), ex);
             }
         }
 
@@ -262,23 +275,28 @@ namespace MES.DAL.Base
         /// 构建INSERT SQL语句（子类必须实现）
         /// </summary>
         /// <param name="entity">实体对象</param>
-        /// <returns>SQL语句和参数</returns>
-        protected virtual (string sql, MySqlParameter[] parameters) BuildInsertSql(T entity)
+        /// <param name="sql">输出SQL语句</param>
+        /// <param name="parameters">输出参数数组</param>
+        /// <returns>操作是否成功</returns>
+        protected virtual bool BuildInsertSql(T entity, out string sql, out MySqlParameter[] parameters)
         {
             try
             {
-                string sql = GetInsertSql();
+                sql = GetInsertSql();
 
                 using (var cmd = new MySqlCommand())
                 {
                     SetInsertParameters(cmd, entity);
-                    return (sql, cmd.Parameters.Cast<MySqlParameter>().ToArray());
+                    parameters = cmd.Parameters.Cast<MySqlParameter>().ToArray();
+                    return true;
                 }
             }
             catch (Exception ex)
             {
-                LogManager.Error($"构建{typeof(T).Name}插入SQL失败", ex);
-                throw new MESException($"构建插入SQL失败", ex);
+                LogManager.Error(string.Format("构建{0}插入SQL失败", typeof(T).Name), ex);
+                sql = null;
+                parameters = null;
+                return false;
             }
         }
 
@@ -286,23 +304,28 @@ namespace MES.DAL.Base
         /// 构建UPDATE SQL语句（子类必须实现）
         /// </summary>
         /// <param name="entity">实体对象</param>
-        /// <returns>SQL语句和参数</returns>
-        protected virtual (string sql, MySqlParameter[] parameters) BuildUpdateSql(T entity)
+        /// <param name="sql">输出SQL语句</param>
+        /// <param name="parameters">输出参数数组</param>
+        /// <returns>操作是否成功</returns>
+        protected virtual bool BuildUpdateSql(T entity, out string sql, out MySqlParameter[] parameters)
         {
             try
             {
-                string sql = GetUpdateSql();
+                sql = GetUpdateSql();
 
                 using (var cmd = new MySqlCommand())
                 {
                     SetUpdateParameters(cmd, entity);
-                    return (sql, cmd.Parameters.Cast<MySqlParameter>().ToArray());
+                    parameters = cmd.Parameters.Cast<MySqlParameter>().ToArray();
+                    return true;
                 }
             }
             catch (Exception ex)
             {
-                LogManager.Error($"构建{typeof(T).Name}更新SQL失败", ex);
-                throw new MESException($"构建更新SQL失败", ex);
+                LogManager.Error(string.Format("构建{0}更新SQL失败", typeof(T).Name), ex);
+                sql = null;
+                parameters = null;
+                return false;
             }
         }
 
@@ -407,8 +430,6 @@ namespace MES.DAL.Base
             
             return result;
         }
-
-        #endregion
 
         #endregion
     }

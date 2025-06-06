@@ -87,12 +87,12 @@ namespace MES.Common.Exceptions
             
             if (!string.IsNullOrEmpty(ErrorCode))
             {
-                result = $"错误代码: {ErrorCode}\n" + result;
+                result = string.Format("错误代码: {0}\n", ErrorCode) + result;
             }
             
             if (!string.IsNullOrEmpty(Module))
             {
-                result = $"错误模块: {Module}\n" + result;
+                result = string.Format("错误模块: {0}\n", Module) + result;
             }
             
             return result;
@@ -139,7 +139,7 @@ namespace MES.Common.Exceptions
         }
 
         public ValidationException(string fieldName, string message) 
-            : base("VAL001", $"字段 '{fieldName}' 验证失败: {message}", "数据验证")
+            : base("VAL001", string.Format("字段 '{0}' 验证失败: {1}", fieldName, message), "数据验证")
         {
         }
     }

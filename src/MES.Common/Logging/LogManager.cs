@@ -54,7 +54,7 @@ namespace MES.Common.Logging
                 catch (Exception ex)
                 {
                     // 如果日志初始化失败，至少要能记录到事件日志或控制台
-                    Console.WriteLine($"日志管理器初始化失败: {ex.Message}");
+                    Console.WriteLine(string.Format("日志管理器初始化失败: {0}", ex.Message));
                     throw;
                 }
             }
@@ -117,7 +117,7 @@ namespace MES.Common.Logging
             {
                 lock (_lockObject)
                 {
-                    var logFileName = $"MES_{DateTime.Now:yyyyMMdd}.log";
+                    var logFileName = string.Format("MES_{0:yyyyMMdd}.log", DateTime.Now);
                     var logFilePath = Path.Combine(_logPath, logFileName);
 
                     var logEntry = FormatLogEntry(level, message, exception);
@@ -134,11 +134,11 @@ namespace MES.Common.Logging
             catch (Exception ex)
             {
                 // 日志写入失败时的备用处理
-                Console.WriteLine($"日志写入失败: {ex.Message}");
-                Console.WriteLine($"原始日志: [{level}] {message}");
+                Console.WriteLine(string.Format("日志写入失败: {0}", ex.Message));
+                Console.WriteLine(string.Format("原始日志: [{0}] {1}", level, message));
                 if (exception != null)
                 {
-                    Console.WriteLine($"异常信息: {exception}");
+                    Console.WriteLine(string.Format("异常信息: {0}", exception));
                 }
             }
         }
@@ -151,11 +151,11 @@ namespace MES.Common.Logging
             var timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
             var threadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
             
-            var logEntry = $"[{timestamp}] [{level.ToString().ToUpper()}] [Thread-{threadId}] {message}";
+            var logEntry = string.Format("[{0}] [{1}] [Thread-{2}] {3}", timestamp, level.ToString().ToUpper(), threadId, message);
 
             if (exception != null)
             {
-                logEntry += Environment.NewLine + $"异常详情: {exception}";
+                logEntry += Environment.NewLine + string.Format("异常详情: {0}", exception);
             }
 
             return logEntry;
@@ -179,7 +179,7 @@ namespace MES.Common.Logging
                     if (fileInfo.CreationTime < cutoffDate)
                     {
                         File.Delete(logFile);
-                        Info($"已删除过期日志文件: {Path.GetFileName(logFile)}");
+                        Info(string.Format("已删除过期日志文件: {0}", Path.GetFileName(logFile)));
                     }
                 }
             }

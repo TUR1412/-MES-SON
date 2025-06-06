@@ -123,7 +123,7 @@ namespace MES.DAL.Core
                             var dataTable = new DataTable();
                             adapter.Fill(dataTable);
 
-                            LogManager.Info($"执行查询成功，返回 {dataTable.Rows.Count} 行数据");
+                            LogManager.Info(string.Format("执行查询成功，返回 {0} 行数据", dataTable.Rows.Count));
                             return dataTable;
                         }
                     }
@@ -131,7 +131,7 @@ namespace MES.DAL.Core
             }
             catch (Exception ex)
             {
-                LogManager.Error($"执行查询失败，SQL: {sql}", ex);
+                LogManager.Error(string.Format("执行查询失败，SQL: {0}", sql), ex);
                 throw new MESException("数据库查询执行失败", ex);
             }
         }
@@ -159,14 +159,14 @@ namespace MES.DAL.Core
                         }
 
                         int rowsAffected = command.ExecuteNonQuery();
-                        LogManager.Info($"执行非查询操作成功，影响 {rowsAffected} 行");
+                        LogManager.Info(string.Format("执行非查询操作成功，影响 {0} 行", rowsAffected));
                         return rowsAffected;
                     }
                 }
             }
             catch (Exception ex)
             {
-                LogManager.Error($"执行非查询操作失败，SQL: {sql}", ex);
+                LogManager.Error(string.Format("执行非查询操作失败，SQL: {0}", sql), ex);
                 throw new MESException("数据库操作执行失败", ex);
             }
         }
@@ -201,7 +201,7 @@ namespace MES.DAL.Core
             }
             catch (Exception ex)
             {
-                LogManager.Error($"执行标量查询失败，SQL: {sql}", ex);
+                LogManager.Error(string.Format("执行标量查询失败，SQL: {0}", sql), ex);
                 throw new MESException("数据库标量查询执行失败", ex);
             }
         }

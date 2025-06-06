@@ -171,7 +171,7 @@ namespace MES.Models.System
         /// <returns>字典路径</returns>
         public string GetFullPath()
         {
-            return $"{DictType}.{DictCode}";
+            return string.Format("{0}.{1}", DictType, DictCode);
         }
 
         /// <summary>
@@ -180,7 +180,7 @@ namespace MES.Models.System
         /// <returns>字典信息字符串</returns>
         public override string ToString()
         {
-            return $"{DictType} - {DictCode}: {DictName}";
+            return string.Format("{0} - {1}: {2}", DictType, DictCode, DictName);
         }
     }
 

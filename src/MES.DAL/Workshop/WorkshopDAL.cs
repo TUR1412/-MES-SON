@@ -89,7 +89,7 @@ namespace MES.DAL.Workshop
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据车间编码获取车间信息失败，车间编码: {workshopCode}", ex);
+                LogManager.Error(string.Format("根据车间编码获取车间信息失败，车间编码: {0}", workshopCode), ex);
                 throw new MESException("获取车间信息失败", ex);
             }
         }
@@ -108,7 +108,7 @@ namespace MES.DAL.Workshop
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据状态获取车间列表失败，状态: {status}", ex);
+                LogManager.Error(string.Format("根据状态获取车间列表失败，状态: {0}", status), ex);
                 throw new MESException("获取车间列表失败", ex);
             }
         }
@@ -132,7 +132,7 @@ namespace MES.DAL.Workshop
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据类型获取车间列表失败，类型: {workshopType}", ex);
+                LogManager.Error(string.Format("根据类型获取车间列表失败，类型: {0}", workshopType), ex);
                 throw new MESException("获取车间列表失败", ex);
             }
         }
