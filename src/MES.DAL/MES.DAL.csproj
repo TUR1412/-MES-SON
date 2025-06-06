@@ -53,9 +53,9 @@
     <Compile Include="System\UserDAL.cs" />
     <Compile Include="Material\MaterialDAL.cs" />
     <Compile Include="Material\BOMDAL.cs" />
-    <!-- TODO: H成员和S成员需要先创建对应的模型类，然后取消注释以下两行 -->
-    <!-- <Compile Include="Production\ProductionOrderDAL.cs" /> -->
-    <!-- <Compile Include="Workshop\WorkshopDAL.cs" /> -->
+    <!-- H成员和S成员的模型类已创建，DAL文件已修复MySQL API -->
+    <Compile Include="Production\ProductionOrderDAL.cs" />
+    <Compile Include="Workshop\WorkshopDAL.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MES.Common\MES.Common.csproj">

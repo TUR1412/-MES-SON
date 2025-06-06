@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using MySql.Data.MySqlClient;
 using MES.Models.Base;
+using MES.Models.Workshop;
 using MES.DAL.Base;
 using MES.DAL.Core;
 using MES.Common.Logging;
