@@ -22,12 +22,18 @@ namespace MES.DAL.Production
         /// <summary>
         /// 表名
         /// </summary>
-        protected override string TableName => "production_order";
+        protected override string TableName
+        {
+            get { return "production_order"; }
+        }
 
         /// <summary>
         /// 主键属性名
         /// </summary>
-        protected override string PrimaryKey => "Id";
+        protected override string PrimaryKey
+        {
+            get { return "Id"; }
+        }
 
         /// <summary>
         /// 将DataRow转换为ProductionOrderInfo实体对象

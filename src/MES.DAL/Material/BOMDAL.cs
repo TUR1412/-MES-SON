@@ -22,12 +22,18 @@ namespace MES.DAL.Material
         /// <summary>
         /// 表名
         /// </summary>
-        protected override string TableName => "bom_info";
+        protected override string TableName
+        {
+            get { return "bom_info"; }
+        }
 
         /// <summary>
         /// 主键属性名
         /// </summary>
-        protected override string PrimaryKey => "Id";
+        protected override string PrimaryKey
+        {
+            get { return "Id"; }
+        }
 
         /// <summary>
         /// 将DataRow转换为BOMInfo实体对象
@@ -72,7 +78,7 @@ namespace MES.DAL.Material
             }
             catch (Exception ex)
             {
-                LogManager.Error(string.Format("根据产品ID获取BOM失败，产品ID: {0}", productId), ex);
+                LogManager.Error($"根据产品ID获取BOM失败，产品ID: {productId}", ex);
                 throw new MESException("获取BOM列表失败", ex);
             }
         }
@@ -98,7 +104,7 @@ namespace MES.DAL.Material
             }
             catch (Exception ex)
             {
-                LogManager.Error(string.Format("根据BOM编码获取BOM失败，BOM编码: {0}", bomCode), ex);
+                LogManager.Error($"根据BOM编码获取BOM失败，BOM编码: {bomCode}", ex);
                 throw new MESException("获取BOM信息失败", ex);
             }
         }
@@ -115,19 +121,17 @@ namespace MES.DAL.Material
         /// 构建INSERT SQL语句
         /// </summary>
         /// <param name="entity">BOM实体</param>
-        /// <param name="sql">输出SQL语句</param>
-        /// <param name="parameters">输出参数数组</param>
-        /// <returns>操作是否成功</returns>
-        protected override bool BuildInsertSql(BOMInfo entity, out string sql, out MySqlParameter[] parameters)
+        /// <returns>SQL语句和参数</returns>
+        protected override (string sql, MySqlParameter[] parameters) BuildInsertSql(BOMInfo entity)
         {
-            sql = @"INSERT INTO bom_info
+            string sql = @"INSERT INTO bom_info
                           (bom_code, product_id, bom_version, bom_type, effective_date, expire_date, status,
                            create_time, create_user_name, is_deleted)
                           VALUES
                           (@bomCode, @productId, @bomVersion, @bomType, @effectiveDate, @expireDate, @status,
                            @createTime, @createUserName, @isDeleted)";
 
-            parameters = new[]
+            var parameters = new[]
             {
                 DatabaseHelper.CreateParameter("@bomCode", entity.BOMCode),
                 DatabaseHelper.CreateParameter("@productId", entity.ProductId),
@@ -141,25 +145,23 @@ namespace MES.DAL.Material
                 DatabaseHelper.CreateParameter("@isDeleted", entity.IsDeleted)
             };
 
-            return true;
+            return (sql, parameters);
         }
 
         /// <summary>
         /// 构建UPDATE SQL语句
         /// </summary>
         /// <param name="entity">BOM实体</param>
-        /// <param name="sql">输出SQL语句</param>
-        /// <param name="parameters">输出参数数组</param>
-        /// <returns>操作是否成功</returns>
-        protected override bool BuildUpdateSql(BOMInfo entity, out string sql, out MySqlParameter[] parameters)
+        /// <returns>SQL语句和参数</returns>
+        protected override (string sql, MySqlParameter[] parameters) BuildUpdateSql(BOMInfo entity)
         {
-            sql = @"UPDATE bom_info SET
+            string sql = @"UPDATE bom_info SET
                           bom_code = @bomCode, product_id = @productId, bom_version = @bomVersion,
                           bom_type = @bomType, effective_date = @effectiveDate, expire_date = @expireDate,
                           status = @status, update_time = @updateTime, update_user_name = @updateUserName
                           WHERE id = @id AND is_deleted = 0";
 
-            parameters = new[]
+            var parameters = new[]
             {
                 DatabaseHelper.CreateParameter("@bomCode", entity.BOMCode),
                 DatabaseHelper.CreateParameter("@productId", entity.ProductId),
@@ -173,7 +175,7 @@ namespace MES.DAL.Material
                 DatabaseHelper.CreateParameter("@id", entity.Id)
             };
 
-            return true;
+            return (sql, parameters);
         }
 
         #endregion
