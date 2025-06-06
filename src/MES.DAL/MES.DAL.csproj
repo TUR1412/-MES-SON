@@ -51,11 +51,15 @@
     <Compile Include="Core\DatabaseHelper.cs" />
     <Compile Include="Base\BaseDAL.cs" />
     <Compile Include="System\UserDAL.cs" />
+    <Compile Include="System\RoleDAL.cs" />
+    <Compile Include="System\DictionaryDAL.cs" />
     <Compile Include="Material\MaterialDAL.cs" />
     <Compile Include="Material\BOMDAL.cs" />
     <!-- H成员和S成员的模型类已创建，DAL文件已修复MySQL API -->
     <Compile Include="Production\ProductionOrderDAL.cs" />
     <Compile Include="Workshop\WorkshopDAL.cs" />
+    <Compile Include="Equipment\EquipmentDAL.cs" />
+    <Compile Include="Quality\QualityInspectionDAL.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MES.Common\MES.Common.csproj">

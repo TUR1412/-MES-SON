@@ -47,6 +47,10 @@
     <Compile Include="Production\ProductionOrderInfo.cs" />
     <Compile Include="Workshop\WorkshopInfo.cs" />
     <Compile Include="System\UserInfo.cs" />
+    <Compile Include="System\RoleInfo.cs" />
+    <Compile Include="System\DictionaryInfo.cs" />
+    <Compile Include="Equipment\EquipmentInfo.cs" />
+    <Compile Include="Quality\QualityInspectionInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

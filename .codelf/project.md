@@ -4,7 +4,7 @@
 
 > 项目目标：为制造企业提供完整的生产管理解决方案，包括物料管理、生产管理、车间管理等核心模块
 
-> 项目状态：✅ MySQL架构统一完成，H/S成员模型类已创建，团队可全速并行开发
+> 项目状态：✅ 团队开发框架完成，H/S成员BLL层框架已建立，依赖问题已解决，团队可安全并行开发
 
 > 项目团队：天帝(组长/系统架构)、L成员(物料管理)、H成员(生产管理)、S成员(车间管理)
 
@@ -100,12 +100,18 @@ root
     │   ├── Properties/
     │   │   └── AssemblyInfo.cs        # 程序集信息
     │   └── MES.DAL.csproj             # 数据访问层项目文件，引用Common和Models
-    ├── MES.BLL/                       # 业务逻辑层(L成员已完成物料管理)
+    ├── MES.BLL/                       # 业务逻辑层 ✅ 三个模块框架已完成
     │   ├── Material/                  # 物料管理业务逻辑(L成员已完成)
     │   │   ├── MaterialBLL.cs         # 物料业务逻辑类(已完成)
     │   │   ├── BOMBLL.cs              # BOM业务逻辑类(已完成)
     │   │   ├── IMaterialBLL.cs        # 物料业务接口(已完成)
     │   │   └── IBOMBLL.cs             # BOM业务接口(已完成)
+    │   ├── Production/                # 生产管理业务逻辑(H成员框架已完成) ✅ 新增
+    │   │   ├── IProductionOrderBLL.cs # 生产订单业务接口(已完成)
+    │   │   └── ProductionOrderBLL.cs  # 生产订单业务实现(已完成)
+    │   ├── Workshop/                  # 车间管理业务逻辑(S成员框架已完成) ✅ 新增
+    │   │   ├── IWorkshopBLL.cs        # 车间业务接口(已完成)
+    │   │   └── WorkshopBLL.cs         # 车间业务实现(已完成)
     │   ├── Properties/
     │   │   └── AssemblyInfo.cs        # 程序集信息
     │   └── MES.BLL.csproj             # 业务逻辑层项目文件，引用DAL、Models、Common
@@ -134,18 +140,21 @@ root
 - `MES.UI/Forms/MainForm.cs`: 主界面实现，采用设计器+动态代码混合架构
 
 **团队协作文件**:
-- `docs/Git工作流程.md`: 详细的Git分支管理策略和团队协作流程
-- `docs/项目总览.md`: 实时项目进度跟踪和里程碑记录
-- `docs/H_S成员立即开发指导.md`: H/S成员专用开发指导，包含模板代码 ✅ 新增
-- `docs/团队开发完整指南.md`: 完整的团队开发规范和流程指导 ✅ 新增
-- `docs/三人同步开发详细指导.md`: 三人完全同步开发计划，无等待策略
-- `docs/开发指南.md`: 团队开发指南和最佳实践
-- `docs/PR_REVIEW_6.md`: L成员物料管理模块代码审查报告，包含详细问题分析和修复建议
+
+* `docs/Git工作流程.md`: 详细的Git分支管理策略和团队协作流程
+* `docs/项目总览.md`: 实时项目进度跟踪和里程碑记录
+* `docs/团队开发环境配置指南.md`: 完整的开发环境配置和故障排除指南 ✅ 新增
+* `docs/三人同步开发详细指导.md`: 三人完全同步开发计划，无等待策略
+* `docs/开发指南.md`: 团队开发指南和最佳实践
+* `docs/PR_REVIEW_6.md`: L成员物料管理模块代码审查报告，包含详细问题分析和修复建议
 
 
 
 **开发规范**:
-- 所有业务模型继承自BaseModel
-- 统一使用LogManager进行日志记录
-- 异常处理统一使用MESException
-- UI开发采用设计器+代码混合模式
+
+* 所有业务模型继承自BaseModel
+* 统一使用LogManager进行日志记录
+* 异常处理统一使用MESException
+* UI开发采用设计器+代码混合模式
+* 依赖管理：统一使用MySQL.Data 9.3.0版本
+* 编译环境：推荐使用Visual Studio进行开发和编译
