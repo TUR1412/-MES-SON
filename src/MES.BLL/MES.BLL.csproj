@@ -52,6 +52,8 @@
     <Compile Include="Workshop\WorkshopBLL.cs" />
     <Compile Include="System\IRoleBLL.cs" />
     <Compile Include="System\RoleBLL.cs" />
+    <Compile Include="Equipment\IEquipmentBLL.cs" />
+    <Compile Include="Quality\IQualityInspectionBLL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
