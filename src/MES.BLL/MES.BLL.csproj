@@ -46,6 +46,12 @@
     <Compile Include="Material\IBOMBLL.cs" />
     <Compile Include="Material\IMaterialBLL.cs" />
     <Compile Include="Material\MaterialBLL.cs" />
+    <Compile Include="Production\IProductionOrderBLL.cs" />
+    <Compile Include="Production\ProductionOrderBLL.cs" />
+    <Compile Include="Workshop\IWorkshopBLL.cs" />
+    <Compile Include="Workshop\WorkshopBLL.cs" />
+    <Compile Include="System\IRoleBLL.cs" />
+    <Compile Include="System\RoleBLL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
