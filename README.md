@@ -1,10 +1,10 @@
 # MES制造执行系统 (Manufacturing Execution System)
 
-[![Build Status](https://github.com/TUR1412/-MES-SON/actions/workflows/build.yml/badge.svg)](https://github.com/TUR1412/-MES-SON/actions)
 [![.NET Framework](https://img.shields.io/badge/.NET%20Framework-4.8-blue.svg)](https://dotnet.microsoft.com/download/dotnet-framework)
 [![MySQL](https://img.shields.io/badge/MySQL-8.0-orange.svg)](https://www.mysql.com/)
 [![Visual Studio](https://img.shields.io/badge/Visual%20Studio-2022-purple.svg)](https://visualstudio.microsoft.com/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Last Update](https://img.shields.io/badge/Last%20Update-2025--06--07-green.svg)](#)
 
 ## 📋 项目概述
 
@@ -15,6 +15,8 @@
 - **UI层**: Windows Forms (WinForms) - 用户界面层
 - **业务逻辑层(BLL)**: C# 类库 - 核心业务逻辑处理
 - **数据访问层(DAL)**: C# 类库 - 数据库操作封装
+- **数据模型层(Models)**: C# 类库 - 数据实体定义
+- **公共组件层(Common)**: C# 类库 - 通用工具和配置
 - **数据库**: MySQL 8.0 - 数据存储
 
 ## 🚀 快速开始
@@ -49,17 +51,11 @@
    - 设置 `MES.UI` 为启动项目
    - 按 F5 运行项目
 
-## 🔄 CI/CD 流水线
+## 📚 文档导航
 
-项目配置了完整的 GitHub Actions 工作流：
-
-- **🔨 构建流水线**: 自动代码质量检查、构建测试、安全扫描
-- **🧪 自动化测试**: 单元测试、集成测试、性能测试、安全测试
-- **🗄️ 数据库验证**: MySQL 脚本语法验证、部署测试、性能测试
-- **📊 系统监控**: 健康检查、性能监控、安全监控、依赖项监控
-- **🚀 发布管理**: 自动化版本发布、多包构建、部署脚本生成
-
-所有工作流都会自动触发，确保代码质量和系统稳定性。
+- **[开发指南](docs/开发指南.md)** - 完整的开发环境配置和工作流程
+- **[系统架构](docs/系统架构.md)** - 详细的技术架构和模块设计
+- **[部署运维](docs/部署运维.md)** - 系统部署、配置和运维指南
 
 ## 📁 项目结构
 
@@ -154,38 +150,40 @@ MES-SON/
 - `production_order` - 生产订单表
 - `workshop_info` - 车间信息表
 
-详细的数据库设计请参考: [数据库设计文档](docs/DATABASE_DESIGN.md)
+详细的数据库设计请参考: [系统架构文档](docs/系统架构.md)
 
-## 🔍 测试
+##  版本历史
 
-### 单元测试
-```bash
-# 运行所有单元测试
-dotnet test
-```
-
-### 集成测试
-- 数据库连接测试
-- 业务逻辑集成测试
-- UI功能测试
-
-## 📈 版本历史
-
-- **v1.0.0** (2025-06-04) - 项目初始化，基础框架建立，完全可运行版本
+- **v1.0.0** (2025-06-07) - 项目初始化，基础框架建立，完全可运行版本
+- **v1.1.0** (2025-06-07) - 简化Git工作流程，完善文档体系
 
 ## 🤝 贡献指南
 
+### 团队成员开发流程
+```bash
+# 1. 拉取最新代码
+git checkout develop
+git pull origin develop
+
+# 2. 开发功能
+# 进行代码开发...
+
+# 3. 提交代码
+git add .
+git commit -m "成员标识: 模块 - 功能描述"
+git push origin develop
+```
+
+### 外部贡献者
 1. Fork 本仓库
-2. 创建功能分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 创建 Pull Request
+2. 在develop分支基础上开发
+3. 提交Pull Request到develop分支
 
 ## 📞 联系方式
 
 - **项目组长**: 天帝 - 负责架构设计和技术决策
 - **技术支持**: 请在GitHub Issues中提出问题
-- **文档**: 详细开发指南请参考 [DEVELOPMENT_GUIDE.md](docs/DEVELOPMENT_GUIDE.md)
+- **开发文档**: 详见 [docs/开发指南.md](docs/开发指南.md)
 
 ## 📄 许可证
 
