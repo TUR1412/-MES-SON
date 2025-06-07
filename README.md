@@ -353,16 +353,17 @@ SOURCE database/init_database.sql;
 <div align="center">
 
 ```mermaid
-gitgraph
-    commit id: "项目初始化"
-    branch develop
-    checkout develop
-    commit id: "L: 物料管理"
-    commit id: "H: 生产管理"
-    commit id: "S: 车间管理"
-    checkout main
-    merge develop
-    commit id: "v1.2.0 稳定版"
+graph LR
+    A[项目初始化] --> B[develop分支]
+    B --> C[L: 物料管理]
+    C --> D[H: 生产管理]
+    D --> E[S: 车间管理]
+    E --> F[合并到main]
+    F --> G[v1.2.0 稳定版]
+
+    style A fill:#e1f5fe
+    style G fill:#e8f5e8
+    style F fill:#fff3e0
 ```
 
 </div>
@@ -489,41 +490,18 @@ LogManager.Debug($"物料验证通过: {material.MaterialCode}");
 <div align="center">
 
 ```mermaid
-erDiagram
-    sys_user ||--o{ sys_user_role : "用户角色关联"
-    sys_role ||--o{ sys_user_role : "角色用户关联"
-    material_info ||--o{ bom_info : "BOM物料关系"
-    production_order ||--o{ workshop_batch : "生产批次"
-    workshop_info ||--o{ workshop_batch : "车间批次"
+graph TD
+    A[👥 sys_user<br/>用户信息表] --> B[🔐 sys_user_role<br/>用户角色关联]
+    C[🔐 sys_role<br/>角色权限表] --> B
+    D[📦 material_info<br/>物料信息表] --> E[🔗 bom_info<br/>BOM物料清单]
+    F[⚡ production_order<br/>生产订单表] --> G[📊 workshop_batch<br/>生产批次]
+    H[🏭 workshop_info<br/>车间信息表] --> G
 
-    sys_user {
-        int user_id PK
-        string user_name
-        string password_hash
-        string email
-        datetime create_time
-        int status
-    }
-
-    material_info {
-        int material_id PK
-        string material_code
-        string material_name
-        string specification
-        string unit
-        int category_id
-        datetime create_time
-    }
-
-    production_order {
-        int order_id PK
-        string order_no
-        int material_id FK
-        decimal quantity
-        datetime plan_start_date
-        datetime plan_end_date
-        int status
-    }
+    style A fill:#e3f2fd
+    style C fill:#f3e5f5
+    style D fill:#e8f5e8
+    style F fill:#fff3e0
+    style H fill:#fce4ec
 ```
 
 </div>
