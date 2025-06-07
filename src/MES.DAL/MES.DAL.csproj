@@ -65,6 +65,7 @@
     <Compile Include="Factory\FactoryDAL.cs" />
     <Compile Include="Flow\FlowDAL.cs" />
     <Compile Include="Oper\OperDAL.cs" />
+    <Compile Include="Production\ProductionDAL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Core\DatabaseHelper.cs" />
     <Compile Include="Base\BaseDAL.cs" />

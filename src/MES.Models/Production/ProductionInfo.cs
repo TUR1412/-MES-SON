@@ -6,7 +6,7 @@ namespace MES.Models.Production
     /// <summary>
     /// 产品ID
     /// </summary>
-    internal class ProductionInfo : BaseModel
+    public class ProductionInfo : BaseModel
     {
         /// <summary>
         /// 产品ID
