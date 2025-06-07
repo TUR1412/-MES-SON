@@ -218,10 +218,10 @@ SOURCE database/init_database.sql;
 
 | 👤 成员 | 🎯 核心职责 | 📋 负责模块 | 📊 完成状态 |
 |---------|-------------|-------------|-------------|
-| **🏆 天帝 (组长)** | 系统架构、代码审查、技术决策 | 框架设计、项目管理、主分支维护 | ![100%](https://progress-bar.dev/100?title=架构完成) |
-| **🔧 L 成员** | 物料与工艺规则配置 | 物料管理、BOM管理、工艺路线 | ![100%](https://progress-bar.dev/100?title=模块完成) |
-| **⚡ H 成员** | 生产订单与执行核心 | 生产订单、生产执行、用户权限 | ![100%](https://progress-bar.dev/100?title=模块完成) |
-| **🏭 S 成员** | 车间作业与辅助管理 | 车间作业、在制品管理、设备管理 | ![100%](https://progress-bar.dev/100?title=模块完成) |
+| **🏆 天帝 (组长)** | 系统架构、代码审查、技术决策 | 框架设计、项目管理、主分支维护 | ![架构完成](https://img.shields.io/badge/架构完成-100%25-00C851?style=flat-square) |
+| **🔧 L 成员** | 物料与工艺规则配置 | 物料管理、BOM管理、工艺路线 | ![模块完成](https://img.shields.io/badge/模块完成-100%25-00C851?style=flat-square) |
+| **⚡ H 成员** | 生产订单与执行核心 | 生产订单、生产执行、用户权限 | ![模块完成](https://img.shields.io/badge/模块完成-100%25-00C851?style=flat-square) |
+| **🏭 S 成员** | 车间作业与辅助管理 | 车间作业、在制品管理、设备管理 | ![模块完成](https://img.shields.io/badge/模块完成-100%25-00C851?style=flat-square) |
 
 </div>
 
