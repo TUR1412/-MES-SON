@@ -47,5 +47,15 @@ namespace MES.Models.Flow
         /// 更新时间
         /// </summary>
         public DateTime? UpdateTime { get; set; }
+
+        /// <summary>
+        /// 磨片厚度(mm)
+        /// </summary>
+        public decimal GrindingThickness { get; set; }
+
+        /// <summary>
+        /// 封装形式
+        /// </summary>
+        public string PackageType { get; set; }
     }
 }
