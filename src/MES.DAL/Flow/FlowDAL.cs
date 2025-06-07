@@ -46,10 +46,13 @@ namespace MES.DAL.Flow
                 FlowNum = row["flow_num"] != DBNull.Value ? row["flow_num"].ToString() : null,
                 FlowName = row["flow_name"] != DBNull.Value ? row["flow_name"].ToString() : null,
                 Version = row["version"] != DBNull.Value ? row["version"].ToString() : null,
+                FortoryId = Convert.ToInt32(row["fortory_id"]),
                 ProductId = Convert.ToInt32(row["product_id"]),
                 Status = Convert.ToInt32(row["status"]),
                 CreateTime = Convert.ToDateTime(row["create_time"]),
-                UpdateTime = row["update_time"] != DBNull.Value ? Convert.ToDateTime(row["update_time"]) : (DateTime?)null
+                UpdateTime = row["update_time"] != DBNull.Value ? Convert.ToDateTime(row["update_time"]) : (DateTime?)null,
+                GrindingThickness = row["grinding_thickness"] != DBNull.Value ? Convert.ToDecimal(row["grinding_thickness"]) : 0,
+                PackageType = row["package_type"] != DBNull.Value ? row["package_type"].ToString() : null
             };
         }
 
@@ -153,21 +156,24 @@ namespace MES.DAL.Flow
         protected override bool BuildInsertSql(FlowInfo entity, out string sql, out MySqlParameter[] parameters)
         {
             sql = @"INSERT INTO flow_info
-                          (flow_num, flow_name, version, product_id, 
-                           status, create_time, update_time)
+                          (flow_num, flow_name, version, fortery_id, product_id, 
+                           status, create_time, update_time, grinding_thickness, package_type)
                           VALUES
-                          (@flowNum, @flowName, @version, @productId, 
-                           @status, @createTime, @updateTime)";
+                          (@flowNum, @flowName, @version, @fortoryId, @productId, 
+                           @status, @createTime, @updateTime, @grindingThickness, @packageType)";
 
             parameters = new[]
             {
                 DatabaseHelper.CreateParameter("@flowNum", entity.FlowNum),
                 DatabaseHelper.CreateParameter("@flowName", entity.FlowName),
                 DatabaseHelper.CreateParameter("@version", entity.Version),
+                DatabaseHelper.CreateParameter("@fortoryId", entity.FortoryId),
                 DatabaseHelper.CreateParameter("@productId", entity.ProductId),
                 DatabaseHelper.CreateParameter("@status", entity.Status),
                 DatabaseHelper.CreateParameter("@createTime", entity.CreateTime),
-                DatabaseHelper.CreateParameter("@updateTime", entity.UpdateTime)
+                DatabaseHelper.CreateParameter("@updateTime", entity.UpdateTime),
+                DatabaseHelper.CreateParameter("@grindingThickness", entity.GrindingThickness),
+                DatabaseHelper.CreateParameter("@packageType", entity.PackageType)
             };
 
             return true;
@@ -184,9 +190,12 @@ namespace MES.DAL.Flow
                           flow_num = @flowNum, 
                           flow_name = @flowName,
                           version = @version, 
+                          fortery_id = @fortoryId,
                           product_id = @productId,
                           status = @status,
-                          update_time = @updateTime
+                          update_time = @updateTime,
+                          grinding_thickness = @grindingThickness,
+                          package_type = @packageType
                           WHERE flow_id = @flowId";
 
             parameters = new[]
@@ -194,9 +203,12 @@ namespace MES.DAL.Flow
                 DatabaseHelper.CreateParameter("@flowNum", entity.FlowNum),
                 DatabaseHelper.CreateParameter("@flowName", entity.FlowName),
                 DatabaseHelper.CreateParameter("@version", entity.Version),
+                DatabaseHelper.CreateParameter("@fortoryId", entity.FortoryId),
                 DatabaseHelper.CreateParameter("@productId", entity.ProductId),
                 DatabaseHelper.CreateParameter("@status", entity.Status),
                 DatabaseHelper.CreateParameter("@updateTime", entity.UpdateTime),
+                DatabaseHelper.CreateParameter("@grindingThickness", entity.GrindingThickness),
+                DatabaseHelper.CreateParameter("@packageType", entity.PackageType),
                 DatabaseHelper.CreateParameter("@flowId", entity.FlowId)
             };
 

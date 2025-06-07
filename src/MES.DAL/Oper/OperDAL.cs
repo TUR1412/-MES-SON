@@ -45,6 +45,7 @@ namespace MES.DAL.Oper
                 OperId = Convert.ToInt32(row["oper_id"]),
                 OperNum = row["oper_num"] != DBNull.Value ? row["oper_num"].ToString() : null,
                 OperName = row["oper_name"] != DBNull.Value ? row["oper_name"].ToString() : null,
+                FortoryId = Convert.ToInt32(row["fortory_id"]),
                 FlowId = Convert.ToInt32(row["flow_id"]),
                 Sequence = Convert.ToInt32(row["sequence"]),
                 Version = row["version"] != DBNull.Value ? row["version"].ToString() : null,
@@ -53,6 +54,7 @@ namespace MES.DAL.Oper
                 UpdateTime = row["update_time"] != DBNull.Value ? Convert.ToDateTime(row["update_time"]) : (DateTime?)null
             };
         }
+
         /// <summary>
         /// 根据工站编号获取工站信息
         /// </summary>
@@ -157,10 +159,10 @@ namespace MES.DAL.Oper
 
                 var parameters = new[]
                 {
-            DatabaseHelper.CreateParameter("@sequence", newSequence),
-            DatabaseHelper.CreateParameter("@updateTime", DateTime.Now),
-            DatabaseHelper.CreateParameter("@operId", operId)
-        };
+                    DatabaseHelper.CreateParameter("@sequence", newSequence),
+                    DatabaseHelper.CreateParameter("@updateTime", DateTime.Now),
+                    DatabaseHelper.CreateParameter("@operId", operId)
+                };
 
                 return DatabaseHelper.ExecuteNonQuery(sql, parameters) > 0;
             }
@@ -170,6 +172,7 @@ namespace MES.DAL.Oper
                 throw new MESException("更新工站顺序失败", ex);
             }
         }
+
         /// <summary>
         /// 构建INSERT SQL语句
         /// </summary>
@@ -178,16 +181,17 @@ namespace MES.DAL.Oper
         protected override bool BuildInsertSql(OperInfo entity, out string sql, out MySqlParameter[] parameters)
         {
             sql = @"INSERT INTO oper_info
-                          (oper_num, oper_name, flow_id, sequence, 
+                          (oper_num, oper_name, fortery_id, flow_id, sequence, 
                            version, status, create_time, update_time)
                           VALUES
-                          (@operNum, @operName, @flowId, @sequence, 
+                          (@operNum, @operName, @fortoryId, @flowId, @sequence, 
                            @version, @status, @createTime, @updateTime)";
 
             parameters = new[]
             {
                 DatabaseHelper.CreateParameter("@operNum", entity.OperNum),
                 DatabaseHelper.CreateParameter("@operName", entity.OperName),
+                DatabaseHelper.CreateParameter("@fortoryId", entity.FortoryId),
                 DatabaseHelper.CreateParameter("@flowId", entity.FlowId),
                 DatabaseHelper.CreateParameter("@sequence", entity.Sequence),
                 DatabaseHelper.CreateParameter("@version", entity.Version),
@@ -209,6 +213,7 @@ namespace MES.DAL.Oper
             sql = @"UPDATE oper_info SET
                           oper_num = @operNum, 
                           oper_name = @operName,
+                          fortery_id = @fortoryId,
                           flow_id = @flowId, 
                           sequence = @sequence,
                           version = @version, 
@@ -220,6 +225,7 @@ namespace MES.DAL.Oper
             {
                 DatabaseHelper.CreateParameter("@operNum", entity.OperNum),
                 DatabaseHelper.CreateParameter("@operName", entity.OperName),
+                DatabaseHelper.CreateParameter("@fortoryId", entity.FortoryId),
                 DatabaseHelper.CreateParameter("@flowId", entity.FlowId),
                 DatabaseHelper.CreateParameter("@sequence", entity.Sequence),
                 DatabaseHelper.CreateParameter("@version", entity.Version),
