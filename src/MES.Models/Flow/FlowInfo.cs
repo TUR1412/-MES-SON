@@ -29,6 +29,11 @@ namespace MES.Models.Flow
         public string Version { get; set; }
 
         /// <summary>
+        /// 工厂ID
+        /// </summary>
+        public int FortoryId { get; set; }
+
+        /// <summary>
         /// 适用产品ID
         /// </summary>
         public int ProductId { get; set; }

@@ -29,6 +29,16 @@ namespace MES.Models.Factory
         public string Address { get; set; }
 
         /// <summary>
+        /// 工艺流程ID
+        /// </summary>
+        public int FlowId { get; set; }
+
+        /// <summary>
+        /// 工站ID
+        /// </summary>
+        public int OperId { get; set; }
+
+        /// <summary>
         /// 联系人
         /// </summary>
         public string ContactPerson { get; set; }

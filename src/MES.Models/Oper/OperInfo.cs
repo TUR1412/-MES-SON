@@ -24,6 +24,11 @@ namespace MES.Models.Oper
         public string OperName { get; set; }
 
         /// <summary>
+        /// 所属工厂ID
+        /// </summary>
+        public int FortoryId { get; set; }
+        /// <summary>
+
         /// 所属工艺流程ID
         /// </summary>
         public int FlowId { get; set; }
