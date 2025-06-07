@@ -199,12 +199,13 @@ INSERT INTO `sys_user_role` (`user_id`, `role_id`) VALUES
 -- 示例业务数据
 -- =============================================
 
--- 插入示例物料数据
-INSERT INTO `material` (`material_code`, `material_name`, `material_type`, `unit`, `safety_stock`, `current_stock`, `unit_price`, `supplier`, `description`) VALUES
-('MAT001', '钢板A型', '原材料', 'KG', 100, 500, 15.50, '钢铁供应商A', '优质钢板，用于机械加工'),
-('MAT002', '螺丝M6', '原材料', 'PCS', 1000, 5000, 0.50, '五金供应商B', 'M6规格螺丝，镀锌处理'),
-('MAT003', '电机组件', '半成品', 'PCS', 50, 200, 120.00, '电机厂商C', '标准电机组件，功率1KW'),
-('PROD001', '机械产品A', '成品', 'PCS', 20, 100, 1500.00, '', '机械产品A，包含多个组件');
+-- 插入示例物料数据	(L: 物料管理 - 2025/6/7 修改示例数据以匹配新的material表）
+INSERT INTO `material` (`material_code`, `material_name`, `material_type`, `specification`, `unit`, `category`, `supplier`, `standard_cost`, `safety_stock`, `min_stock`, `max_stock`, 
+`stock_quantity`, `lead_time`, `status`, `create_user_id`, `create_user_name`, `remark`, `version`) VALUES
+('MAT001', '钢板A型', 'RAW_MATERIAL', '厚度: 10mm', 'PCS', '金属材料', '钢铁供应商A', 15.50, 100.00, 50.00, 500.00, 200.00, 7, 1, 1, 'admin', '优质钢板，用于机械加工', 1),
+('MAT002', '螺丝M6', 'RAW_MATERIAL', 'M6x30mm', 'PCS', '紧固件', '五金供应商B', 0.50, 500.00, 200.00, 1000.00, 600.00, 3, 1, 1, 'admin', 'M6规格螺丝，镀锌处理', 1),
+('MAT003', '电机组件', 'SEMI_FINISHED', '功率: 1KW', 'PCS', '电气组件', '电机厂商C', 120.00, 50.00, 20.00, 200.00, 80.00, 14, 1, 1, 'admin', '标准电机组件', 1),
+('PROD001', '机械产品A', 'FINISHED_PRODUCT', '尺寸: 500x300x200mm', 'PCS', '机械设备', '', 1500.00, 20.00, 10.00, 100.00, 40.00, 21, 1, 1, 'admin', '机械产品A，包含多个组件', 1);
 
 -- 插入示例车间数据
 INSERT INTO `workshop` (`workshop_code`, `workshop_name`, `workshop_type`, `capacity`, `area`, `location`, `manager_name`, `status`, `description`) VALUES
