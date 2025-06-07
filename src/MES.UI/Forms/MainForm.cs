@@ -37,7 +37,7 @@ namespace MES.UI.Forms
 
                 // 设置窗体属性
                 this.WindowState = FormWindowState.Maximized;
-                this.Text = $"{ConfigManager.SystemTitle} v{ConfigManager.SystemVersion} - 2025年6月4日";
+                this.Text = string.Format("{0} v{1} - 2025年6月4日", ConfigManager.SystemTitle, ConfigManager.SystemVersion);
                 this.Icon = SystemIcons.Application;
 
                 // 初始化状态栏
@@ -63,7 +63,7 @@ namespace MES.UI.Forms
             catch (Exception ex)
             {
                 LogManager.Error("主窗体初始化失败", ex);
-                MessageBox.Show($"主窗体初始化失败：{ex.Message}", "错误",
+                MessageBox.Show(string.Format("主窗体初始化失败：{0}", ex.Message), "错误",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -252,7 +252,7 @@ namespace MES.UI.Forms
                     ShowAbout();
                     break;
                 default:
-                    MessageBox.Show($"功能 '{nodeName}' 正在开发中...", "提示",
+                    MessageBox.Show(string.Format("功能 '{0}' 正在开发中...", nodeName), "提示",
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                     break;
             }
@@ -327,7 +327,7 @@ namespace MES.UI.Forms
             // 添加版本信息
             var versionLabel = new Label
             {
-                Text = $"版本 {ConfigManager.SystemVersion} - 基础框架已完成",
+                Text = string.Format("版本 {0} - 基础框架已完成", ConfigManager.SystemVersion),
                 Font = new Font("微软雅黑", 12),
                 ForeColor = Color.Gray,
                 AutoSize = true,
@@ -434,23 +434,42 @@ namespace MES.UI.Forms
         #region 菜单事件处理方法 - 待各模块负责人实现
 
         // L成员负责实现的物料管理模块
-        //private void OpenMaterialForm() => ShowNotImplemented("物料信息管理");
-        private void OpenMaterialForm() => showMMForm();
-        private void OpenBOMForm() => ShowNotImplemented("BOM管理");
-        private void OpenProcessRouteForm() => ShowNotImplemented("工艺路线管理");
+        //private void OpenMaterialForm() { ShowNotImplemented("物料信息管理"); }
+        private void OpenMaterialForm() { showMMForm(); }
+        private void OpenBOMForm() { ShowNotImplemented("BOM管理"); }
+        private void OpenProcessRouteForm() { ShowNotImplemented("工艺路线管理"); }
 
         // H成员负责实现的生产管理模块
-        private void OpenProductionOrderForm() => ShowNotImplemented("生产订单管理");
-        private void OpenProductionExecutionForm() => ShowNotImplemented("生产执行管理");
-        private void OpenUserPermissionForm() => ShowNotImplemented("用户权限管理");
+        private void OpenProductionOrderForm() { ShowNotImplemented("生产订单管理"); }
+        private void OpenProductionExecutionForm() { ShowNotImplemented("生产执行管理"); }
+        private void OpenUserPermissionForm() { ShowNotImplemented("用户权限管理"); }
 
         // S成员负责实现的车间管理模块
-        private void OpenWorkshopOperationForm() => ShowNotImplemented("车间作业管理");
-        private void OpenWIPForm() => ShowNotImplemented("在制品管理");
-        private void OpenEquipmentForm() => ShowNotImplemented("设备管理");
+        private void OpenWorkshopOperationForm() { OpenWorkshopManagementForm(); }
+        private void OpenWIPForm() { ShowNotImplemented("在制品管理"); }
+        private void OpenEquipmentForm() { ShowNotImplemented("设备管理"); }
+
+        /// <summary>
+        /// 打开车间管理窗体
+        /// </summary>
+        private void OpenWorkshopManagementForm()
+        {
+            try
+            {
+                var workshopForm = new WorkshopManagementForm();
+                workshopForm.ShowDialog();
+                LogManager.Info("打开车间管理窗体");
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("打开车间管理窗体失败", ex);
+                MessageBox.Show(string.Format("打开车间管理窗体失败：{0}", ex.Message), "错误",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
 
         // 系统管理模块
-        private void OpenSystemConfigForm() => ShowNotImplemented("系统配置");
+        private void OpenSystemConfigForm() { ShowNotImplemented("系统配置"); }
 
         /// <summary>
         /// 显示UI框架信息
@@ -501,7 +520,7 @@ namespace MES.UI.Forms
         /// </summary>
         private void ShowNotImplemented(string functionName)
         {
-            MessageBox.Show($"{functionName}功能正在开发中，敬请期待！", "提示", 
+            MessageBox.Show(string.Format("{0}功能正在开发中，敬请期待！", functionName), "提示",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
         private void showMMForm()
@@ -514,9 +533,9 @@ namespace MES.UI.Forms
         /// </summary>
         private void ShowAbout()
         {
-            string aboutText = $@"
-{ConfigManager.SystemTitle}
-版本：{ConfigManager.SystemVersion}
+            string aboutText = string.Format(@"
+{0}
+版本：{1}
 技术架构：C# .NET Framework 4.8 + WinForms + MySQL 8.0
 开发团队：
 - 天帝 (组长) - 架构设计与协调
@@ -525,7 +544,7 @@ namespace MES.UI.Forms
 - S成员 - 车间管理模块
 
 Copyright © 2025 您的公司名称
-";
+", ConfigManager.SystemTitle, ConfigManager.SystemVersion);
             MessageBox.Show(aboutText, "关于系统", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
@@ -549,7 +568,7 @@ Copyright © 2025 您的公司名称
 
                 this.BackColor = colors[themeIndex];
 
-                MessageBox.Show($"主题已切换为：{themes[themeIndex]}\n\n" +
+                MessageBox.Show(string.Format("主题已切换为：{0}\n\n", themes[themeIndex]) +
                     "这是UI框架主题切换功能的演示。\n" +
                     "完整版本支持：\n" +
                     "• 3种预设主题\n" +
@@ -558,7 +577,7 @@ Copyright © 2025 您的公司名称
                     "• 组件自适应",
                     "主题切换演示", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                LogManager.Info($"演示主题切换：{themes[themeIndex]}");
+                LogManager.Info(string.Format("演示主题切换：{0}", themes[themeIndex]));
             }
             catch (Exception ex)
             {

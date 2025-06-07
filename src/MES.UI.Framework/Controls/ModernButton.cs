@@ -58,7 +58,7 @@ namespace MES.UI.Framework.Controls
         [DefaultValue(4)]
         public int BorderRadius
         {
-            get => _borderRadius;
+            get { return _borderRadius; }
             set
             {
                 _borderRadius = Math.Max(0, value);
@@ -74,7 +74,7 @@ namespace MES.UI.Framework.Controls
         [DefaultValue(ButtonStyle.Primary)]
         public ButtonStyle Style
         {
-            get => _buttonStyle;
+            get { return _buttonStyle; }
             set
             {
                 _buttonStyle = value;
@@ -90,7 +90,7 @@ namespace MES.UI.Framework.Controls
         [Description("鼠标悬停时的背景颜色")]
         public Color HoverColor
         {
-            get => _hoverColor;
+            get { return _hoverColor; }
             set
             {
                 _hoverColor = value;
@@ -105,7 +105,7 @@ namespace MES.UI.Framework.Controls
         [Description("鼠标按下时的背景颜色")]
         public Color PressedColor
         {
-            get => _pressedColor;
+            get { return _pressedColor; }
             set
             {
                 _pressedColor = value;

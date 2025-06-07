@@ -383,18 +383,18 @@ namespace MES.UI.Framework.Controls
                             string[] values = new string[Columns.Count];
                             for (int i = 0; i < Columns.Count; i++)
                             {
-                                values[i] = row.Cells[i].Value?.ToString() ?? "";
+                                values[i] = row.Cells[i].Value != null ? row.Cells[i].Value.ToString() : "";
                             }
                             writer.WriteLine(string.Join(",", values));
                         }
                     }
                 }
                 
-                LogManager.Info($"数据已导出到CSV文件: {filePath}");
+                LogManager.Info(string.Format("数据已导出到CSV文件: {0}", filePath));
             }
             catch (Exception ex)
             {
-                LogManager.Error($"导出CSV文件失败: {filePath}", ex);
+                LogManager.Error(string.Format("导出CSV文件失败: {0}", filePath), ex);
                 throw;
             }
         }
@@ -406,7 +406,7 @@ namespace MES.UI.Framework.Controls
         {
             try
             {
-                int selectedIndex = CurrentRow?.Index ?? -1;
+                int selectedIndex = CurrentRow != null ? CurrentRow.Index : -1;
                 
                 // 刷新数据源
                 if (DataSource is BindingSource bindingSource)
@@ -441,7 +441,7 @@ namespace MES.UI.Framework.Controls
             if (disposing)
             {
                 UIThemeManager.OnThemeChanged -= OnThemeChanged;
-                _emptyDataFont?.Dispose();
+                if (_emptyDataFont != null) _emptyDataFont.Dispose();
             }
             base.Dispose(disposing);
         }

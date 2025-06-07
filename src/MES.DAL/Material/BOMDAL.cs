@@ -22,7 +22,43 @@ namespace MES.DAL.Material
         /// <summary>
         /// 表名
         /// </summary>
-        protected override string TableName => "bom_info";
+        protected override string TableName
+        {
+            get { return "bom_info"; }
+        }
+
+        /// <summary>
+        /// 主键属性名
+        /// </summary>
+        protected override string PrimaryKey
+        {
+            get { return "Id"; }
+        }
+
+        /// <summary>
+        /// 将DataRow转换为BOMInfo实体对象
+        /// </summary>
+        /// <param name="row">数据行</param>
+        /// <returns>BOMInfo实体对象</returns>
+        protected override BOMInfo MapRowToEntity(DataRow row)
+        {
+            return new BOMInfo
+            {
+                Id = Convert.ToInt32(row["id"]),
+                BOMCode = row["bom_code"] != DBNull.Value ? row["bom_code"].ToString() : null,
+                ProductId = Convert.ToInt32(row["product_id"]),
+                BOMVersion = row["bom_version"] != DBNull.Value ? row["bom_version"].ToString() : null,
+                BOMType = row["bom_type"] != DBNull.Value ? row["bom_type"].ToString() : null,
+                EffectiveDate = Convert.ToDateTime(row["effective_date"]),
+                ExpireDate = row["expire_date"] != DBNull.Value ? Convert.ToDateTime(row["expire_date"]) : (DateTime?)null,
+                Status = Convert.ToBoolean(row["status"]),
+                CreateTime = Convert.ToDateTime(row["create_time"]),
+                CreateUserName = row["create_user_name"] != DBNull.Value ? row["create_user_name"].ToString() : null,
+                UpdateTime = row["update_time"] != DBNull.Value ? Convert.ToDateTime(row["update_time"]) : (DateTime?)null,
+                UpdateUserName = row["update_user_name"] != DBNull.Value ? row["update_user_name"].ToString() : null,
+                IsDeleted = Convert.ToBoolean(row["is_deleted"])
+            };
+        }
 
         #endregion
 
@@ -42,7 +78,7 @@ namespace MES.DAL.Material
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据产品ID获取BOM失败，产品ID: {productId}", ex);
+                LogManager.Error(string.Format("根据产品ID获取BOM失败，产品ID: {0}", productId), ex);
                 throw new MESException("获取BOM列表失败", ex);
             }
         }
@@ -58,7 +94,7 @@ namespace MES.DAL.Material
             {
                 if (string.IsNullOrEmpty(bomCode))
                 {
-                    throw new ArgumentException("BOM编码不能为空", nameof(bomCode));
+                    throw new ArgumentException("BOM编码不能为空", "bomCode");
                 }
 
                 var boms = GetByCondition("bom_code = @bomCode",
@@ -68,7 +104,7 @@ namespace MES.DAL.Material
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据BOM编码获取BOM失败，BOM编码: {bomCode}", ex);
+                LogManager.Error(string.Format("根据BOM编码获取BOM失败，BOM编码: {0}", bomCode), ex);
                 throw new MESException("获取BOM信息失败", ex);
             }
         }
@@ -86,16 +122,16 @@ namespace MES.DAL.Material
         /// </summary>
         /// <param name="entity">BOM实体</param>
         /// <returns>SQL语句和参数</returns>
-        protected override (string sql, MySqlParameter[] parameters) BuildInsertSql(BOMInfo entity)
+        protected override bool BuildInsertSql(BOMInfo entity, out string sql, out MySqlParameter[] parameters)
         {
-            string sql = @"INSERT INTO bom_info
+            sql = @"INSERT INTO bom_info
                           (bom_code, product_id, bom_version, bom_type, effective_date, expire_date, status,
                            create_time, create_user_name, is_deleted)
                           VALUES
                           (@bomCode, @productId, @bomVersion, @bomType, @effectiveDate, @expireDate, @status,
                            @createTime, @createUserName, @isDeleted)";
 
-            var parameters = new[]
+            parameters = new[]
             {
                 DatabaseHelper.CreateParameter("@bomCode", entity.BOMCode),
                 DatabaseHelper.CreateParameter("@productId", entity.ProductId),
@@ -109,23 +145,25 @@ namespace MES.DAL.Material
                 DatabaseHelper.CreateParameter("@isDeleted", entity.IsDeleted)
             };
 
-            return (sql, parameters);
+            return true;
         }
 
         /// <summary>
         /// 构建UPDATE SQL语句
         /// </summary>
         /// <param name="entity">BOM实体</param>
-        /// <returns>SQL语句和参数</returns>
-        protected override (string sql, MySqlParameter[] parameters) BuildUpdateSql(BOMInfo entity)
+        /// <param name="sql">输出SQL语句</param>
+        /// <param name="parameters">输出参数数组</param>
+        /// <returns>操作是否成功</returns>
+        protected override bool BuildUpdateSql(BOMInfo entity, out string sql, out MySqlParameter[] parameters)
         {
-            string sql = @"UPDATE bom_info SET
+            sql = @"UPDATE bom_info SET
                           bom_code = @bomCode, product_id = @productId, bom_version = @bomVersion,
                           bom_type = @bomType, effective_date = @effectiveDate, expire_date = @expireDate,
                           status = @status, update_time = @updateTime, update_user_name = @updateUserName
                           WHERE id = @id AND is_deleted = 0";
 
-            var parameters = new[]
+            parameters = new[]
             {
                 DatabaseHelper.CreateParameter("@bomCode", entity.BOMCode),
                 DatabaseHelper.CreateParameter("@productId", entity.ProductId),
@@ -139,7 +177,7 @@ namespace MES.DAL.Material
                 DatabaseHelper.CreateParameter("@id", entity.Id)
             };
 
-            return (sql, parameters);
+            return true;
         }
 
         #endregion

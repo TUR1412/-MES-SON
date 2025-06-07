@@ -297,11 +297,11 @@ namespace MES.UI.Framework.Controls
                 
                 _queryFields.Add(field);
                 
-                LogManager.Debug($"已添加查询字段: {field.Name}");
+                LogManager.Debug(string.Format("已添加查询字段: {0}", field.Name));
             }
             catch (Exception ex)
             {
-                LogManager.Error($"添加查询字段失败: {field.Name}", ex);
+                LogManager.Error(string.Format("添加查询字段失败: {0}", field.Name), ex);
             }
         }
 
@@ -320,12 +320,12 @@ namespace MES.UI.Framework.Controls
                     object value = GetFieldValue(field);
                     if (value != null)
                     {
-                        parameters[field.Name] = value;
+                        parameters.Add(field.Name, value);
                     }
                 }
                 catch (Exception ex)
                 {
-                    LogManager.Error($"获取查询字段值失败: {field.Name}", ex);
+                    LogManager.Error(string.Format("获取查询字段值失败: {0}", field.Name), ex);
                 }
             }
             
@@ -345,7 +345,7 @@ namespace MES.UI.Framework.Controls
                 }
                 catch (Exception ex)
                 {
-                    LogManager.Error($"重置查询字段失败: {field.Name}", ex);
+                    LogManager.Error(string.Format("重置查询字段失败: {0}", field.Name), ex);
                 }
             }
         }
@@ -528,7 +528,7 @@ namespace MES.UI.Framework.Controls
             }
             catch (Exception ex)
             {
-                LogManager.Error($"设置字段值失败: {field.Name}", ex);
+                LogManager.Error(string.Format("设置字段值失败: {0}", field.Name), ex);
             }
         }
 
@@ -581,7 +581,7 @@ namespace MES.UI.Framework.Controls
             try
             {
                 var parameters = GetQueryParameters();
-                SearchClicked?.Invoke(this, new QueryEventArgs { QueryParameters = parameters });
+                if (SearchClicked != null) SearchClicked.Invoke(this, new QueryEventArgs { QueryParameters = parameters });
                 LogManager.Debug("查询按钮被点击");
             }
             catch (Exception ex)
@@ -595,7 +595,7 @@ namespace MES.UI.Framework.Controls
             try
             {
                 ResetFields();
-                ResetClicked?.Invoke(this, EventArgs.Empty);
+                if (ResetClicked != null) ResetClicked.Invoke(this, EventArgs.Empty);
                 LogManager.Debug("重置按钮被点击");
             }
             catch (Exception ex)

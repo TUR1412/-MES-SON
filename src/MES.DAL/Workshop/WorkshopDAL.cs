@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
+using System.Data;
+using MySql.Data.MySqlClient;
 using MES.Models.Base;
+using MES.Models.Workshop;
 using MES.DAL.Base;
 using MES.DAL.Core;
 using MES.Common.Logging;
@@ -21,7 +23,53 @@ namespace MES.DAL.Workshop
         /// <summary>
         /// 表名
         /// </summary>
-        protected override string TableName => "workshop_info";
+        protected override string TableName
+        {
+            get { return "workshop_info"; }
+        }
+
+        /// <summary>
+        /// 主键属性名
+        /// </summary>
+        protected override string PrimaryKey
+        {
+            get { return "Id"; }
+        }
+
+        /// <summary>
+        /// 将DataRow转换为WorkshopInfo实体对象
+        /// </summary>
+        /// <param name="row">数据行</param>
+        /// <returns>WorkshopInfo实体对象</returns>
+        protected override WorkshopInfo MapRowToEntity(DataRow row)
+        {
+            return new WorkshopInfo
+            {
+                Id = Convert.ToInt32(row["id"]),
+                WorkshopCode = row["workshop_code"] != DBNull.Value ? row["workshop_code"].ToString() : null,
+                WorkshopName = row["workshop_name"] != DBNull.Value ? row["workshop_name"].ToString() : null,
+                Department = row["department"] != DBNull.Value ? row["department"].ToString() : null,
+                Manager = row["manager"] != DBNull.Value ? row["manager"].ToString() : null,
+                ManagerId = row["manager_id"] != DBNull.Value ? Convert.ToInt32(row["manager_id"]) : (int?)null,
+                Phone = row["phone"] != DBNull.Value ? row["phone"].ToString() : null,
+                Location = row["location"] != DBNull.Value ? row["location"].ToString() : null,
+                Area = row["area"] != DBNull.Value ? Convert.ToDecimal(row["area"]) : 0,
+                EquipmentCount = row["equipment_count"] != DBNull.Value ? Convert.ToInt32(row["equipment_count"]) : 0,
+                EmployeeCount = row["employee_count"] != DBNull.Value ? Convert.ToInt32(row["employee_count"]) : 0,
+                WorkshopType = row["workshop_type"] != DBNull.Value ? Convert.ToInt32(row["workshop_type"]) : 1,
+                ProductionCapacity = row["production_capacity"] != DBNull.Value ? Convert.ToInt32(row["production_capacity"]) : 0,
+                Status = row["status"] != DBNull.Value ? row["status"].ToString() : null,
+                WorkShift = row["work_shift"] != DBNull.Value ? Convert.ToInt32(row["work_shift"]) : 1,
+                SafetyLevel = row["safety_level"] != DBNull.Value ? Convert.ToInt32(row["safety_level"]) : 1,
+                EnvironmentRequirement = row["environment_requirement"] != DBNull.Value ? row["environment_requirement"].ToString() : null,
+                QualityStandard = row["quality_standard"] != DBNull.Value ? row["quality_standard"].ToString() : null,
+                Description = row["description"] != DBNull.Value ? row["description"].ToString() : null,
+                EquipmentList = row["equipment_list"] != DBNull.Value ? row["equipment_list"].ToString() : null,
+                CreateTime = Convert.ToDateTime(row["create_time"]),
+                UpdateTime = row["update_time"] != DBNull.Value ? Convert.ToDateTime(row["update_time"]) : (DateTime?)null,
+                IsDeleted = Convert.ToBoolean(row["is_deleted"])
+            };
+        }
 
         #endregion
 
@@ -38,7 +86,7 @@ namespace MES.DAL.Workshop
             {
                 if (string.IsNullOrEmpty(workshopCode))
                 {
-                    throw new ArgumentException("车间编码不能为空", nameof(workshopCode));
+                    throw new ArgumentException("车间编码不能为空", "workshopCode");
                 }
 
                 var workshops = GetByCondition("workshop_code = @workshopCode", 
@@ -48,7 +96,7 @@ namespace MES.DAL.Workshop
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据车间编码获取车间信息失败，车间编码: {workshopCode}", ex);
+                LogManager.Error(string.Format("根据车间编码获取车间信息失败，车间编码: {0}", workshopCode), ex);
                 throw new MESException("获取车间信息失败", ex);
             }
         }
@@ -62,17 +110,36 @@ namespace MES.DAL.Workshop
         {
             try
             {
-                if (string.IsNullOrEmpty(status))
-                {
-                    return new List<WorkshopInfo>();
-                }
-
-                return GetByCondition("status = @status", 
+                return GetByCondition("status = @status",
                     DatabaseHelper.CreateParameter("@status", status));
             }
             catch (Exception ex)
             {
-                LogManager.Error($"根据状态获取车间列表失败，状态: {status}", ex);
+                LogManager.Error(string.Format("根据状态获取车间列表失败，状态: {0}", status), ex);
+                throw new MESException("获取车间列表失败", ex);
+            }
+        }
+
+        /// <summary>
+        /// 根据车间类型获取车间列表
+        /// </summary>
+        /// <param name="workshopType">车间类型</param>
+        /// <returns>车间列表</returns>
+        public List<WorkshopInfo> GetByWorkshopType(string workshopType)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(workshopType))
+                {
+                    return new List<WorkshopInfo>();
+                }
+
+                return GetByCondition("workshop_type = @workshopType",
+                    DatabaseHelper.CreateParameter("@workshopType", workshopType));
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error(string.Format("根据类型获取车间列表失败，类型: {0}", workshopType), ex);
                 throw new MESException("获取车间列表失败", ex);
             }
         }
@@ -95,28 +162,48 @@ namespace MES.DAL.Workshop
         /// </summary>
         /// <param name="entity">车间实体</param>
         /// <returns>SQL语句和参数</returns>
-        protected override (string sql, SqlParameter[] parameters) BuildInsertSql(WorkshopInfo entity)
+        protected override bool BuildInsertSql(WorkshopInfo entity, out string sql, out MySqlParameter[] parameters)
         {
-            // TODO: S成员需要根据实际的workshop_info表结构完善此SQL
-            string sql = @"INSERT INTO workshop_info 
-                          (workshop_code, workshop_name, department, status, 
-                           create_time, create_user_name, is_deleted) 
-                          VALUES 
-                          (@workshopCode, @workshopName, @department, @status, 
-                           @createTime, @createUserName, @isDeleted)";
+            sql = @"INSERT INTO workshop_info
+                          (workshop_code, workshop_name, department, manager, manager_id, phone,
+                           location, area, equipment_count, employee_count, workshop_type,
+                           production_capacity, status, work_shift, safety_level,
+                           environment_requirement, quality_standard, description, equipment_list,
+                           create_time, update_time, is_deleted)
+                          VALUES
+                          (@workshopCode, @workshopName, @department, @manager, @managerId, @phone,
+                           @location, @area, @equipmentCount, @employeeCount, @workshopType,
+                           @productionCapacity, @status, @workShift, @safetyLevel,
+                           @environmentRequirement, @qualityStandard, @description, @equipmentList,
+                           @createTime, @updateTime, @isDeleted)";
 
-            var parameters = new[]
+            parameters = new[]
             {
                 DatabaseHelper.CreateParameter("@workshopCode", entity.WorkshopCode),
                 DatabaseHelper.CreateParameter("@workshopName", entity.WorkshopName),
                 DatabaseHelper.CreateParameter("@department", entity.Department),
+                DatabaseHelper.CreateParameter("@manager", entity.Manager),
+                DatabaseHelper.CreateParameter("@managerId", entity.ManagerId),
+                DatabaseHelper.CreateParameter("@phone", entity.Phone),
+                DatabaseHelper.CreateParameter("@location", entity.Location),
+                DatabaseHelper.CreateParameter("@area", entity.Area),
+                DatabaseHelper.CreateParameter("@equipmentCount", entity.EquipmentCount),
+                DatabaseHelper.CreateParameter("@employeeCount", entity.EmployeeCount),
+                DatabaseHelper.CreateParameter("@workshopType", entity.WorkshopType),
+                DatabaseHelper.CreateParameter("@productionCapacity", entity.ProductionCapacity),
                 DatabaseHelper.CreateParameter("@status", entity.Status),
+                DatabaseHelper.CreateParameter("@workShift", entity.WorkShift),
+                DatabaseHelper.CreateParameter("@safetyLevel", entity.SafetyLevel),
+                DatabaseHelper.CreateParameter("@environmentRequirement", entity.EnvironmentRequirement),
+                DatabaseHelper.CreateParameter("@qualityStandard", entity.QualityStandard),
+                DatabaseHelper.CreateParameter("@description", entity.Description),
+                DatabaseHelper.CreateParameter("@equipmentList", entity.EquipmentList),
                 DatabaseHelper.CreateParameter("@createTime", entity.CreateTime),
-                DatabaseHelper.CreateParameter("@createUserName", entity.CreateUserName),
+                DatabaseHelper.CreateParameter("@updateTime", entity.UpdateTime),
                 DatabaseHelper.CreateParameter("@isDeleted", entity.IsDeleted)
             };
 
-            return (sql, parameters);
+            return true;
         }
 
         /// <summary>
@@ -125,27 +212,46 @@ namespace MES.DAL.Workshop
         /// </summary>
         /// <param name="entity">车间实体</param>
         /// <returns>SQL语句和参数</returns>
-        protected override (string sql, SqlParameter[] parameters) BuildUpdateSql(WorkshopInfo entity)
+        protected override bool BuildUpdateSql(WorkshopInfo entity, out string sql, out MySqlParameter[] parameters)
         {
-            // TODO: S成员需要根据实际的workshop_info表结构完善此SQL
-            string sql = @"UPDATE workshop_info SET 
-                          workshop_code = @workshopCode, workshop_name = @workshopName, 
-                          department = @department, status = @status, 
-                          update_time = @updateTime, update_user_name = @updateUserName 
+            sql = @"UPDATE workshop_info SET
+                          workshop_code = @workshopCode, workshop_name = @workshopName,
+                          department = @department, manager = @manager, manager_id = @managerId,
+                          phone = @phone, location = @location, area = @area,
+                          equipment_count = @equipmentCount, employee_count = @employeeCount,
+                          workshop_type = @workshopType, production_capacity = @productionCapacity,
+                          status = @status, work_shift = @workShift, safety_level = @safetyLevel,
+                          environment_requirement = @environmentRequirement, quality_standard = @qualityStandard,
+                          description = @description, equipment_list = @equipmentList,
+                          update_time = @updateTime
                           WHERE id = @id AND is_deleted = 0";
 
-            var parameters = new[]
+            parameters = new[]
             {
                 DatabaseHelper.CreateParameter("@workshopCode", entity.WorkshopCode),
                 DatabaseHelper.CreateParameter("@workshopName", entity.WorkshopName),
                 DatabaseHelper.CreateParameter("@department", entity.Department),
+                DatabaseHelper.CreateParameter("@manager", entity.Manager),
+                DatabaseHelper.CreateParameter("@managerId", entity.ManagerId),
+                DatabaseHelper.CreateParameter("@phone", entity.Phone),
+                DatabaseHelper.CreateParameter("@location", entity.Location),
+                DatabaseHelper.CreateParameter("@area", entity.Area),
+                DatabaseHelper.CreateParameter("@equipmentCount", entity.EquipmentCount),
+                DatabaseHelper.CreateParameter("@employeeCount", entity.EmployeeCount),
+                DatabaseHelper.CreateParameter("@workshopType", entity.WorkshopType),
+                DatabaseHelper.CreateParameter("@productionCapacity", entity.ProductionCapacity),
                 DatabaseHelper.CreateParameter("@status", entity.Status),
+                DatabaseHelper.CreateParameter("@workShift", entity.WorkShift),
+                DatabaseHelper.CreateParameter("@safetyLevel", entity.SafetyLevel),
+                DatabaseHelper.CreateParameter("@environmentRequirement", entity.EnvironmentRequirement),
+                DatabaseHelper.CreateParameter("@qualityStandard", entity.QualityStandard),
+                DatabaseHelper.CreateParameter("@description", entity.Description),
+                DatabaseHelper.CreateParameter("@equipmentList", entity.EquipmentList),
                 DatabaseHelper.CreateParameter("@updateTime", entity.UpdateTime),
-                DatabaseHelper.CreateParameter("@updateUserName", entity.UpdateUserName),
                 DatabaseHelper.CreateParameter("@id", entity.Id)
             };
 
-            return (sql, parameters);
+            return true;
         }
 
         #endregion

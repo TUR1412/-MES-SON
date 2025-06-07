@@ -39,7 +39,7 @@ namespace MES.UI
             catch (Exception ex)
             {
                 LogManager.Error("系统启动失败", ex);
-                MessageBox.Show($"系统启动失败：{ex.Message}", "错误",
+                MessageBox.Show(string.Format("系统启动失败：{0}", ex.Message), "错误",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -50,7 +50,7 @@ namespace MES.UI
         private static void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
         {
             LogManager.Error("UI线程异常", e.Exception);
-            MessageBox.Show($"系统发生错误：{e.Exception.Message}", "错误",
+            MessageBox.Show(string.Format("系统发生错误：{0}", e.Exception.Message), "错误",
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
@@ -59,10 +59,11 @@ namespace MES.UI
         /// </summary>
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            if (e.ExceptionObject is Exception ex)
+            var ex = e.ExceptionObject as Exception;
+            if (ex != null)
             {
                 LogManager.Error("应用程序域异常", ex);
-                MessageBox.Show($"系统发生严重错误：{ex.Message}", "严重错误",
+                MessageBox.Show(string.Format("系统发生严重错误：{0}", ex.Message), "严重错误",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }

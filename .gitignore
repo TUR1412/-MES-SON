@@ -1,0 +1,300 @@
+﻿# MES制造执行系统 - Git忽略文件配置
+# 更新时间：2025-06-07
+# 说明：忽略所有编译产物、临时文件、用户配置等不应提交的文件
+
+###########################################
+# Visual Studio 相关文件
+###########################################
+
+# Visual Studio 临时文件、构建结果和生成的文件
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio 2015/2017 缓存/选项目录
+.vs/
+# Uncomment if you have tasks that create the project's static files in wwwroot
+#wwwroot/
+
+# Visual Studio 2017 自动生成的文件
+Generated\ Files/
+
+# MSTest 测试结果
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+
+# NUnit
+*.VisualState.xml
+TestResult.xml
+nunit-*.xml
+
+# 构建结果
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+###########################################
+# .NET Framework 相关
+###########################################
+
+# NuGet 包文件夹
+packages/
+# NuGet Symbol 包
+*.snupkg
+# NuGet 包配置文件
+**/packages.lock.json
+**/packages.config.backup
+
+# Microsoft Azure 构建输出
+csx/
+*.build.csdef
+
+# Microsoft Azure 模拟器
+ecf/
+rcf/
+
+# Windows Store 应用包目录
+AppPackages/
+BundleArtifacts/
+Package.StoreAssociation.xml
+_pkginfo.txt
+*.appx
+*.appxbundle
+*.appxupload
+
+###########################################
+# 用户特定文件
+###########################################
+
+# 用户特定文件（MonoDevelop/Xamarin Studio）
+*.userprefs
+
+# Mono 自动生成的文件
+mono_crash.*
+
+# 构建结果
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+###########################################
+# IDE 和编辑器文件
+###########################################
+
+# Visual Studio Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# Local History for Visual Studio Code
+.history/
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Windows Installer files
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+
+# Windows shortcuts
+*.lnk
+
+###########################################
+# 临时文件和缓存
+###########################################
+
+# 临时文件
+*.tmp
+*.temp
+*.log
+*.cache
+
+# 编译器生成的文件
+*.dll
+*.exe
+*.pdb
+*.exp
+*.lib
+*.ilk
+*.map
+*.res
+*.pch
+*.idb
+*.aps
+*.ncb
+*.opendb
+*.opensdf
+*.sdf
+*.cachefile
+*.VC.db
+*.VC.VC.opendb
+
+# Visual Studio profiler
+*.psess
+*.vsp
+*.vspx
+*.sap
+
+# Visual Studio Trace Files
+*.e2e
+
+###########################################
+# 数据库文件
+###########################################
+
+# SQL Server files
+*.mdf
+*.ldf
+*.ndf
+
+# Business Intelligence projects
+*.rdl.data
+*.bim.layout
+*.bim_*.settings
+*.rptproj.rsuser
+*- [Bb]ackup.rdl
+*- [Bb]ackup ([0-9]).rdl
+*- [Bb]ackup ([0-9][0-9]).rdl
+
+###########################################
+# 项目特定忽略
+###########################################
+
+# MES项目特定的临时文件
+*.dtbcache.json
+*.AssemblyReference.cache
+*.AssemblyAttributes.cs
+*.FileListAbsolute.txt
+*.Up2Date
+
+# 编译顺序文件
+compile_order.bat.bak
+*.bat.bak
+
+# 测试覆盖率文件
+*.coverage
+*.coveragexml
+
+# 性能测试结果
+*.trx
+*.coverage
+*.coveragexml
+
+###########################################
+# 文档和配置备份
+###########################################
+
+# 文档备份文件
+*.md.bak
+*.md.backup
+*.config.bak
+*.config.backup
+
+# 自动生成的文档
+docs/auto-generated/
+
+###########################################
+# 开发工具生成的文件
+###########################################
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+# CodeRush personal settings
+.cr/personal
+
+# Python tools for Visual Studio (PTVS)
+__pycache__/
+*.pyc
+
+# Cake - Uncomment if you are using it
+# tools/**
+# !tools/packages.config
+
+# Tabs Studio
+*.tss
+
+# Telerik's JustMock configuration file
+*.jmconfig
+
+# BizTalk build output
+*.btp.cs
+*.btm.cs
+*.odx.cs
+*.xsd.cs
+
+# OpenCover UI analysis results
+OpenCover/
+
+# Azure Stream Analytics local run output
+ASALocalRun/
+
+# MSBuild Binary and Structured Log
+*.binlog
+
+# NVidia Nsight GPU debugger configuration file
+*.nvuser
+
+# MFractors (Xamarin productivity tool) working folder
+.mfractor/
+
+# Local History for Visual Studio
+.localhistory/
+
+# BeatPulse healthcheck temp database
+healthchecksdb
+
+# Backup folder for Package Reference Convert tool in Visual Studio 2017
+MigrationBackup/
+
+# Ionide (cross platform F# VS Code tools) working folder
+.ionide/
+
+# Fody - auto-generated XML schema
+FodyWeavers.xsd

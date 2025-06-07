@@ -64,6 +64,11 @@ namespace MES.Models.Material
         public decimal? MaxStock { get; set; }
 
         /// <summary>
+        /// 当前库存数量
+        /// </summary>
+        public decimal? StockQuantity { get; set; }
+
+        /// <summary>
         /// 采购提前期（天）
         /// </summary>
         public int? LeadTime { get; set; }

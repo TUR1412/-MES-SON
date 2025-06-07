@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -12,6 +12,7 @@
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <LangVersion>5</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -98,11 +99,29 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Forms\Batch\Cancel.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Batch\Cancel.Designer.cs">
+      <DependentUpon>Cancel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Batch\Create.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Batch\Create.Designer.cs">
+      <DependentUpon>Create.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\SystemManagement\RoleManagementForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SystemManagement\RoleManagementForm.Designer.cs">
+      <DependentUpon>RoleManagementForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\Material\MaterialManagementForm.cs">
       <SubType>Form</SubType>
@@ -110,20 +129,73 @@
     <Compile Include="Forms\Material\MaterialManagementForm.Designer.cs">
       <DependentUpon>MaterialManagementForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\WorkOrder\Cancel.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\WorkOrder\Cancel.Designer.cs">
+      <DependentUpon>Cancel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\WorkOrder\Create.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\WorkOrder\Create.Designer.cs">
+      <DependentUpon>Create.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\WorkOrder\Submit.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\WorkOrder\Submit.Designer.cs">
+      <DependentUpon>Submit.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\WorkshopManagementForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\WorkshopManagementForm.Designer.cs">
+      <DependentUpon>WorkshopManagementForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\WorkshopEditForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\WorkshopEditForm.Designer.cs">
+      <DependentUpon>WorkshopEditForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MES.BLL\MES.BLL.csproj">
+      <Project>{B2C3D4E5-F6A7-8901-BCDE-F23456789012}</Project>
+      <Name>MES.BLL</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MES.Common\MES.Common.csproj">
-      <Project>{E5F6A7B8-C9D0-1234-EF01-567890123456}</Project>
+      <Project>{0000E5F6-0000-0000-0000-000000000000}</Project>
       <Name>MES.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MES.Models\MES.Models.csproj">
+      <Project>{D4E5F6A7-B8C9-0123-DEF0-456789012345}</Project>
+      <Name>MES.Models</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Forms\Batch\Cancel.resx">
+      <DependentUpon>Cancel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Batch\Create.resx">
+      <DependentUpon>Create.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\Material\MaterialManagementForm.resx">
       <DependentUpon>MaterialManagementForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\WorkOrder\Cancel.resx">
+      <DependentUpon>Cancel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\WorkOrder\Create.resx">
+      <DependentUpon>Create.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\WorkOrder\Submit.resx">
+      <DependentUpon>Submit.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
