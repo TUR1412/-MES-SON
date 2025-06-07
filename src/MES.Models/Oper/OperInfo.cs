@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using MES.Models.Base;
 
 namespace MES.Models.Oper
 {
     /// <summary>
     /// 工站
     /// </summary>
-    internal class Oper
+    public class OperInfo : BaseModel
     {
         /// <summary>
         /// 工站ID

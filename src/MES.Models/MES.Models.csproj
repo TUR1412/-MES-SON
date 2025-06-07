@@ -94,14 +94,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Base\BaseModel.cs" />
-    <Compile Include="Batch\Batch.cs" />
-    <Compile Include="Factory\Factory.cs" />
-    <Compile Include="Flow\Flow.cs" />
+    <Compile Include="Factory\FactoryInfo.cs" />
+    <Compile Include="Flow\FlowInfo.cs" />
     <Compile Include="Material\MaterialInfo.cs" />
     <Compile Include="Material\BOMInfo.cs" />
-    <Compile Include="Oper\Oper.cs" />
+    <Compile Include="Oper\OperInfo.cs" />
     <Compile Include="Production\ProductionOrderInfo.cs" />
-    <Compile Include="WorkOrder\WorkOrder.cs" />
+    <Compile Include="WorkOrder\WorkOrderInfo.cs" />
     <Compile Include="Workshop\WorkshopInfo.cs" />
     <Compile Include="Workshop\BatchInfo.cs" />
     <Compile Include="Workshop\EquipmentStatusHistory.cs" />

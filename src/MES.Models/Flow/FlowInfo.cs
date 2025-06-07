@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using MES.Models.Base;
 
 namespace MES.Models.Flow
 {
     /// <summary>
     /// 工艺流程
     /// </summary>
-    internal class Flow
+    public class FlowInfo : BaseModel
     {
         /// <summary>
         /// 工艺流程ID
