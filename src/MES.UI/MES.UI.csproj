@@ -123,6 +123,15 @@
     <Compile Include="Forms\SystemManagement\RoleManagementForm.Designer.cs">
       <DependentUpon>RoleManagementForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\SystemManagement\SystemConfigForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SystemManagement\SystemConfigForm.Designer.cs">
+      <DependentUpon>SystemConfigForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\SystemManagement\AboutForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\Material\MaterialManagementForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -177,6 +186,7 @@
       <Project>{D4E5F6A7-B8C9-0123-DEF0-456789012345}</Project>
       <Name>MES.Models</Name>
     </ProjectReference>
+
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Forms\Batch\Cancel.resx">

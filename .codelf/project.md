@@ -4,13 +4,13 @@
 
 > 🎯 项目目标：为制造企业提供完整的生产管理解决方案，包括物料管理、生产管理、车间管理等核心模块
 
-> 📊 项目状态：✅ MES系统架构完全成型，README.md文档革命性升级完成(v1.2.0)，简化Git工作流程为双分支策略，6大业务模块100%完成，企业级制造执行系统全面就绪
+> 📊 项目状态：✅ MES系统架构完全成型，SystemConfigForm重构为设计器模式完成(v1.3.0)，解决UI问题，6大业务模块100%完成，企业级制造执行系统全面就绪
 
 > 👥 项目团队：天帝(组长/系统架构/文档优化)、L成员(物料管理)、H成员(生产管理)、S成员(车间管理)
 
 > 🛠️ 技术栈：C# .NET Framework 4.8 + WinForms + MySQL 8.0，采用三层架构(UI/BLL/DAL/Models/Common)，Git版本控制，GitHub协作
 
-> ✨ 特色：采用设计器+动态代码的混合界面架构，既支持可视化设计又保持系统灵活性，适合企业级应用开发
+> ✨ 特色：采用标准WinForms设计器架构，所有控件在设计器中可见可编辑，遵循最佳实践，适合企业级应用开发
 
 > 🔄 工作流程：简化为双分支策略(main稳定版 + develop开发版)，团队成员直接在develop协作，天帝负责发布稳定版本
 
@@ -140,13 +140,19 @@ root
     │   └── MES.BLL.csproj             # 业务逻辑层项目文件，引用DAL、Models、Common
     └── MES.UI/                        # 用户界面层(重要主程序)
         ├── Forms/                     # 窗体目录
-        │   ├── MainForm.cs            # 主窗体代码，实现混合界面架构，包含菜单、工具栏、导航树
+        │   ├── MainForm.cs            # 主窗体代码，实现标准设计器架构，包含菜单、工具栏、导航树
         │   ├── MainForm.Designer.cs   # 主窗体设计器代码，定义界面布局和控件
         │   ├── MainForm.resx          # 主窗体资源文件 ✅ 已修复toolStrip1元数据
         │   ├── WorkshopManagementForm.cs # 车间管理主窗体 ✅ S成员新增
         │   ├── WorkshopManagementForm.Designer.cs # 车间管理窗体设计器
         │   ├── WorkshopEditForm.cs    # 车间编辑窗体 ✅ S成员新增
         │   ├── WorkshopEditForm.Designer.cs # 车间编辑窗体设计器
+        │   ├── SystemManagement/      # 系统管理窗体目录
+        │   │   ├── SystemConfigForm.cs # 系统配置窗体 ✅ v1.3.0重构为设计器模式
+        │   │   ├── SystemConfigForm.Designer.cs # 系统配置设计器文件 ✅ 新增
+        │   │   ├── RoleManagementForm.cs # 角色管理窗体
+        │   │   ├── RoleManagementForm.Designer.cs # 角色管理设计器
+        │   │   └── AboutForm.cs       # 关于窗体
         │   └── Material/              # 物料管理窗体目录(L成员)
         ├── Properties/                # 应用程序属性
         │   ├── AssemblyInfo.cs        # 程序集信息
@@ -165,7 +171,8 @@ root
 - `MES.Common/LogManager.cs`: 全局日志管理，支持多级别日志记录，自动文件轮转
 - `MES.Common/ConfigManager.cs`: 配置管理中心，支持系统标题、版本等配置
 - `MES.Models/Base/BaseModel.cs`: 所有数据模型的基类，提供ID、创建时间等通用属性
-- `MES.UI/Forms/MainForm.cs`: 主界面实现，采用设计器+动态代码混合架构
+- `MES.UI/Forms/MainForm.cs`: 主界面实现，采用标准设计器架构
+- `MES.UI/Forms/SystemManagement/SystemConfigForm.cs`: 系统配置窗体，v1.3.0重构为设计器模式
 
 **团队协作文件**:
 
@@ -184,6 +191,6 @@ root
 * 所有业务模型继承自BaseModel
 * 统一使用LogManager进行日志记录
 * 异常处理统一使用MESException
-* UI开发采用设计器+代码混合模式
+* UI开发采用标准设计器模式，所有控件在设计器中可见
 * 依赖管理：统一使用MySQL.Data 9.3.0版本
 * 编译环境：推荐使用Visual Studio进行开发和编译

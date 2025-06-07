@@ -12,7 +12,7 @@
 
 [![License](https://img.shields.io/badge/License-MIT-00C851?style=for-the-badge)](LICENSE)
 [![Build Status](https://img.shields.io/badge/Build-Passing-00C851?style=for-the-badge)](https://github.com/TUR1412/-MES-SON)
-[![Version](https://img.shields.io/badge/Version-v1.2.0-FF6900?style=for-the-badge)](https://github.com/TUR1412/-MES-SON/releases)
+[![Version](https://img.shields.io/badge/Version-v1.3.0-FF6900?style=for-the-badge)](https://github.com/TUR1412/-MES-SON/releases)
 [![Last Update](https://img.shields.io/badge/Last%20Update-2025--06--07-00C851?style=for-the-badge)](#)
 
 ---
@@ -27,7 +27,7 @@
 
 ### ✨ 核心特色
 
-- 🎨 **混合界面架构** - 设计器+动态代码，兼顾可视化设计与系统灵活性
+- 🎨 **标准设计器架构** - 遵循WinForms最佳实践，所有控件在设计器中可见可编辑
 - 🏗️ **企业级三层架构** - 严格分层设计，高内聚低耦合
 - 🔧 **模块化设计** - 物料、生产、车间三大核心业务模块
 - 📊 **实时数据管理** - 生产过程全程可视化监控
@@ -534,11 +534,21 @@ graph TD
 
 | 🏷️ 版本 | 📅 发布日期 | 🎯 主要更新 | 👤 发布者 |
 |----------|-------------|-------------|-----------|
+| **🎨 v1.3.0** | 2025-06-07 | SystemConfigForm重构为设计器模式，解决UI问题 | 天帝 |
 | **🚀 v1.2.0** | 2025-06-07 | README重构，简化Git工作流程 | 天帝 |
 | **⚡ v1.1.0** | 2025-06-07 | 简化Git工作流程，完善文档体系 | 天帝 |
 | **🎯 v1.0.0** | 2025-06-07 | 项目初始化，基础框架建立，完全可运行版本 | 天帝 |
 
 </div>
+
+### 🎯 v1.3.0 更新亮点
+
+- **🎨 UI架构重构** - SystemConfigForm从动态创建重构为标准设计器模式
+- **🔧 问题修复** - 解决输入框光标不显示、控件截断等UI问题
+- **📐 布局优化** - 精确调整控件位置，实现完美对齐和紧凑布局
+- **🛠️ 开发体验提升** - 所有控件在Visual Studio设计器中可见可编辑
+- **⚡ 性能优化** - 减少运行时动态创建开销，提升窗体加载速度
+- **📚 代码质量** - 遵循WinForms最佳实践，提高可维护性
 
 ### 🎯 v1.2.0 更新亮点
 
