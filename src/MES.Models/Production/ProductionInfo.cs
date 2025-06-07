@@ -4,7 +4,7 @@ using MES.Models.Base;
 namespace MES.Models.Production
 {
     /// <summary>
-    /// 产品ID
+    /// 产品
     /// </summary>
     public class ProductionInfo : BaseModel
     {
