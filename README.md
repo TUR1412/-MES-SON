@@ -218,10 +218,10 @@ SOURCE database/init_database.sql;
 
 | 👤 成员 | 🎯 核心职责 | 📋 负责模块 | 📊 完成状态 |
 |---------|-------------|-------------|-------------|
-| **🏆 天帝 (组长)** | 系统架构、代码审查、技术决策 | 框架设计、项目管理、主分支维护 | ![100%](https://progress-bar.dev/100?title=架构完成) |
-| **🔧 L 成员** | 物料与工艺规则配置 | 物料管理、BOM管理、工艺路线 | ![100%](https://progress-bar.dev/100?title=模块完成) |
-| **⚡ H 成员** | 生产订单与执行核心 | 生产订单、生产执行、用户权限 | ![100%](https://progress-bar.dev/100?title=模块完成) |
-| **🏭 S 成员** | 车间作业与辅助管理 | 车间作业、在制品管理、设备管理 | ![100%](https://progress-bar.dev/100?title=模块完成) |
+| **🏆 天帝 (组长)** | 系统架构、代码审查、技术决策 | 框架设计、项目管理、主分支维护 | ![架构完成](https://img.shields.io/badge/架构完成-100%25-00C851?style=flat-square) |
+| **🔧 L 成员** | 物料与工艺规则配置 | 物料管理、BOM管理、工艺路线 | ![模块完成](https://img.shields.io/badge/模块完成-100%25-00C851?style=flat-square) |
+| **⚡ H 成员** | 生产订单与执行核心 | 生产订单、生产执行、用户权限 | ![模块完成](https://img.shields.io/badge/模块完成-100%25-00C851?style=flat-square) |
+| **🏭 S 成员** | 车间作业与辅助管理 | 车间作业、在制品管理、设备管理 | ![模块完成](https://img.shields.io/badge/模块完成-100%25-00C851?style=flat-square) |
 
 </div>
 
@@ -353,16 +353,17 @@ SOURCE database/init_database.sql;
 <div align="center">
 
 ```mermaid
-gitgraph
-    commit id: "项目初始化"
-    branch develop
-    checkout develop
-    commit id: "L: 物料管理"
-    commit id: "H: 生产管理"
-    commit id: "S: 车间管理"
-    checkout main
-    merge develop
-    commit id: "v1.2.0 稳定版"
+graph LR
+    A[项目初始化] --> B[develop分支]
+    B --> C[L: 物料管理]
+    C --> D[H: 生产管理]
+    D --> E[S: 车间管理]
+    E --> F[合并到main]
+    F --> G[v1.2.0 稳定版]
+
+    style A fill:#e1f5fe
+    style G fill:#e8f5e8
+    style F fill:#fff3e0
 ```
 
 </div>
@@ -489,41 +490,18 @@ LogManager.Debug($"物料验证通过: {material.MaterialCode}");
 <div align="center">
 
 ```mermaid
-erDiagram
-    sys_user ||--o{ sys_user_role : "用户角色关联"
-    sys_role ||--o{ sys_user_role : "角色用户关联"
-    material_info ||--o{ bom_info : "BOM物料关系"
-    production_order ||--o{ workshop_batch : "生产批次"
-    workshop_info ||--o{ workshop_batch : "车间批次"
+graph TD
+    A[👥 sys_user<br/>用户信息表] --> B[🔐 sys_user_role<br/>用户角色关联]
+    C[🔐 sys_role<br/>角色权限表] --> B
+    D[📦 material_info<br/>物料信息表] --> E[🔗 bom_info<br/>BOM物料清单]
+    F[⚡ production_order<br/>生产订单表] --> G[📊 workshop_batch<br/>生产批次]
+    H[🏭 workshop_info<br/>车间信息表] --> G
 
-    sys_user {
-        int user_id PK
-        string user_name
-        string password_hash
-        string email
-        datetime create_time
-        int status
-    }
-
-    material_info {
-        int material_id PK
-        string material_code
-        string material_name
-        string specification
-        string unit
-        int category_id
-        datetime create_time
-    }
-
-    production_order {
-        int order_id PK
-        string order_no
-        int material_id FK
-        decimal quantity
-        datetime plan_start_date
-        datetime plan_end_date
-        int status
-    }
+    style A fill:#e3f2fd
+    style C fill:#f3e5f5
+    style D fill:#e8f5e8
+    style F fill:#fff3e0
+    style H fill:#fce4ec
 ```
 
 </div>
