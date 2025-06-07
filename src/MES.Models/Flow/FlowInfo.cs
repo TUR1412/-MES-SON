@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using MES.Models.Base;
 
 namespace MES.Models.Flow
 {
     /// <summary>
     /// 工艺流程
     /// </summary>
-    internal class Flow
+    public class FlowInfo : BaseModel
     {
         /// <summary>
         /// 工艺流程ID
@@ -32,6 +29,11 @@ namespace MES.Models.Flow
         public string Version { get; set; }
 
         /// <summary>
+        /// 工厂ID
+        /// </summary>
+        public int FortoryId { get; set; }
+
+        /// <summary>
         /// 适用产品ID
         /// </summary>
         public int ProductId { get; set; }
@@ -50,5 +52,15 @@ namespace MES.Models.Flow
         /// 更新时间
         /// </summary>
         public DateTime? UpdateTime { get; set; }
+
+        /// <summary>
+        /// 磨片厚度(mm)
+        /// </summary>
+        public decimal GrindingThickness { get; set; }
+
+        /// <summary>
+        /// 封装形式
+        /// </summary>
+        public string PackageType { get; set; }
     }
 }

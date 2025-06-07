@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using MES.Models.Base;
 
 namespace MES.Models.Factory
 {
     /// <summary>
     /// 工厂
     /// </summary>
-    internal class Factory
+    public class FactoryInfo : BaseModel
     {
         /// <summary>
         /// 工厂ID
@@ -30,6 +27,16 @@ namespace MES.Models.Factory
         /// 工厂地址
         /// </summary>
         public string Address { get; set; }
+
+        /// <summary>
+        /// 工艺流程ID
+        /// </summary>
+        public int FlowId { get; set; }
+
+        /// <summary>
+        /// 工站ID
+        /// </summary>
+        public int OperId { get; set; }
 
         /// <summary>
         /// 联系人

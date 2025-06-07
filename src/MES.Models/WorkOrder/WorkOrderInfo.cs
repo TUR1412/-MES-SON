@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using MES.Models.Base;
 
 namespace MES.Models.WorkOrder
 {
     /// <summary>
     /// 工单
     /// </summary>
-    internal class WorkOrder
+    public class WorkOrderInfo : BaseModel
     {
         /// <summary>
         /// 工单ID
