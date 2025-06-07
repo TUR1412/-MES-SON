@@ -114,6 +114,7 @@
     <Compile Include="Material\MaterialInfo.cs" />
     <Compile Include="Material\BOMInfo.cs" />
     <Compile Include="Oper\OperInfo.cs" />
+    <Compile Include="Production\ProductionInfo.cs" />
     <Compile Include="Production\ProductionOrderInfo.cs" />
     <Compile Include="WorkOrder\WorkOrderInfo.cs" />
     <Compile Include="Workshop\WorkshopInfo.cs" />
