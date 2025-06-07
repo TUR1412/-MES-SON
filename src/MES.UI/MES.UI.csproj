@@ -186,7 +186,6 @@
       <Project>{D4E5F6A7-B8C9-0123-DEF0-456789012345}</Project>
       <Name>MES.Models</Name>
     </ProjectReference>
-
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Forms\Batch\Cancel.resx">
@@ -194,6 +193,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Batch\Create.resx">
       <DependentUpon>Create.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Material\MaterialManagementForm.resx">
       <DependentUpon>MaterialManagementForm.cs</DependentUpon>

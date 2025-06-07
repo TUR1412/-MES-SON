@@ -427,60 +427,23 @@ namespace MES.UI.Forms
         }
 
         /// <summary>
-        /// 初始化卡片点击事件
+        /// 初始化卡片点击事件（重构为Button卡片）
         /// </summary>
         private void InitializeCardClickEvents()
         {
             // 物料管理卡片点击事件
-            panelMaterialCard.Click += (s, e) => OpenMaterialForm();
-            labelMaterialTitle.Click += (s, e) => OpenMaterialForm();
-            labelMaterialDesc.Click += (s, e) => OpenMaterialForm();
-            pictureBoxMaterial.Click += (s, e) => OpenMaterialForm();
+            btnMaterialCard.Click += (s, e) => OpenMaterialForm();
 
             // 生产管理卡片点击事件
-            panelProductionCard.Click += (s, e) => OpenProductionOrderForm();
-            labelProductionTitle.Click += (s, e) => OpenProductionOrderForm();
-            labelProductionDesc.Click += (s, e) => OpenProductionOrderForm();
-            pictureBoxProduction.Click += (s, e) => OpenProductionOrderForm();
+            btnProductionCard.Click += (s, e) => OpenProductionOrderForm();
 
             // 车间管理卡片点击事件
-            panelWorkshopCard.Click += (s, e) => OpenWorkshopOperationForm();
-            labelWorkshopTitle.Click += (s, e) => OpenWorkshopOperationForm();
-            labelWorkshopDesc.Click += (s, e) => OpenWorkshopOperationForm();
-            pictureBoxWorkshop.Click += (s, e) => OpenWorkshopOperationForm();
+            btnWorkshopCard.Click += (s, e) => OpenWorkshopOperationForm();
 
-            // 添加鼠标悬停效果
-            AddCardHoverEffects();
+            // Button控件自带稳定的悬浮效果，无需额外处理
         }
 
-        /// <summary>
-        /// 添加卡片悬停效果
-        /// </summary>
-        private void AddCardHoverEffects()
-        {
-            AddHoverEffect(panelMaterialCard);
-            AddHoverEffect(panelProductionCard);
-            AddHoverEffect(panelWorkshopCard);
-        }
-
-        /// <summary>
-        /// 为面板添加悬停效果
-        /// </summary>
-        private void AddHoverEffect(Panel panel)
-        {
-            var originalBackColor = panel.BackColor;
-            var hoverBackColor = Color.FromArgb(248, 249, 250);
-
-            panel.MouseEnter += (s, e) => panel.BackColor = hoverBackColor;
-            panel.MouseLeave += (s, e) => panel.BackColor = originalBackColor;
-
-            // 为子控件也添加相同效果
-            foreach (Control control in panel.Controls)
-            {
-                control.MouseEnter += (s, e) => panel.BackColor = hoverBackColor;
-                control.MouseLeave += (s, e) => panel.BackColor = originalBackColor;
-            }
-        }
+        // 旧的Panel悬停效果方法已删除，因为现在使用Button控件
 
         /// <summary>
         /// 创建菜单图标
