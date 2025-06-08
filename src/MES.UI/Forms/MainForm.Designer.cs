@@ -32,7 +32,12 @@ namespace MES.UI.Forms
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.panelLeft = new System.Windows.Forms.Panel();
+            this.panelNavContent = new System.Windows.Forms.Panel();
             this.treeViewModules = new System.Windows.Forms.TreeView();
+            this.panelNavFooter = new System.Windows.Forms.Panel();
+            this.labelNavInfo = new System.Windows.Forms.Label();
+            this.panelNavHeader = new System.Windows.Forms.Panel();
+            this.labelNavTitle = new System.Windows.Forms.Label();
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.panelMain = new System.Windows.Forms.Panel();
             this.panelStatusInfo = new System.Windows.Forms.Panel();
@@ -46,6 +51,9 @@ namespace MES.UI.Forms
             this.labelSystemVersion = new System.Windows.Forms.Label();
             this.labelSystemTitle = new System.Windows.Forms.Label();
             this.panelLeft.SuspendLayout();
+            this.panelNavContent.SuspendLayout();
+            this.panelNavFooter.SuspendLayout();
+            this.panelNavHeader.SuspendLayout();
             this.panelMain.SuspendLayout();
             this.panelStatusInfo.SuspendLayout();
             this.panelModuleCards.SuspendLayout();
@@ -96,13 +104,25 @@ namespace MES.UI.Forms
             // 
             this.panelLeft.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(249)))), ((int)(((byte)(250)))));
             this.panelLeft.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panelLeft.Controls.Add(this.treeViewModules);
+            this.panelLeft.Controls.Add(this.panelNavContent);
+            this.panelLeft.Controls.Add(this.panelNavFooter);
+            this.panelLeft.Controls.Add(this.panelNavHeader);
             this.panelLeft.Dock = System.Windows.Forms.DockStyle.Left;
             this.panelLeft.Location = new System.Drawing.Point(0, 49);
             this.panelLeft.Name = "panelLeft";
-            this.panelLeft.Padding = new System.Windows.Forms.Padding(8);
             this.panelLeft.Size = new System.Drawing.Size(280, 679);
             this.panelLeft.TabIndex = 2;
+            // 
+            // panelNavContent
+            // 
+            this.panelNavContent.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(249)))), ((int)(((byte)(250)))));
+            this.panelNavContent.Controls.Add(this.treeViewModules);
+            this.panelNavContent.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelNavContent.Location = new System.Drawing.Point(0, 50);
+            this.panelNavContent.Name = "panelNavContent";
+            this.panelNavContent.Padding = new System.Windows.Forms.Padding(8, 5, 8, 5);
+            this.panelNavContent.Size = new System.Drawing.Size(278, 587);
+            this.panelNavContent.TabIndex = 1;
             // 
             // treeViewModules
             // 
@@ -114,13 +134,56 @@ namespace MES.UI.Forms
             this.treeViewModules.FullRowSelect = true;
             this.treeViewModules.HideSelection = false;
             this.treeViewModules.ItemHeight = 32;
-            this.treeViewModules.Location = new System.Drawing.Point(8, 8);
+            this.treeViewModules.Location = new System.Drawing.Point(8, 5);
             this.treeViewModules.Name = "treeViewModules";
             this.treeViewModules.ShowLines = false;
-            this.treeViewModules.ShowPlusMinus = false;
             this.treeViewModules.ShowRootLines = false;
-            this.treeViewModules.Size = new System.Drawing.Size(262, 661);
+            this.treeViewModules.Size = new System.Drawing.Size(262, 577);
             this.treeViewModules.TabIndex = 0;
+            // 
+            // panelNavFooter
+            // 
+            this.panelNavFooter.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(249)))), ((int)(((byte)(250)))));
+            this.panelNavFooter.Controls.Add(this.labelNavInfo);
+            this.panelNavFooter.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panelNavFooter.Location = new System.Drawing.Point(0, 637);
+            this.panelNavFooter.Name = "panelNavFooter";
+            this.panelNavFooter.Padding = new System.Windows.Forms.Padding(15, 5, 15, 10);
+            this.panelNavFooter.Size = new System.Drawing.Size(278, 40);
+            this.panelNavFooter.TabIndex = 2;
+            // 
+            // labelNavInfo
+            // 
+            this.labelNavInfo.AutoSize = true;
+            this.labelNavInfo.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.labelNavInfo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(108)))), ((int)(((byte)(117)))), ((int)(((byte)(125)))));
+            this.labelNavInfo.Location = new System.Drawing.Point(15, 10);
+            this.labelNavInfo.Name = "labelNavInfo";
+            this.labelNavInfo.Size = new System.Drawing.Size(92, 17);
+            this.labelNavInfo.TabIndex = 0;
+            this.labelNavInfo.Text = "请选择功能模块";
+            // 
+            // panelNavHeader
+            // 
+            this.panelNavHeader.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(249)))), ((int)(((byte)(250)))));
+            this.panelNavHeader.Controls.Add(this.labelNavTitle);
+            this.panelNavHeader.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panelNavHeader.Location = new System.Drawing.Point(0, 0);
+            this.panelNavHeader.Name = "panelNavHeader";
+            this.panelNavHeader.Padding = new System.Windows.Forms.Padding(15, 10, 15, 5);
+            this.panelNavHeader.Size = new System.Drawing.Size(278, 50);
+            this.panelNavHeader.TabIndex = 0;
+            // 
+            // labelNavTitle
+            // 
+            this.labelNavTitle.AutoSize = true;
+            this.labelNavTitle.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Bold);
+            this.labelNavTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(37)))), ((int)(((byte)(41)))));
+            this.labelNavTitle.Location = new System.Drawing.Point(15, 15);
+            this.labelNavTitle.Name = "labelNavTitle";
+            this.labelNavTitle.Size = new System.Drawing.Size(74, 22);
+            this.labelNavTitle.TabIndex = 0;
+            this.labelNavTitle.Text = "功能导航";
             // 
             // splitter1
             // 
@@ -287,6 +350,11 @@ namespace MES.UI.Forms
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "MES制造执行系统";
             this.panelLeft.ResumeLayout(false);
+            this.panelNavContent.ResumeLayout(false);
+            this.panelNavFooter.ResumeLayout(false);
+            this.panelNavFooter.PerformLayout();
+            this.panelNavHeader.ResumeLayout(false);
+            this.panelNavHeader.PerformLayout();
             this.panelMain.ResumeLayout(false);
             this.panelStatusInfo.ResumeLayout(false);
             this.panelStatusInfo.PerformLayout();
@@ -304,7 +372,12 @@ namespace MES.UI.Forms
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.Panel panelLeft;
+        private System.Windows.Forms.Panel panelNavHeader;
+        private System.Windows.Forms.Label labelNavTitle;
+        private System.Windows.Forms.Panel panelNavContent;
         private System.Windows.Forms.TreeView treeViewModules;
+        private System.Windows.Forms.Panel panelNavFooter;
+        private System.Windows.Forms.Label labelNavInfo;
         private System.Windows.Forms.Splitter splitter1;
         private System.Windows.Forms.Panel panelMain;
         private System.Windows.Forms.Panel panelWelcome;
