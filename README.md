@@ -12,8 +12,8 @@
 
 [![License](https://img.shields.io/badge/License-MIT-00C851?style=for-the-badge)](LICENSE)
 [![Build Status](https://img.shields.io/badge/Build-Passing-00C851?style=for-the-badge)](https://github.com/TUR1412/-MES-SON)
-[![Version](https://img.shields.io/badge/Version-v1.3.0-FF6900?style=for-the-badge)](https://github.com/TUR1412/-MES-SON/releases)
-[![Last Update](https://img.shields.io/badge/Last%20Update-2025--06--07-00C851?style=for-the-badge)](#)
+[![Version](https://img.shields.io/badge/Version-v1.7.0-FF6900?style=for-the-badge)](https://github.com/TUR1412/-MES-SON/releases)
+[![Last Update](https://img.shields.io/badge/Last%20Update-2025--06--08-00C851?style=for-the-badge)](#)
 
 ---
 
@@ -258,10 +258,12 @@ SOURCE database/init_database.sql;
   - 物料分类管理和层级结构
   - 物料状态控制（启用/禁用）
 
-- **🔗 BOM物料清单管理**
+- **🔗 BOM物料清单管理** ✅ 已完成
   - 多层级BOM结构设计
   - 物料用量和替代料配置
   - BOM版本控制和历史追溯
+  - 生效/失效日期管理
+  - 损耗率和替代料管理
 
 - **🛠️ 工艺路线配置**
   - 工艺流程定义和优化
@@ -281,10 +283,12 @@ SOURCE database/init_database.sql;
   - 订单优先级和排程管理
   - 生产进度实时跟踪
 
-- **🎯 生产执行控制**
-  - 生产任务分配和执行
-  - 质量检验和异常处理
-  - 生产数据采集和分析
+- **🎯 生产执行控制** ✅ 已完成
+  - 实时生产执行监控与控制
+  - 智能搜索和自动定时刷新
+  - 可视化进度条显示
+  - 执行控制按钮（开始、暂停、完成）
+  - 详细信息面板展示
 
 - **🔐 用户权限管理**
   - 基于角色的权限控制(RBAC)

@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using MES.Common.Logging;
 using MES.Common.Configuration;
 using MES.UI.Forms.Material;
+using MES.UI.Forms.Production;
 using MES.UI.Forms.SystemManagement;
 // using MES.UI.Framework.Themes;
 // using MES.UI.Framework.Utilities;
@@ -884,13 +885,13 @@ namespace MES.UI.Forms
         // L成员负责实现的物料管理模块
         //private void OpenMaterialForm() { ShowNotImplemented("物料信息管理"); }
         private void OpenMaterialForm() { showMMForm(); }
-        private void OpenBOMForm() { ShowNotImplemented("BOM管理"); }
+        private void OpenBOMForm() { ShowBOMManagementForm(); }
         private void OpenProcessRouteForm() { ShowNotImplemented("工艺路线管理"); }
 
         // H成员负责实现的生产管理模块
-        private void OpenProductionOrderForm() { ShowNotImplemented("生产订单管理"); }
-        private void OpenProductionExecutionForm() { ShowNotImplemented("生产执行管理"); }
-        private void OpenUserPermissionForm() { ShowNotImplemented("用户权限管理"); }
+        private void OpenProductionOrderForm() { ShowProductionOrderForm(); }
+        private void OpenProductionExecutionForm() { ShowProductionExecutionControlForm(); }
+        private void OpenUserPermissionForm() { ShowUserPermissionForm(); }
 
         // S成员负责实现的车间管理模块
         private void OpenWorkshopOperationForm() { OpenWorkshopManagementForm(); }
@@ -1145,6 +1146,42 @@ namespace MES.UI.Forms
         {
             MaterialManagementForm mmForm = new MaterialManagementForm();
             mmForm.Show();
+        }
+
+        /// <summary>
+        /// 显示生产订单管理窗体
+        /// </summary>
+        private void ShowProductionOrderForm()
+        {
+            ProductionOrderManagementForm productionForm = new ProductionOrderManagementForm();
+            productionForm.Show();
+        }
+
+        /// <summary>
+        /// 显示用户权限管理窗体
+        /// </summary>
+        private void ShowUserPermissionForm()
+        {
+            UserPermissionManagementForm userPermissionForm = new UserPermissionManagementForm();
+            userPermissionForm.Show();
+        }
+
+        /// <summary>
+        /// 显示BOM物料清单管理窗体
+        /// </summary>
+        private void ShowBOMManagementForm()
+        {
+            BOMManagementForm bomForm = new BOMManagementForm();
+            bomForm.Show();
+        }
+
+        /// <summary>
+        /// 显示生产执行控制窗体
+        /// </summary>
+        private void ShowProductionExecutionControlForm()
+        {
+            ProductionExecutionControlForm executionForm = new ProductionExecutionControlForm();
+            executionForm.Show();
         }
         /// <summary>
         /// 显示关于对话框

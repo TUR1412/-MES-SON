@@ -153,6 +153,31 @@
     <Compile Include="Forms\Material\MaterialManagementForm.Designer.cs">
       <DependentUpon>MaterialManagementForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\Material\BOMManagementForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Material\BOMManagementForm.Designer.cs">
+      <DependentUpon>BOMManagementForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Production\ProductionOrderManagementForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Production\ProductionOrderManagementForm.Designer.cs">
+      <DependentUpon>ProductionOrderManagementForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Production\UserPermissionManagementForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Production\UserPermissionManagementForm.Designer.cs">
+      <DependentUpon>UserPermissionManagementForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Production\ProductionExecutionControlForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Production\ProductionExecutionControlForm.Designer.cs">
+      <DependentUpon>ProductionExecutionControlForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Models\MaterialInfo.cs" />
     <Compile Include="Forms\WorkOrder\Cancel.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -214,6 +239,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Material\MaterialManagementForm.resx">
       <DependentUpon>MaterialManagementForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Material\BOMManagementForm.resx">
+      <DependentUpon>BOMManagementForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Production\UserPermissionManagementForm.resx">
+      <DependentUpon>UserPermissionManagementForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Production\ProductionExecutionControlForm.resx">
+      <DependentUpon>ProductionExecutionControlForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\WorkOrder\Cancel.resx">
       <DependentUpon>Cancel.cs</DependentUpon>
