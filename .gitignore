@@ -212,6 +212,17 @@ $RECYCLE.BIN/
 *.FileListAbsolute.txt
 *.Up2Date
 
+# MSBuild 编译缓存文件
+*.csproj.CoreCompileInputs.cache
+*.csproj.FileListAbsolute.txt
+**/obj/**/DesignTimeResolveAssemblyReferencesInput.cache
+
+# .NET Framework 编译输出（确保覆盖所有位置）
+**/*.dll
+**/*.pdb
+**/bin/**/*.dll
+**/bin/**/*.pdb
+
 # 编译顺序文件
 compile_order.bat.bak
 *.bat.bak
