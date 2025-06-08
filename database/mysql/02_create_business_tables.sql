@@ -11,38 +11,42 @@ USE `mes_system`;
 -- 物料管理相关表
 -- =============================================
 
--- 物料信息表
+-- 物料信息表	(L: 物料管理 - 2025/6/7 重构material_info数据表以匹配模型层）
 CREATE TABLE `material` (
-    `id` INT AUTO_INCREMENT PRIMARY KEY COMMENT '物料ID',
-    `material_code` VARCHAR(50) NOT NULL COMMENT '物料编码',
-    `material_name` VARCHAR(200) NOT NULL COMMENT '物料名称',
-    `material_type` VARCHAR(100) DEFAULT '' COMMENT '物料类型',
-    `specification` VARCHAR(500) DEFAULT '' COMMENT '规格型号',
-    `unit` VARCHAR(20) DEFAULT '' COMMENT '计量单位',
-    `safety_stock` DECIMAL(18,4) DEFAULT 0 COMMENT '安全库存',
-    `max_stock` DECIMAL(18,4) DEFAULT 0 COMMENT '最大库存',
-    `min_stock` DECIMAL(18,4) DEFAULT 0 COMMENT '最小库存',
-    `current_stock` DECIMAL(18,4) DEFAULT 0 COMMENT '当前库存',
-    `unit_price` DECIMAL(18,4) DEFAULT 0 COMMENT '单价',
-    `supplier` VARCHAR(200) DEFAULT '' COMMENT '供应商',
-    `manufacturer` VARCHAR(200) DEFAULT '' COMMENT '制造商',
-    `shelf_life` INT DEFAULT 0 COMMENT '保质期(天)',
-    `storage_location` VARCHAR(200) DEFAULT '' COMMENT '存储位置',
-    `status` TINYINT DEFAULT 1 COMMENT '状态：1-启用，0-禁用',
-    `description` TEXT COMMENT '物料描述',
-    `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `create_user_id` INT DEFAULT 0 COMMENT '创建用户ID',
-    `create_user_name` VARCHAR(100) DEFAULT '' COMMENT '创建用户名',
-    `update_time` DATETIME DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-    `update_user_id` INT DEFAULT 0 COMMENT '更新用户ID',
-    `update_user_name` VARCHAR(100) DEFAULT '' COMMENT '更新用户名',
-    `is_deleted` TINYINT DEFAULT 0 COMMENT '是否删除：1-是，0-否',
-    UNIQUE KEY `uk_material_code` (`material_code`),
-    INDEX `idx_material_name` (`material_name`),
-    INDEX `idx_material_type` (`material_type`),
-    INDEX `idx_supplier` (`supplier`),
-    INDEX `idx_status` (`status`),
-    INDEX `idx_create_time` (`create_time`)
+    `id` int NOT NULL AUTO_INCREMENT COMMENT '物料ID',
+  `material_code` VARCHAR(50) NOT NULL COMMENT '物料编码',
+  `material_name` VARCHAR(200) NOT NULL COMMENT '物料名称',
+  `material_type` VARCHAR(50) NOT NULL COMMENT '物料类型：原材料、半成品、成品等',
+  `specification` VARCHAR(200) NULL COMMENT '规格型号',
+  `unit` VARCHAR(20) NOT NULL COMMENT '计量单位',
+  `category` VARCHAR(100) NULL COMMENT '物料分类',
+  `supplier` VARCHAR(200) NULL COMMENT '供应商',
+  `standard_cost` DECIMAL(18, 4) NULL COMMENT '标准成本',
+  `safety_stock` DECIMAL(18, 2) NULL COMMENT '安全库存',
+  `min_stock` DECIMAL(18, 2) NULL COMMENT '最小库存',
+  `max_stock` DECIMAL(18, 2) NULL COMMENT '最大库存',
+  `stock_quantity` DECIMAL(18, 2) NULL DEFAULT 0 COMMENT '当前库存数量', -- 这是之前缺失的关键字段
+  `lead_time` INT NULL COMMENT '采购提前期（天）',
+  `status` TINYINT(1) NOT NULL DEFAULT 1 COMMENT '状态：1-启用，0-禁用',
+  `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `create_user_id` INT NULL COMMENT '创建人ID',
+  `create_user_name` VARCHAR(100) NULL COMMENT '创建人姓名',
+  `update_time` DATETIME NULL COMMENT '最后修改时间',
+  `update_user_id` INT NULL COMMENT '最后修改人ID',
+  `update_user_name` VARCHAR(100) NULL COMMENT '最后修改人姓名',
+  `is_deleted` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '是否删除（软删除标记）',
+  `delete_time` DATETIME NULL COMMENT '删除时间',
+  `delete_user_id` INT NULL COMMENT '删除人ID',
+  `delete_user_name` VARCHAR(100) NULL COMMENT '删除人姓名',
+  `remark` TEXT NULL COMMENT '备注',
+  `version` INT NOT NULL DEFAULT 1 COMMENT '版本号（用于乐观锁）',
+  -- 主键和索引
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_material_code` (`material_code`),
+  KEY `idx_material_type` (`material_type`),
+  KEY `idx_category` (`category`),
+  KEY `idx_status` (`status`),
+  KEY `idx_is_deleted` (`is_deleted`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='物料信息表';
 
 -- BOM清单表

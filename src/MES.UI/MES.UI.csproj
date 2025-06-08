@@ -52,8 +52,23 @@
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=9.0.0.5, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.Bcl.AsyncInterfaces.9.0.5\lib\net462\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions, Version=7.0.0.1, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Extensions.Logging.Abstractions.7.0.1\lib\net462\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+    </Reference>
     <Reference Include="MySql.Data, Version=9.3.0.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <HintPath>..\..\packages\MySql.Data.9.3.0\lib\net48\MySql.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="MySqlConnector, Version=2.0.0.0, Culture=neutral, PublicKeyToken=d33d3e53aa5f8c92, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\MySqlConnector.2.3.5\lib\net48\MySqlConnector.dll</HintPath>
+    </Reference>
+    <Reference Include="Savage.Data, Version=5.5.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Savage.Data.5.5.2\lib\netstandard2.0\Savage.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Savage.Data.MySqlClient, Version=5.5.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\MySqlClient.5.5.2\lib\netstandard2.0\Savage.Data.MySqlClient.dll</HintPath>
+    </Reference>
+    <Reference Include="Savage.OptimizedDataReader, Version=1.1.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\OptimizedDataReader.1.1.2\lib\net46\Savage.OptimizedDataReader.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.5.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -123,12 +138,46 @@
     <Compile Include="Forms\SystemManagement\RoleManagementForm.Designer.cs">
       <DependentUpon>RoleManagementForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\SystemManagement\SystemConfigForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SystemManagement\SystemConfigForm.Designer.cs">
+      <DependentUpon>SystemConfigForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\SystemManagement\AboutForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\Material\MaterialManagementForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\Material\MaterialManagementForm.Designer.cs">
       <DependentUpon>MaterialManagementForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\Material\BOMManagementForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Material\BOMManagementForm.Designer.cs">
+      <DependentUpon>BOMManagementForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Production\ProductionOrderManagementForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Production\ProductionOrderManagementForm.Designer.cs">
+      <DependentUpon>ProductionOrderManagementForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Production\UserPermissionManagementForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Production\UserPermissionManagementForm.Designer.cs">
+      <DependentUpon>UserPermissionManagementForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Production\ProductionExecutionControlForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Production\ProductionExecutionControlForm.Designer.cs">
+      <DependentUpon>ProductionExecutionControlForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Models\MaterialInfo.cs" />
     <Compile Include="Forms\WorkOrder\Cancel.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -185,8 +234,20 @@
     <EmbeddedResource Include="Forms\Batch\Create.resx">
       <DependentUpon>Create.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\Material\MaterialManagementForm.resx">
       <DependentUpon>MaterialManagementForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Material\BOMManagementForm.resx">
+      <DependentUpon>BOMManagementForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Production\UserPermissionManagementForm.resx">
+      <DependentUpon>UserPermissionManagementForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Production\ProductionExecutionControlForm.resx">
+      <DependentUpon>ProductionExecutionControlForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\WorkOrder\Cancel.resx">
       <DependentUpon>Cancel.cs</DependentUpon>

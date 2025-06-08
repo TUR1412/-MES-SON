@@ -67,6 +67,22 @@ namespace MES.Models.Production
         }
 
         /// <summary>
+        /// 进度文本 - BLL层兼容属性
+        /// </summary>
+        public string ProgressText
+        {
+            get
+            {
+                if (Quantity > 0)
+                {
+                    var percent = (double)ActualQuantity / (double)Quantity * 100;
+                    return string.Format("{0}/{1} ({2:F1}%)", ActualQuantity, Quantity, percent);
+                }
+                return "0/0 (0%)";
+            }
+        }
+
+        /// <summary>
         /// 单位（对应数据库unit字段）
         /// </summary>
         public string Unit { get; set; }
@@ -132,9 +148,27 @@ namespace MES.Models.Production
         public string WorkshopName { get; set; }
 
         /// <summary>
+        /// 车间名称 - BLL层兼容属性
+        /// </summary>
+        public string Workshop
+        {
+            get { return WorkshopName; }
+            set { WorkshopName = value; }
+        }
+
+        /// <summary>
         /// 负责人
         /// </summary>
         public string ResponsiblePerson { get; set; }
+
+        /// <summary>
+        /// 操作员 - BLL层兼容属性
+        /// </summary>
+        public string Operator
+        {
+            get { return ResponsiblePerson; }
+            set { ResponsiblePerson = value; }
+        }
 
         /// <summary>
         /// 客户名称（对应数据库customer字段）
@@ -164,6 +198,39 @@ namespace MES.Models.Production
             Priority = "普通"; // 默认优先级为普通
             ActualQuantity = 0; // 默认实际完成数量为0
             Unit = "个"; // 默认单位
+        }
+
+        /// <summary>
+        /// 克隆对象 - C# 5.0兼容实现
+        /// </summary>
+        public ProductionOrderInfo Clone()
+        {
+            return new ProductionOrderInfo
+            {
+                Id = this.Id,
+                OrderNo = this.OrderNo,
+                MaterialId = this.MaterialId,
+                ProductCode = this.ProductCode,
+                ProductName = this.ProductName,
+                Quantity = this.Quantity,
+                ActualQuantity = this.ActualQuantity,
+                Unit = this.Unit,
+                PlanStartTime = this.PlanStartTime,
+                PlanEndTime = this.PlanEndTime,
+                ActualStartTime = this.ActualStartTime,
+                ActualEndTime = this.ActualEndTime,
+                Status = this.Status,
+                Priority = this.Priority,
+                WorkshopId = this.WorkshopId,
+                WorkshopName = this.WorkshopName,
+                ResponsiblePerson = this.ResponsiblePerson,
+                CustomerName = this.CustomerName,
+                SalesOrderNumber = this.SalesOrderNumber,
+                Remarks = this.Remarks,
+                CreateTime = this.CreateTime,
+                UpdateTime = this.UpdateTime,
+                Version = this.Version
+            };
         }
     }
 }

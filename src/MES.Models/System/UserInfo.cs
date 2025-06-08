@@ -59,11 +59,48 @@ namespace MES.Models.System
         public DateTime? LastLoginTime { get; set; }
 
         /// <summary>
+        /// 角色ID
+        /// </summary>
+        public int? RoleId { get; set; }
+
+        /// <summary>
+        /// 角色名称
+        /// </summary>
+        public string RoleName { get; set; }
+
+        /// <summary>
         /// 构造函数
         /// </summary>
         public UserInfo()
         {
             Status = true;
+            RoleName = string.Empty;
+        }
+
+        /// <summary>
+        /// 克隆对象 - C# 5.0兼容实现
+        /// </summary>
+        public UserInfo Clone()
+        {
+            return new UserInfo
+            {
+                Id = this.Id,
+                UserCode = this.UserCode,
+                UserName = this.UserName,
+                LoginName = this.LoginName,
+                Password = this.Password,
+                Department = this.Department,
+                Position = this.Position,
+                Email = this.Email,
+                Phone = this.Phone,
+                Status = this.Status,
+                LastLoginTime = this.LastLoginTime,
+                RoleId = this.RoleId,
+                RoleName = this.RoleName,
+                CreateTime = this.CreateTime,
+                UpdateTime = this.UpdateTime,
+                Version = this.Version
+            };
         }
     }
 }
