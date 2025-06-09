@@ -120,6 +120,7 @@
     <Compile Include="Production\ProductionOrderInfo.cs" />
     <Compile Include="WorkOrder\WorkOrderInfo.cs" />
     <Compile Include="Workshop\WorkshopInfo.cs" />
+    <Compile Include="Workshop\WorkshopOperationInfo.cs" />
     <Compile Include="Workshop\BatchInfo.cs" />
     <Compile Include="Workshop\EquipmentStatusHistory.cs" />
     <Compile Include="System\UserInfo.cs" />

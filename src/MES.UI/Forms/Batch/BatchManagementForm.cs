@@ -2,6 +2,8 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using MES.Common.Logging;
+using MES.BLL.Workshop;
+using MES.Models.Workshop;
 
 namespace MES.UI.Forms.Batch
 {
@@ -15,6 +17,7 @@ namespace MES.UI.Forms.Batch
 
         private CreateBatch createForm;
         private CancelBatch cancelForm;
+        private readonly BatchBLL _batchBLL;
 
         #endregion
 
@@ -26,6 +29,7 @@ namespace MES.UI.Forms.Batch
         public BatchManagementForm()
         {
             InitializeComponent();
+            _batchBLL = new BatchBLL();
             InitializeEvents();
             LoadBatchData();
             LogManager.Info("批次管理窗体初始化完成");
@@ -62,18 +66,18 @@ namespace MES.UI.Forms.Batch
         {
             try
             {
-                // TODO: 从数据库加载批次数据
-                // 这里暂时使用示例数据
-                var dataTable = CreateSampleData();
+                // 从BLL层获取真实批次数据
+                var batches = _batchBLL.GetAllBatches();
+                var dataTable = ConvertBatchesToDataTable(batches);
                 dgvBatches.DataSource = dataTable;
-                
+
                 // 设置列标题
                 SetupDataGridColumns();
-                
+
                 // 更新统计信息
                 UpdateStatistics();
-                
-                LogManager.Info("批次数据加载完成");
+
+                LogManager.Info(string.Format("批次数据加载完成，共 {0} 条记录", batches.Count));
             }
             catch (Exception ex)
             {
@@ -84,27 +88,36 @@ namespace MES.UI.Forms.Batch
         }
 
         /// <summary>
-        /// 创建示例数据
+        /// 将批次列表转换为DataTable
         /// </summary>
-        private System.Data.DataTable CreateSampleData()
+        private System.Data.DataTable ConvertBatchesToDataTable(System.Collections.Generic.List<BatchInfo> batches)
         {
             var table = new System.Data.DataTable();
             table.Columns.Add("批次号", typeof(string));
             table.Columns.Add("产品名称", typeof(string));
             table.Columns.Add("工单号", typeof(string));
-            table.Columns.Add("批次数量", typeof(int));
-            table.Columns.Add("已完成数量", typeof(int));
+            table.Columns.Add("批次数量", typeof(decimal));
+            table.Columns.Add("已完成数量", typeof(decimal));
             table.Columns.Add("状态", typeof(string));
             table.Columns.Add("创建时间", typeof(DateTime));
             table.Columns.Add("计划完成时间", typeof(DateTime));
             table.Columns.Add("负责人", typeof(string));
-            
-            // 添加示例数据
-            table.Rows.Add("BATCH202506090001", "产品A", "WO202506090001", 50, 0, "待开始", DateTime.Now, DateTime.Now.AddDays(3), "张三");
-            table.Rows.Add("BATCH202506090002", "产品B", "WO202506090002", 100, 30, "进行中", DateTime.Now.AddDays(-1), DateTime.Now.AddDays(2), "李四");
-            table.Rows.Add("BATCH202506090003", "产品C", "WO202506090003", 75, 75, "已完成", DateTime.Now.AddDays(-3), DateTime.Now.AddDays(-1), "王五");
-            table.Rows.Add("BATCH202506090004", "产品A", "WO202506090004", 80, 0, "已暂停", DateTime.Now.AddDays(-2), DateTime.Now.AddDays(1), "赵六");
-            
+
+            foreach (var batch in batches)
+            {
+                table.Rows.Add(
+                    batch.BatchNumber,
+                    batch.ProductName ?? "未知产品",
+                    batch.ProductionOrderNumber ?? "",
+                    batch.PlannedQuantity,
+                    batch.ActualQuantity,
+                    batch.BatchStatus,
+                    batch.CreateTime,
+                    batch.EndTime ?? DateTime.Now.AddDays(7),
+                    batch.OperatorName ?? "未分配"
+                );
+            }
+
             return table;
         }
 

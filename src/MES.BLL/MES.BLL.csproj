@@ -121,6 +121,8 @@
     <Compile Include="WorkOrder\WorkOrderBLL.cs" />
     <Compile Include="Workshop\IWorkshopBLL.cs" />
     <Compile Include="Workshop\WorkshopBLL.cs" />
+    <Compile Include="Workshop\IWorkshopOperationBLL.cs" />
+    <Compile Include="Workshop\WorkshopOperationBLL.cs" />
     <Compile Include="Workshop\IBatchBLL.cs" />
     <Compile Include="Workshop\BatchBLL.cs" />
     <Compile Include="System\IRoleBLL.cs" />

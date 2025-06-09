@@ -2,6 +2,8 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using MES.Common.Logging;
+using MES.BLL.WorkOrder;
+using MES.Models.WorkOrder;
 
 namespace MES.UI.Forms.WorkOrder
 {
@@ -16,6 +18,7 @@ namespace MES.UI.Forms.WorkOrder
         private CreateWorkOrder createForm;
         private SubmitWorkOrder submitForm;
         private CancelWorkOrder cancelForm;
+        private readonly WorkOrderBLL _workOrderBLL;
 
         #endregion
 
@@ -27,6 +30,7 @@ namespace MES.UI.Forms.WorkOrder
         public WorkOrderManagementForm()
         {
             InitializeComponent();
+            _workOrderBLL = new WorkOrderBLL();
             InitializeEvents();
             LoadWorkOrderData();
             LogManager.Info("工单管理窗体初始化完成");
@@ -63,18 +67,18 @@ namespace MES.UI.Forms.WorkOrder
         {
             try
             {
-                // TODO: 从数据库加载工单数据
-                // 这里暂时使用示例数据
-                var dataTable = CreateSampleData();
+                // 从BLL层获取真实工单数据
+                var workOrders = _workOrderBLL.GetAllWorkOrders();
+                var dataTable = ConvertWorkOrdersToDataTable(workOrders);
                 dgvWorkOrders.DataSource = dataTable;
-                
+
                 // 设置列标题
                 SetupDataGridColumns();
-                
+
                 // 更新统计信息
                 UpdateStatistics();
-                
-                LogManager.Info("工单数据加载完成");
+
+                LogManager.Info(string.Format("工单数据加载完成，共 {0} 条记录", workOrders.Count));
             }
             catch (Exception ex)
             {
@@ -85,25 +89,58 @@ namespace MES.UI.Forms.WorkOrder
         }
 
         /// <summary>
-        /// 创建示例数据
+        /// 将工单列表转换为DataTable
         /// </summary>
-        private System.Data.DataTable CreateSampleData()
+        private System.Data.DataTable ConvertWorkOrdersToDataTable(System.Collections.Generic.List<WorkOrderInfo> workOrders)
         {
             var table = new System.Data.DataTable();
             table.Columns.Add("工单号", typeof(string));
             table.Columns.Add("产品名称", typeof(string));
-            table.Columns.Add("计划数量", typeof(int));
-            table.Columns.Add("已完成数量", typeof(int));
+            table.Columns.Add("计划数量", typeof(decimal));
+            table.Columns.Add("已完成数量", typeof(decimal));
             table.Columns.Add("状态", typeof(string));
             table.Columns.Add("创建时间", typeof(DateTime));
             table.Columns.Add("计划完成时间", typeof(DateTime));
-            
-            // 添加示例数据
-            table.Rows.Add("WO202506090001", "产品A", 100, 0, "待开始", DateTime.Now, DateTime.Now.AddDays(7));
-            table.Rows.Add("WO202506090002", "产品B", 200, 50, "进行中", DateTime.Now.AddDays(-2), DateTime.Now.AddDays(5));
-            table.Rows.Add("WO202506090003", "产品C", 150, 150, "已完成", DateTime.Now.AddDays(-5), DateTime.Now.AddDays(-1));
-            
+
+            foreach (var workOrder in workOrders)
+            {
+                string statusText = GetStatusText(workOrder.WorkOrderStatus);
+                table.Rows.Add(
+                    workOrder.WorkOrderNum,
+                    GetProductName(workOrder.ProductId), // 需要根据ProductId获取产品名称
+                    workOrder.PlannedQuantity,
+                    workOrder.OutputQuantity,
+                    statusText,
+                    workOrder.CreateTime,
+                    workOrder.PlannedDueDate ?? DateTime.Now.AddDays(7)
+                );
+            }
+
             return table;
+        }
+
+        /// <summary>
+        /// 获取状态文本
+        /// </summary>
+        private string GetStatusText(int status)
+        {
+            switch (status)
+            {
+                case 0: return "待开始";
+                case 1: return "进行中";
+                case 2: return "已完成";
+                case 3: return "已关闭";
+                default: return "未知";
+            }
+        }
+
+        /// <summary>
+        /// 根据产品ID获取产品名称（简化实现）
+        /// </summary>
+        private string GetProductName(int productId)
+        {
+            // 这里应该调用产品BLL获取产品名称，暂时返回默认值
+            return string.Format("产品{0}", productId);
         }
 
         /// <summary>

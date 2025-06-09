@@ -22,6 +22,7 @@ namespace MES.UI.Forms.Workshop
     {
         private readonly IWorkshopBLL _workshopBLL;
         private readonly IBatchBLL _batchBLL;
+        private readonly IWorkshopOperationBLL _workshopOperationBLL;
         private List<WorkshopOperationInfo> _currentOperations;
         private List<WorkshopInfo> _workshops;
 
@@ -33,9 +34,10 @@ namespace MES.UI.Forms.Workshop
             InitializeComponent();
             _workshopBLL = new WorkshopBLL();
             _batchBLL = new BatchBLL();
+            _workshopOperationBLL = new WorkshopOperationBLL();
             _currentOperations = new List<WorkshopOperationInfo>();
             _workshops = new List<WorkshopInfo>();
-            
+
             InitializeForm();
             LoadData();
         }
@@ -258,13 +260,13 @@ namespace MES.UI.Forms.Workshop
         {
             try
             {
-                // 模拟作业数据 - 实际应该从数据库加载
-                _currentOperations = GenerateSimulatedOperations();
-                
+                // 从BLL层获取真实作业数据
+                _currentOperations = _workshopOperationBLL.GetAllOperations();
+
                 dgvOperations.DataSource = _currentOperations;
-                
+
                 lblTotal.Text = string.Format("共 {0} 条记录", _currentOperations.Count);
-                
+
                 LogManager.Info(string.Format("加载车间作业数据完成，共 {0} 条记录", _currentOperations.Count));
             }
             catch (Exception ex)
@@ -641,20 +643,5 @@ namespace MES.UI.Forms.Workshop
         }
     }
 
-    /// <summary>
-    /// 车间作业信息模型
-    /// </summary>
-    public class WorkshopOperationInfo
-    {
-        public string OperationId { get; set; }
-        public string WorkshopName { get; set; }
-        public string BatchNumber { get; set; }
-        public string ProductCode { get; set; }
-        public decimal Quantity { get; set; }
-        public int Status { get; set; }
-        public string StatusText { get; set; }
-        public DateTime StartTime { get; set; }
-        public decimal Progress { get; set; }
-        public string Operator { get; set; }
-    }
+
 }

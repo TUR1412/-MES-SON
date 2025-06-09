@@ -42,6 +42,22 @@ namespace MES.BLL.WorkOrder
         }
 
         /// <summary>
+        /// 获取所有工单信息
+        /// </summary>
+        /// <returns>工单信息列表</returns>
+        public List<WorkOrderInfo> GetAllWorkOrders()
+        {
+            try
+            {
+                return workOrderDAL.GetAll();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(string.Format("获取工单列表失败：{0}", ex.Message), ex);
+            }
+        }
+
+        /// <summary>
         /// 获取成品工单列表
         /// </summary>
         /// <returns>成品工单数据表</returns>
