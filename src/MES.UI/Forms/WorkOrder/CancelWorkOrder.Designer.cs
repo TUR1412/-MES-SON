@@ -1,6 +1,6 @@
 ﻿namespace MES.UI.Forms.WorkOrder
 {
-    partial class Cancel
+    partial class CancelWorkOrder
     {
         /// <summary>
         /// Required designer variable.

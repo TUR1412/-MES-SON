@@ -1,6 +1,6 @@
 ﻿namespace MES.UI.Forms.Batch
 {
-    partial class Cancel
+    partial class CancelBatch
     {
         /// <summary>
         /// Required designer variable.

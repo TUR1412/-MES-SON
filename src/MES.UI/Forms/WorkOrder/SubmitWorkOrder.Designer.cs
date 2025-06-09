@@ -1,6 +1,6 @@
 ﻿namespace MES.UI.Forms.WorkOrder
 {
-    partial class Submit
+    partial class SubmitWorkOrder
     {
         /// <summary>
         /// Required designer variable.

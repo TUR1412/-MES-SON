@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace MES.UI.Forms.Batch
 {
-    public partial class Cancel : Form
+    public partial class CreateBatch : Form
     {
-        public Cancel()
+        public CreateBatch()
         {
             InitializeComponent();
         }

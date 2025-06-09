@@ -71,7 +71,7 @@ namespace MES.UI.Forms
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(15, 6, 0, 6);
             this.menuStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
-            this.menuStrip1.Size = new System.Drawing.Size(1200, 36);
+            this.menuStrip1.Size = new System.Drawing.Size(1200, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -93,11 +93,11 @@ namespace MES.UI.Forms
             this.toolStrip1.Font = new System.Drawing.Font("微软雅黑", 8.5F);
             this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.toolStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
-            this.toolStrip1.Location = new System.Drawing.Point(0, 36);
+            this.toolStrip1.Location = new System.Drawing.Point(0, 24);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Padding = new System.Windows.Forms.Padding(15, 3, 1, 3);
             this.toolStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
-            this.toolStrip1.Size = new System.Drawing.Size(1200, 38);
+            this.toolStrip1.Size = new System.Drawing.Size(1200, 25);
             this.toolStrip1.TabIndex = 1;
             this.toolStrip1.Text = "快捷工具栏";
             // 
@@ -109,9 +109,9 @@ namespace MES.UI.Forms
             this.panelLeft.Controls.Add(this.panelNavFooter);
             this.panelLeft.Controls.Add(this.panelNavHeader);
             this.panelLeft.Dock = System.Windows.Forms.DockStyle.Left;
-            this.panelLeft.Location = new System.Drawing.Point(0, 74);
+            this.panelLeft.Location = new System.Drawing.Point(0, 49);
             this.panelLeft.Name = "panelLeft";
-            this.panelLeft.Size = new System.Drawing.Size(280, 654);
+            this.panelLeft.Size = new System.Drawing.Size(280, 679);
             this.panelLeft.TabIndex = 2;
             // 
             // panelNavContent
@@ -122,7 +122,7 @@ namespace MES.UI.Forms
             this.panelNavContent.Location = new System.Drawing.Point(0, 50);
             this.panelNavContent.Name = "panelNavContent";
             this.panelNavContent.Padding = new System.Windows.Forms.Padding(8, 5, 8, 5);
-            this.panelNavContent.Size = new System.Drawing.Size(278, 562);
+            this.panelNavContent.Size = new System.Drawing.Size(278, 587);
             this.panelNavContent.TabIndex = 1;
             // 
             // treeViewModules
@@ -139,7 +139,7 @@ namespace MES.UI.Forms
             this.treeViewModules.Name = "treeViewModules";
             this.treeViewModules.ShowLines = false;
             this.treeViewModules.ShowRootLines = false;
-            this.treeViewModules.Size = new System.Drawing.Size(262, 552);
+            this.treeViewModules.Size = new System.Drawing.Size(262, 577);
             this.treeViewModules.TabIndex = 0;
             // 
             // panelNavFooter
@@ -147,7 +147,7 @@ namespace MES.UI.Forms
             this.panelNavFooter.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(249)))), ((int)(((byte)(250)))));
             this.panelNavFooter.Controls.Add(this.labelNavInfo);
             this.panelNavFooter.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panelNavFooter.Location = new System.Drawing.Point(0, 612);
+            this.panelNavFooter.Location = new System.Drawing.Point(0, 637);
             this.panelNavFooter.Name = "panelNavFooter";
             this.panelNavFooter.Padding = new System.Windows.Forms.Padding(15, 5, 15, 10);
             this.panelNavFooter.Size = new System.Drawing.Size(278, 40);
@@ -189,9 +189,9 @@ namespace MES.UI.Forms
             // splitter1
             // 
             this.splitter1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(222)))), ((int)(((byte)(226)))), ((int)(((byte)(230)))));
-            this.splitter1.Location = new System.Drawing.Point(280, 74);
+            this.splitter1.Location = new System.Drawing.Point(280, 49);
             this.splitter1.Name = "splitter1";
-            this.splitter1.Size = new System.Drawing.Size(4, 654);
+            this.splitter1.Size = new System.Drawing.Size(4, 679);
             this.splitter1.TabIndex = 3;
             this.splitter1.TabStop = false;
             // 
@@ -202,10 +202,10 @@ namespace MES.UI.Forms
             this.panelMain.Controls.Add(this.panelModuleCards);
             this.panelMain.Controls.Add(this.panelWelcome);
             this.panelMain.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelMain.Location = new System.Drawing.Point(284, 74);
+            this.panelMain.Location = new System.Drawing.Point(284, 49);
             this.panelMain.Name = "panelMain";
             this.panelMain.Padding = new System.Windows.Forms.Padding(20);
-            this.panelMain.Size = new System.Drawing.Size(916, 654);
+            this.panelMain.Size = new System.Drawing.Size(916, 679);
             this.panelMain.TabIndex = 5;
             // 
             // panelStatusInfo
@@ -350,6 +350,7 @@ namespace MES.UI.Forms
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "MES制造执行系统";
+            this.Load += new System.EventHandler(this.MainForm_Load);
             this.panelLeft.ResumeLayout(false);
             this.panelNavContent.ResumeLayout(false);
             this.panelNavFooter.ResumeLayout(false);

@@ -6,6 +6,8 @@ using MES.Common.Logging;
 using MES.Common.Configuration;
 using MES.UI.Forms.Material;
 using MES.UI.Forms.Production;
+using MES.UI.Forms.WorkOrder;
+using MES.UI.Forms.Batch;
 using MES.UI.Forms.SystemManagement;
 using MES.UI.Forms.Workshop;
 // using MES.UI.Framework.Themes;
@@ -306,16 +308,47 @@ namespace MES.UI.Forms
                 };
                 productionNode.Nodes.Add(executionControlNode);
 
-                var userPermissionNode = new TreeNode("👥 用户权限管理")
+                productionNode.ExpandAll();
+                treeViewModules.Nodes.Add(productionNode);
+                //创建工单
+                var CreateWorkOrder = new TreeNode("创建工单")
                 {
                     ForeColor = Color.FromArgb(20, 140, 255),
                     NodeFont = new Font("微软雅黑", 9, FontStyle.Regular),
-                    ToolTipText = "系统用户权限配置"
+                    ToolTipText = "创建工单"
                 };
-                productionNode.Nodes.Add(userPermissionNode);
 
-                productionNode.ExpandAll();
-                treeViewModules.Nodes.Add(productionNode);
+                var CancelWorkOrder = new TreeNode("取消创建工单")
+                {
+                    ForeColor = Color.FromArgb(20, 140, 255),
+                    NodeFont = new Font("微软雅黑", 9, FontStyle.Regular),
+                    ToolTipText = "取消创建工单"
+                };
+
+                var SubmitWorkOrder = new TreeNode("提交工单")
+                {
+                    ForeColor = Color.FromArgb(20, 140, 255),
+                    NodeFont = new Font("微软雅黑", 9, FontStyle.Regular),
+                    ToolTipText = "提交工单"
+                };
+                var CreateBatch = new TreeNode("创建批次")
+                {
+                    ForeColor = Color.FromArgb(20, 140, 255),
+                    NodeFont = new Font("微软雅黑", 9, FontStyle.Regular),
+                    ToolTipText = "创建批次"
+                };
+
+                var CancelBatch = new TreeNode("取消创建批次")
+                {
+                    ForeColor = Color.FromArgb(20, 140, 255),
+                    NodeFont = new Font("微软雅黑", 9, FontStyle.Regular),
+                    ToolTipText = "取消创建批次"
+                };
+                productionNode.Nodes.Add(CreateWorkOrder);
+                productionNode.Nodes.Add(CancelWorkOrder);
+                productionNode.Nodes.Add(SubmitWorkOrder);
+                productionNode.Nodes.Add(CreateBatch);
+                productionNode.Nodes.Add(CancelBatch);
 
                 // S成员 - 车间管理模块
                 var workshopNode = new TreeNode("🏭 车间管理 (S成员)")
@@ -499,11 +532,23 @@ namespace MES.UI.Forms
                 case "📊 生产订单管理":
                     OpenProductionOrderForm();
                     break;
+                case "创建工单":
+                    OpenCreateWorkOrderForm();
+                    break;
+                case "取消创建工单":
+                    OpenCancelWorkOrderForm();
+                    break;
+                case "提交工单":
+                    OpenSubmitWorkOrderForm();
+                    break;
+                case "创建批次":
+                    OpenCreateBatchForm();
+                    break;
+                case "取消创建批次":
+                    OpenCancelBatchForm();
+                    break;
                 case "🎯 生产执行控制":
                     OpenProductionExecutionForm();
-                    break;
-                case "👥 用户权限管理":
-                    OpenUserPermissionForm();
                     break;
                 case "🔨 车间作业管理":
                     OpenWorkshopOperationForm();
@@ -576,10 +621,6 @@ namespace MES.UI.Forms
             executionItem.Click += ExecutionItem_Click;
             productionMenu.DropDownItems.Add(executionItem);
 
-            var permissionItem = new ToolStripMenuItem("用户权限管理");
-            permissionItem.Click += PermissionItem_Click;
-            productionMenu.DropDownItems.Add(permissionItem);
-            menuStrip1.Items.Add(productionMenu);
 
             // 车间管理菜单 - S成员负责
             var workshopMenu = new ToolStripMenuItem("🏭 车间管理(&W)")
@@ -891,8 +932,12 @@ namespace MES.UI.Forms
 
         // H成员负责实现的生产管理模块
         private void OpenProductionOrderForm() { ShowProductionOrderForm(); }
+        private void OpenCreateWorkOrderForm() { ShowCreateWorkOrderForm(); }
+        private void OpenCancelWorkOrderForm() { ShowCancelWorkOrderForm(); }
+        private void OpenSubmitWorkOrderForm() { ShowSubmitWorkOrderForm(); }
+        private void OpenCreateBatchForm() { ShowCreateBatchForm(); }
+        private void OpenCancelBatchForm() { ShowCancelBatchForm(); }
         private void OpenProductionExecutionForm() { ShowProductionExecutionControlForm(); }
-        private void OpenUserPermissionForm() { ShowUserPermissionForm(); }
 
         // S成员负责实现的车间管理模块
         private void OpenWorkshopOperationForm() { ShowWorkshopOperationForm(); }
@@ -1083,13 +1128,7 @@ namespace MES.UI.Forms
             OpenProductionExecutionForm();
         }
 
-        /// <summary>
-        /// 用户权限管理菜单项点击事件
-        /// </summary>
-        private void PermissionItem_Click(object sender, EventArgs e)
-        {
-            OpenUserPermissionForm();
-        }
+
 
         /// <summary>
         /// 通用菜单项点击事件处理
@@ -1157,15 +1196,33 @@ namespace MES.UI.Forms
             ProductionOrderManagementForm productionForm = new ProductionOrderManagementForm();
             productionForm.Show();
         }
-
-        /// <summary>
-        /// 显示用户权限管理窗体
-        /// </summary>
-        private void ShowUserPermissionForm()
+        private void ShowCreateWorkOrderForm()
         {
-            UserPermissionManagementForm userPermissionForm = new UserPermissionManagementForm();
-            userPermissionForm.Show();
+            CreateWorkOrder createWorkOrder = new CreateWorkOrder();
+            createWorkOrder.Show();
         }
+        private void ShowCancelWorkOrderForm()
+        {
+            CancelWorkOrder cancelWorkOrder = new CancelWorkOrder();
+            cancelWorkOrder.Show();
+        }
+        private void ShowSubmitWorkOrderForm()
+        {
+            SubmitWorkOrder submitWorkOrder = new SubmitWorkOrder();
+            submitWorkOrder.Show();
+        }
+        private void ShowCreateBatchForm()
+        {
+            CreateBatch createBatch = new CreateBatch();
+            createBatch.Show();
+        }
+        private void ShowCancelBatchForm()
+        {
+            CancelBatch cancelBatch = new CancelBatch();
+            cancelBatch.Show();
+        }
+
+
 
         /// <summary>
         /// 显示BOM物料清单管理窗体
@@ -1330,6 +1387,11 @@ namespace MES.UI.Forms
 
             LogManager.Info("用户退出系统，资源已释放");
             base.OnFormClosing(e);
+        }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

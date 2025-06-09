@@ -1,6 +1,6 @@
 ﻿namespace MES.UI.Forms.WorkOrder
 {
-    partial class Create
+    partial class CreateWorkOrder
     {
         /// <summary>
         /// Required designer variable.

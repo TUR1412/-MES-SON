@@ -8,11 +8,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace MES.UI.Forms.WorkOrder
+namespace MES.UI.Forms.Batch
 {
-    public partial class Cancel : Form
+    public partial class CancelBatch : Form
     {
-        public Cancel()
+        public CancelBatch()
         {
             InitializeComponent();
         }

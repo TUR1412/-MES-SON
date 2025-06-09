@@ -1,6 +1,6 @@
 ﻿namespace MES.UI.Forms.Batch
 {
-    partial class Create
+    partial class CreateBatch
     {
         /// <summary>
         /// Required designer variable.

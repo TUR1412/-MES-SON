@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace MES.UI.Forms.WorkOrder
 {
-    public partial class Create : Form
+    public partial class CreateWorkOrder : Form
     {
-        public Create()
+        public CreateWorkOrder()
         {
             InitializeComponent();
         }
