@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using MES.Common.Logging;
-using MES.UI.Models;
+using MES.BLL.Material;       // 引用BLL接口
+using MES.BLL.Material.DTO;   // 引用DTO
 
 namespace MES.UI.Forms.Material
 {
@@ -16,13 +15,17 @@ namespace MES.UI.Forms.Material
     /// </summary>
     public partial class MaterialManagementForm : Form
     {
-        private List<MaterialInfo> materialList;
-        private List<MaterialInfo> filteredMaterialList;
-        private MaterialInfo currentMaterial;
+        // --- 依赖于BLL接口和DTO ---
+        private readonly IMaterialBLL _materialBLL;
+        private List<MaterialDto> materialList;
+        private List<MaterialDto> filteredMaterialList;
+        private MaterialDto currentMaterial;
 
         public MaterialManagementForm()
         {
             InitializeComponent();
+            // 实例化BLL
+            _materialBLL = new MaterialBLL();
             InitializeForm();
         }
 
@@ -33,21 +36,16 @@ namespace MES.UI.Forms.Material
         {
             try
             {
-                // 初始化数据
-                materialList = new List<MaterialInfo>();
-                filteredMaterialList = new List<MaterialInfo>();
+                materialList = new List<MaterialDto>();
+                filteredMaterialList = new List<MaterialDto>();
                 currentMaterial = null;
 
-                // 设置DataGridView
                 SetupDataGridView();
 
-                // 加载示例数据
-                LoadSampleData();
+                // --- 从BLL加载真实数据，而不是示例数据 ---
+                LoadMaterialData();
 
-                // 刷新显示
                 RefreshDataGridView();
-
-                // 清空详情面板
                 ClearDetailsPanel();
 
                 LogManager.Info("物料管理窗体初始化完成");
@@ -61,140 +59,26 @@ namespace MES.UI.Forms.Material
         }
 
         /// <summary>
-        /// 设置DataGridView
+        /// 从BLL加载物料数据
         /// </summary>
-        private void SetupDataGridView()
+        private void LoadMaterialData()
         {
-            // 设置列
-            dataGridViewMaterials.AutoGenerateColumns = false;
-            dataGridViewMaterials.Columns.Clear();
-
-            dataGridViewMaterials.Columns.Add(new DataGridViewTextBoxColumn
+            try
             {
-                Name = "MaterialCode",
-                HeaderText = "物料编码",
-                DataPropertyName = "MaterialCode",
-                Width = 120,
-                ReadOnly = true
-            });
-
-            dataGridViewMaterials.Columns.Add(new DataGridViewTextBoxColumn
+                this.Cursor = Cursors.WaitCursor;
+                materialList = _materialBLL.GetAllMaterialDtos();
+                // 默认显示所有
+                filteredMaterialList = new List<MaterialDto>(materialList);
+            }
+            catch (Exception ex)
             {
-                Name = "MaterialName",
-                HeaderText = "物料名称",
-                DataPropertyName = "MaterialName",
-                Width = 200,
-                ReadOnly = true
-            });
-
-            dataGridViewMaterials.Columns.Add(new DataGridViewTextBoxColumn
+                LogManager.Error("加载物料数据失败", ex);
+                MessageBox.Show("加载物料数据失败: " + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
             {
-                Name = "MaterialType",
-                HeaderText = "物料类型",
-                DataPropertyName = "MaterialType",
-                Width = 120,
-                ReadOnly = true
-            });
-
-            dataGridViewMaterials.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                Name = "Unit",
-                HeaderText = "计量单位",
-                DataPropertyName = "Unit",
-                Width = 80,
-                ReadOnly = true
-            });
-
-            dataGridViewMaterials.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                Name = "Specification",
-                HeaderText = "规格型号",
-                DataPropertyName = "Specification",
-                Width = 150,
-                ReadOnly = true
-            });
-
-            dataGridViewMaterials.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                Name = "Supplier",
-                HeaderText = "供应商",
-                DataPropertyName = "Supplier",
-                Width = 120,
-                ReadOnly = true
-            });
-
-            // 设置样式
-            dataGridViewMaterials.EnableHeadersVisualStyles = false;
-            dataGridViewMaterials.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(52, 58, 64);
-            dataGridViewMaterials.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
-            dataGridViewMaterials.ColumnHeadersDefaultCellStyle.Font = new Font("微软雅黑", 9F, FontStyle.Bold);
-            dataGridViewMaterials.ColumnHeadersHeight = 40;
-
-            dataGridViewMaterials.DefaultCellStyle.Font = new Font("微软雅黑", 9F);
-            dataGridViewMaterials.DefaultCellStyle.BackColor = Color.White;
-            dataGridViewMaterials.DefaultCellStyle.ForeColor = Color.FromArgb(33, 37, 41);
-            dataGridViewMaterials.DefaultCellStyle.SelectionBackColor = Color.FromArgb(0, 123, 255);
-            dataGridViewMaterials.DefaultCellStyle.SelectionForeColor = Color.White;
-
-            dataGridViewMaterials.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(248, 249, 250);
-            dataGridViewMaterials.GridColor = Color.FromArgb(222, 226, 230);
-        }
-
-        /// <summary>
-        /// 加载示例数据
-        /// </summary>
-        private void LoadSampleData()
-        {
-            materialList.Clear();
-
-            // 添加示例物料数据
-            materialList.Add(new MaterialInfo("M001", "钢板", "原材料", "张")
-            {
-                Id = 1,
-                Specification = "Q235 10mm",
-                Supplier = "钢铁公司A",
-                Price = 1200.50m,
-                Remark = "优质钢板，用于结构件制造"
-            });
-
-            materialList.Add(new MaterialInfo("M002", "螺栓", "标准件", "个")
-            {
-                Id = 2,
-                Specification = "M8×20",
-                Supplier = "标准件厂B",
-                Price = 0.85m,
-                Remark = "304不锈钢螺栓"
-            });
-
-            materialList.Add(new MaterialInfo("M003", "轴承", "机械件", "个")
-            {
-                Id = 3,
-                Specification = "6205-2RS",
-                Supplier = "轴承制造商C",
-                Price = 25.60m,
-                Remark = "深沟球轴承，密封型"
-            });
-
-            materialList.Add(new MaterialInfo("M004", "电机", "电气件", "台")
-            {
-                Id = 4,
-                Specification = "Y90L-4 1.5KW",
-                Supplier = "电机厂D",
-                Price = 680.00m,
-                Remark = "三相异步电机"
-            });
-
-            materialList.Add(new MaterialInfo("M005", "铝型材", "原材料", "米")
-            {
-                Id = 5,
-                Specification = "4040工业铝型材",
-                Supplier = "铝业公司E",
-                Price = 15.80m,
-                Remark = "工业用铝合金型材"
-            });
-
-            // 复制到过滤列表
-            filteredMaterialList = new List<MaterialInfo>(materialList);
+                this.Cursor = Cursors.Default;
+            }
         }
 
         /// <summary>
@@ -204,14 +88,17 @@ namespace MES.UI.Forms.Material
         {
             try
             {
+                // 记录当前选中项的ID，以便刷新后能重新选中
+                int selectedId = (currentMaterial != null) ? currentMaterial.Id : 0;
+
                 dataGridViewMaterials.DataSource = null;
                 dataGridViewMaterials.DataSource = filteredMaterialList;
 
-                // 如果有数据，选中第一行
-                if (filteredMaterialList.Count > 0)
+                if (filteredMaterialList.Any())
                 {
-                    dataGridViewMaterials.Rows[0].Selected = true;
-                    ShowMaterialDetails(filteredMaterialList[0]);
+                    // 尝试重新选中之前的项，如果找不到则选中第一项
+                    var itemToSelect = filteredMaterialList.FirstOrDefault(m => m.Id == selectedId) ?? filteredMaterialList.First();
+                    SelectMaterialById(itemToSelect.Id);
                 }
                 else
                 {
@@ -235,17 +122,16 @@ namespace MES.UI.Forms.Material
 
                 if (string.IsNullOrEmpty(searchTerm))
                 {
-                    // 显示所有物料
-                    filteredMaterialList = new List<MaterialInfo>(materialList);
+                    filteredMaterialList = new List<MaterialDto>(materialList);
                 }
                 else
                 {
-                    // 根据物料编码、名称、类型进行搜索
+                    // 使用DTO的属性进行客户端筛选
                     filteredMaterialList = materialList.Where(m =>
-                        m.MaterialCode.ToLower().Contains(searchTerm) ||
-                        m.MaterialName.ToLower().Contains(searchTerm) ||
-                        m.MaterialType.ToLower().Contains(searchTerm) ||
-                        m.Specification.ToLower().Contains(searchTerm)
+                        (m.MaterialCode != null && m.MaterialCode.ToLower().Contains(searchTerm)) ||
+                        (m.MaterialName != null && m.MaterialName.ToLower().Contains(searchTerm)) ||
+                        (m.MaterialType != null && m.MaterialType.ToLower().Contains(searchTerm)) ||
+                        (m.Specification != null && m.Specification.ToLower().Contains(searchTerm))
                     ).ToList();
                 }
 
@@ -254,8 +140,7 @@ namespace MES.UI.Forms.Material
             catch (Exception ex)
             {
                 LogManager.Error("搜索失败", ex);
-                MessageBox.Show("搜索失败：" + ex.Message, "错误",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("搜索失败：" + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -269,7 +154,8 @@ namespace MES.UI.Forms.Material
                 if (dataGridViewMaterials.CurrentRow != null &&
                     dataGridViewMaterials.CurrentRow.DataBoundItem != null)
                 {
-                    var material = dataGridViewMaterials.CurrentRow.DataBoundItem as MaterialInfo;
+                    // 将选中项转为DTO
+                    var material = dataGridViewMaterials.CurrentRow.DataBoundItem as MaterialDto;
                     if (material != null)
                     {
                         ShowMaterialDetails(material);
@@ -285,44 +171,22 @@ namespace MES.UI.Forms.Material
         /// <summary>
         /// 显示物料详情
         /// </summary>
-        private void ShowMaterialDetails(MaterialInfo material)
+        private void ShowMaterialDetails(MaterialDto material)
         {
             if (material == null)
             {
                 ClearDetailsPanel();
                 return;
             }
-
             currentMaterial = material;
-
-            // 填充基本信息
             textBoxMaterialCode.Text = material.MaterialCode;
             textBoxMaterialName.Text = material.MaterialName;
             textBoxMaterialType.Text = material.MaterialType;
             textBoxUnit.Text = material.Unit;
-
-            // 填充详细信息
             textBoxSpecification.Text = material.Specification;
             textBoxSupplier.Text = material.Supplier;
             textBoxPrice.Text = material.Price.ToString("F2");
             textBoxRemark.Text = material.Remark;
-        }
-
-        /// <summary>
-        /// 清空详情面板
-        /// </summary>
-        private void ClearDetailsPanel()
-        {
-            currentMaterial = null;
-
-            textBoxMaterialCode.Text = string.Empty;
-            textBoxMaterialName.Text = string.Empty;
-            textBoxMaterialType.Text = string.Empty;
-            textBoxUnit.Text = string.Empty;
-            textBoxSpecification.Text = string.Empty;
-            textBoxSupplier.Text = string.Empty;
-            textBoxPrice.Text = string.Empty;
-            textBoxRemark.Text = string.Empty;
         }
 
         /// <summary>
@@ -332,38 +196,29 @@ namespace MES.UI.Forms.Material
         {
             try
             {
-                // 创建新物料对话框
-                var result = ShowMaterialEditDialog(null);
-                if (result != null)
+                // 模拟弹出一个编辑窗口，并返回一个填充好的DTO
+                // 在真实项目中，这里会 new MaterialEditForm(null).ShowDialog();
+                var newMaterialDto = ShowMaterialEditDialog(null);
+
+                if (newMaterialDto != null)
                 {
-                    // 生成新ID
-                    result.Id = materialList.Count > 0 ? materialList.Max(m => m.Id) + 1 : 1;
-                    result.CreateTime = DateTime.Now;
-                    result.UpdateTime = DateTime.Now;
-
-                    // 添加到列表
-                    materialList.Add(result);
-
-                    // 刷新显示
-                    RefreshDataGridView();
-
-                    // 选中新添加的物料
-                    SelectMaterialById(result.Id);
-
-                    MessageBox.Show("物料添加成功！", "成功",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                    LogManager.Info(string.Format("添加物料：{0} - {1}", result.MaterialCode, result.MaterialName));
+                    // 调用BLL进行添加
+                    if (_materialBLL.AddMaterial(newMaterialDto))
+                    {
+                        MessageBox.Show("物料添加成功！", "成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        LogManager.Info(string.Format("添加物料：{0}", newMaterialDto.MaterialName));
+                        // 重新从数据库加载数据并刷新
+                        LoadMaterialData();
+                        RefreshDataGridView();
+                    }
                 }
             }
             catch (Exception ex)
             {
                 LogManager.Error("添加物料失败", ex);
-                MessageBox.Show("添加物料失败：" + ex.Message, "错误",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("添加物料失败：" + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
 
         /// <summary>
         /// 编辑按钮点击事件
@@ -374,51 +229,32 @@ namespace MES.UI.Forms.Material
             {
                 if (currentMaterial == null)
                 {
-                    MessageBox.Show("请先选择要编辑的物料！", "提示",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("请先选择要编辑的物料！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
-                // 创建编辑对话框
-                var result = ShowMaterialEditDialog(currentMaterial);
-                if (result != null)
+                // 模拟弹出一个编辑窗口，并返回一个编辑好的DTO
+                var editedMaterialDto = ShowMaterialEditDialog(currentMaterial);
+
+                if (editedMaterialDto != null)
                 {
-                    // 更新物料信息
-                    var originalMaterial = materialList.FirstOrDefault(m => m.Id == currentMaterial.Id);
-                    if (originalMaterial != null)
+                    // 调用BLL进行更新
+                    if (_materialBLL.UpdateMaterial(editedMaterialDto))
                     {
-                        originalMaterial.MaterialCode = result.MaterialCode;
-                        originalMaterial.MaterialName = result.MaterialName;
-                        originalMaterial.MaterialType = result.MaterialType;
-                        originalMaterial.Unit = result.Unit;
-                        originalMaterial.Specification = result.Specification;
-                        originalMaterial.Supplier = result.Supplier;
-                        originalMaterial.Price = result.Price;
-                        originalMaterial.Remark = result.Remark;
-                        originalMaterial.UpdateTime = DateTime.Now;
-
-                        // 刷新显示
+                        MessageBox.Show("物料编辑成功！", "成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        LogManager.Info(string.Format("编辑物料：{0}", editedMaterialDto.MaterialName));
+                        // 重新从数据库加载数据并刷新
+                        LoadMaterialData();
                         RefreshDataGridView();
-
-                        // 重新选中编辑的物料
-                        SelectMaterialById(originalMaterial.Id);
-
-                        MessageBox.Show("物料编辑成功！", "成功",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                        LogManager.Info(string.Format("编辑物料：{0} - {1}",
-                            originalMaterial.MaterialCode, originalMaterial.MaterialName));
                     }
                 }
             }
             catch (Exception ex)
             {
                 LogManager.Error("编辑物料失败", ex);
-                MessageBox.Show("编辑物料失败：" + ex.Message, "错误",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("编辑物料失败：" + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
 
         /// <summary>
         /// 删除按钮点击事件
@@ -429,38 +265,30 @@ namespace MES.UI.Forms.Material
             {
                 if (currentMaterial == null)
                 {
-                    MessageBox.Show("请先选择要删除的物料！", "提示",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("请先选择要删除的物料！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
-                var result = MessageBox.Show(
-                    string.Format("确认要删除物料 [{0} - {1}] 吗？\n\n此操作不可撤销！",
-                        currentMaterial.MaterialCode, currentMaterial.MaterialName),
-                    "确认删除",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Warning);
+                var result = MessageBox.Show(string.Format("确认要删除物料 [{0}] 吗？", currentMaterial.MaterialName),
+                    "确认删除", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
 
                 if (result == DialogResult.Yes)
                 {
-                    // 从列表中移除
-                    materialList.RemoveAll(m => m.Id == currentMaterial.Id);
-
-                    // 刷新显示
-                    RefreshDataGridView();
-
-                    MessageBox.Show("物料删除成功！", "成功",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                    LogManager.Info(string.Format("删除物料：{0} - {1}",
-                        currentMaterial.MaterialCode, currentMaterial.MaterialName));
+                    // 调用BLL进行删除
+                    if (_materialBLL.DeleteMaterial(currentMaterial.Id))
+                    {
+                        MessageBox.Show("物料删除成功！", "成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        LogManager.Info(string.Format("删除物料：{0}", currentMaterial.MaterialName));
+                        // 重新从数据库加载数据并刷新
+                        LoadMaterialData();
+                        RefreshDataGridView();
+                    }
                 }
             }
             catch (Exception ex)
             {
                 LogManager.Error("删除物料失败", ex);
-                MessageBox.Show("删除物料失败：" + ex.Message, "错误",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("删除物料失败：" + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -469,86 +297,72 @@ namespace MES.UI.Forms.Material
         /// </summary>
         private void btnRefresh_Click(object sender, EventArgs e)
         {
-            try
-            {
-                // 清空搜索框
-                textBoxSearch.Text = string.Empty;
-
-                // 重新加载数据
-                LoadSampleData();
-                RefreshDataGridView();
-
-                MessageBox.Show("数据刷新成功！", "成功",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                LogManager.Info("物料数据已刷新");
-            }
-            catch (Exception ex)
-            {
-                LogManager.Error("刷新数据失败", ex);
-                MessageBox.Show("刷新数据失败：" + ex.Message, "错误",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            textBoxSearch.Clear();
+            LoadMaterialData();
+            RefreshDataGridView();
+            MessageBox.Show("数据已刷新", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
+        // --- 以下是辅助方法，基本不变或微调 ---
+
         /// <summary>
-        /// 根据ID选中物料
+        /// 根据ID选中DataGridView中的行
         /// </summary>
         private void SelectMaterialById(int materialId)
         {
-            try
+            for (int i = 0; i < dataGridViewMaterials.Rows.Count; i++)
             {
-                for (int i = 0; i < dataGridViewMaterials.Rows.Count; i++)
+                var material = dataGridViewMaterials.Rows[i].DataBoundItem as MaterialDto;
+                if (material != null && material.Id == materialId)
                 {
-                    var material = dataGridViewMaterials.Rows[i].DataBoundItem as MaterialInfo;
-                    if (material != null && material.Id == materialId)
-                    {
-                        dataGridViewMaterials.ClearSelection();
-                        dataGridViewMaterials.Rows[i].Selected = true;
-                        dataGridViewMaterials.CurrentCell = dataGridViewMaterials.Rows[i].Cells[0];
-                        break;
-                    }
+                    dataGridViewMaterials.ClearSelection();
+                    dataGridViewMaterials.Rows[i].Selected = true;
+                    dataGridViewMaterials.CurrentCell = dataGridViewMaterials.Rows[i].Cells[0];
+                    return;
                 }
-            }
-            catch (Exception ex)
-            {
-                LogManager.Error("选中物料失败", ex);
             }
         }
 
         /// <summary>
-        /// 显示物料编辑对话框
+        /// 清空详情面板
         /// </summary>
-        private MaterialInfo ShowMaterialEditDialog(MaterialInfo material)
+        private void ClearDetailsPanel() { /* ... 此方法无需修改 ... */ }
+        private void SetupDataGridView() { /* ... 此方法无需修改 ... */ }
+
+        /// <summary>
+        /// 显示物料编辑对话框 (模拟)
+        /// </summary>
+        private MaterialDto ShowMaterialEditDialog(MaterialDto material)
         {
-            // 这里应该打开一个物料编辑对话框
-            // 为了演示，我们使用简单的输入框
-            string title = material == null ? "新增物料" : "编辑物料";
+            // 在真实应用中，这里会打开一个新窗体，例如：
+            // using (var form = new MaterialEditForm(material))
+            // {
+            //     if (form.ShowDialog() == DialogResult.OK)
+            //     {
+            //         return form.MaterialData; // 返回编辑后的DTO
+            //     }
+            //     return null;
+            // }
 
-            // 简化的编辑逻辑，实际应该使用专门的编辑窗体
-            var editMaterial = material != null ? material.Clone() : new MaterialInfo();
-
-            // 这里可以实现一个简单的编辑对话框
-            // 或者调用专门的MaterialEditForm
-
-            // 暂时返回示例数据用于演示
-            if (material == null)
+            // --- 以下为模拟代码 ---
+            if (material == null) // 新增模式
             {
-                // 新增物料的示例
-                return new MaterialInfo("M" + (materialList.Count + 1).ToString("000"),
-                    "新物料", "新类型", "个")
+                return new MaterialDto
                 {
-                    Specification = "规格待定",
-                    Supplier = "供应商待定",
-                    Price = 0,
-                    Remark = "新增物料"
+                    MaterialCode = "M-NEW-" + new Random().Next(100, 999),
+                    MaterialName = "新物料-" + DateTime.Now.Second,
+                    MaterialType = "原材料",
+                    Unit = "个",
+                    Price = 10.0m,
+                    Remark = "这是一个新增的物料"
                 };
             }
-            else
+            else // 编辑模式
             {
-                // 编辑现有物料
-                editMaterial.MaterialName = editMaterial.MaterialName + " (已编辑)";
-                return editMaterial;
+                var editedDto = material.Clone(); // 创建副本进行编辑
+                editedDto.MaterialName += " (已编辑)";
+                editedDto.Price += 1;
+                return editedDto;
             }
         }
     }

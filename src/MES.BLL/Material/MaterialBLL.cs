@@ -6,9 +6,6 @@ using MES.Models.Material;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 
 namespace MES.BLL.Material
 {
@@ -21,10 +18,8 @@ namespace MES.BLL.Material
             _materialDAL = new MaterialDAL();
         }
 
-        /// <summary>
-        /// 获取所有物料信息
-        /// </summary>
-        /// <returns>物料信息列表</returns>
+        #region 内部方法 (使用Model)
+
         public List<MaterialInfo> GetAllMaterials()
         {
             try
@@ -38,73 +33,25 @@ namespace MES.BLL.Material
             }
         }
 
-        public List<MaterialInfo> SearchByName(string materialName)
-        {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(materialName))
-                    throw new ArgumentException("物料名称不能为空", "materialName");
-
-                return _materialDAL.SearchByName(materialName);
-            }
-            catch (Exception ex)
-            {
-                LogManager.Error(string.Format("根据名称搜索物料信息失败，名称: {0}", materialName), ex);
-                throw new MESException(string.Format("搜索物料信息失败，名称: {0}", materialName), ex);
-            }
-
-        }
-
-        /// <summary>
-        /// 根据ID获取物料信息
-        /// </summary>
-        /// <param name="id">物料ID</param>
-        /// <returns>物料信息，如果未找到则返回null</returns>
-        public MaterialInfo GetMaterialById(int id)
-        {
-            try
-            {
-                return _materialDAL.GetById(id);
-            }
-            catch (Exception ex)
-            {
-                LogManager.Error(string.Format("根据ID获取物料信息失败，ID: {0}", id), ex);
-                throw new MESException(string.Format("获取物料信息失败，ID: {0}", id), ex);
-            }
-        }
-
-        /// <summary>
-        /// 添加新的物料信息
-        /// </summary>
-        /// <param name="material">物料信息对象</param>
-        /// <returns>添加是否成功</returns>
         public bool AddMaterial(MaterialInfo material)
         {
             try
             {
-                // 1. 参数验证
-                if (material == null)
-                    throw new ArgumentNullException("material");
+                // 参数验证
+                if (material == null) throw new ArgumentNullException("material");
+                if (string.IsNullOrWhiteSpace(material.MaterialCode)) throw new MESException("物料编码不能为空");
+                if (string.IsNullOrWhiteSpace(material.MaterialName)) throw new MESException("物料名称不能为空");
 
-                if (string.IsNullOrWhiteSpace(material.MaterialCode))
-                    throw new MESException("物料编码不能为空");
-
-                if (string.IsNullOrWhiteSpace(material.MaterialName))
-                    throw new MESException("物料名称不能为空");
-
-                // 2. 业务规则验证
+                // 业务规则验证
                 if (_materialDAL.ExistsByMaterialCode(material.MaterialCode))
                     throw new MESException(string.Format("物料编码 {0} 已存在", material.MaterialCode));
 
-                // 3. 数据完整性检查
-                if (material.MinStock.HasValue && material.MaxStock.HasValue &&
-                    material.MinStock > material.MaxStock)
+                if (material.MinStock.HasValue && material.MaxStock.HasValue && material.MinStock > material.MaxStock)
                     throw new MESException("最小库存不能大于最大库存");
 
-                // 4. 设置默认值
+                // 设置默认值
                 material.CreateUserName = material.CreateUserName ?? "system";
 
-                // 5. 执行添加操作
                 return _materialDAL.Add(material);
             }
             catch (Exception ex)
@@ -114,16 +61,14 @@ namespace MES.BLL.Material
             }
         }
 
-        /// <summary>
-        /// 更新物料信息
-        /// </summary>
-        /// <param name="material">物料信息对象</param>
-        /// <returns>更新是否成功</returns>
         public bool UpdateMaterial(MaterialInfo material)
         {
             try
             {
-                // 这里可以添加业务逻辑验证
+                // 业务逻辑验证
+                if (material == null) return false;
+                if (_materialDAL.GetById(material.Id) == null) throw new MESException("待更新的物料不存在");
+
                 return _materialDAL.Update(material);
             }
             catch (Exception ex)
@@ -133,11 +78,10 @@ namespace MES.BLL.Material
             }
         }
 
-        /// <summary>
-        /// 删除物料信息（逻辑删除）
-        /// </summary>
-        /// <param name="id">物料ID</param>
-        /// <returns>删除是否成功</returns>
+        #endregion
+
+        #region 接口实现 (面向UI，使用DTO)
+
         public bool DeleteMaterial(int id)
         {
             try
@@ -151,36 +95,88 @@ namespace MES.BLL.Material
             }
         }
 
+        public List<MaterialDto> GetAllMaterialDtos()
+        {
+            var materialList = this.GetAllMaterials();
+            // 使用完整的转换方法
+            return materialList.Select(ConvertToDto).ToList();
+        }
 
-        // 添加私有方法
+        public bool AddMaterial(MaterialDto materialDto)
+        {
+            var materialModel = ConvertToModel(materialDto);
+            return this.AddMaterial(materialModel);
+        }
+
+        public bool UpdateMaterial(MaterialDto materialDto)
+        {
+            var materialModel = ConvertToModel(materialDto);
+            return this.UpdateMaterial(materialModel);
+        }
+
+        #endregion
+
+        #region 私有转换方法
+
+        /// <summary>
+        /// 将Model转换为DTO
+        /// </summary>
         private MaterialDto ConvertToDto(MaterialInfo material)
         {
+            if (material == null) return null;
             return new MaterialDto
             {
                 Id = material.Id,
                 MaterialCode = material.MaterialCode,
                 MaterialName = material.MaterialName,
-                // ... 其他属性
+                MaterialType = material.MaterialType,
+                Specification = material.Specification,
+                Unit = material.Unit,
+                Category = material.Category,
+                Supplier = material.Supplier,
+                StandardCost = material.StandardCost,
+                SafetyStock = material.SafetyStock,
+                MinStock = material.MinStock,
+                MaxStock = material.MaxStock,
+                StockQuantity = material.StockQuantity,
+                LeadTime = material.LeadTime,
+                Status = material.Status,
+                // 根据业务逻辑，Price可能来自StandardCost
+                Price = material.StandardCost.HasValue ? material.StandardCost.Value : 0,
+                Remark = material.Remark
             };
         }
 
         /// <summary>
-        /// 获取所有物料的DTO对象列表
+        /// 将DTO转换为Model
         /// </summary>
-        /// <returns>物料DTO列表</returns>
-        public List<MaterialDto> GetAllMaterialDtos()
+        private MaterialInfo ConvertToModel(MaterialDto dto)
         {
-            return GetAllMaterials().Select(ConvertToDto).ToList();
+            if (dto == null) return null;
+
+            // 如果是更新操作，最好先获取原实体，再用DTO覆盖，这里简化处理
+            return new MaterialInfo
+            {
+                Id = dto.Id,
+                MaterialCode = dto.MaterialCode,
+                MaterialName = dto.MaterialName,
+                MaterialType = dto.MaterialType,
+                Specification = dto.Specification,
+                Unit = dto.Unit,
+                Category = dto.Category,
+                Supplier = dto.Supplier,
+                StandardCost = dto.StandardCost,
+                SafetyStock = dto.SafetyStock,
+                MinStock = dto.MinStock,
+                MaxStock = dto.MaxStock,
+                StockQuantity = dto.StockQuantity,
+                LeadTime = dto.LeadTime,
+                Status = dto.Status,
+                Remark = dto.Remark
+                // BaseModel中的字段（如CreateTime, UpdateTime）由DAL或BLL在操作时自动填充
+            };
         }
 
-        /// <summary>
-        /// 删除物料信息（逻辑删除）
-        /// </summary>
-        /// <param name="id">物料ID</param>
-        /// <returns>删除是否成功</returns>
-        public List<MaterialDto> SearchMaterialDtosByName(string name)
-        {
-            return SearchByName(name).Select(ConvertToDto).ToList();
-        }
+        #endregion
     }
 }
