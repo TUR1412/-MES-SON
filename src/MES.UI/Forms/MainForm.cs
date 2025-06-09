@@ -7,6 +7,7 @@ using MES.Common.Configuration;
 using MES.UI.Forms.Material;
 using MES.UI.Forms.Production;
 using MES.UI.Forms.SystemManagement;
+using MES.UI.Forms.Workshop;
 // using MES.UI.Framework.Themes;
 // using MES.UI.Framework.Utilities;
 // using MES.UI.Framework.Controls;
@@ -894,9 +895,9 @@ namespace MES.UI.Forms
         private void OpenUserPermissionForm() { ShowUserPermissionForm(); }
 
         // S成员负责实现的车间管理模块
-        private void OpenWorkshopOperationForm() { OpenWorkshopManagementForm(); }
-        private void OpenWIPForm() { ShowNotImplemented("在制品管理"); }
-        private void OpenEquipmentForm() { ShowNotImplemented("设备管理"); }
+        private void OpenWorkshopOperationForm() { ShowWorkshopOperationForm(); }
+        private void OpenWIPForm() { ShowWIPManagementForm(); }
+        private void OpenEquipmentForm() { ShowEquipmentStatusForm(); }
 
         /// <summary>
         /// 打开车间管理窗体
@@ -1182,6 +1183,63 @@ namespace MES.UI.Forms
         {
             ProductionExecutionControlForm executionForm = new ProductionExecutionControlForm();
             executionForm.Show();
+        }
+
+        /// <summary>
+        /// 显示车间作业管理窗体
+        /// </summary>
+        private void ShowWorkshopOperationForm()
+        {
+            try
+            {
+                var workshopOperationForm = new WorkshopOperationForm();
+                workshopOperationForm.Show();
+                LogManager.Info("打开车间作业管理窗体");
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("打开车间作业管理窗体失败", ex);
+                MessageBox.Show(string.Format("打开车间作业管理窗体失败：{0}", ex.Message), "错误",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// 显示在制品管理窗体
+        /// </summary>
+        private void ShowWIPManagementForm()
+        {
+            try
+            {
+                var wipForm = new WIPManagementForm();
+                wipForm.Show();
+                LogManager.Info("打开在制品管理窗体");
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("打开在制品管理窗体失败", ex);
+                MessageBox.Show(string.Format("打开在制品管理窗体失败：{0}", ex.Message), "错误",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// 显示设备状态管理窗体
+        /// </summary>
+        private void ShowEquipmentStatusForm()
+        {
+            try
+            {
+                var equipmentForm = new EquipmentStatusForm();
+                equipmentForm.Show();
+                LogManager.Info("打开设备状态管理窗体");
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("打开设备状态管理窗体失败", ex);
+                MessageBox.Show(string.Format("打开设备状态管理窗体失败：{0}", ex.Message), "错误",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
         /// <summary>
         /// 显示关于对话框
