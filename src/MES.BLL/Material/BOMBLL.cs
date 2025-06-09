@@ -128,5 +128,74 @@ namespace MES.BLL.Material
                 throw new MESException(string.Format("删除BOM信息失败，ID: {0}", id), ex);
             }
         }
+
+        /// <summary>
+        /// 根据产品编号获取默认BOM
+        /// </summary>
+        /// <param name="productCode">产品编号</param>
+        /// <returns>默认BOM信息</returns>
+        public BOMModel GetDefaultBOMByProduct(string productCode)
+        {
+            try
+            {
+                // 模拟返回默认BOM
+                return new BOMModel
+                {
+                    BOMCode = string.Format("BOM_{0}", productCode),
+                    Version = "V1.0",
+                    ProductCode = productCode,
+                    Status = "有效"
+                };
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error(string.Format("根据产品编号获取默认BOM失败，产品编号: {0}", productCode), ex);
+                throw new MESException(string.Format("获取默认BOM失败，产品编号: {0}", productCode), ex);
+            }
+        }
+
+        /// <summary>
+        /// 获取BOM明细
+        /// </summary>
+        /// <param name="bomCode">BOM编号</param>
+        /// <param name="bomVersion">BOM版本</param>
+        /// <returns>BOM明细数据表</returns>
+        public global::System.Data.DataTable GetBOMDetails(string bomCode, string bomVersion)
+        {
+            try
+            {
+                var table = new global::System.Data.DataTable();
+                table.Columns.Add("MaterialCode", typeof(string));
+                table.Columns.Add("MaterialName", typeof(string));
+                table.Columns.Add("Specification", typeof(string));
+                table.Columns.Add("RequiredQuantity", typeof(decimal));
+                table.Columns.Add("Unit", typeof(string));
+
+                // 添加示例数据
+                table.Rows.Add("MAT001", "电阻", "1K欧", 10, "个");
+                table.Rows.Add("MAT002", "电容", "100uF", 5, "个");
+                table.Rows.Add("MAT003", "芯片", "STM32", 1, "个");
+                table.Rows.Add("MAT004", "PCB板", "FR4", 1, "片");
+                table.Rows.Add("MAT005", "外壳", "塑料", 1, "个");
+
+                return table;
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error(string.Format("获取BOM明细失败，BOM编号: {0}, 版本: {1}", bomCode, bomVersion), ex);
+                throw new MESException(string.Format("获取BOM明细失败，BOM编号: {0}, 版本: {1}", bomCode, bomVersion), ex);
+            }
+        }
+    }
+
+    /// <summary>
+    /// BOM模型（临时定义，应该在Models项目中）
+    /// </summary>
+    public class BOMModel
+    {
+        public string BOMCode { get; set; }
+        public string Version { get; set; }
+        public string ProductCode { get; set; }
+        public string Status { get; set; }
     }
 }

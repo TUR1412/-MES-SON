@@ -34,7 +34,7 @@ namespace MES.DAL.Core
                 if (string.IsNullOrEmpty(connectionString))
                 {
                     // 默认连接字符串（MySQL）
-                    connectionString = "Server=localhost;Database=MES_DB;Uid=root;Pwd=123456;CharSet=utf8mb4;SslMode=none;";
+                    connectionString = "Server=localhost;Database=mes_db;Uid=root;Pwd=Qwe.123;CharSet=utf8mb4;SslMode=none;";
                     LogManager.Warning("未找到配置的数据库连接字符串，使用默认MySQL连接字符串");
                 }
 

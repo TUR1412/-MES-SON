@@ -41,7 +41,7 @@ namespace MES.DAL.Material
         /// <returns>MaterialInfo实体对象</returns>
         protected override MaterialInfo MapRowToEntity(DataRow row)
         {
-            return new MaterialInfo
+            var entity = new MaterialInfo
             {
                 Id = Convert.ToInt32(row["id"]),
                 MaterialCode = row["material_code"] != DBNull.Value ? row["material_code"].ToString() : null,
@@ -50,21 +50,31 @@ namespace MES.DAL.Material
                 Category = row["category"] != DBNull.Value ? row["category"].ToString() : null,
                 Specification = row["specification"] != DBNull.Value ? row["specification"].ToString() : null,
                 Unit = row["unit"] != DBNull.Value ? row["unit"].ToString() : null,
-                StandardCost = row["standard_cost"] != DBNull.Value ? Convert.ToDecimal(row["standard_cost"]) : 0,
-                SafetyStock = row["safety_stock"] != DBNull.Value ? Convert.ToDecimal(row["safety_stock"]) : 0,
-                MinStock = row["min_stock"] != DBNull.Value ? Convert.ToDecimal(row["min_stock"]) : 0,
-                MaxStock = row["max_stock"] != DBNull.Value ? Convert.ToDecimal(row["max_stock"]) : 0,
-                StockQuantity = row["stock_quantity"] != DBNull.Value ? Convert.ToDecimal(row["stock_quantity"]) : 0,
+                StandardCost = row["standard_cost"] != DBNull.Value ? Convert.ToDecimal(row["standard_cost"]) : (decimal?)null,
+                SafetyStock = row["safety_stock"] != DBNull.Value ? Convert.ToDecimal(row["safety_stock"]) : (decimal?)null,
+                MinStock = row["min_stock"] != DBNull.Value ? Convert.ToDecimal(row["min_stock"]) : (decimal?)null,
+                MaxStock = row["max_stock"] != DBNull.Value ? Convert.ToDecimal(row["max_stock"]) : (decimal?)null,
+                StockQuantity = row["stock_quantity"] != DBNull.Value ? Convert.ToDecimal(row["stock_quantity"]) : (decimal?)null,
                 Supplier = row["supplier"] != DBNull.Value ? row["supplier"].ToString() : null,
-                LeadTime = row["lead_time"] != DBNull.Value ? Convert.ToInt32(row["lead_time"]) : 0,
+                LeadTime = row["lead_time"] != DBNull.Value ? Convert.ToInt32(row["lead_time"]) : (int?)null,
                 Status = Convert.ToBoolean(row["status"]),
+
+                Price = row.Table.Columns.Contains("price") && row["price"] != DBNull.Value ? Convert.ToDecimal(row["price"]) : 0,
+
                 CreateTime = Convert.ToDateTime(row["create_time"]),
                 CreateUserName = row["create_user_name"] != DBNull.Value ? row["create_user_name"].ToString() : null,
                 UpdateTime = row["update_time"] != DBNull.Value ? Convert.ToDateTime(row["update_time"]) : (DateTime?)null,
                 UpdateUserName = row["update_user_name"] != DBNull.Value ? row["update_user_name"].ToString() : null,
                 IsDeleted = Convert.ToBoolean(row["is_deleted"])
             };
+
+            // Remark 是从 BaseModel 继承的，需要单独赋值
+            entity.Remark = row.Table.Columns.Contains("remark") && row["remark"] != DBNull.Value ? row["remark"].ToString() : null;
+
+            return entity;
         }
+
+
 
         #endregion
 
@@ -84,9 +94,9 @@ namespace MES.DAL.Material
                     throw new ArgumentException("物料编码不能为空", "materialCode");
                 }
 
-                var materials = GetByCondition("material_code = @materialCode", 
+                var materials = GetByCondition("material_code = @materialCode",
                     DatabaseHelper.CreateParameter("@materialCode", materialCode));
-                
+
                 return materials.Count > 0 ? materials[0] : null;
             }
             catch (Exception ex)
@@ -110,7 +120,7 @@ namespace MES.DAL.Material
                     return new List<MaterialInfo>();
                 }
 
-                return GetByCondition("category = @category", 
+                return GetByCondition("category = @category",
                     DatabaseHelper.CreateParameter("@category", category));
             }
             catch (Exception ex)
@@ -154,13 +164,13 @@ namespace MES.DAL.Material
             {
                 string sql = "SELECT DISTINCT category FROM material_info WHERE is_deleted = 0 AND category IS NOT NULL ORDER BY category";
                 var dataTable = DatabaseHelper.ExecuteQuery(sql);
-                
+
                 var categories = new List<string>();
                 foreach (DataRow row in dataTable.Rows)
                 {
                     categories.Add(row["category"].ToString());
                 }
-                
+
                 return categories;
             }
             catch (Exception ex)
@@ -226,13 +236,13 @@ namespace MES.DAL.Material
                 };
 
                 int rowsAffected = DatabaseHelper.ExecuteNonQuery(sql, parameters);
-                
+
                 bool success = rowsAffected > 0;
                 if (success)
                 {
                     LogManager.Info(string.Format("物料库存更新成功，物料ID: {0}, 库存: {1}", materialId, stockQuantity));
                 }
-                
+
                 return success;
             }
             catch (Exception ex)
@@ -293,13 +303,16 @@ namespace MES.DAL.Material
         /// <returns>操作是否成功</returns>
         protected override bool BuildInsertSql(MaterialInfo entity, out string sql, out MySqlParameter[] parameters)
         {
+            // --- 核心修复点 2: 在 INSERT 语句中加入 price 和 remark ---
             sql = @"INSERT INTO material_info
                           (material_code, material_name, material_type, category, specification, unit,
                            standard_cost, safety_stock, min_stock, max_stock, supplier, lead_time, status,
+                           price, remark,
                            create_time, create_user_name, is_deleted)
                           VALUES
                           (@materialCode, @materialName, @materialType, @category, @specification, @unit,
                            @standardCost, @safetyStock, @minStock, @maxStock, @supplier, @leadTime, @status,
+                           @price, @remark,
                            @createTime, @createUserName, @isDeleted)";
 
             parameters = new[]
@@ -317,11 +330,13 @@ namespace MES.DAL.Material
                 DatabaseHelper.CreateParameter("@supplier", entity.Supplier),
                 DatabaseHelper.CreateParameter("@leadTime", entity.LeadTime),
                 DatabaseHelper.CreateParameter("@status", entity.Status),
+                // --- 添加 price 和 remark 参数 ---
+                DatabaseHelper.CreateParameter("@price", entity.Price),
+                DatabaseHelper.CreateParameter("@remark", entity.Remark),
                 DatabaseHelper.CreateParameter("@createTime", entity.CreateTime),
                 DatabaseHelper.CreateParameter("@createUserName", entity.CreateUserName),
                 DatabaseHelper.CreateParameter("@isDeleted", entity.IsDeleted)
             };
-
             return true;
         }
 
@@ -340,9 +355,11 @@ namespace MES.DAL.Material
                           standard_cost = @standardCost, safety_stock = @safetyStock,
                           min_stock = @minStock, max_stock = @maxStock, supplier = @supplier,
                           lead_time = @leadTime, status = @status,
+                          price = @price, remark = @remark,
                           update_time = @updateTime, update_user_name = @updateUserName
                           WHERE id = @id AND is_deleted = 0";
 
+            // --- 核心修复：为所有在UPDATE语句中使用的参数提供值 ---
             parameters = new[]
             {
                 DatabaseHelper.CreateParameter("@materialCode", entity.MaterialCode),
@@ -358,9 +375,11 @@ namespace MES.DAL.Material
                 DatabaseHelper.CreateParameter("@supplier", entity.Supplier),
                 DatabaseHelper.CreateParameter("@leadTime", entity.LeadTime),
                 DatabaseHelper.CreateParameter("@status", entity.Status),
+                DatabaseHelper.CreateParameter("@price", entity.Price),
+                DatabaseHelper.CreateParameter("@remark", entity.Remark),
                 DatabaseHelper.CreateParameter("@updateTime", entity.UpdateTime),
                 DatabaseHelper.CreateParameter("@updateUserName", entity.UpdateUserName),
-                DatabaseHelper.CreateParameter("@id", entity.Id)
+                DatabaseHelper.CreateParameter("@id", entity.Id) // WHERE子句中的ID参数
             };
 
             return true;

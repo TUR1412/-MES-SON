@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using MES.BLL.Equipment;
 using MES.DAL.Equipment;
 using MES.Models.Equipment;
 using MES.Common.Logging;

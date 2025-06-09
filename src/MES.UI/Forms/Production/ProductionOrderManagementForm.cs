@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using MES.Common.Logging;
 using MES.Models.Production;
+using MES.BLL.Production;
 
 namespace MES.UI.Forms.Production
 {
@@ -20,10 +21,12 @@ namespace MES.UI.Forms.Production
         private List<ProductionOrderInfo> orderList;
         private List<ProductionOrderInfo> filteredOrderList;
         private ProductionOrderInfo currentOrder;
+        private readonly IProductionOrderBLL _productionOrderBLL;
 
         public ProductionOrderManagementForm()
         {
             InitializeComponent();
+            _productionOrderBLL = new ProductionOrderBLL();
             InitializeForm();
         }
 
@@ -42,8 +45,8 @@ namespace MES.UI.Forms.Production
                 // 设置DataGridView
                 SetupDataGridView();
 
-                // 加载示例数据
-                LoadSampleData();
+                // 加载真实数据
+                LoadProductionOrderData();
 
                 // 刷新显示
                 RefreshDataGridView();
@@ -151,124 +154,36 @@ namespace MES.UI.Forms.Production
         }
 
         /// <summary>
-        /// 加载示例数据
+        /// 加载生产订单数据
         /// </summary>
-        private void LoadSampleData()
+        private void LoadProductionOrderData()
         {
-            orderList.Clear();
-
-            // 添加示例生产订单数据
-            orderList.Add(new ProductionOrderInfo
+            try
             {
-                Id = 1,
-                OrderNo = "PO202506080001",
-                ProductCode = "P001",
-                ProductName = "钢制支架",
-                Quantity = 100,
-                ActualQuantity = 85,
-                Unit = "个",
-                Status = "进行中",
-                Priority = "重要",
-                WorkshopId = 1,
-                WorkshopName = "机械加工车间",
-                ResponsiblePerson = "张工",
-                CustomerName = "ABC制造公司",
-                SalesOrderNumber = "SO202506080001",
-                PlanStartTime = DateTime.Now.AddDays(-5),
-                PlanEndTime = DateTime.Now.AddDays(2),
-                ActualStartTime = DateTime.Now.AddDays(-5),
-                Remarks = "优质钢材制作，要求精度高"
-            });
+                orderList.Clear();
 
-            orderList.Add(new ProductionOrderInfo
+                // 从BLL层获取真实数据
+                var orders = _productionOrderBLL.GetAllProductionOrders();
+                if (orders != null && orders.Count > 0)
+                {
+                    orderList.AddRange(orders);
+                }
+
+                // 复制到过滤列表
+                filteredOrderList = new List<ProductionOrderInfo>(orderList);
+
+                LogManager.Info(string.Format("成功加载生产订单数据，共 {0} 条记录", orderList.Count));
+            }
+            catch (Exception ex)
             {
-                Id = 2,
-                OrderNo = "PO202506080002",
-                ProductCode = "P002",
-                ProductName = "铝合金外壳",
-                Quantity = 200,
-                ActualQuantity = 0,
-                Unit = "个",
-                Status = "待开始",
-                Priority = "普通",
-                WorkshopId = 2,
-                WorkshopName = "冲压车间",
-                ResponsiblePerson = "李师傅",
-                CustomerName = "XYZ电子公司",
-                SalesOrderNumber = "SO202506080002",
-                PlanStartTime = DateTime.Now.AddDays(1),
-                PlanEndTime = DateTime.Now.AddDays(7),
-                Remarks = "表面需要阳极氧化处理"
-            });
+                LogManager.Error("加载生产订单数据失败", ex);
+                MessageBox.Show("加载生产订单数据失败：" + ex.Message, "错误",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-            orderList.Add(new ProductionOrderInfo
-            {
-                Id = 3,
-                OrderNo = "PO202506080003",
-                ProductCode = "P003",
-                ProductName = "精密齿轮",
-                Quantity = 50,
-                ActualQuantity = 50,
-                Unit = "个",
-                Status = "已完成",
-                Priority = "紧急",
-                WorkshopId = 1,
-                WorkshopName = "机械加工车间",
-                ResponsiblePerson = "王工",
-                CustomerName = "DEF机械公司",
-                SalesOrderNumber = "SO202506080003",
-                PlanStartTime = DateTime.Now.AddDays(-10),
-                PlanEndTime = DateTime.Now.AddDays(-3),
-                ActualStartTime = DateTime.Now.AddDays(-10),
-                ActualEndTime = DateTime.Now.AddDays(-3),
-                Remarks = "高精度要求，已按时完成"
-            });
-
-            orderList.Add(new ProductionOrderInfo
-            {
-                Id = 4,
-                OrderNo = "PO202506080004",
-                ProductCode = "P004",
-                ProductName = "电机外壳",
-                Quantity = 150,
-                ActualQuantity = 0,
-                Unit = "个",
-                Status = "已暂停",
-                Priority = "普通",
-                WorkshopId = 3,
-                WorkshopName = "装配车间",
-                ResponsiblePerson = "赵主管",
-                CustomerName = "GHI电机公司",
-                SalesOrderNumber = "SO202506080004",
-                PlanStartTime = DateTime.Now.AddDays(-2),
-                PlanEndTime = DateTime.Now.AddDays(5),
-                Remarks = "等待原材料到货，暂停生产"
-            });
-
-            orderList.Add(new ProductionOrderInfo
-            {
-                Id = 5,
-                OrderNo = "PO202506080005",
-                ProductCode = "P005",
-                ProductName = "不锈钢管件",
-                Quantity = 300,
-                ActualQuantity = 120,
-                Unit = "个",
-                Status = "进行中",
-                Priority = "重要",
-                WorkshopId = 2,
-                WorkshopName = "冲压车间",
-                ResponsiblePerson = "孙师傅",
-                CustomerName = "JKL管道公司",
-                SalesOrderNumber = "SO202506080005",
-                PlanStartTime = DateTime.Now.AddDays(-3),
-                PlanEndTime = DateTime.Now.AddDays(4),
-                ActualStartTime = DateTime.Now.AddDays(-3),
-                Remarks = "304不锈钢材质，防腐要求高"
-            });
-
-            // 复制到过滤列表
-            filteredOrderList = new List<ProductionOrderInfo>(orderList);
+                // 初始化空列表
+                orderList = new List<ProductionOrderInfo>();
+                filteredOrderList = new List<ProductionOrderInfo>();
+            }
         }
 
         /// <summary>
@@ -603,7 +518,7 @@ namespace MES.UI.Forms.Production
                 textBoxSearch.Text = string.Empty;
 
                 // 重新加载数据
-                LoadSampleData();
+                LoadProductionOrderData();
                 RefreshDataGridView();
 
                 MessageBox.Show("数据刷新成功！", "成功",

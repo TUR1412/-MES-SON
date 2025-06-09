@@ -6,7 +6,10 @@ using MES.Common.Logging;
 using MES.Common.Configuration;
 using MES.UI.Forms.Material;
 using MES.UI.Forms.Production;
+using MES.UI.Forms.WorkOrder;
+using MES.UI.Forms.Batch;
 using MES.UI.Forms.SystemManagement;
+using MES.UI.Forms.Workshop;
 // using MES.UI.Framework.Themes;
 // using MES.UI.Framework.Utilities;
 // using MES.UI.Framework.Controls;
@@ -271,6 +274,8 @@ namespace MES.UI.Forms
                     "产品物料清单管理");
                 materialNode.Nodes.Add(bomNode);
 
+
+
                 var processRouteNode = CreateTreeNode("⚙️ 工艺路线配置",
                     Color.FromArgb(60, 180, 85),
                     new Font("微软雅黑", 9, FontStyle.Regular),
@@ -285,7 +290,7 @@ namespace MES.UI.Forms
                 {
                     ForeColor = Color.FromArgb(0, 123, 255),
                     NodeFont = new Font("微软雅黑", 10, FontStyle.Bold),
-                    ToolTipText = "生产订单管理、执行控制、权限管理"
+                    ToolTipText = "生产订单管理、执行控制"
                 };
 
                 // 添加生产管理子节点
@@ -305,13 +310,19 @@ namespace MES.UI.Forms
                 };
                 productionNode.Nodes.Add(executionControlNode);
 
-                var userPermissionNode = new TreeNode("👥 用户权限管理")
-                {
-                    ForeColor = Color.FromArgb(20, 140, 255),
-                    NodeFont = new Font("微软雅黑", 9, FontStyle.Regular),
-                    ToolTipText = "系统用户权限配置"
-                };
-                productionNode.Nodes.Add(userPermissionNode);
+                // 添加工单管理子节点
+                var workOrderManagementNode = CreateTreeNode("📋 工单管理",
+                    Color.FromArgb(20, 140, 255),
+                    new Font("微软雅黑", 9, FontStyle.Regular),
+                    "工单创建、提交、取消等管理");
+                productionNode.Nodes.Add(workOrderManagementNode);
+
+                // 添加批次管理子节点
+                var batchManagementNode = CreateTreeNode("📦 批次管理",
+                    Color.FromArgb(20, 140, 255),
+                    new Font("微软雅黑", 9, FontStyle.Regular),
+                    "批次创建、取消等管理");
+                productionNode.Nodes.Add(batchManagementNode);
 
                 productionNode.ExpandAll();
                 treeViewModules.Nodes.Add(productionNode);
@@ -483,44 +494,61 @@ namespace MES.UI.Forms
                 return;
             }
 
-            // 根据子节点名称打开对应窗体
-            switch (nodeName)
+            // 添加调试日志
+            LogManager.Info(string.Format("TreeView节点双击: '{0}' (长度: {1})", nodeName, nodeName.Length));
+
+            // 直接根据节点文本进行精确匹配，移除emoji前缀
+            var cleanText = nodeName;
+            if (cleanText.Length > 2 && (cleanText[0] > 127 || cleanText[1] == ' '))
             {
-                case "📋 物料信息管理":
+                // 移除emoji和空格前缀
+                var spaceIndex = cleanText.IndexOf(' ');
+                if (spaceIndex > 0)
+                {
+                    cleanText = cleanText.Substring(spaceIndex + 1);
+                }
+            }
+
+            switch (cleanText)
+            {
+                case "物料信息管理":
                     OpenMaterialForm();
                     break;
-                case "🔧 BOM物料清单":
+                case "BOM物料清单":
                     OpenBOMForm();
                     break;
-                case "⚙️ 工艺路线配置":
+                case "工艺路线配置":
                     OpenProcessRouteForm();
                     break;
-                case "📊 生产订单管理":
+                case "生产订单管理":
                     OpenProductionOrderForm();
                     break;
-                case "🎯 生产执行控制":
+                case "工单管理":
+                    OpenWorkOrderManagementForm();
+                    break;
+                case "批次管理":
+                    OpenBatchManagementForm();
+                    break;
+                case "生产执行控制":
                     OpenProductionExecutionForm();
                     break;
-                case "👥 用户权限管理":
-                    OpenUserPermissionForm();
-                    break;
-                case "🔨 车间作业管理":
+                case "车间作业管理":
                     OpenWorkshopOperationForm();
                     break;
-                case "📦 在制品管理":
+                case "在制品管理":
                     OpenWIPForm();
                     break;
-                case "🔧 设备状态管理":
+                case "设备状态管理":
                     OpenEquipmentForm();
                     break;
-                case "⚙️ 系统配置":
+                case "系统配置":
                     OpenSystemConfigForm();
                     break;
-                case "ℹ️ 关于系统":
+                case "关于系统":
                     ShowAbout();
                     break;
                 default:
-                    MessageBox.Show(string.Format("功能 '{0}' 正在开发中...", nodeName), "提示",
+                    MessageBox.Show(string.Format("功能 '{0}' 正在开发中...", cleanText), "提示",
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                     break;
             }
@@ -575,10 +603,6 @@ namespace MES.UI.Forms
             executionItem.Click += ExecutionItem_Click;
             productionMenu.DropDownItems.Add(executionItem);
 
-            var permissionItem = new ToolStripMenuItem("用户权限管理");
-            permissionItem.Click += PermissionItem_Click;
-            productionMenu.DropDownItems.Add(permissionItem);
-            menuStrip1.Items.Add(productionMenu);
 
             // 车间管理菜单 - S成员负责
             var workshopMenu = new ToolStripMenuItem("🏭 车间管理(&W)")
@@ -886,17 +910,18 @@ namespace MES.UI.Forms
         //private void OpenMaterialForm() { ShowNotImplemented("物料信息管理"); }
         private void OpenMaterialForm() { showMMForm(); }
         private void OpenBOMForm() { ShowBOMManagementForm(); }
-        private void OpenProcessRouteForm() { ShowNotImplemented("工艺路线管理"); }
+        private void OpenProcessRouteForm() { ShowProcessRouteConfigForm(); }
 
         // H成员负责实现的生产管理模块
         private void OpenProductionOrderForm() { ShowProductionOrderForm(); }
+        private void OpenWorkOrderManagementForm() { ShowWorkOrderManagementForm(); }
+        private void OpenBatchManagementForm() { ShowBatchManagementForm(); }
         private void OpenProductionExecutionForm() { ShowProductionExecutionControlForm(); }
-        private void OpenUserPermissionForm() { ShowUserPermissionForm(); }
 
         // S成员负责实现的车间管理模块
-        private void OpenWorkshopOperationForm() { OpenWorkshopManagementForm(); }
-        private void OpenWIPForm() { ShowNotImplemented("在制品管理"); }
-        private void OpenEquipmentForm() { ShowNotImplemented("设备管理"); }
+        private void OpenWorkshopOperationForm() { ShowWorkshopOperationForm(); }
+        private void OpenWIPForm() { ShowWIPManagementForm(); }
+        private void OpenEquipmentForm() { ShowEquipmentStatusForm(); }
 
         /// <summary>
         /// 打开车间管理窗体
@@ -1082,13 +1107,7 @@ namespace MES.UI.Forms
             OpenProductionExecutionForm();
         }
 
-        /// <summary>
-        /// 用户权限管理菜单项点击事件
-        /// </summary>
-        private void PermissionItem_Click(object sender, EventArgs e)
-        {
-            OpenUserPermissionForm();
-        }
+
 
         /// <summary>
         /// 通用菜单项点击事件处理
@@ -1157,14 +1176,8 @@ namespace MES.UI.Forms
             productionForm.Show();
         }
 
-        /// <summary>
-        /// 显示用户权限管理窗体
-        /// </summary>
-        private void ShowUserPermissionForm()
-        {
-            UserPermissionManagementForm userPermissionForm = new UserPermissionManagementForm();
-            userPermissionForm.Show();
-        }
+
+
 
         /// <summary>
         /// 显示BOM物料清单管理窗体
@@ -1176,12 +1189,128 @@ namespace MES.UI.Forms
         }
 
         /// <summary>
+        /// 显示工艺路线配置窗体
+        /// </summary>
+        private void ShowProcessRouteConfigForm()
+        {
+            try
+            {
+                ProcessRouteConfigForm processRouteForm = new ProcessRouteConfigForm();
+                processRouteForm.Show();
+                LogManager.Info("打开工艺路线配置窗体");
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("打开工艺路线配置窗体失败", ex);
+                MessageBox.Show(string.Format("打开工艺路线配置窗体失败：{0}", ex.Message), "错误",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+
+
+        /// <summary>
+        /// 显示工单管理窗体
+        /// </summary>
+        private void ShowWorkOrderManagementForm()
+        {
+            try
+            {
+                var workOrderForm = new WorkOrder.WorkOrderManagementForm();
+                workOrderForm.Show();
+                LogManager.Info("打开工单管理统一窗体");
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("打开工单管理窗体失败", ex);
+                MessageBox.Show(string.Format("打开工单管理窗体失败：{0}", ex.Message), "错误",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// 显示批次管理窗体
+        /// </summary>
+        private void ShowBatchManagementForm()
+        {
+            try
+            {
+                var batchForm = new Batch.BatchManagementForm();
+                batchForm.Show();
+                LogManager.Info("打开批次管理统一窗体");
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("打开批次管理窗体失败", ex);
+                MessageBox.Show(string.Format("打开批次管理窗体失败：{0}", ex.Message), "错误",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
         /// 显示生产执行控制窗体
         /// </summary>
         private void ShowProductionExecutionControlForm()
         {
             ProductionExecutionControlForm executionForm = new ProductionExecutionControlForm();
             executionForm.Show();
+        }
+
+        /// <summary>
+        /// 显示车间作业管理窗体
+        /// </summary>
+        private void ShowWorkshopOperationForm()
+        {
+            try
+            {
+                var workshopOperationForm = new WorkshopOperationForm();
+                workshopOperationForm.Show();
+                LogManager.Info("打开车间作业管理窗体");
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("打开车间作业管理窗体失败", ex);
+                MessageBox.Show(string.Format("打开车间作业管理窗体失败：{0}", ex.Message), "错误",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// 显示在制品管理窗体
+        /// </summary>
+        private void ShowWIPManagementForm()
+        {
+            try
+            {
+                var wipForm = new WIPManagementForm();
+                wipForm.Show();
+                LogManager.Info("打开在制品管理窗体");
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("打开在制品管理窗体失败", ex);
+                MessageBox.Show(string.Format("打开在制品管理窗体失败：{0}", ex.Message), "错误",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// 显示设备状态管理窗体
+        /// </summary>
+        private void ShowEquipmentStatusForm()
+        {
+            try
+            {
+                var equipmentForm = new EquipmentStatusForm();
+                equipmentForm.Show();
+                LogManager.Info("打开设备状态管理窗体");
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("打开设备状态管理窗体失败", ex);
+                MessageBox.Show(string.Format("打开设备状态管理窗体失败：{0}", ex.Message), "错误",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
         /// <summary>
         /// 显示关于对话框
@@ -1263,6 +1392,11 @@ namespace MES.UI.Forms
 
             LogManager.Info("用户退出系统，资源已释放");
             base.OnFormClosing(e);
+        }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

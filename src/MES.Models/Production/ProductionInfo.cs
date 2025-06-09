@@ -54,14 +54,14 @@ namespace MES.Models.Production
         public int Status { get; set; }
 
         /// <summary>
-        /// 创建时间
+        /// 创建时间（隐藏基类成员）
         /// </summary>
-        public DateTime CreateTime { get; set; }
+        public new DateTime CreateTime { get; set; }
 
         /// <summary>
-        /// 更新时间
+        /// 更新时间（隐藏基类成员）
         /// </summary>
-        public DateTime? UpdateTime { get; set; }
+        public new DateTime? UpdateTime { get; set; }
     }
 }
 

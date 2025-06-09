@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
-using MES.BLL.Workshop;
 using MES.DAL.Workshop;
 using MES.Models.Workshop;
 using MES.Common.Logging;
@@ -23,6 +23,37 @@ namespace MES.BLL.Workshop
         public BatchBLL()
         {
             _batchDAL = new BatchDAL();
+        }
+
+        /// <summary>
+        /// 创建批次（为UI层提供的简化接口）
+        /// </summary>
+        /// <param name="batch">批次模型</param>
+        /// <returns>操作是否成功</returns>
+        public bool CreateBatch(BatchModel batch)
+        {
+            try
+            {
+                // 转换为BatchInfo
+                var batchInfo = new BatchInfo
+                {
+                    BatchId = batch.BatchNo,
+                    WorkOrderId = batch.WorkOrderNo,
+                    ProductMaterialId = batch.ProductCode,
+                    Quantity = (int)batch.BatchQuantity,
+                    Status = 1, // 创建状态
+                    CreateTime = DateTime.Now,
+                    UpdateTime = DateTime.Now,
+                    IsDeleted = false
+                };
+
+                return AddBatch(batchInfo);
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error(string.Format("创建批次异常：{0}", ex.Message), ex);
+                throw new MESException("创建批次时发生异常", ex);
+            }
         }
 
         /// <summary>
@@ -307,6 +338,76 @@ namespace MES.BLL.Workshop
         }
 
         /// <summary>
+        /// 获取可取消的批次列表（状态为待产或生产中的批次）
+        /// </summary>
+        /// <returns>可取消的批次数据表</returns>
+        public DataTable GetCancellableBatches()
+        {
+            try
+            {
+                // 获取状态为待产(2)或生产中(3)的批次
+                var cancellableBatches = new List<BatchInfo>();
+                var waitingBatches = GetBatchesByStatus(2); // 待产状态
+                var productionBatches = GetBatchesByStatus(3); // 生产中状态
+
+                cancellableBatches.AddRange(waitingBatches);
+                cancellableBatches.AddRange(productionBatches);
+
+                // 转换为DataTable格式
+                var dataTable = new DataTable();
+                dataTable.Columns.Add("Id", typeof(int));
+                dataTable.Columns.Add("BatchNo", typeof(string));
+                dataTable.Columns.Add("WorkOrderNo", typeof(string));
+                dataTable.Columns.Add("ProductCode", typeof(string));
+                dataTable.Columns.Add("BatchQuantity", typeof(decimal));
+                dataTable.Columns.Add("Status", typeof(string));
+                dataTable.Columns.Add("CreatedBy", typeof(string));
+                dataTable.Columns.Add("CreatedDate", typeof(DateTime));
+
+                foreach (var batch in cancellableBatches)
+                {
+                    var row = dataTable.NewRow();
+                    row["Id"] = batch.Id;
+                    row["BatchNo"] = batch.BatchId;
+                    row["WorkOrderNo"] = batch.WorkOrderId;
+                    row["ProductCode"] = batch.ProductMaterialId;
+                    row["BatchQuantity"] = batch.Quantity;
+                    row["Status"] = GetStatusText(batch.Status);
+                    row["CreatedBy"] = batch.CreateUserName ?? "系统";
+                    row["CreatedDate"] = batch.CreateTime;
+                    dataTable.Rows.Add(row);
+                }
+
+                LogManager.Info(string.Format("获取可取消批次列表完成，共 {0} 条记录", dataTable.Rows.Count));
+                return dataTable;
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error(string.Format("获取可取消批次列表异常：{0}", ex.Message), ex);
+                throw new MESException("获取可取消批次列表时发生异常", ex);
+            }
+        }
+
+        /// <summary>
+        /// 获取状态文本描述
+        /// </summary>
+        /// <param name="status">状态码</param>
+        /// <returns>状态文本</returns>
+        private string GetStatusText(int status)
+        {
+            switch (status)
+            {
+                case 1: return "已创建";
+                case 2: return "待产";
+                case 3: return "生产中";
+                case 4: return "暂停";
+                case 5: return "已完成";
+                case 6: return "已取消";
+                default: return "未知状态";
+            }
+        }
+
+        /// <summary>
         /// 根据当前工站获取批次列表
         /// </summary>
         /// <param name="stationId">工站ID</param>
@@ -580,6 +681,38 @@ namespace MES.BLL.Workshop
         }
 
         /// <summary>
+        /// 根据批次号取消批次
+        /// </summary>
+        /// <param name="batchNo">批次号</param>
+        /// <param name="reason">取消原因</param>
+        /// <returns>操作是否成功</returns>
+        public bool CancelBatch(string batchNo, string reason)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(batchNo))
+                {
+                    LogManager.Error("取消批次失败：批次号不能为空");
+                    return false;
+                }
+
+                var batch = _batchDAL.GetByBatchId(batchNo);
+                if (batch == null)
+                {
+                    LogManager.Error(string.Format("取消批次失败：批次号为 {0} 的批次不存在", batchNo));
+                    return false;
+                }
+
+                return CancelBatch(batch.Id, reason);
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error(string.Format("根据批次号取消批次异常：{0}", ex.Message), ex);
+                throw new MESException("根据批次号取消批次时发生异常", ex);
+            }
+        }
+
+        /// <summary>
         /// 转移批次到指定工站
         /// </summary>
         /// <param name="id">批次ID</param>
@@ -703,5 +836,24 @@ namespace MES.BLL.Workshop
                 throw new MESException("获取批次统计信息时发生异常", ex);
             }
         }
+    }
+
+    /// <summary>
+    /// 批次模型（临时定义，应该在Models项目中）
+    /// </summary>
+    public class BatchModel
+    {
+        public string BatchNo { get; set; }
+        public string WorkOrderNo { get; set; }
+        public string ProductCode { get; set; }
+        public string ProductName { get; set; }
+        public decimal BatchQuantity { get; set; }
+        public decimal CompletedQuantity { get; set; }
+        public string Status { get; set; }
+        public string ResponsiblePerson { get; set; }
+        public DateTime PlanCompletionDate { get; set; }
+        public string Remarks { get; set; }
+        public string CreatedBy { get; set; }
+        public DateTime CreatedDate { get; set; }
     }
 }

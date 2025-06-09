@@ -25,7 +25,7 @@ namespace MES.DAL.Production
         /// </summary>
         protected override string TableName
         {
-            get { return "production_order"; }
+            get { return "production_order_info"; }
         }
 
         /// <summary>
@@ -46,21 +46,22 @@ namespace MES.DAL.Production
             return new ProductionOrderInfo
             {
                 Id = Convert.ToInt32(row["id"]),
-                OrderNumber = row["order_number"] != DBNull.Value ? row["order_number"].ToString() : null,
+                OrderNumber = row["order_no"] != DBNull.Value ? row["order_no"].ToString() : null,
                 ProductCode = row["product_code"] != DBNull.Value ? row["product_code"].ToString() : null,
                 ProductName = row["product_name"] != DBNull.Value ? row["product_name"].ToString() : null,
-                PlannedQuantity = Convert.ToDecimal(row["planned_quantity"]),
+                Quantity = Convert.ToDecimal(row["planned_quantity"]),
                 ActualQuantity = row["actual_quantity"] != DBNull.Value ? Convert.ToDecimal(row["actual_quantity"]) : 0,
                 Unit = row["unit"] != DBNull.Value ? row["unit"].ToString() : null,
-                PlannedStartTime = Convert.ToDateTime(row["planned_start_time"]),
-                PlannedEndTime = Convert.ToDateTime(row["planned_end_time"]),
+                PlanStartTime = Convert.ToDateTime(row["plan_start_time"]),
+                PlanEndTime = Convert.ToDateTime(row["plan_end_time"]),
                 ActualStartTime = row["actual_start_time"] != DBNull.Value ? Convert.ToDateTime(row["actual_start_time"]) : (DateTime?)null,
                 ActualEndTime = row["actual_end_time"] != DBNull.Value ? Convert.ToDateTime(row["actual_end_time"]) : (DateTime?)null,
                 Status = row["status"] != DBNull.Value ? row["status"].ToString() : null,
                 Priority = row["priority"] != DBNull.Value ? row["priority"].ToString() : null,
                 WorkshopId = row["workshop_id"] != DBNull.Value ? Convert.ToInt32(row["workshop_id"]) : 0,
                 WorkshopName = row["workshop_name"] != DBNull.Value ? row["workshop_name"].ToString() : null,
-                CustomerName = row["customer"] != DBNull.Value ? row["customer"].ToString() : null,
+                ResponsiblePerson = row["responsible_person"] != DBNull.Value ? row["responsible_person"].ToString() : null,
+                CustomerName = row["customer_name"] != DBNull.Value ? row["customer_name"].ToString() : null,
                 SalesOrderNumber = row["sales_order_number"] != DBNull.Value ? row["sales_order_number"].ToString() : null,
                 Remarks = row["remarks"] != DBNull.Value ? row["remarks"].ToString() : null,
                 CreateTime = Convert.ToDateTime(row["create_time"]),
@@ -87,7 +88,7 @@ namespace MES.DAL.Production
                     throw new ArgumentException("订单编号不能为空", "orderNo");
                 }
 
-                var orders = GetByCondition("order_number = @orderNumber",
+                var orders = GetByCondition("order_no = @orderNumber",
                     DatabaseHelper.CreateParameter("@orderNumber", orderNo));
                 
                 return orders.Count > 0 ? orders[0] : null;
@@ -220,8 +221,8 @@ namespace MES.DAL.Production
                     return GetAll();
                 }
 
-                string condition = @"(order_number LIKE @keyword OR product_code LIKE @keyword
-                                   OR product_name LIKE @keyword OR customer LIKE @keyword)";
+                string condition = @"(order_no LIKE @keyword OR product_code LIKE @keyword
+                                   OR product_name LIKE @keyword OR customer_name LIKE @keyword)";
 
                 var parameter = DatabaseHelper.CreateParameter("@keyword", string.Format("%{0}%", keyword));
 
@@ -247,33 +248,34 @@ namespace MES.DAL.Production
         /// <returns>操作是否成功</returns>
         protected override bool BuildInsertSql(ProductionOrderInfo entity, out string sql, out MySqlParameter[] parameters)
         {
-            sql = @"INSERT INTO production_order
-                          (order_number, product_code, product_name, planned_quantity, actual_quantity, unit,
-                           planned_start_time, planned_end_time, actual_start_time, actual_end_time,
-                           status, priority, workshop_id, workshop_name, customer, sales_order_number, remarks,
+            sql = @"INSERT INTO production_order_info
+                          (order_no, product_code, product_name, planned_quantity, actual_quantity, unit,
+                           plan_start_time, plan_end_time, actual_start_time, actual_end_time,
+                           status, priority, workshop_id, workshop_name, responsible_person, customer_name, sales_order_number, remarks,
                            create_time, create_user_name, is_deleted)
                           VALUES
                           (@orderNumber, @productCode, @productName, @plannedQuantity, @actualQuantity, @unit,
                            @plannedStartTime, @plannedEndTime, @actualStartTime, @actualEndTime,
-                           @status, @priority, @workshopId, @workshopName, @customer, @salesOrderNumber, @remarks,
+                           @status, @priority, @workshopId, @workshopName, @responsiblePerson, @customer, @salesOrderNumber, @remarks,
                            @createTime, @createUserName, @isDeleted)";
 
             parameters = new[]
             {
-                DatabaseHelper.CreateParameter("@orderNumber", entity.OrderNo),
+                DatabaseHelper.CreateParameter("@orderNumber", entity.OrderNumber),
                 DatabaseHelper.CreateParameter("@productCode", entity.ProductCode),
                 DatabaseHelper.CreateParameter("@productName", entity.ProductName),
-                DatabaseHelper.CreateParameter("@plannedQuantity", entity.Quantity),
+                DatabaseHelper.CreateParameter("@plannedQuantity", entity.PlannedQuantity),
                 DatabaseHelper.CreateParameter("@actualQuantity", entity.ActualQuantity),
                 DatabaseHelper.CreateParameter("@unit", entity.Unit),
-                DatabaseHelper.CreateParameter("@plannedStartTime", entity.PlanStartTime),
-                DatabaseHelper.CreateParameter("@plannedEndTime", entity.PlanEndTime),
+                DatabaseHelper.CreateParameter("@plannedStartTime", entity.PlannedStartTime),
+                DatabaseHelper.CreateParameter("@plannedEndTime", entity.PlannedEndTime),
                 DatabaseHelper.CreateParameter("@actualStartTime", entity.ActualStartTime),
                 DatabaseHelper.CreateParameter("@actualEndTime", entity.ActualEndTime),
                 DatabaseHelper.CreateParameter("@status", entity.Status),
                 DatabaseHelper.CreateParameter("@priority", entity.Priority),
                 DatabaseHelper.CreateParameter("@workshopId", entity.WorkshopId),
                 DatabaseHelper.CreateParameter("@workshopName", entity.WorkshopName),
+                DatabaseHelper.CreateParameter("@responsiblePerson", entity.ResponsiblePerson),
                 DatabaseHelper.CreateParameter("@customer", entity.CustomerName),
                 DatabaseHelper.CreateParameter("@salesOrderNumber", entity.SalesOrderNumber),
                 DatabaseHelper.CreateParameter("@remarks", entity.Remarks),
@@ -294,32 +296,33 @@ namespace MES.DAL.Production
         /// <returns>操作是否成功</returns>
         protected override bool BuildUpdateSql(ProductionOrderInfo entity, out string sql, out MySqlParameter[] parameters)
         {
-            sql = @"UPDATE production_order SET
-                          order_number = @orderNumber, product_code = @productCode,
+            sql = @"UPDATE production_order_info SET
+                          order_no = @orderNumber, product_code = @productCode,
                           product_name = @productName, planned_quantity = @plannedQuantity, actual_quantity = @actualQuantity, unit = @unit,
-                          planned_start_time = @plannedStartTime, planned_end_time = @plannedEndTime,
+                          plan_start_time = @plannedStartTime, plan_end_time = @plannedEndTime,
                           actual_start_time = @actualStartTime, actual_end_time = @actualEndTime,
                           status = @status, priority = @priority, workshop_id = @workshopId, workshop_name = @workshopName,
-                          customer = @customer, sales_order_number = @salesOrderNumber, remarks = @remarks,
+                          responsible_person = @responsiblePerson, customer_name = @customer, sales_order_number = @salesOrderNumber, remarks = @remarks,
                           update_time = @updateTime, update_user_name = @updateUserName
                           WHERE id = @id AND is_deleted = 0";
 
             parameters = new[]
             {
-                DatabaseHelper.CreateParameter("@orderNumber", entity.OrderNo),
+                DatabaseHelper.CreateParameter("@orderNumber", entity.OrderNumber),
                 DatabaseHelper.CreateParameter("@productCode", entity.ProductCode),
                 DatabaseHelper.CreateParameter("@productName", entity.ProductName),
-                DatabaseHelper.CreateParameter("@plannedQuantity", entity.Quantity),
+                DatabaseHelper.CreateParameter("@plannedQuantity", entity.PlannedQuantity),
                 DatabaseHelper.CreateParameter("@actualQuantity", entity.ActualQuantity),
                 DatabaseHelper.CreateParameter("@unit", entity.Unit),
-                DatabaseHelper.CreateParameter("@plannedStartTime", entity.PlanStartTime),
-                DatabaseHelper.CreateParameter("@plannedEndTime", entity.PlanEndTime),
+                DatabaseHelper.CreateParameter("@plannedStartTime", entity.PlannedStartTime),
+                DatabaseHelper.CreateParameter("@plannedEndTime", entity.PlannedEndTime),
                 DatabaseHelper.CreateParameter("@actualStartTime", entity.ActualStartTime),
                 DatabaseHelper.CreateParameter("@actualEndTime", entity.ActualEndTime),
                 DatabaseHelper.CreateParameter("@status", entity.Status),
                 DatabaseHelper.CreateParameter("@priority", entity.Priority),
                 DatabaseHelper.CreateParameter("@workshopId", entity.WorkshopId),
                 DatabaseHelper.CreateParameter("@workshopName", entity.WorkshopName),
+                DatabaseHelper.CreateParameter("@responsiblePerson", entity.ResponsiblePerson),
                 DatabaseHelper.CreateParameter("@customer", entity.CustomerName),
                 DatabaseHelper.CreateParameter("@salesOrderNumber", entity.SalesOrderNumber),
                 DatabaseHelper.CreateParameter("@remarks", entity.Remarks),

@@ -20,7 +20,7 @@ namespace MES.Models.Base
         /// <summary>
         /// 创建人ID
         /// </summary>
-        public int CreateUserId { get; set; }
+        public int? CreateUserId { get; set; }
 
         /// <summary>
         /// 创建人姓名
@@ -87,7 +87,7 @@ namespace MES.Models.Base
         /// </summary>
         /// <param name="userId">创建人ID</param>
         /// <param name="userName">创建人姓名</param>
-        public virtual void SetCreateInfo(int userId, string userName)
+        public virtual void SetCreateInfo(int? userId, string userName)
         {
             CreateUserId = userId;
             CreateUserName = userName;
@@ -99,7 +99,7 @@ namespace MES.Models.Base
         /// </summary>
         /// <param name="userId">更新人ID</param>
         /// <param name="userName">更新人姓名</param>
-        public virtual void SetUpdateInfo(int userId, string userName)
+        public virtual void SetUpdateInfo(int? userId, string userName)
         {
             UpdateUserId = userId;
             UpdateUserName = userName;
@@ -112,7 +112,7 @@ namespace MES.Models.Base
         /// </summary>
         /// <param name="userId">删除人ID</param>
         /// <param name="userName">删除人姓名</param>
-        public virtual void SetDeleteInfo(int userId, string userName)
+        public virtual void SetDeleteInfo(int? userId, string userName)
         {
             DeleteUserId = userId;
             DeleteUserName = userName;

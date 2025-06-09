@@ -65,6 +65,7 @@ namespace MES.UI.Forms
             this.menuStrip1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(245)))), ((int)(((byte)(246)))), ((int)(((byte)(250)))));
             this.menuStrip1.Font = new System.Drawing.Font("微软雅黑", 9.5F, System.Drawing.FontStyle.Bold);
             this.menuStrip1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(37)))), ((int)(((byte)(41)))));
+            this.menuStrip1.GripMargin = new System.Windows.Forms.Padding(2, 2, 0, 2);
             this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
@@ -159,7 +160,7 @@ namespace MES.UI.Forms
             this.labelNavInfo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(108)))), ((int)(((byte)(117)))), ((int)(((byte)(125)))));
             this.labelNavInfo.Location = new System.Drawing.Point(15, 10);
             this.labelNavInfo.Name = "labelNavInfo";
-            this.labelNavInfo.Size = new System.Drawing.Size(92, 17);
+            this.labelNavInfo.Size = new System.Drawing.Size(136, 24);
             this.labelNavInfo.TabIndex = 0;
             this.labelNavInfo.Text = "请选择功能模块";
             // 
@@ -181,7 +182,7 @@ namespace MES.UI.Forms
             this.labelNavTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(37)))), ((int)(((byte)(41)))));
             this.labelNavTitle.Location = new System.Drawing.Point(15, 15);
             this.labelNavTitle.Name = "labelNavTitle";
-            this.labelNavTitle.Size = new System.Drawing.Size(74, 22);
+            this.labelNavTitle.Size = new System.Drawing.Size(110, 31);
             this.labelNavTitle.TabIndex = 0;
             this.labelNavTitle.Text = "功能导航";
             // 
@@ -238,7 +239,7 @@ namespace MES.UI.Forms
             this.labelStatusTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(25)))), ((int)(((byte)(135)))), ((int)(((byte)(84)))));
             this.labelStatusTitle.Location = new System.Drawing.Point(30, 20);
             this.labelStatusTitle.Name = "labelStatusTitle";
-            this.labelStatusTitle.Size = new System.Drawing.Size(354, 26);
+            this.labelStatusTitle.Size = new System.Drawing.Size(521, 37);
             this.labelStatusTitle.TabIndex = 0;
             this.labelStatusTitle.Text = "当前状态：基础框架已完成，各模块就绪";
             // 
@@ -316,7 +317,7 @@ namespace MES.UI.Forms
             this.labelSystemVersion.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(108)))), ((int)(((byte)(117)))), ((int)(((byte)(125)))));
             this.labelSystemVersion.Location = new System.Drawing.Point(35, 75);
             this.labelSystemVersion.Name = "labelSystemVersion";
-            this.labelSystemVersion.Size = new System.Drawing.Size(211, 21);
+            this.labelSystemVersion.Size = new System.Drawing.Size(315, 31);
             this.labelSystemVersion.TabIndex = 1;
             this.labelSystemVersion.Text = "版本 1.0.0 - 企业级制造管理";
             // 
@@ -327,13 +328,13 @@ namespace MES.UI.Forms
             this.labelSystemTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(123)))), ((int)(((byte)(255)))));
             this.labelSystemTitle.Location = new System.Drawing.Point(30, 20);
             this.labelSystemTitle.Name = "labelSystemTitle";
-            this.labelSystemTitle.Size = new System.Drawing.Size(280, 42);
+            this.labelSystemTitle.Size = new System.Drawing.Size(420, 64);
             this.labelSystemTitle.TabIndex = 0;
             this.labelSystemTitle.Text = "MES制造执行系统";
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(249)))), ((int)(((byte)(250)))));
             this.ClientSize = new System.Drawing.Size(1200, 750);
@@ -349,6 +350,7 @@ namespace MES.UI.Forms
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "MES制造执行系统";
+            this.Load += new System.EventHandler(this.MainForm_Load);
             this.panelLeft.ResumeLayout(false);
             this.panelNavContent.ResumeLayout(false);
             this.panelNavFooter.ResumeLayout(false);

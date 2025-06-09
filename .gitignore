@@ -239,7 +239,7 @@ compile_order.bat.bak
 ###########################################
 # 文档和配置备份
 ###########################################
-
+.vscode
 # 文档备份文件
 *.md.bak
 *.md.backup
@@ -317,3 +317,7 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 .augment-guidelines
+src/MES.BLL/bin/Debug/MES.BLL.dll
+src/MES.BLL/bin/Debug/MES.BLL.pdb
+src/MES.BLL/obj/Debug/MES.BLL.dll
+src/MES.BLL/obj/Debug/MES.BLL.pdb

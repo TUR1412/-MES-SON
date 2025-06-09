@@ -78,6 +78,7 @@
     <Compile Include="Production\ProductionOrderDAL.cs" />
     <Compile Include="WorkOrder\WorkOrderDAL.cs" />
     <Compile Include="Workshop\WorkshopDAL.cs" />
+    <Compile Include="Workshop\WorkshopOperationDAL.cs" />
     <Compile Include="Workshop\BatchDAL.cs" />
     <Compile Include="Equipment\EquipmentDAL.cs" />
     <Compile Include="Quality\QualityInspectionDAL.cs" />

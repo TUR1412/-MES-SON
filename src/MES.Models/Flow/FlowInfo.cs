@@ -24,9 +24,9 @@ namespace MES.Models.Flow
         public string FlowName { get; set; }
 
         /// <summary>
-        /// 工艺流程版本
+        /// 工艺流程版本（隐藏基类成员）
         /// </summary>
-        public string Version { get; set; }
+        public new string Version { get; set; }
 
         /// <summary>
         /// 工厂ID
@@ -44,14 +44,14 @@ namespace MES.Models.Flow
         public int Status { get; set; }
 
         /// <summary>
-        /// 创建时间
+        /// 创建时间（隐藏基类成员）
         /// </summary>
-        public DateTime CreateTime { get; set; }
+        public new DateTime CreateTime { get; set; }
 
         /// <summary>
-        /// 更新时间
+        /// 更新时间（隐藏基类成员）
         /// </summary>
-        public DateTime? UpdateTime { get; set; }
+        public new DateTime? UpdateTime { get; set; }
 
         /// <summary>
         /// 磨片厚度(mm)
