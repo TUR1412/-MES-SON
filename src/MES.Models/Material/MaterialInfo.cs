@@ -77,6 +77,7 @@ namespace MES.Models.Material
         /// 状态：1-启用，0-禁用
         /// </summary>
         public bool Status { get; set; }
+        public decimal Price { get; set; } // 新增此属性
 
         /// <summary>
         /// 构造函数
@@ -84,6 +85,7 @@ namespace MES.Models.Material
         public MaterialInfo()
         {
             Status = true;
+            Price = 0;
         }
     }
 }

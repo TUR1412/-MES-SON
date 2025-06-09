@@ -23,6 +23,7 @@ namespace MES.UI.Forms.Material
 
         public MaterialManagementForm()
         {
+
             InitializeComponent();
             // 实例化BLL
             _materialBLL = new MaterialBLL();
@@ -196,26 +197,30 @@ namespace MES.UI.Forms.Material
         {
             try
             {
-                // 模拟弹出一个编辑窗口，并返回一个填充好的DTO
-                // 在真实项目中，这里会 new MaterialEditForm(null).ShowDialog();
-                var newMaterialDto = ShowMaterialEditDialog(null);
-
-                if (newMaterialDto != null)
+                // 打开新增窗体
+                using (var form = new MaterialEditForm(null))
                 {
-                    // 调用BLL进行添加
-                    if (_materialBLL.AddMaterial(newMaterialDto))
+                    // 如果用户在编辑窗体点击了“保存”
+                    if (form.ShowDialog() == DialogResult.OK)
                     {
-                        MessageBox.Show("物料添加成功！", "成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        LogManager.Info(string.Format("添加物料：{0}", newMaterialDto.MaterialName));
-                        // 重新从数据库加载数据并刷新
-                        LoadMaterialData();
-                        RefreshDataGridView();
+                        // 获取新窗体返回的、已填充好的DTO
+                        var newMaterialDto = form.MaterialData;
+
+                        // 调用BLL进行添加
+                        if (_materialBLL.AddMaterial(newMaterialDto))
+                        {
+                            MessageBox.Show("物料添加成功！", "成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            LogManager.Info(string.Format("添加物料：{0}", newMaterialDto.MaterialName));
+                            // 重新加载数据并刷新界面
+                            LoadMaterialData();
+                            RefreshDataGridView();
+                        }
                     }
                 }
             }
             catch (Exception ex)
             {
-                LogManager.Error("添加物料失败", ex);
+                LogManager.Error("添加物料操作失败", ex);
                 MessageBox.Show("添加物料失败：" + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -225,33 +230,36 @@ namespace MES.UI.Forms.Material
         /// </summary>
         private void btnEdit_Click(object sender, EventArgs e)
         {
+            if (currentMaterial == null)
+            {
+                MessageBox.Show("请先选择要编辑的物料！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             try
             {
-                if (currentMaterial == null)
+                // 将当前选中的物料DTO传递给编辑窗体
+                using (var form = new MaterialEditForm(currentMaterial))
                 {
-                    MessageBox.Show("请先选择要编辑的物料！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-
-                // 模拟弹出一个编辑窗口，并返回一个编辑好的DTO
-                var editedMaterialDto = ShowMaterialEditDialog(currentMaterial);
-
-                if (editedMaterialDto != null)
-                {
-                    // 调用BLL进行更新
-                    if (_materialBLL.UpdateMaterial(editedMaterialDto))
+                    if (form.ShowDialog() == DialogResult.OK)
                     {
-                        MessageBox.Show("物料编辑成功！", "成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        LogManager.Info(string.Format("编辑物料：{0}", editedMaterialDto.MaterialName));
-                        // 重新从数据库加载数据并刷新
-                        LoadMaterialData();
-                        RefreshDataGridView();
+                        // 获取编辑后的DTO
+                        var editedMaterialDto = form.MaterialData;
+
+                        // 调用BLL进行更新
+                        if (_materialBLL.UpdateMaterial(editedMaterialDto))
+                        {
+                            MessageBox.Show("物料编辑成功！", "成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            LogManager.Info(string.Format("编辑物料：{0}", editedMaterialDto.MaterialName));
+                            LoadMaterialData();
+                            RefreshDataGridView();
+                        }
                     }
                 }
             }
             catch (Exception ex)
             {
-                LogManager.Error("编辑物料失败", ex);
+                LogManager.Error("编辑物料操作失败", ex);
                 MessageBox.Show("编辑物料失败：" + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -261,35 +269,39 @@ namespace MES.UI.Forms.Material
         /// </summary>
         private void btnDelete_Click(object sender, EventArgs e)
         {
+            if (currentMaterial == null)
+            {
+                MessageBox.Show("请先选择要删除的物料！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             try
             {
-                if (currentMaterial == null)
-                {
-                    MessageBox.Show("请先选择要删除的物料！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
+                var confirmResult = MessageBox.Show(string.Format("您确定要删除物料 [{0}] 吗？", currentMaterial.MaterialName),
+                                                    "确认删除", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
-                var result = MessageBox.Show(string.Format("确认要删除物料 [{0}] 吗？", currentMaterial.MaterialName),
-                    "确认删除", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-
-                if (result == DialogResult.Yes)
+                if (confirmResult == DialogResult.Yes)
                 {
                     // 调用BLL进行删除
                     if (_materialBLL.DeleteMaterial(currentMaterial.Id))
                     {
                         MessageBox.Show("物料删除成功！", "成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        LogManager.Info(string.Format("删除物料：{0}", currentMaterial.MaterialName));
-                        // 重新从数据库加载数据并刷新
+                        LogManager.Info(string.Format("删除物料 ID: {0}, 名称: {1}", currentMaterial.Id, currentMaterial.MaterialName));
                         LoadMaterialData();
                         RefreshDataGridView();
+                    }
+                    else
+                    {
+                        MessageBox.Show("删除失败，可能该物料已被使用或不存在。", "删除失败", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
             }
             catch (Exception ex)
             {
-                LogManager.Error("删除物料失败", ex);
+                LogManager.Error("删除物料操作失败", ex);
                 MessageBox.Show("删除物料失败：" + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
         }
 
         /// <summary>

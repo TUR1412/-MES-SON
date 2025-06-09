@@ -104,14 +104,38 @@ namespace MES.BLL.Material
 
         public bool AddMaterial(MaterialDto materialDto)
         {
+            // 对于新增操作，直接将DTO转换为新Model即可
             var materialModel = ConvertToModel(materialDto);
             return this.AddMaterial(materialModel);
         }
 
+        /// <summary>
+        /// 更新现有的物料信息（通过DTO）
+        /// </summary>
         public bool UpdateMaterial(MaterialDto materialDto)
         {
-            var materialModel = ConvertToModel(materialDto);
-            return this.UpdateMaterial(materialModel);
+            try
+            {
+                // --- 核心修复点 1: 先从数据库获取原始实体 ---
+                var existingMaterial = _materialDAL.GetById(materialDto.Id);
+                if (existingMaterial == null)
+                {
+                    // 如果找不到要更新的物料，直接抛出异常，防止后续操作出错
+                    throw new MESException(string.Format("ID为 {0} 的物料不存在，无法更新。", materialDto.Id));
+                }
+
+                // --- 核心修复点 2: 将DTO的数据更新到已存在的实体上 ---
+                var updatedMaterial = MapDtoToModel(materialDto, existingMaterial);
+
+                // 调用内部的UpdateMaterial方法，传入的是一个完整的、最新的实体
+                return this.UpdateMaterial(updatedMaterial);
+            }
+            catch (Exception ex)
+            {
+                // 捕获所有可能的异常（包括上面手动抛出的），记录日志并向上层抛出通用错误
+                LogManager.Error(string.Format("更新物料信息失败，ID: {0}", materialDto.Id), ex);
+                throw new MESException("更新物料信息失败", ex);
+            }
         }
 
         #endregion
@@ -141,8 +165,9 @@ namespace MES.BLL.Material
                 StockQuantity = material.StockQuantity,
                 LeadTime = material.LeadTime,
                 Status = material.Status,
-                // 根据业务逻辑，Price可能来自StandardCost
-                Price = material.StandardCost.HasValue ? material.StandardCost.Value : 0,
+
+                // --- 核心修复点: 直接从 Model.Price 获取值 ---
+                Price = material.Price,
                 Remark = material.Remark
             };
         }
@@ -152,9 +177,8 @@ namespace MES.BLL.Material
         /// </summary>
         private MaterialInfo ConvertToModel(MaterialDto dto)
         {
-            if (dto == null) return null;
 
-            // 如果是更新操作，最好先获取原实体，再用DTO覆盖，这里简化处理
+            if (dto == null) return null;
             return new MaterialInfo
             {
                 Id = dto.Id,
@@ -172,9 +196,42 @@ namespace MES.BLL.Material
                 StockQuantity = dto.StockQuantity,
                 LeadTime = dto.LeadTime,
                 Status = dto.Status,
+                Price = dto.Price,
                 Remark = dto.Remark
-                // BaseModel中的字段（如CreateTime, UpdateTime）由DAL或BLL在操作时自动填充
             };
+        }
+
+        /// <summary>
+        /// (新增方法) 将DTO的数据映射（覆盖）到已存在的Model上（用于更新操作）
+        /// </summary>
+        /// <param name="dto">包含新数据的DTO</param>
+        /// <param name="model">从数据库获取的原始Model</param>
+        /// <returns>已更新的Model</returns>
+        private MaterialInfo MapDtoToModel(MaterialDto dto, MaterialInfo model)
+        {
+            // 将DTO中的值赋给从数据库取出的实体
+            // 这样可以保留model中原有的、DTO中不存在的字段值（如CreateTime, CreateUserName等）
+            model.MaterialCode = dto.MaterialCode;
+            model.MaterialName = dto.MaterialName;
+            model.MaterialType = dto.MaterialType;
+            model.Specification = dto.Specification;
+            model.Unit = dto.Unit;
+            model.Category = dto.Category;
+            model.Supplier = dto.Supplier;
+            model.StandardCost = dto.StandardCost;
+            model.SafetyStock = dto.SafetyStock;
+            model.MinStock = dto.MinStock;
+            model.MaxStock = dto.MaxStock;
+            // 注意：库存量(StockQuantity)通常不由编辑界面直接修改，所以这里不赋值
+            // model.StockQuantity = dto.StockQuantity; 
+            model.LeadTime = dto.LeadTime;
+            model.Status = dto.Status;
+            model.Price = dto.Price;
+            model.Remark = dto.Remark;
+
+            // UpdateTime 和 UpdateUserName 等字段将在 BaseDAL.Update() 方法中自动设置
+
+            return model;
         }
 
         #endregion
