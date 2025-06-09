@@ -28,157 +28,178 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.dateTimePicker2 = new System.Windows.Forms.DateTimePicker();
-            this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
-            this.label8 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
-            this.textBox3 = new System.Windows.Forms.TextBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            this.btnClose = new System.Windows.Forms.Button();
+            this.btnCancel = new System.Windows.Forms.Button();
+            this.txtCancelReason = new System.Windows.Forms.TextBox();
+            this.lblBatchCount = new System.Windows.Forms.Label();
+            this.dgvBatches = new System.Windows.Forms.DataGridView();
+            this.btnRefresh = new System.Windows.Forms.Button();
+            this.lblBatchNo = new System.Windows.Forms.Label();
+            this.lblWorkOrderNo = new System.Windows.Forms.Label();
+            this.lblProductCode = new System.Windows.Forms.Label();
+            this.lblBatchQuantity = new System.Windows.Forms.Label();
+            this.lblStatus = new System.Windows.Forms.Label();
+            this.lblCreatedBy = new System.Windows.Forms.Label();
+            this.lblCreatedDate = new System.Windows.Forms.Label();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvBatches)).BeginInit();
             this.SuspendLayout();
-            // 
-            // dateTimePicker2
-            // 
-            this.dateTimePicker2.CalendarFont = new System.Drawing.Font("宋体", 12F);
-            this.dateTimePicker2.Font = new System.Drawing.Font("宋体", 12F);
-            this.dateTimePicker2.Location = new System.Drawing.Point(855, 17);
-            this.dateTimePicker2.Name = "dateTimePicker2";
-            this.dateTimePicker2.Size = new System.Drawing.Size(200, 35);
-            this.dateTimePicker2.TabIndex = 159;
-            // 
-            // dateTimePicker1
-            // 
-            this.dateTimePicker1.CalendarFont = new System.Drawing.Font("宋体", 15F);
-            this.dateTimePicker1.Font = new System.Drawing.Font("宋体", 12F);
-            this.dateTimePicker1.Location = new System.Drawing.Point(634, 16);
-            this.dateTimePicker1.Name = "dateTimePicker1";
-            this.dateTimePicker1.Size = new System.Drawing.Size(200, 35);
-            this.dateTimePicker1.TabIndex = 158;
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Font = new System.Drawing.Font("微软雅黑", 12F);
-            this.label8.Location = new System.Drawing.Point(478, 18);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(110, 31);
-            this.label8.TabIndex = 157;
-            this.label8.Text = "创建日期";
-            // 
-            // button1
-            // 
-            this.button1.BackColor = System.Drawing.SystemColors.Highlight;
-            this.button1.Font = new System.Drawing.Font("宋体", 12F);
-            this.button1.ForeColor = System.Drawing.SystemColors.HighlightText;
-            this.button1.Location = new System.Drawing.Point(1102, 14);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(128, 44);
-            this.button1.TabIndex = 156;
-            this.button1.Text = "查询";
-            this.button1.UseVisualStyleBackColor = false;
-            // 
-            // textBox3
-            // 
-            this.textBox3.Font = new System.Drawing.Font("宋体", 12F);
-            this.textBox3.Location = new System.Drawing.Point(591, 69);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(152, 35);
-            this.textBox3.TabIndex = 155;
-            // 
-            // textBox2
-            // 
-            this.textBox2.Font = new System.Drawing.Font("宋体", 12F);
-            this.textBox2.Location = new System.Drawing.Point(311, 69);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(152, 35);
-            this.textBox2.TabIndex = 154;
-            // 
-            // textBox1
-            // 
-            this.textBox1.Font = new System.Drawing.Font("宋体", 12F);
-            this.textBox1.Location = new System.Drawing.Point(137, 14);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(282, 35);
-            this.textBox1.TabIndex = 153;
-            // 
-            // dataGridView1
-            // 
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(29, 133);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.RowHeadersWidth = 62;
-            this.dataGridView1.RowTemplate.Height = 30;
-            this.dataGridView1.Size = new System.Drawing.Size(1824, 648);
-            this.dataGridView1.TabIndex = 152;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("宋体", 12F);
-            this.label4.ForeColor = System.Drawing.SystemColors.MenuHighlight;
-            this.label4.Location = new System.Drawing.Point(479, 74);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(106, 24);
-            this.label4.TabIndex = 151;
-            this.label4.Text = "选中数量";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("宋体", 12F);
-            this.label3.ForeColor = System.Drawing.SystemColors.MenuHighlight;
-            this.label3.Location = new System.Drawing.Point(167, 75);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(130, 24);
-            this.label3.TabIndex = 150;
-            this.label3.Text = "已选批次数";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("宋体", 12F);
-            this.label2.Location = new System.Drawing.Point(25, 75);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(82, 24);
-            this.label2.TabIndex = 149;
-            this.label2.Text = "主界面";
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("宋体", 12F);
-            this.label1.Location = new System.Drawing.Point(27, 20);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(82, 24);
-            this.label1.TabIndex = 148;
-            this.label1.Text = "批次号";
-            // 
-            // Cancel
-            // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
+            //
+            // btnClose
+            //
+            this.btnClose.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F);
+            this.btnClose.Location = new System.Drawing.Point(750, 500);
+            this.btnClose.Name = "btnClose";
+            this.btnClose.Size = new System.Drawing.Size(100, 35);
+            this.btnClose.TabIndex = 1;
+            this.btnClose.Text = "关闭";
+            this.btnClose.UseVisualStyleBackColor = true;
+            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
+            //
+            // btnCancel
+            //
+            this.btnCancel.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F);
+            this.btnCancel.Location = new System.Drawing.Point(630, 500);
+            this.btnCancel.Name = "btnCancel";
+            this.btnCancel.Size = new System.Drawing.Size(100, 35);
+            this.btnCancel.TabIndex = 2;
+            this.btnCancel.Text = "取消批次";
+            this.btnCancel.UseVisualStyleBackColor = true;
+            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
+            //
+            // txtCancelReason
+            //
+            this.txtCancelReason.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F);
+            this.txtCancelReason.Location = new System.Drawing.Point(30, 450);
+            this.txtCancelReason.Multiline = true;
+            this.txtCancelReason.Name = "txtCancelReason";
+            this.txtCancelReason.Size = new System.Drawing.Size(820, 35);
+            this.txtCancelReason.TabIndex = 3;
+            //
+            // lblBatchCount
+            //
+            this.lblBatchCount.AutoSize = true;
+            this.lblBatchCount.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F);
+            this.lblBatchCount.Location = new System.Drawing.Point(30, 80);
+            this.lblBatchCount.Name = "lblBatchCount";
+            this.lblBatchCount.Size = new System.Drawing.Size(120, 20);
+            this.lblBatchCount.TabIndex = 4;
+            this.lblBatchCount.Text = "批次数量统计";
+            //
+            // dgvBatches
+            //
+            this.dgvBatches.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvBatches.Location = new System.Drawing.Point(30, 110);
+            this.dgvBatches.Name = "dgvBatches";
+            this.dgvBatches.RowHeadersWidth = 62;
+            this.dgvBatches.RowTemplate.Height = 30;
+            this.dgvBatches.Size = new System.Drawing.Size(820, 250);
+            this.dgvBatches.TabIndex = 5;
+            this.dgvBatches.SelectionChanged += new System.EventHandler(this.dgvBatches_SelectionChanged);
+            //
+            // btnRefresh
+            //
+            this.btnRefresh.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F);
+            this.btnRefresh.Location = new System.Drawing.Point(750, 75);
+            this.btnRefresh.Name = "btnRefresh";
+            this.btnRefresh.Size = new System.Drawing.Size(100, 30);
+            this.btnRefresh.TabIndex = 6;
+            this.btnRefresh.Text = "刷新";
+            this.btnRefresh.UseVisualStyleBackColor = true;
+            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
+            //
+            // lblBatchNo
+            //
+            this.lblBatchNo.AutoSize = true;
+            this.lblBatchNo.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F);
+            this.lblBatchNo.Location = new System.Drawing.Point(30, 380);
+            this.lblBatchNo.Name = "lblBatchNo";
+            this.lblBatchNo.Size = new System.Drawing.Size(80, 20);
+            this.lblBatchNo.TabIndex = 7;
+            this.lblBatchNo.Text = "批次号：";
+            //
+            // lblWorkOrderNo
+            //
+            this.lblWorkOrderNo.AutoSize = true;
+            this.lblWorkOrderNo.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F);
+            this.lblWorkOrderNo.Location = new System.Drawing.Point(150, 380);
+            this.lblWorkOrderNo.Name = "lblWorkOrderNo";
+            this.lblWorkOrderNo.Size = new System.Drawing.Size(80, 20);
+            this.lblWorkOrderNo.TabIndex = 8;
+            this.lblWorkOrderNo.Text = "工单号：";
+            //
+            // lblProductCode
+            //
+            this.lblProductCode.AutoSize = true;
+            this.lblProductCode.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F);
+            this.lblProductCode.Location = new System.Drawing.Point(280, 380);
+            this.lblProductCode.Name = "lblProductCode";
+            this.lblProductCode.Size = new System.Drawing.Size(100, 20);
+            this.lblProductCode.TabIndex = 9;
+            this.lblProductCode.Text = "产品编号：";
+            //
+            // lblBatchQuantity
+            //
+            this.lblBatchQuantity.AutoSize = true;
+            this.lblBatchQuantity.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F);
+            this.lblBatchQuantity.Location = new System.Drawing.Point(410, 380);
+            this.lblBatchQuantity.Name = "lblBatchQuantity";
+            this.lblBatchQuantity.Size = new System.Drawing.Size(100, 20);
+            this.lblBatchQuantity.TabIndex = 10;
+            this.lblBatchQuantity.Text = "批次数量：";
+            //
+            // lblStatus
+            //
+            this.lblStatus.AutoSize = true;
+            this.lblStatus.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F);
+            this.lblStatus.Location = new System.Drawing.Point(540, 380);
+            this.lblStatus.Name = "lblStatus";
+            this.lblStatus.Size = new System.Drawing.Size(60, 20);
+            this.lblStatus.TabIndex = 11;
+            this.lblStatus.Text = "状态：";
+            //
+            // lblCreatedBy
+            //
+            this.lblCreatedBy.AutoSize = true;
+            this.lblCreatedBy.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F);
+            this.lblCreatedBy.Location = new System.Drawing.Point(30, 410);
+            this.lblCreatedBy.Name = "lblCreatedBy";
+            this.lblCreatedBy.Size = new System.Drawing.Size(80, 20);
+            this.lblCreatedBy.TabIndex = 12;
+            this.lblCreatedBy.Text = "创建人：";
+            //
+            // lblCreatedDate
+            //
+            this.lblCreatedDate.AutoSize = true;
+            this.lblCreatedDate.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F);
+            this.lblCreatedDate.Location = new System.Drawing.Point(150, 410);
+            this.lblCreatedDate.Name = "lblCreatedDate";
+            this.lblCreatedDate.Size = new System.Drawing.Size(100, 20);
+            this.lblCreatedDate.TabIndex = 13;
+            this.lblCreatedDate.Text = "创建时间：";
+            //
+            // CancelBatch
+            //
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1878, 794);
-            this.Controls.Add(this.dateTimePicker2);
-            this.Controls.Add(this.dateTimePicker1);
-            this.Controls.Add(this.label8);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.textBox3);
-            this.Controls.Add(this.textBox2);
-            this.Controls.Add(this.textBox1);
-            this.Controls.Add(this.dataGridView1);
-            this.Controls.Add(this.label4);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
-            this.Name = "Cancel";
-            this.Text = "Cancel";
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            this.ClientSize = new System.Drawing.Size(880, 560);
+            this.Controls.Add(this.lblCreatedDate);
+            this.Controls.Add(this.lblCreatedBy);
+            this.Controls.Add(this.lblStatus);
+            this.Controls.Add(this.lblBatchQuantity);
+            this.Controls.Add(this.lblProductCode);
+            this.Controls.Add(this.lblWorkOrderNo);
+            this.Controls.Add(this.lblBatchNo);
+            this.Controls.Add(this.btnRefresh);
+            this.Controls.Add(this.dgvBatches);
+            this.Controls.Add(this.lblBatchCount);
+            this.Controls.Add(this.txtCancelReason);
+            this.Controls.Add(this.btnCancel);
+            this.Controls.Add(this.btnClose);
+            this.Name = "CancelBatch";
+            this.Text = "取消批次";
+            this.Load += new System.EventHandler(this.CancelBatch_Load);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.CancelBatch_FormClosed);
+            ((System.ComponentModel.ISupportInitialize)(this.dgvBatches)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -186,17 +207,18 @@
 
         #endregion
 
-        private System.Windows.Forms.DateTimePicker dateTimePicker2;
-        private System.Windows.Forms.DateTimePicker dateTimePicker1;
-        private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.TextBox textBox3;
-        private System.Windows.Forms.TextBox textBox2;
-        private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.DataGridView dataGridView1;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button btnClose;
+        private System.Windows.Forms.Button btnCancel;
+        private System.Windows.Forms.TextBox txtCancelReason;
+        private System.Windows.Forms.Label lblBatchCount;
+        private System.Windows.Forms.DataGridView dgvBatches;
+        private System.Windows.Forms.Button btnRefresh;
+        private System.Windows.Forms.Label lblBatchNo;
+        private System.Windows.Forms.Label lblWorkOrderNo;
+        private System.Windows.Forms.Label lblProductCode;
+        private System.Windows.Forms.Label lblBatchQuantity;
+        private System.Windows.Forms.Label lblStatus;
+        private System.Windows.Forms.Label lblCreatedBy;
+        private System.Windows.Forms.Label lblCreatedDate;
     }
 }

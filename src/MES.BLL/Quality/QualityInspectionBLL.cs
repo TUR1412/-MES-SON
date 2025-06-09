@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using MES.BLL.Quality;
 using MES.DAL.Quality;
 using MES.Models.Quality;
 using MES.Common.Logging;

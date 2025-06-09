@@ -28,221 +28,389 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.dataGridView2 = new System.Windows.Forms.DataGridView();
-            this.button3 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.textBox4 = new System.Windows.Forms.TextBox();
-            this.label6 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
-            this.textBox3 = new System.Windows.Forms.TextBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            // 主面板
+            this.panelTop = new System.Windows.Forms.Panel();
+            this.lblTitle = new System.Windows.Forms.Label();
+            this.panelSearch = new System.Windows.Forms.Panel();
+            this.btnSearch = new System.Windows.Forms.Button();
+            this.txtWorkOrderNo = new System.Windows.Forms.TextBox();
+            this.lblWorkOrderNo = new System.Windows.Forms.Label();
+            this.panelMain = new System.Windows.Forms.Panel();
+            this.dgvWorkOrders = new System.Windows.Forms.DataGridView();
+            this.panelBatch = new System.Windows.Forms.Panel();
+            this.grpBatchInfo = new System.Windows.Forms.GroupBox();
+            this.lblBatchQuantity = new System.Windows.Forms.Label();
+            this.txtBatchQuantity = new System.Windows.Forms.TextBox();
+            this.lblBatchNo = new System.Windows.Forms.Label();
+            this.txtBatchNo = new System.Windows.Forms.TextBox();
+            this.lblResponsible = new System.Windows.Forms.Label();
+            this.cmbResponsible = new System.Windows.Forms.ComboBox();
+            this.lblPlanDate = new System.Windows.Forms.Label();
+            this.dtpPlanDate = new System.Windows.Forms.DateTimePicker();
+            this.lblRemarks = new System.Windows.Forms.Label();
+            this.txtRemarks = new System.Windows.Forms.TextBox();
+            this.panelButtons = new System.Windows.Forms.Panel();
+            this.btnCreate = new System.Windows.Forms.Button();
+            this.btnCancel = new System.Windows.Forms.Button();
+
+            this.panelTop.SuspendLayout();
+            this.panelSearch.SuspendLayout();
+            this.panelMain.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvWorkOrders)).BeginInit();
+            this.panelBatch.SuspendLayout();
+            this.grpBatchInfo.SuspendLayout();
+            this.panelButtons.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // dataGridView2
-            // 
-            this.dataGridView2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView2.Location = new System.Drawing.Point(29, 613);
-            this.dataGridView2.Name = "dataGridView2";
-            this.dataGridView2.RowHeadersWidth = 62;
-            this.dataGridView2.RowTemplate.Height = 30;
-            this.dataGridView2.Size = new System.Drawing.Size(1824, 177);
-            this.dataGridView2.TabIndex = 59;
-            // 
-            // button3
-            // 
-            this.button3.BackColor = System.Drawing.SystemColors.Highlight;
-            this.button3.Font = new System.Drawing.Font("宋体", 12F);
-            this.button3.ForeColor = System.Drawing.SystemColors.HighlightText;
-            this.button3.Location = new System.Drawing.Point(516, 530);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(184, 44);
-            this.button3.TabIndex = 58;
-            this.button3.Text = "取消创建批次";
-            this.button3.UseVisualStyleBackColor = false;
-            // 
-            // button2
-            // 
-            this.button2.BackColor = System.Drawing.SystemColors.Highlight;
-            this.button2.Font = new System.Drawing.Font("宋体", 12F);
-            this.button2.ForeColor = System.Drawing.SystemColors.HighlightText;
-            this.button2.Location = new System.Drawing.Point(335, 530);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(128, 44);
-            this.button2.TabIndex = 57;
-            this.button2.Text = "创建批次";
-            this.button2.UseVisualStyleBackColor = false;
-            // 
-            // textBox4
-            // 
-            this.textBox4.Font = new System.Drawing.Font("宋体", 12F);
-            this.textBox4.Location = new System.Drawing.Point(137, 534);
-            this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(152, 35);
-            this.textBox4.TabIndex = 56;
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Font = new System.Drawing.Font("宋体", 12F);
-            this.label6.ForeColor = System.Drawing.SystemColors.MenuHighlight;
-            this.label6.Location = new System.Drawing.Point(25, 540);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(106, 24);
-            this.label6.TabIndex = 55;
-            this.label6.Text = "创建数量";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("宋体", 12F);
-            this.label5.Location = new System.Drawing.Point(25, 579);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(154, 24);
-            this.label5.TabIndex = 54;
-            this.label5.Text = "创建批次类表";
-            // 
-            // button1
-            // 
-            this.button1.BackColor = System.Drawing.SystemColors.Highlight;
-            this.button1.Font = new System.Drawing.Font("宋体", 12F);
-            this.button1.ForeColor = System.Drawing.SystemColors.HighlightText;
-            this.button1.Location = new System.Drawing.Point(462, 5);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(128, 44);
-            this.button1.TabIndex = 53;
-            this.button1.Text = "查询";
-            this.button1.UseVisualStyleBackColor = false;
-            // 
-            // textBox3
-            // 
-            this.textBox3.Font = new System.Drawing.Font("宋体", 12F);
-            this.textBox3.Location = new System.Drawing.Point(699, 67);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(152, 35);
-            this.textBox3.TabIndex = 52;
-            // 
-            // textBox2
-            // 
-            this.textBox2.Font = new System.Drawing.Font("宋体", 12F);
-            this.textBox2.Location = new System.Drawing.Point(311, 67);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(152, 35);
-            this.textBox2.TabIndex = 51;
-            // 
-            // textBox1
-            // 
-            this.textBox1.Font = new System.Drawing.Font("宋体", 12F);
-            this.textBox1.Location = new System.Drawing.Point(137, 12);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(282, 35);
-            this.textBox1.TabIndex = 50;
-            // 
-            // dataGridView1
-            // 
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(29, 131);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.RowHeadersWidth = 62;
-            this.dataGridView1.RowTemplate.Height = 30;
-            this.dataGridView1.Size = new System.Drawing.Size(1824, 385);
-            this.dataGridView1.TabIndex = 49;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("宋体", 12F);
-            this.label4.ForeColor = System.Drawing.SystemColors.MenuHighlight;
-            this.label4.Location = new System.Drawing.Point(479, 72);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(202, 24);
-            this.label4.TabIndex = 48;
-            this.label4.Text = "已创建未投产数量";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("宋体", 12F);
-            this.label3.ForeColor = System.Drawing.SystemColors.MenuHighlight;
-            this.label3.Location = new System.Drawing.Point(199, 73);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(106, 24);
-            this.label3.TabIndex = 47;
-            this.label3.Text = "剩余数量";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("宋体", 12F);
-            this.label2.Location = new System.Drawing.Point(25, 73);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(106, 24);
-            this.label2.TabIndex = 46;
-            this.label2.Text = "工单清单";
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("宋体", 12F);
-            this.label1.Location = new System.Drawing.Point(25, 15);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(82, 24);
-            this.label1.TabIndex = 45;
-            this.label1.Text = "工单号";
-            // 
-            // Create
-            // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
+
+            //
+            // panelTop - 顶部标题区域
+            //
+            this.panelTop.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(249)))), ((int)(((byte)(250)))));
+            this.panelTop.Controls.Add(this.lblTitle);
+            this.panelTop.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panelTop.Location = new System.Drawing.Point(0, 0);
+            this.panelTop.Name = "panelTop";
+            this.panelTop.Size = new System.Drawing.Size(1000, 60);
+            this.panelTop.TabIndex = 0;
+
+            //
+            // lblTitle - 窗体标题
+            //
+            this.lblTitle.AutoSize = true;
+            this.lblTitle.Font = new System.Drawing.Font("微软雅黑", 16F, System.Drawing.FontStyle.Bold);
+            this.lblTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(167)))), ((int)(((byte)(69)))));
+            this.lblTitle.Location = new System.Drawing.Point(20, 15);
+            this.lblTitle.Name = "lblTitle";
+            this.lblTitle.Size = new System.Drawing.Size(181, 30);
+            this.lblTitle.TabIndex = 0;
+            this.lblTitle.Text = "➕ 创建生产批次";
+
+            //
+            // panelSearch - 搜索区域
+            //
+            this.panelSearch.BackColor = System.Drawing.Color.White;
+            this.panelSearch.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panelSearch.Controls.Add(this.btnSearch);
+            this.panelSearch.Controls.Add(this.txtWorkOrderNo);
+            this.panelSearch.Controls.Add(this.lblWorkOrderNo);
+            this.panelSearch.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panelSearch.Location = new System.Drawing.Point(0, 60);
+            this.panelSearch.Name = "panelSearch";
+            this.panelSearch.Size = new System.Drawing.Size(1000, 60);
+            this.panelSearch.TabIndex = 1;
+
+            //
+            // lblWorkOrderNo - 工单号标签
+            //
+            this.lblWorkOrderNo.AutoSize = true;
+            this.lblWorkOrderNo.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.lblWorkOrderNo.Location = new System.Drawing.Point(20, 20);
+            this.lblWorkOrderNo.Name = "lblWorkOrderNo";
+            this.lblWorkOrderNo.Size = new System.Drawing.Size(56, 17);
+            this.lblWorkOrderNo.TabIndex = 0;
+            this.lblWorkOrderNo.Text = "工单号：";
+
+            //
+            // txtWorkOrderNo - 工单号文本框
+            //
+            this.txtWorkOrderNo.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.txtWorkOrderNo.Location = new System.Drawing.Point(80, 17);
+            this.txtWorkOrderNo.Name = "txtWorkOrderNo";
+            this.txtWorkOrderNo.Size = new System.Drawing.Size(200, 23);
+            this.txtWorkOrderNo.TabIndex = 1;
+
+            //
+            // btnSearch - 搜索按钮
+            //
+            this.btnSearch.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(167)))), ((int)(((byte)(69)))));
+            this.btnSearch.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSearch.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.btnSearch.ForeColor = System.Drawing.Color.White;
+            this.btnSearch.Location = new System.Drawing.Point(300, 15);
+            this.btnSearch.Name = "btnSearch";
+            this.btnSearch.Size = new System.Drawing.Size(80, 27);
+            this.btnSearch.TabIndex = 2;
+            this.btnSearch.Text = "🔍 搜索";
+            this.btnSearch.UseVisualStyleBackColor = false;
+
+            //
+            // panelMain - 主内容区域
+            //
+            this.panelMain.Controls.Add(this.dgvWorkOrders);
+            this.panelMain.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelMain.Location = new System.Drawing.Point(0, 120);
+            this.panelMain.Name = "panelMain";
+            this.panelMain.Padding = new System.Windows.Forms.Padding(10);
+            this.panelMain.Size = new System.Drawing.Size(1000, 300);
+            this.panelMain.TabIndex = 2;
+
+            //
+            // dgvWorkOrders - 工单数据网格
+            //
+            this.dgvWorkOrders.AllowUserToAddRows = false;
+            this.dgvWorkOrders.AllowUserToDeleteRows = false;
+            this.dgvWorkOrders.BackgroundColor = System.Drawing.Color.White;
+            this.dgvWorkOrders.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.dgvWorkOrders.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvWorkOrders.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgvWorkOrders.Location = new System.Drawing.Point(10, 10);
+            this.dgvWorkOrders.MultiSelect = false;
+            this.dgvWorkOrders.Name = "dgvWorkOrders";
+            this.dgvWorkOrders.ReadOnly = true;
+            this.dgvWorkOrders.RowTemplate.Height = 25;
+            this.dgvWorkOrders.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dgvWorkOrders.Size = new System.Drawing.Size(980, 280);
+            this.dgvWorkOrders.TabIndex = 0;
+
+            //
+            // panelBatch - 批次信息面板
+            //
+            this.panelBatch.BackColor = System.Drawing.Color.White;
+            this.panelBatch.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panelBatch.Controls.Add(this.grpBatchInfo);
+            this.panelBatch.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panelBatch.Location = new System.Drawing.Point(0, 420);
+            this.panelBatch.Name = "panelBatch";
+            this.panelBatch.Size = new System.Drawing.Size(1000, 120);
+            this.panelBatch.TabIndex = 3;
+
+            //
+            // grpBatchInfo - 批次信息组
+            //
+            this.grpBatchInfo.Controls.Add(this.lblBatchNo);
+            this.grpBatchInfo.Controls.Add(this.txtBatchNo);
+            this.grpBatchInfo.Controls.Add(this.lblBatchQuantity);
+            this.grpBatchInfo.Controls.Add(this.txtBatchQuantity);
+            this.grpBatchInfo.Controls.Add(this.lblResponsible);
+            this.grpBatchInfo.Controls.Add(this.cmbResponsible);
+            this.grpBatchInfo.Controls.Add(this.lblPlanDate);
+            this.grpBatchInfo.Controls.Add(this.dtpPlanDate);
+            this.grpBatchInfo.Controls.Add(this.lblRemarks);
+            this.grpBatchInfo.Controls.Add(this.txtRemarks);
+            this.grpBatchInfo.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.grpBatchInfo.Font = new System.Drawing.Font("微软雅黑", 10F, System.Drawing.FontStyle.Bold);
+            this.grpBatchInfo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(167)))), ((int)(((byte)(69)))));
+            this.grpBatchInfo.Location = new System.Drawing.Point(0, 0);
+            this.grpBatchInfo.Name = "grpBatchInfo";
+            this.grpBatchInfo.Size = new System.Drawing.Size(998, 118);
+            this.grpBatchInfo.TabIndex = 0;
+            this.grpBatchInfo.TabStop = false;
+            this.grpBatchInfo.Text = "📋 批次信息";
+
+            //
+            // lblBatchNo - 批次号标签
+            //
+            this.lblBatchNo.AutoSize = true;
+            this.lblBatchNo.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.lblBatchNo.ForeColor = System.Drawing.Color.Black;
+            this.lblBatchNo.Location = new System.Drawing.Point(20, 30);
+            this.lblBatchNo.Name = "lblBatchNo";
+            this.lblBatchNo.Size = new System.Drawing.Size(56, 17);
+            this.lblBatchNo.TabIndex = 0;
+            this.lblBatchNo.Text = "批次号：";
+
+            //
+            // txtBatchNo - 批次号文本框
+            //
+            this.txtBatchNo.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.txtBatchNo.Location = new System.Drawing.Point(80, 27);
+            this.txtBatchNo.Name = "txtBatchNo";
+            this.txtBatchNo.ReadOnly = true;
+            this.txtBatchNo.Size = new System.Drawing.Size(150, 23);
+            this.txtBatchNo.TabIndex = 1;
+
+            //
+            // lblBatchQuantity - 批次数量标签
+            //
+            this.lblBatchQuantity.AutoSize = true;
+            this.lblBatchQuantity.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.lblBatchQuantity.ForeColor = System.Drawing.Color.Black;
+            this.lblBatchQuantity.Location = new System.Drawing.Point(250, 30);
+            this.lblBatchQuantity.Name = "lblBatchQuantity";
+            this.lblBatchQuantity.Size = new System.Drawing.Size(68, 17);
+            this.lblBatchQuantity.TabIndex = 2;
+            this.lblBatchQuantity.Text = "批次数量：";
+
+            //
+            // txtBatchQuantity - 批次数量文本框
+            //
+            this.txtBatchQuantity.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.txtBatchQuantity.Location = new System.Drawing.Point(320, 27);
+            this.txtBatchQuantity.Name = "txtBatchQuantity";
+            this.txtBatchQuantity.Size = new System.Drawing.Size(100, 23);
+            this.txtBatchQuantity.TabIndex = 3;
+
+            //
+            // lblResponsible - 负责人标签
+            //
+            this.lblResponsible.AutoSize = true;
+            this.lblResponsible.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.lblResponsible.ForeColor = System.Drawing.Color.Black;
+            this.lblResponsible.Location = new System.Drawing.Point(440, 30);
+            this.lblResponsible.Name = "lblResponsible";
+            this.lblResponsible.Size = new System.Drawing.Size(56, 17);
+            this.lblResponsible.TabIndex = 4;
+            this.lblResponsible.Text = "负责人：";
+
+            //
+            // cmbResponsible - 负责人下拉框
+            //
+            this.cmbResponsible.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbResponsible.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.cmbResponsible.FormattingEnabled = true;
+            this.cmbResponsible.Items.AddRange(new object[] {
+            "张三",
+            "李四",
+            "王五",
+            "赵六"});
+            this.cmbResponsible.Location = new System.Drawing.Point(500, 27);
+            this.cmbResponsible.Name = "cmbResponsible";
+            this.cmbResponsible.Size = new System.Drawing.Size(120, 25);
+            this.cmbResponsible.TabIndex = 5;
+
+            //
+            // lblPlanDate - 计划完成日期标签
+            //
+            this.lblPlanDate.AutoSize = true;
+            this.lblPlanDate.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.lblPlanDate.ForeColor = System.Drawing.Color.Black;
+            this.lblPlanDate.Location = new System.Drawing.Point(640, 30);
+            this.lblPlanDate.Name = "lblPlanDate";
+            this.lblPlanDate.Size = new System.Drawing.Size(92, 17);
+            this.lblPlanDate.TabIndex = 6;
+            this.lblPlanDate.Text = "计划完成日期：";
+
+            //
+            // dtpPlanDate - 计划完成日期选择器
+            //
+            this.dtpPlanDate.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.dtpPlanDate.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.dtpPlanDate.Location = new System.Drawing.Point(740, 27);
+            this.dtpPlanDate.Name = "dtpPlanDate";
+            this.dtpPlanDate.Size = new System.Drawing.Size(120, 23);
+            this.dtpPlanDate.TabIndex = 7;
+
+            //
+            // lblRemarks - 备注标签
+            //
+            this.lblRemarks.AutoSize = true;
+            this.lblRemarks.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.lblRemarks.ForeColor = System.Drawing.Color.Black;
+            this.lblRemarks.Location = new System.Drawing.Point(20, 65);
+            this.lblRemarks.Name = "lblRemarks";
+            this.lblRemarks.Size = new System.Drawing.Size(44, 17);
+            this.lblRemarks.TabIndex = 8;
+            this.lblRemarks.Text = "备注：";
+
+            //
+            // txtRemarks - 备注文本框
+            //
+            this.txtRemarks.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.txtRemarks.Location = new System.Drawing.Point(80, 62);
+            this.txtRemarks.Multiline = true;
+            this.txtRemarks.Name = "txtRemarks";
+            this.txtRemarks.Size = new System.Drawing.Size(780, 40);
+            this.txtRemarks.TabIndex = 9;
+
+            //
+            // panelButtons - 按钮面板
+            //
+            this.panelButtons.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(249)))), ((int)(((byte)(250)))));
+            this.panelButtons.Controls.Add(this.btnCreate);
+            this.panelButtons.Controls.Add(this.btnCancel);
+            this.panelButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panelButtons.Location = new System.Drawing.Point(0, 540);
+            this.panelButtons.Name = "panelButtons";
+            this.panelButtons.Size = new System.Drawing.Size(1000, 60);
+            this.panelButtons.TabIndex = 4;
+
+            //
+            // btnCreate - 创建按钮
+            //
+            this.btnCreate.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(167)))), ((int)(((byte)(69)))));
+            this.btnCreate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnCreate.Font = new System.Drawing.Font("微软雅黑", 10F, System.Drawing.FontStyle.Bold);
+            this.btnCreate.ForeColor = System.Drawing.Color.White;
+            this.btnCreate.Location = new System.Drawing.Point(750, 15);
+            this.btnCreate.Name = "btnCreate";
+            this.btnCreate.Size = new System.Drawing.Size(100, 30);
+            this.btnCreate.TabIndex = 0;
+            this.btnCreate.Text = "✅ 创建批次";
+            this.btnCreate.UseVisualStyleBackColor = false;
+
+            //
+            // btnCancel - 取消按钮
+            //
+            this.btnCancel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(108)))), ((int)(((byte)(117)))), ((int)(((byte)(125)))));
+            this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnCancel.Font = new System.Drawing.Font("微软雅黑", 10F, System.Drawing.FontStyle.Bold);
+            this.btnCancel.ForeColor = System.Drawing.Color.White;
+            this.btnCancel.Location = new System.Drawing.Point(870, 15);
+            this.btnCancel.Name = "btnCancel";
+            this.btnCancel.Size = new System.Drawing.Size(100, 30);
+            this.btnCancel.TabIndex = 1;
+            this.btnCancel.Text = "❌ 取消";
+            this.btnCancel.UseVisualStyleBackColor = false;
+
+            //
+            // CreateBatch - 创建批次窗体
+            //
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1878, 794);
-            this.Controls.Add(this.dataGridView2);
-            this.Controls.Add(this.button3);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.textBox4);
-            this.Controls.Add(this.label6);
-            this.Controls.Add(this.label5);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.textBox3);
-            this.Controls.Add(this.textBox2);
-            this.Controls.Add(this.textBox1);
-            this.Controls.Add(this.dataGridView1);
-            this.Controls.Add(this.label4);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
-            this.Name = "Create";
-            this.Text = "Create";
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(249)))), ((int)(((byte)(250)))));
+            this.ClientSize = new System.Drawing.Size(1000, 600);
+            this.Controls.Add(this.panelMain);
+            this.Controls.Add(this.panelBatch);
+            this.Controls.Add(this.panelButtons);
+            this.Controls.Add(this.panelSearch);
+            this.Controls.Add(this.panelTop);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.Name = "CreateBatch";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.Text = "创建生产批次";
+
+            // 布局恢复
+            this.panelTop.ResumeLayout(false);
+            this.panelTop.PerformLayout();
+            this.panelSearch.ResumeLayout(false);
+            this.panelSearch.PerformLayout();
+            this.panelMain.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dgvWorkOrders)).EndInit();
+            this.panelBatch.ResumeLayout(false);
+            this.grpBatchInfo.ResumeLayout(false);
+            this.grpBatchInfo.PerformLayout();
+            this.panelButtons.ResumeLayout(false);
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
 
-        private System.Windows.Forms.DataGridView dataGridView2;
-        private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.TextBox textBox4;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.TextBox textBox3;
-        private System.Windows.Forms.TextBox textBox2;
-        private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.DataGridView dataGridView1;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label1;
+        // 主面板控件
+        private System.Windows.Forms.Panel panelTop;
+        private System.Windows.Forms.Label lblTitle;
+        private System.Windows.Forms.Panel panelSearch;
+        private System.Windows.Forms.Label lblWorkOrderNo;
+        private System.Windows.Forms.TextBox txtWorkOrderNo;
+        private System.Windows.Forms.Button btnSearch;
+        private System.Windows.Forms.Panel panelMain;
+        private System.Windows.Forms.DataGridView dgvWorkOrders;
+        private System.Windows.Forms.Panel panelBatch;
+        private System.Windows.Forms.GroupBox grpBatchInfo;
+        private System.Windows.Forms.Label lblBatchNo;
+        private System.Windows.Forms.TextBox txtBatchNo;
+        private System.Windows.Forms.Label lblBatchQuantity;
+        private System.Windows.Forms.TextBox txtBatchQuantity;
+        private System.Windows.Forms.Label lblResponsible;
+        private System.Windows.Forms.ComboBox cmbResponsible;
+        private System.Windows.Forms.Label lblPlanDate;
+        private System.Windows.Forms.DateTimePicker dtpPlanDate;
+        private System.Windows.Forms.Label lblRemarks;
+        private System.Windows.Forms.TextBox txtRemarks;
+        private System.Windows.Forms.Panel panelButtons;
+        private System.Windows.Forms.Button btnCreate;
+        private System.Windows.Forms.Button btnCancel;
     }
 }

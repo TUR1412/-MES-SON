@@ -126,6 +126,12 @@
     <Compile Include="Forms\Batch\CreateBatch.Designer.cs">
       <DependentUpon>CreateBatch.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\Batch\BatchManagementForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Batch\BatchManagementForm.Designer.cs">
+      <DependentUpon>BatchManagementForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -177,12 +183,6 @@
     <Compile Include="Forms\Production\ProductionOrderManagementForm.Designer.cs">
       <DependentUpon>ProductionOrderManagementForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\Production\UserPermissionManagementForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\Production\UserPermissionManagementForm.Designer.cs">
-      <DependentUpon>UserPermissionManagementForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="Forms\Production\ProductionExecutionControlForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -207,6 +207,12 @@
     </Compile>
     <Compile Include="Forms\WorkOrder\SubmitWorkOrder.Designer.cs">
       <DependentUpon>SubmitWorkOrder.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\WorkOrder\WorkOrderManagementForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\WorkOrder\WorkOrderManagementForm.Designer.cs">
+      <DependentUpon>WorkOrderManagementForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\WorkshopManagementForm.cs">
       <SubType>Form</SubType>
@@ -264,6 +270,9 @@
     <EmbeddedResource Include="Forms\Batch\CreateBatch.resx">
       <DependentUpon>CreateBatch.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Batch\BatchManagementForm.resx">
+      <DependentUpon>BatchManagementForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -273,11 +282,14 @@
     <EmbeddedResource Include="Forms\Material\BOMManagementForm.resx">
       <DependentUpon>BOMManagementForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Material\ProcessRouteConfigForm.resx">
+      <DependentUpon>ProcessRouteConfigForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Material\ProcessRouteEditForm.resx">
+      <DependentUpon>ProcessRouteEditForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\Production\ProductionOrderManagementForm.resx">
       <DependentUpon>ProductionOrderManagementForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Production\UserPermissionManagementForm.resx">
-      <DependentUpon>UserPermissionManagementForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Production\ProductionExecutionControlForm.resx">
       <DependentUpon>ProductionExecutionControlForm.cs</DependentUpon>
@@ -290,6 +302,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\WorkOrder\SubmitWorkOrder.resx">
       <DependentUpon>SubmitWorkOrder.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\WorkOrder\WorkOrderManagementForm.resx">
+      <DependentUpon>WorkOrderManagementForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Workshop\WorkshopOperationForm.resx">
       <DependentUpon>WorkshopOperationForm.cs</DependentUpon>

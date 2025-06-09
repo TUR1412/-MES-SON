@@ -274,6 +274,8 @@ namespace MES.UI.Forms
                     "产品物料清单管理");
                 materialNode.Nodes.Add(bomNode);
 
+
+
                 var processRouteNode = CreateTreeNode("⚙️ 工艺路线配置",
                     Color.FromArgb(60, 180, 85),
                     new Font("微软雅黑", 9, FontStyle.Regular),
@@ -288,7 +290,7 @@ namespace MES.UI.Forms
                 {
                     ForeColor = Color.FromArgb(0, 123, 255),
                     NodeFont = new Font("微软雅黑", 10, FontStyle.Bold),
-                    ToolTipText = "生产订单管理、执行控制、权限管理"
+                    ToolTipText = "生产订单管理、执行控制"
                 };
 
                 // 添加生产管理子节点
@@ -308,47 +310,22 @@ namespace MES.UI.Forms
                 };
                 productionNode.Nodes.Add(executionControlNode);
 
+                // 添加工单管理子节点
+                var workOrderManagementNode = CreateTreeNode("📋 工单管理",
+                    Color.FromArgb(20, 140, 255),
+                    new Font("微软雅黑", 9, FontStyle.Regular),
+                    "工单创建、提交、取消等管理");
+                productionNode.Nodes.Add(workOrderManagementNode);
+
+                // 添加批次管理子节点
+                var batchManagementNode = CreateTreeNode("📦 批次管理",
+                    Color.FromArgb(20, 140, 255),
+                    new Font("微软雅黑", 9, FontStyle.Regular),
+                    "批次创建、取消等管理");
+                productionNode.Nodes.Add(batchManagementNode);
+
                 productionNode.ExpandAll();
                 treeViewModules.Nodes.Add(productionNode);
-                //创建工单
-                var CreateWorkOrder = new TreeNode("创建工单")
-                {
-                    ForeColor = Color.FromArgb(20, 140, 255),
-                    NodeFont = new Font("微软雅黑", 9, FontStyle.Regular),
-                    ToolTipText = "创建工单"
-                };
-
-                var CancelWorkOrder = new TreeNode("取消创建工单")
-                {
-                    ForeColor = Color.FromArgb(20, 140, 255),
-                    NodeFont = new Font("微软雅黑", 9, FontStyle.Regular),
-                    ToolTipText = "取消创建工单"
-                };
-
-                var SubmitWorkOrder = new TreeNode("提交工单")
-                {
-                    ForeColor = Color.FromArgb(20, 140, 255),
-                    NodeFont = new Font("微软雅黑", 9, FontStyle.Regular),
-                    ToolTipText = "提交工单"
-                };
-                var CreateBatch = new TreeNode("创建批次")
-                {
-                    ForeColor = Color.FromArgb(20, 140, 255),
-                    NodeFont = new Font("微软雅黑", 9, FontStyle.Regular),
-                    ToolTipText = "创建批次"
-                };
-
-                var CancelBatch = new TreeNode("取消创建批次")
-                {
-                    ForeColor = Color.FromArgb(20, 140, 255),
-                    NodeFont = new Font("微软雅黑", 9, FontStyle.Regular),
-                    ToolTipText = "取消创建批次"
-                };
-                productionNode.Nodes.Add(CreateWorkOrder);
-                productionNode.Nodes.Add(CancelWorkOrder);
-                productionNode.Nodes.Add(SubmitWorkOrder);
-                productionNode.Nodes.Add(CreateBatch);
-                productionNode.Nodes.Add(CancelBatch);
 
                 // S成员 - 车间管理模块
                 var workshopNode = new TreeNode("🏭 车间管理 (S成员)")
@@ -517,56 +494,61 @@ namespace MES.UI.Forms
                 return;
             }
 
-            // 根据子节点名称打开对应窗体
-            switch (nodeName)
+            // 添加调试日志
+            LogManager.Info(string.Format("TreeView节点双击: '{0}' (长度: {1})", nodeName, nodeName.Length));
+
+            // 直接根据节点文本进行精确匹配，移除emoji前缀
+            var cleanText = nodeName;
+            if (cleanText.Length > 2 && (cleanText[0] > 127 || cleanText[1] == ' '))
             {
-                case "📋 物料信息管理":
+                // 移除emoji和空格前缀
+                var spaceIndex = cleanText.IndexOf(' ');
+                if (spaceIndex > 0)
+                {
+                    cleanText = cleanText.Substring(spaceIndex + 1);
+                }
+            }
+
+            switch (cleanText)
+            {
+                case "物料信息管理":
                     OpenMaterialForm();
                     break;
-                case "🔧 BOM物料清单":
+                case "BOM物料清单":
                     OpenBOMForm();
                     break;
-                case "⚙️ 工艺路线配置":
+                case "工艺路线配置":
                     OpenProcessRouteForm();
                     break;
-                case "📊 生产订单管理":
+                case "生产订单管理":
                     OpenProductionOrderForm();
                     break;
-                case "创建工单":
-                    OpenCreateWorkOrderForm();
+                case "工单管理":
+                    OpenWorkOrderManagementForm();
                     break;
-                case "取消创建工单":
-                    OpenCancelWorkOrderForm();
+                case "批次管理":
+                    OpenBatchManagementForm();
                     break;
-                case "提交工单":
-                    OpenSubmitWorkOrderForm();
-                    break;
-                case "创建批次":
-                    OpenCreateBatchForm();
-                    break;
-                case "取消创建批次":
-                    OpenCancelBatchForm();
-                    break;
-                case "🎯 生产执行控制":
+                case "生产执行控制":
                     OpenProductionExecutionForm();
                     break;
-                case "🔨 车间作业管理":
+                case "车间作业管理":
                     OpenWorkshopOperationForm();
                     break;
-                case "📦 在制品管理":
+                case "在制品管理":
                     OpenWIPForm();
                     break;
-                case "🔧 设备状态管理":
+                case "设备状态管理":
                     OpenEquipmentForm();
                     break;
-                case "⚙️ 系统配置":
+                case "系统配置":
                     OpenSystemConfigForm();
                     break;
-                case "ℹ️ 关于系统":
+                case "关于系统":
                     ShowAbout();
                     break;
                 default:
-                    MessageBox.Show(string.Format("功能 '{0}' 正在开发中...", nodeName), "提示",
+                    MessageBox.Show(string.Format("功能 '{0}' 正在开发中...", cleanText), "提示",
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                     break;
             }
@@ -932,11 +914,8 @@ namespace MES.UI.Forms
 
         // H成员负责实现的生产管理模块
         private void OpenProductionOrderForm() { ShowProductionOrderForm(); }
-        private void OpenCreateWorkOrderForm() { ShowCreateWorkOrderForm(); }
-        private void OpenCancelWorkOrderForm() { ShowCancelWorkOrderForm(); }
-        private void OpenSubmitWorkOrderForm() { ShowSubmitWorkOrderForm(); }
-        private void OpenCreateBatchForm() { ShowCreateBatchForm(); }
-        private void OpenCancelBatchForm() { ShowCancelBatchForm(); }
+        private void OpenWorkOrderManagementForm() { ShowWorkOrderManagementForm(); }
+        private void OpenBatchManagementForm() { ShowBatchManagementForm(); }
         private void OpenProductionExecutionForm() { ShowProductionExecutionControlForm(); }
 
         // S成员负责实现的车间管理模块
@@ -1196,31 +1175,7 @@ namespace MES.UI.Forms
             ProductionOrderManagementForm productionForm = new ProductionOrderManagementForm();
             productionForm.Show();
         }
-        private void ShowCreateWorkOrderForm()
-        {
-            CreateWorkOrder createWorkOrder = new CreateWorkOrder();
-            createWorkOrder.Show();
-        }
-        private void ShowCancelWorkOrderForm()
-        {
-            CancelWorkOrder cancelWorkOrder = new CancelWorkOrder();
-            cancelWorkOrder.Show();
-        }
-        private void ShowSubmitWorkOrderForm()
-        {
-            SubmitWorkOrder submitWorkOrder = new SubmitWorkOrder();
-            submitWorkOrder.Show();
-        }
-        private void ShowCreateBatchForm()
-        {
-            CreateBatch createBatch = new CreateBatch();
-            createBatch.Show();
-        }
-        private void ShowCancelBatchForm()
-        {
-            CancelBatch cancelBatch = new CancelBatch();
-            cancelBatch.Show();
-        }
+
 
 
 
@@ -1238,8 +1193,58 @@ namespace MES.UI.Forms
         /// </summary>
         private void ShowProcessRouteConfigForm()
         {
-            ProcessRouteConfigForm processRouteForm = new ProcessRouteConfigForm();
-            processRouteForm.Show();
+            try
+            {
+                ProcessRouteConfigForm processRouteForm = new ProcessRouteConfigForm();
+                processRouteForm.Show();
+                LogManager.Info("打开工艺路线配置窗体");
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("打开工艺路线配置窗体失败", ex);
+                MessageBox.Show(string.Format("打开工艺路线配置窗体失败：{0}", ex.Message), "错误",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+
+
+        /// <summary>
+        /// 显示工单管理窗体
+        /// </summary>
+        private void ShowWorkOrderManagementForm()
+        {
+            try
+            {
+                var workOrderForm = new WorkOrder.WorkOrderManagementForm();
+                workOrderForm.Show();
+                LogManager.Info("打开工单管理统一窗体");
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("打开工单管理窗体失败", ex);
+                MessageBox.Show(string.Format("打开工单管理窗体失败：{0}", ex.Message), "错误",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// 显示批次管理窗体
+        /// </summary>
+        private void ShowBatchManagementForm()
+        {
+            try
+            {
+                var batchForm = new Batch.BatchManagementForm();
+                batchForm.Show();
+                LogManager.Info("打开批次管理统一窗体");
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("打开批次管理窗体失败", ex);
+                MessageBox.Show(string.Format("打开批次管理窗体失败：{0}", ex.Message), "错误",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         /// <summary>

@@ -1,4 +1,4 @@
-﻿namespace MES.UI.Forms.WorkOrder
+namespace MES.UI.Forms.WorkOrder
 {
     partial class CreateWorkOrder
     {
@@ -28,571 +28,705 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.dateTimePicker2 = new System.Windows.Forms.DateTimePicker();
-            this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
-            this.button4 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
-            this.textBox16 = new System.Windows.Forms.TextBox();
-            this.textBox15 = new System.Windows.Forms.TextBox();
-            this.label19 = new System.Windows.Forms.Label();
-            this.label18 = new System.Windows.Forms.Label();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.label17 = new System.Windows.Forms.Label();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
-            this.textBox14 = new System.Windows.Forms.TextBox();
-            this.label16 = new System.Windows.Forms.Label();
-            this.textBox13 = new System.Windows.Forms.TextBox();
-            this.textBox12 = new System.Windows.Forms.TextBox();
-            this.label15 = new System.Windows.Forms.Label();
-            this.textBox11 = new System.Windows.Forms.TextBox();
-            this.textBox10 = new System.Windows.Forms.TextBox();
-            this.textBox9 = new System.Windows.Forms.TextBox();
-            this.label14 = new System.Windows.Forms.Label();
-            this.label13 = new System.Windows.Forms.Label();
-            this.label12 = new System.Windows.Forms.Label();
-            this.textBox8 = new System.Windows.Forms.TextBox();
-            this.textBox7 = new System.Windows.Forms.TextBox();
-            this.textBox6 = new System.Windows.Forms.TextBox();
-            this.label11 = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
-            this.textBox5 = new System.Windows.Forms.TextBox();
-            this.textBox4 = new System.Windows.Forms.TextBox();
-            this.textBox3 = new System.Windows.Forms.TextBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.label7 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.comboBox3 = new System.Windows.Forms.ComboBox();
-            this.comboBox2 = new System.Windows.Forms.ComboBox();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            // 主面板
+            this.panelTop = new System.Windows.Forms.Panel();
+            this.lblTitle = new System.Windows.Forms.Label();
+            this.panelMain = new System.Windows.Forms.Panel();
+            this.panelLeft = new System.Windows.Forms.Panel();
+            this.panelRight = new System.Windows.Forms.Panel();
+            this.panelBottom = new System.Windows.Forms.Panel();
+            
+            // 左侧基本信息区域
+            this.grpBasicInfo = new System.Windows.Forms.GroupBox();
+            this.lblWorkOrderType = new System.Windows.Forms.Label();
+            this.cmbWorkOrderType = new System.Windows.Forms.ComboBox();
+            this.lblWorkOrderDesc = new System.Windows.Forms.Label();
+            this.txtWorkOrderDesc = new System.Windows.Forms.TextBox();
+            this.lblProductCode = new System.Windows.Forms.Label();
+            this.cmbProductCode = new System.Windows.Forms.ComboBox();
+            this.lblFinishedWorkOrder = new System.Windows.Forms.Label();
+            this.cmbFinishedWorkOrder = new System.Windows.Forms.ComboBox();
+            this.lblBOMCode = new System.Windows.Forms.Label();
+            this.txtBOMCode = new System.Windows.Forms.TextBox();
+            this.txtBOMVersion = new System.Windows.Forms.TextBox();
+            this.btnSelectBOM = new System.Windows.Forms.Button();
+            
+            // 计划信息区域
+            this.grpPlanInfo = new System.Windows.Forms.GroupBox();
+            this.lblPlanStartDate = new System.Windows.Forms.Label();
+            this.dtpPlanStartDate = new System.Windows.Forms.DateTimePicker();
+            this.lblPlanEndDate = new System.Windows.Forms.Label();
+            this.dtpPlanEndDate = new System.Windows.Forms.DateTimePicker();
+            this.lblPlanQuantity = new System.Windows.Forms.Label();
+            this.txtPlanQuantity = new System.Windows.Forms.TextBox();
+            this.lblUnit = new System.Windows.Forms.Label();
+            this.txtUnit = new System.Windows.Forms.TextBox();
+            this.lblProductType = new System.Windows.Forms.Label();
+            this.txtProductType = new System.Windows.Forms.TextBox();
+            
+            // 右侧BOM物料清单区域
+            this.grpBOMList = new System.Windows.Forms.GroupBox();
+            this.dgvBOMList = new System.Windows.Forms.DataGridView();
+            this.panelBOMButtons = new System.Windows.Forms.Panel();
+            this.btnAddBOM = new System.Windows.Forms.Button();
+            this.btnRemoveBOM = new System.Windows.Forms.Button();
+            this.btnRefreshBOM = new System.Windows.Forms.Button();
+            
+            // 底部操作区域
+            this.grpRemarks = new System.Windows.Forms.GroupBox();
+            this.lblRemarks = new System.Windows.Forms.Label();
+            this.txtRemarks = new System.Windows.Forms.TextBox();
+            this.lblCreatedBy = new System.Windows.Forms.Label();
+            this.txtCreatedBy = new System.Windows.Forms.TextBox();
+            this.btnSave = new System.Windows.Forms.Button();
+            this.btnCancel = new System.Windows.Forms.Button();
+            
+            this.panelTop.SuspendLayout();
+            this.panelMain.SuspendLayout();
+            this.panelLeft.SuspendLayout();
+            this.panelRight.SuspendLayout();
+            this.panelBottom.SuspendLayout();
+            this.grpBasicInfo.SuspendLayout();
+            this.grpPlanInfo.SuspendLayout();
+            this.grpBOMList.SuspendLayout();
+            this.grpRemarks.SuspendLayout();
+            this.panelBOMButtons.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvBOMList)).BeginInit();
             this.SuspendLayout();
-            // 
-            // dateTimePicker2
-            // 
-            this.dateTimePicker2.CalendarFont = new System.Drawing.Font("宋体", 12F);
-            this.dateTimePicker2.Font = new System.Drawing.Font("宋体", 12F);
-            this.dateTimePicker2.Location = new System.Drawing.Point(1102, 75);
-            this.dateTimePicker2.Name = "dateTimePicker2";
-            this.dateTimePicker2.Size = new System.Drawing.Size(200, 35);
-            this.dateTimePicker2.TabIndex = 222;
-            // 
-            // dateTimePicker1
-            // 
-            this.dateTimePicker1.CalendarFont = new System.Drawing.Font("宋体", 15F);
-            this.dateTimePicker1.Font = new System.Drawing.Font("宋体", 12F);
-            this.dateTimePicker1.Location = new System.Drawing.Point(881, 74);
-            this.dateTimePicker1.Name = "dateTimePicker1";
-            this.dateTimePicker1.Size = new System.Drawing.Size(200, 35);
-            this.dateTimePicker1.TabIndex = 221;
-            // 
-            // button4
-            // 
-            this.button4.Font = new System.Drawing.Font("黑体", 12F);
-            this.button4.Location = new System.Drawing.Point(1708, 716);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(94, 43);
-            this.button4.TabIndex = 220;
-            this.button4.Text = "退出";
-            this.button4.UseVisualStyleBackColor = true;
-            // 
-            // button3
-            // 
-            this.button3.Font = new System.Drawing.Font("黑体", 12F);
-            this.button3.Location = new System.Drawing.Point(1569, 716);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(94, 43);
-            this.button3.TabIndex = 219;
-            this.button3.Text = "确定";
-            this.button3.UseVisualStyleBackColor = true;
-            // 
-            // textBox16
-            // 
-            this.textBox16.Font = new System.Drawing.Font("宋体", 12F);
-            this.textBox16.Location = new System.Drawing.Point(1203, 722);
-            this.textBox16.Name = "textBox16";
-            this.textBox16.Size = new System.Drawing.Size(272, 35);
-            this.textBox16.TabIndex = 218;
-            // 
-            // textBox15
-            // 
-            this.textBox15.Font = new System.Drawing.Font("宋体", 12F);
-            this.textBox15.Location = new System.Drawing.Point(129, 722);
-            this.textBox15.Name = "textBox15";
-            this.textBox15.Size = new System.Drawing.Size(853, 35);
-            this.textBox15.TabIndex = 217;
-            // 
-            // label19
-            // 
-            this.label19.AutoSize = true;
-            this.label19.Font = new System.Drawing.Font("微软雅黑", 12F);
-            this.label19.Location = new System.Drawing.Point(1042, 726);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(110, 31);
-            this.label19.TabIndex = 216;
-            this.label19.Text = "用户编号";
-            // 
-            // label18
-            // 
-            this.label18.AutoSize = true;
-            this.label18.Font = new System.Drawing.Font("微软雅黑", 12F);
-            this.label18.Location = new System.Drawing.Point(48, 726);
-            this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(62, 31);
-            this.label18.TabIndex = 215;
-            this.label18.Text = "备注";
-            // 
-            // dataGridView1
-            // 
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(54, 361);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.RowHeadersWidth = 62;
-            this.dataGridView1.RowTemplate.Height = 30;
-            this.dataGridView1.Size = new System.Drawing.Size(1748, 337);
-            this.dataGridView1.TabIndex = 214;
-            // 
-            // label17
-            // 
-            this.label17.AutoSize = true;
-            this.label17.Font = new System.Drawing.Font("黑体", 13F);
-            this.label17.Location = new System.Drawing.Point(47, 325);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(168, 26);
-            this.label17.TabIndex = 213;
-            this.label17.Text = "创建工单列表";
-            // 
-            // button2
-            // 
-            this.button2.Font = new System.Drawing.Font("黑体", 12F);
-            this.button2.Location = new System.Drawing.Point(191, 251);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(94, 43);
-            this.button2.TabIndex = 212;
-            this.button2.Text = "清空";
-            this.button2.UseVisualStyleBackColor = true;
-            // 
-            // button1
-            // 
-            this.button1.Font = new System.Drawing.Font("黑体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button1.Location = new System.Drawing.Point(54, 251);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(94, 43);
-            this.button1.TabIndex = 211;
-            this.button1.Text = "添加";
-            this.button1.UseVisualStyleBackColor = true;
-            // 
-            // textBox14
-            // 
-            this.textBox14.Font = new System.Drawing.Font("宋体", 12F);
-            this.textBox14.Location = new System.Drawing.Point(1720, 163);
-            this.textBox14.Name = "textBox14";
-            this.textBox14.Size = new System.Drawing.Size(111, 35);
-            this.textBox14.TabIndex = 210;
-            // 
-            // label16
-            // 
-            this.label16.AutoSize = true;
-            this.label16.Font = new System.Drawing.Font("微软雅黑", 12F);
-            this.label16.Location = new System.Drawing.Point(1447, 210);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(110, 31);
-            this.label16.TabIndex = 209;
-            this.label16.Text = "封装形式";
-            // 
-            // textBox13
-            // 
-            this.textBox13.Font = new System.Drawing.Font("宋体", 12F);
-            this.textBox13.Location = new System.Drawing.Point(1585, 210);
-            this.textBox13.Name = "textBox13";
-            this.textBox13.Size = new System.Drawing.Size(246, 35);
-            this.textBox13.TabIndex = 208;
-            // 
-            // textBox12
-            // 
-            this.textBox12.Font = new System.Drawing.Font("宋体", 12F);
-            this.textBox12.Location = new System.Drawing.Point(1585, 163);
-            this.textBox12.Name = "textBox12";
-            this.textBox12.Size = new System.Drawing.Size(129, 35);
-            this.textBox12.TabIndex = 207;
-            // 
-            // label15
-            // 
-            this.label15.AutoSize = true;
-            this.label15.Font = new System.Drawing.Font("微软雅黑", 12F);
-            this.label15.Location = new System.Drawing.Point(1447, 163);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(134, 31);
-            this.label15.TabIndex = 206;
-            this.label15.Text = "工艺流程号";
-            // 
-            // textBox11
-            // 
-            this.textBox11.Font = new System.Drawing.Font("宋体", 12F);
-            this.textBox11.Location = new System.Drawing.Point(1233, 210);
-            this.textBox11.Name = "textBox11";
-            this.textBox11.Size = new System.Drawing.Size(173, 35);
-            this.textBox11.TabIndex = 205;
-            // 
-            // textBox10
-            // 
-            this.textBox10.Font = new System.Drawing.Font("宋体", 12F);
-            this.textBox10.Location = new System.Drawing.Point(1233, 163);
-            this.textBox10.Name = "textBox10";
-            this.textBox10.Size = new System.Drawing.Size(173, 35);
-            this.textBox10.TabIndex = 204;
-            // 
-            // textBox9
-            // 
-            this.textBox9.Font = new System.Drawing.Font("宋体", 12F);
-            this.textBox9.Location = new System.Drawing.Point(1233, 117);
-            this.textBox9.Name = "textBox9";
-            this.textBox9.Size = new System.Drawing.Size(173, 35);
-            this.textBox9.TabIndex = 203;
-            // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Font = new System.Drawing.Font("微软雅黑", 12F);
-            this.label14.Location = new System.Drawing.Point(1096, 210);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(110, 31);
-            this.label14.TabIndex = 202;
-            this.label14.Text = "磨片厚度";
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Font = new System.Drawing.Font("微软雅黑", 12F);
-            this.label13.Location = new System.Drawing.Point(1096, 163);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(110, 31);
-            this.label13.TabIndex = 201;
-            this.label13.Text = "产品类别";
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Font = new System.Drawing.Font("微软雅黑", 12F);
-            this.label12.Location = new System.Drawing.Point(1096, 118);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(134, 31);
-            this.label12.TabIndex = 200;
-            this.label12.Text = "客户批次号";
-            // 
-            // textBox8
-            // 
-            this.textBox8.Font = new System.Drawing.Font("宋体", 12F);
-            this.textBox8.Location = new System.Drawing.Point(881, 210);
-            this.textBox8.Name = "textBox8";
-            this.textBox8.Size = new System.Drawing.Size(173, 35);
-            this.textBox8.TabIndex = 199;
-            // 
-            // textBox7
-            // 
-            this.textBox7.Font = new System.Drawing.Font("宋体", 12F);
-            this.textBox7.Location = new System.Drawing.Point(881, 163);
-            this.textBox7.Name = "textBox7";
-            this.textBox7.Size = new System.Drawing.Size(173, 35);
-            this.textBox7.TabIndex = 198;
-            // 
-            // textBox6
-            // 
-            this.textBox6.Font = new System.Drawing.Font("宋体", 12F);
-            this.textBox6.Location = new System.Drawing.Point(881, 118);
-            this.textBox6.Name = "textBox6";
-            this.textBox6.Size = new System.Drawing.Size(173, 35);
-            this.textBox6.TabIndex = 197;
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Font = new System.Drawing.Font("微软雅黑", 12F);
-            this.label11.Location = new System.Drawing.Point(725, 206);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(62, 31);
-            this.label11.TabIndex = 196;
-            this.label11.Text = "单位";
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Font = new System.Drawing.Font("微软雅黑", 12F);
-            this.label10.Location = new System.Drawing.Point(725, 159);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(110, 31);
-            this.label10.TabIndex = 195;
-            this.label10.Text = "产品类型";
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Font = new System.Drawing.Font("微软雅黑", 12F);
-            this.label9.Location = new System.Drawing.Point(725, 118);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(110, 31);
-            this.label9.TabIndex = 194;
-            this.label9.Text = "计划数量";
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Font = new System.Drawing.Font("微软雅黑", 12F);
-            this.label8.Location = new System.Drawing.Point(725, 75);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(158, 31);
-            this.label8.TabIndex = 193;
-            this.label8.Text = "计划开始日期";
-            // 
-            // textBox5
-            // 
-            this.textBox5.Font = new System.Drawing.Font("宋体", 12F);
-            this.textBox5.Location = new System.Drawing.Point(395, 159);
-            this.textBox5.Name = "textBox5";
-            this.textBox5.Size = new System.Drawing.Size(294, 35);
-            this.textBox5.TabIndex = 192;
-            // 
-            // textBox4
-            // 
-            this.textBox4.Font = new System.Drawing.Font("宋体", 12F);
-            this.textBox4.Location = new System.Drawing.Point(626, 206);
-            this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(63, 35);
-            this.textBox4.TabIndex = 191;
-            // 
-            // textBox3
-            // 
-            this.textBox3.Font = new System.Drawing.Font("宋体", 12F);
-            this.textBox3.Location = new System.Drawing.Point(516, 206);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(104, 35);
-            this.textBox3.TabIndex = 190;
-            // 
-            // textBox2
-            // 
-            this.textBox2.Font = new System.Drawing.Font("宋体", 12F);
-            this.textBox2.Location = new System.Drawing.Point(516, 73);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(173, 35);
-            this.textBox2.TabIndex = 189;
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Font = new System.Drawing.Font("微软雅黑", 12F);
-            this.label7.Location = new System.Drawing.Point(390, 206);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(120, 31);
-            this.label7.TabIndex = 188;
-            this.label7.Text = "BOM编号";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Font = new System.Drawing.Font("微软雅黑", 12F);
-            this.label6.Location = new System.Drawing.Point(390, 71);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(110, 31);
-            this.label6.TabIndex = 187;
-            this.label6.Text = "工单类型";
-            // 
-            // textBox1
-            // 
-            this.textBox1.Font = new System.Drawing.Font("宋体", 12F);
-            this.textBox1.Location = new System.Drawing.Point(191, 117);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(498, 35);
-            this.textBox1.TabIndex = 186;
-            // 
-            // comboBox3
-            // 
-            this.comboBox3.Font = new System.Drawing.Font("宋体", 12F);
-            this.comboBox3.FormattingEnabled = true;
-            this.comboBox3.Location = new System.Drawing.Point(191, 206);
-            this.comboBox3.Name = "comboBox3";
-            this.comboBox3.Size = new System.Drawing.Size(164, 32);
-            this.comboBox3.TabIndex = 185;
-            // 
-            // comboBox2
-            // 
-            this.comboBox2.Font = new System.Drawing.Font("宋体", 12F);
-            this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Location = new System.Drawing.Point(191, 159);
-            this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(164, 32);
-            this.comboBox2.TabIndex = 184;
-            // 
-            // comboBox1
-            // 
-            this.comboBox1.Font = new System.Drawing.Font("宋体", 12F);
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(191, 75);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(164, 32);
-            this.comboBox1.TabIndex = 183;
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("微软雅黑", 12F);
-            this.label5.Location = new System.Drawing.Point(47, 202);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(134, 31);
-            this.label5.TabIndex = 182;
-            this.label5.Text = "成品工单号";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("微软雅黑", 12F);
-            this.label4.Location = new System.Drawing.Point(49, 159);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(110, 31);
-            this.label4.TabIndex = 181;
-            this.label4.Text = "产品编号";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("微软雅黑", 12F);
-            this.label3.Location = new System.Drawing.Point(47, 118);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(110, 31);
-            this.label3.TabIndex = 180;
-            this.label3.Text = "工单说明";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("微软雅黑", 12F);
-            this.label2.Location = new System.Drawing.Point(47, 75);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(110, 31);
-            this.label2.TabIndex = 179;
-            this.label2.Text = "工单类型";
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("黑体", 13F);
-            this.label1.Location = new System.Drawing.Point(48, 36);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(116, 26);
-            this.label1.TabIndex = 178;
-            this.label1.Text = "创建信息";
-            // 
-            // Create
-            // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
+            
+            // 
+            // panelTop - 顶部标题区域
+            // 
+            this.panelTop.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(249)))), ((int)(((byte)(250)))));
+            this.panelTop.Controls.Add(this.lblTitle);
+            this.panelTop.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panelTop.Location = new System.Drawing.Point(0, 0);
+            this.panelTop.Name = "panelTop";
+            this.panelTop.Size = new System.Drawing.Size(1200, 60);
+            this.panelTop.TabIndex = 0;
+            
+            // 
+            // lblTitle - 窗体标题
+            // 
+            this.lblTitle.AutoSize = true;
+            this.lblTitle.Font = new System.Drawing.Font("微软雅黑", 16F, System.Drawing.FontStyle.Bold);
+            this.lblTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(123)))), ((int)(((byte)(255)))));
+            this.lblTitle.Location = new System.Drawing.Point(20, 15);
+            this.lblTitle.Name = "lblTitle";
+            this.lblTitle.Size = new System.Drawing.Size(181, 30);
+            this.lblTitle.TabIndex = 0;
+            this.lblTitle.Text = "➕ 创建工单";
+            
+            // 
+            // panelMain - 主内容区域
+            // 
+            this.panelMain.BackColor = System.Drawing.Color.White;
+            this.panelMain.Controls.Add(this.panelLeft);
+            this.panelMain.Controls.Add(this.panelRight);
+            this.panelMain.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelMain.Location = new System.Drawing.Point(0, 60);
+            this.panelMain.Name = "panelMain";
+            this.panelMain.Padding = new System.Windows.Forms.Padding(20);
+            this.panelMain.Size = new System.Drawing.Size(1200, 480);
+            this.panelMain.TabIndex = 1;
+            
+            // 
+            // panelLeft - 左侧信息面板
+            // 
+            this.panelLeft.Controls.Add(this.grpBasicInfo);
+            this.panelLeft.Controls.Add(this.grpPlanInfo);
+            this.panelLeft.Dock = System.Windows.Forms.DockStyle.Left;
+            this.panelLeft.Location = new System.Drawing.Point(20, 20);
+            this.panelLeft.Name = "panelLeft";
+            this.panelLeft.Size = new System.Drawing.Size(580, 440);
+            this.panelLeft.TabIndex = 0;
+            
+            // 
+            // grpBasicInfo - 基本信息组
+            // 
+            this.grpBasicInfo.Controls.Add(this.lblWorkOrderType);
+            this.grpBasicInfo.Controls.Add(this.cmbWorkOrderType);
+            this.grpBasicInfo.Controls.Add(this.lblWorkOrderDesc);
+            this.grpBasicInfo.Controls.Add(this.txtWorkOrderDesc);
+            this.grpBasicInfo.Controls.Add(this.lblProductCode);
+            this.grpBasicInfo.Controls.Add(this.cmbProductCode);
+            this.grpBasicInfo.Controls.Add(this.lblFinishedWorkOrder);
+            this.grpBasicInfo.Controls.Add(this.cmbFinishedWorkOrder);
+            this.grpBasicInfo.Controls.Add(this.lblBOMCode);
+            this.grpBasicInfo.Controls.Add(this.txtBOMCode);
+            this.grpBasicInfo.Controls.Add(this.txtBOMVersion);
+            this.grpBasicInfo.Controls.Add(this.btnSelectBOM);
+            this.grpBasicInfo.Dock = System.Windows.Forms.DockStyle.Top;
+            this.grpBasicInfo.Font = new System.Drawing.Font("微软雅黑", 10F, System.Drawing.FontStyle.Bold);
+            this.grpBasicInfo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(123)))), ((int)(((byte)(255)))));
+            this.grpBasicInfo.Location = new System.Drawing.Point(0, 0);
+            this.grpBasicInfo.Name = "grpBasicInfo";
+            this.grpBasicInfo.Size = new System.Drawing.Size(580, 220);
+            this.grpBasicInfo.TabIndex = 0;
+            this.grpBasicInfo.TabStop = false;
+            this.grpBasicInfo.Text = "📋 基本信息";
+            
+            // 
+            // lblWorkOrderType - 工单类型标签
+            // 
+            this.lblWorkOrderType.AutoSize = true;
+            this.lblWorkOrderType.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.lblWorkOrderType.ForeColor = System.Drawing.Color.Black;
+            this.lblWorkOrderType.Location = new System.Drawing.Point(20, 35);
+            this.lblWorkOrderType.Name = "lblWorkOrderType";
+            this.lblWorkOrderType.Size = new System.Drawing.Size(68, 17);
+            this.lblWorkOrderType.TabIndex = 0;
+            this.lblWorkOrderType.Text = "工单类型：";
+            
+            // 
+            // cmbWorkOrderType - 工单类型下拉框
+            // 
+            this.cmbWorkOrderType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbWorkOrderType.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.cmbWorkOrderType.FormattingEnabled = true;
+            this.cmbWorkOrderType.Items.AddRange(new object[] {
+            "生产工单",
+            "维修工单",
+            "测试工单",
+            "返工工单"});
+            this.cmbWorkOrderType.Location = new System.Drawing.Point(120, 32);
+            this.cmbWorkOrderType.Name = "cmbWorkOrderType";
+            this.cmbWorkOrderType.Size = new System.Drawing.Size(150, 25);
+            this.cmbWorkOrderType.TabIndex = 1;
+            
+            // 
+            // lblWorkOrderDesc - 工单说明标签
+            // 
+            this.lblWorkOrderDesc.AutoSize = true;
+            this.lblWorkOrderDesc.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.lblWorkOrderDesc.ForeColor = System.Drawing.Color.Black;
+            this.lblWorkOrderDesc.Location = new System.Drawing.Point(20, 70);
+            this.lblWorkOrderDesc.Name = "lblWorkOrderDesc";
+            this.lblWorkOrderDesc.Size = new System.Drawing.Size(68, 17);
+            this.lblWorkOrderDesc.TabIndex = 2;
+            this.lblWorkOrderDesc.Text = "工单说明：";
+            
+            // 
+            // txtWorkOrderDesc - 工单说明文本框
+            // 
+            this.txtWorkOrderDesc.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.txtWorkOrderDesc.Location = new System.Drawing.Point(120, 67);
+            this.txtWorkOrderDesc.Name = "txtWorkOrderDesc";
+            this.txtWorkOrderDesc.Size = new System.Drawing.Size(430, 23);
+            this.txtWorkOrderDesc.TabIndex = 3;
+            
+            // 
+            // lblProductCode - 产品编号标签
+            // 
+            this.lblProductCode.AutoSize = true;
+            this.lblProductCode.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.lblProductCode.ForeColor = System.Drawing.Color.Black;
+            this.lblProductCode.Location = new System.Drawing.Point(20, 105);
+            this.lblProductCode.Name = "lblProductCode";
+            this.lblProductCode.Size = new System.Drawing.Size(68, 17);
+            this.lblProductCode.TabIndex = 4;
+            this.lblProductCode.Text = "产品编号：";
+            
+            // 
+            // cmbProductCode - 产品编号下拉框
+            // 
+            this.cmbProductCode.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.cmbProductCode.FormattingEnabled = true;
+            this.cmbProductCode.Location = new System.Drawing.Point(120, 102);
+            this.cmbProductCode.Name = "cmbProductCode";
+            this.cmbProductCode.Size = new System.Drawing.Size(200, 25);
+            this.cmbProductCode.TabIndex = 5;
+            
+            // 
+            // lblFinishedWorkOrder - 成品工单号标签
+            // 
+            this.lblFinishedWorkOrder.AutoSize = true;
+            this.lblFinishedWorkOrder.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.lblFinishedWorkOrder.ForeColor = System.Drawing.Color.Black;
+            this.lblFinishedWorkOrder.Location = new System.Drawing.Point(340, 105);
+            this.lblFinishedWorkOrder.Name = "lblFinishedWorkOrder";
+            this.lblFinishedWorkOrder.Size = new System.Drawing.Size(80, 17);
+            this.lblFinishedWorkOrder.TabIndex = 6;
+            this.lblFinishedWorkOrder.Text = "成品工单号：";
+            
+            // 
+            // cmbFinishedWorkOrder - 成品工单号下拉框
+            // 
+            this.cmbFinishedWorkOrder.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.cmbFinishedWorkOrder.FormattingEnabled = true;
+            this.cmbFinishedWorkOrder.Location = new System.Drawing.Point(430, 102);
+            this.cmbFinishedWorkOrder.Name = "cmbFinishedWorkOrder";
+            this.cmbFinishedWorkOrder.Size = new System.Drawing.Size(120, 25);
+            this.cmbFinishedWorkOrder.TabIndex = 7;
+
+            //
+            // lblBOMCode - BOM编号标签
+            //
+            this.lblBOMCode.AutoSize = true;
+            this.lblBOMCode.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.lblBOMCode.ForeColor = System.Drawing.Color.Black;
+            this.lblBOMCode.Location = new System.Drawing.Point(20, 140);
+            this.lblBOMCode.Name = "lblBOMCode";
+            this.lblBOMCode.Size = new System.Drawing.Size(68, 17);
+            this.lblBOMCode.TabIndex = 8;
+            this.lblBOMCode.Text = "BOM编号：";
+
+            //
+            // txtBOMCode - BOM编号文本框
+            //
+            this.txtBOMCode.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.txtBOMCode.Location = new System.Drawing.Point(120, 137);
+            this.txtBOMCode.Name = "txtBOMCode";
+            this.txtBOMCode.ReadOnly = true;
+            this.txtBOMCode.Size = new System.Drawing.Size(150, 23);
+            this.txtBOMCode.TabIndex = 9;
+
+            //
+            // txtBOMVersion - BOM版本文本框
+            //
+            this.txtBOMVersion.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.txtBOMVersion.Location = new System.Drawing.Point(280, 137);
+            this.txtBOMVersion.Name = "txtBOMVersion";
+            this.txtBOMVersion.ReadOnly = true;
+            this.txtBOMVersion.Size = new System.Drawing.Size(80, 23);
+            this.txtBOMVersion.TabIndex = 10;
+
+            //
+            // btnSelectBOM - 选择BOM按钮
+            //
+            this.btnSelectBOM.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(123)))), ((int)(((byte)(255)))));
+            this.btnSelectBOM.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSelectBOM.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.btnSelectBOM.ForeColor = System.Drawing.Color.White;
+            this.btnSelectBOM.Location = new System.Drawing.Point(370, 135);
+            this.btnSelectBOM.Name = "btnSelectBOM";
+            this.btnSelectBOM.Size = new System.Drawing.Size(80, 27);
+            this.btnSelectBOM.TabIndex = 11;
+            this.btnSelectBOM.Text = "🔍 选择BOM";
+            this.btnSelectBOM.UseVisualStyleBackColor = false;
+
+            //
+            // grpPlanInfo - 计划信息组
+            //
+            this.grpPlanInfo.Controls.Add(this.lblPlanStartDate);
+            this.grpPlanInfo.Controls.Add(this.dtpPlanStartDate);
+            this.grpPlanInfo.Controls.Add(this.lblPlanEndDate);
+            this.grpPlanInfo.Controls.Add(this.dtpPlanEndDate);
+            this.grpPlanInfo.Controls.Add(this.lblPlanQuantity);
+            this.grpPlanInfo.Controls.Add(this.txtPlanQuantity);
+            this.grpPlanInfo.Controls.Add(this.lblUnit);
+            this.grpPlanInfo.Controls.Add(this.txtUnit);
+            this.grpPlanInfo.Controls.Add(this.lblProductType);
+            this.grpPlanInfo.Controls.Add(this.txtProductType);
+            this.grpPlanInfo.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.grpPlanInfo.Font = new System.Drawing.Font("微软雅黑", 10F, System.Drawing.FontStyle.Bold);
+            this.grpPlanInfo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(167)))), ((int)(((byte)(69)))));
+            this.grpPlanInfo.Location = new System.Drawing.Point(0, 220);
+            this.grpPlanInfo.Name = "grpPlanInfo";
+            this.grpPlanInfo.Size = new System.Drawing.Size(580, 220);
+            this.grpPlanInfo.TabIndex = 1;
+            this.grpPlanInfo.TabStop = false;
+            this.grpPlanInfo.Text = "📅 计划信息";
+
+            //
+            // lblPlanStartDate - 计划开始日期标签
+            //
+            this.lblPlanStartDate.AutoSize = true;
+            this.lblPlanStartDate.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.lblPlanStartDate.ForeColor = System.Drawing.Color.Black;
+            this.lblPlanStartDate.Location = new System.Drawing.Point(20, 35);
+            this.lblPlanStartDate.Name = "lblPlanStartDate";
+            this.lblPlanStartDate.Size = new System.Drawing.Size(92, 17);
+            this.lblPlanStartDate.TabIndex = 0;
+            this.lblPlanStartDate.Text = "计划开始日期：";
+
+            //
+            // dtpPlanStartDate - 计划开始日期选择器
+            //
+            this.dtpPlanStartDate.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.dtpPlanStartDate.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.dtpPlanStartDate.Location = new System.Drawing.Point(120, 32);
+            this.dtpPlanStartDate.Name = "dtpPlanStartDate";
+            this.dtpPlanStartDate.Size = new System.Drawing.Size(150, 23);
+            this.dtpPlanStartDate.TabIndex = 1;
+
+            //
+            // lblPlanEndDate - 计划结束日期标签
+            //
+            this.lblPlanEndDate.AutoSize = true;
+            this.lblPlanEndDate.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.lblPlanEndDate.ForeColor = System.Drawing.Color.Black;
+            this.lblPlanEndDate.Location = new System.Drawing.Point(290, 35);
+            this.lblPlanEndDate.Name = "lblPlanEndDate";
+            this.lblPlanEndDate.Size = new System.Drawing.Size(92, 17);
+            this.lblPlanEndDate.TabIndex = 2;
+            this.lblPlanEndDate.Text = "计划结束日期：";
+
+            //
+            // dtpPlanEndDate - 计划结束日期选择器
+            //
+            this.dtpPlanEndDate.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.dtpPlanEndDate.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.dtpPlanEndDate.Location = new System.Drawing.Point(390, 32);
+            this.dtpPlanEndDate.Name = "dtpPlanEndDate";
+            this.dtpPlanEndDate.Size = new System.Drawing.Size(150, 23);
+            this.dtpPlanEndDate.TabIndex = 3;
+
+            //
+            // lblPlanQuantity - 计划数量标签
+            //
+            this.lblPlanQuantity.AutoSize = true;
+            this.lblPlanQuantity.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.lblPlanQuantity.ForeColor = System.Drawing.Color.Black;
+            this.lblPlanQuantity.Location = new System.Drawing.Point(20, 70);
+            this.lblPlanQuantity.Name = "lblPlanQuantity";
+            this.lblPlanQuantity.Size = new System.Drawing.Size(68, 17);
+            this.lblPlanQuantity.TabIndex = 4;
+            this.lblPlanQuantity.Text = "计划数量：";
+
+            //
+            // txtPlanQuantity - 计划数量文本框
+            //
+            this.txtPlanQuantity.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.txtPlanQuantity.Location = new System.Drawing.Point(120, 67);
+            this.txtPlanQuantity.Name = "txtPlanQuantity";
+            this.txtPlanQuantity.Size = new System.Drawing.Size(100, 23);
+            this.txtPlanQuantity.TabIndex = 5;
+
+            //
+            // lblUnit - 单位标签
+            //
+            this.lblUnit.AutoSize = true;
+            this.lblUnit.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.lblUnit.ForeColor = System.Drawing.Color.Black;
+            this.lblUnit.Location = new System.Drawing.Point(240, 70);
+            this.lblUnit.Name = "lblUnit";
+            this.lblUnit.Size = new System.Drawing.Size(44, 17);
+            this.lblUnit.TabIndex = 6;
+            this.lblUnit.Text = "单位：";
+
+            //
+            // txtUnit - 单位文本框
+            //
+            this.txtUnit.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.txtUnit.Location = new System.Drawing.Point(290, 67);
+            this.txtUnit.Name = "txtUnit";
+            this.txtUnit.Size = new System.Drawing.Size(80, 23);
+            this.txtUnit.TabIndex = 7;
+
+            //
+            // lblProductType - 产品类型标签
+            //
+            this.lblProductType.AutoSize = true;
+            this.lblProductType.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.lblProductType.ForeColor = System.Drawing.Color.Black;
+            this.lblProductType.Location = new System.Drawing.Point(390, 70);
+            this.lblProductType.Name = "lblProductType";
+            this.lblProductType.Size = new System.Drawing.Size(68, 17);
+            this.lblProductType.TabIndex = 8;
+            this.lblProductType.Text = "产品类型：";
+
+            //
+            // txtProductType - 产品类型文本框
+            //
+            this.txtProductType.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.txtProductType.Location = new System.Drawing.Point(460, 67);
+            this.txtProductType.Name = "txtProductType";
+            this.txtProductType.Size = new System.Drawing.Size(100, 23);
+            this.txtProductType.TabIndex = 9;
+
+            //
+            // panelRight - 右侧BOM面板
+            //
+            this.panelRight.Controls.Add(this.grpBOMList);
+            this.panelRight.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelRight.Location = new System.Drawing.Point(600, 20);
+            this.panelRight.Name = "panelRight";
+            this.panelRight.Padding = new System.Windows.Forms.Padding(20, 0, 0, 0);
+            this.panelRight.Size = new System.Drawing.Size(580, 440);
+            this.panelRight.TabIndex = 1;
+
+            //
+            // grpBOMList - BOM物料清单组
+            //
+            this.grpBOMList.Controls.Add(this.dgvBOMList);
+            this.grpBOMList.Controls.Add(this.panelBOMButtons);
+            this.grpBOMList.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.grpBOMList.Font = new System.Drawing.Font("微软雅黑", 10F, System.Drawing.FontStyle.Bold);
+            this.grpBOMList.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(193)))), ((int)(((byte)(7)))));
+            this.grpBOMList.Location = new System.Drawing.Point(20, 0);
+            this.grpBOMList.Name = "grpBOMList";
+            this.grpBOMList.Size = new System.Drawing.Size(560, 440);
+            this.grpBOMList.TabIndex = 0;
+            this.grpBOMList.TabStop = false;
+            this.grpBOMList.Text = "📦 BOM物料清单";
+
+            //
+            // dgvBOMList - BOM物料清单数据网格
+            //
+            this.dgvBOMList.AllowUserToAddRows = false;
+            this.dgvBOMList.AllowUserToDeleteRows = false;
+            this.dgvBOMList.BackgroundColor = System.Drawing.Color.White;
+            this.dgvBOMList.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.dgvBOMList.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvBOMList.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgvBOMList.Location = new System.Drawing.Point(3, 19);
+            this.dgvBOMList.MultiSelect = false;
+            this.dgvBOMList.Name = "dgvBOMList";
+            this.dgvBOMList.ReadOnly = true;
+            this.dgvBOMList.RowTemplate.Height = 25;
+            this.dgvBOMList.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dgvBOMList.Size = new System.Drawing.Size(554, 378);
+            this.dgvBOMList.TabIndex = 0;
+
+            //
+            // panelBOMButtons - BOM操作按钮面板
+            //
+            this.panelBOMButtons.Controls.Add(this.btnAddBOM);
+            this.panelBOMButtons.Controls.Add(this.btnRemoveBOM);
+            this.panelBOMButtons.Controls.Add(this.btnRefreshBOM);
+            this.panelBOMButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panelBOMButtons.Location = new System.Drawing.Point(3, 397);
+            this.panelBOMButtons.Name = "panelBOMButtons";
+            this.panelBOMButtons.Size = new System.Drawing.Size(554, 40);
+            this.panelBOMButtons.TabIndex = 1;
+
+            //
+            // btnAddBOM - 添加BOM按钮
+            //
+            this.btnAddBOM.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(167)))), ((int)(((byte)(69)))));
+            this.btnAddBOM.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnAddBOM.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.btnAddBOM.ForeColor = System.Drawing.Color.White;
+            this.btnAddBOM.Location = new System.Drawing.Point(10, 5);
+            this.btnAddBOM.Name = "btnAddBOM";
+            this.btnAddBOM.Size = new System.Drawing.Size(80, 30);
+            this.btnAddBOM.TabIndex = 0;
+            this.btnAddBOM.Text = "➕ 添加";
+            this.btnAddBOM.UseVisualStyleBackColor = false;
+
+            //
+            // btnRemoveBOM - 移除BOM按钮
+            //
+            this.btnRemoveBOM.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(53)))), ((int)(((byte)(69)))));
+            this.btnRemoveBOM.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnRemoveBOM.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.btnRemoveBOM.ForeColor = System.Drawing.Color.White;
+            this.btnRemoveBOM.Location = new System.Drawing.Point(100, 5);
+            this.btnRemoveBOM.Name = "btnRemoveBOM";
+            this.btnRemoveBOM.Size = new System.Drawing.Size(80, 30);
+            this.btnRemoveBOM.TabIndex = 1;
+            this.btnRemoveBOM.Text = "➖ 移除";
+            this.btnRemoveBOM.UseVisualStyleBackColor = false;
+
+            //
+            // btnRefreshBOM - 刷新BOM按钮
+            //
+            this.btnRefreshBOM.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(108)))), ((int)(((byte)(117)))), ((int)(((byte)(125)))));
+            this.btnRefreshBOM.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnRefreshBOM.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.btnRefreshBOM.ForeColor = System.Drawing.Color.White;
+            this.btnRefreshBOM.Location = new System.Drawing.Point(190, 5);
+            this.btnRefreshBOM.Name = "btnRefreshBOM";
+            this.btnRefreshBOM.Size = new System.Drawing.Size(80, 30);
+            this.btnRefreshBOM.TabIndex = 2;
+            this.btnRefreshBOM.Text = "🔄 刷新";
+            this.btnRefreshBOM.UseVisualStyleBackColor = false;
+
+            //
+            // panelBottom - 底部操作面板
+            //
+            this.panelBottom.BackColor = System.Drawing.Color.White;
+            this.panelBottom.Controls.Add(this.grpRemarks);
+            this.panelBottom.Controls.Add(this.btnSave);
+            this.panelBottom.Controls.Add(this.btnCancel);
+            this.panelBottom.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panelBottom.Location = new System.Drawing.Point(0, 540);
+            this.panelBottom.Name = "panelBottom";
+            this.panelBottom.Padding = new System.Windows.Forms.Padding(20);
+            this.panelBottom.Size = new System.Drawing.Size(1200, 100);
+            this.panelBottom.TabIndex = 2;
+
+            //
+            // grpRemarks - 备注信息组
+            //
+            this.grpRemarks.Controls.Add(this.lblRemarks);
+            this.grpRemarks.Controls.Add(this.txtRemarks);
+            this.grpRemarks.Controls.Add(this.lblCreatedBy);
+            this.grpRemarks.Controls.Add(this.txtCreatedBy);
+            this.grpRemarks.Dock = System.Windows.Forms.DockStyle.Left;
+            this.grpRemarks.Font = new System.Drawing.Font("微软雅黑", 10F, System.Drawing.FontStyle.Bold);
+            this.grpRemarks.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(108)))), ((int)(((byte)(117)))), ((int)(((byte)(125)))));
+            this.grpRemarks.Location = new System.Drawing.Point(20, 20);
+            this.grpRemarks.Name = "grpRemarks";
+            this.grpRemarks.Size = new System.Drawing.Size(800, 60);
+            this.grpRemarks.TabIndex = 0;
+            this.grpRemarks.TabStop = false;
+            this.grpRemarks.Text = "📝 备注信息";
+
+            //
+            // lblRemarks - 备注标签
+            //
+            this.lblRemarks.AutoSize = true;
+            this.lblRemarks.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.lblRemarks.ForeColor = System.Drawing.Color.Black;
+            this.lblRemarks.Location = new System.Drawing.Point(20, 25);
+            this.lblRemarks.Name = "lblRemarks";
+            this.lblRemarks.Size = new System.Drawing.Size(44, 17);
+            this.lblRemarks.TabIndex = 0;
+            this.lblRemarks.Text = "备注：";
+
+            //
+            // txtRemarks - 备注文本框
+            //
+            this.txtRemarks.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.txtRemarks.Location = new System.Drawing.Point(70, 22);
+            this.txtRemarks.Name = "txtRemarks";
+            this.txtRemarks.Size = new System.Drawing.Size(400, 23);
+            this.txtRemarks.TabIndex = 1;
+
+            //
+            // lblCreatedBy - 创建人标签
+            //
+            this.lblCreatedBy.AutoSize = true;
+            this.lblCreatedBy.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.lblCreatedBy.ForeColor = System.Drawing.Color.Black;
+            this.lblCreatedBy.Location = new System.Drawing.Point(490, 25);
+            this.lblCreatedBy.Name = "lblCreatedBy";
+            this.lblCreatedBy.Size = new System.Drawing.Size(56, 17);
+            this.lblCreatedBy.TabIndex = 2;
+            this.lblCreatedBy.Text = "创建人：";
+
+            //
+            // txtCreatedBy - 创建人文本框
+            //
+            this.txtCreatedBy.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.txtCreatedBy.Location = new System.Drawing.Point(550, 22);
+            this.txtCreatedBy.Name = "txtCreatedBy";
+            this.txtCreatedBy.ReadOnly = true;
+            this.txtCreatedBy.Size = new System.Drawing.Size(120, 23);
+            this.txtCreatedBy.TabIndex = 3;
+
+            //
+            // btnSave - 保存按钮
+            //
+            this.btnSave.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(167)))), ((int)(((byte)(69)))));
+            this.btnSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSave.Font = new System.Drawing.Font("微软雅黑", 10F, System.Drawing.FontStyle.Bold);
+            this.btnSave.ForeColor = System.Drawing.Color.White;
+            this.btnSave.Location = new System.Drawing.Point(950, 35);
+            this.btnSave.Name = "btnSave";
+            this.btnSave.Size = new System.Drawing.Size(100, 35);
+            this.btnSave.TabIndex = 1;
+            this.btnSave.Text = "💾 保存";
+            this.btnSave.UseVisualStyleBackColor = false;
+
+            //
+            // btnCancel - 取消按钮
+            //
+            this.btnCancel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(108)))), ((int)(((byte)(117)))), ((int)(((byte)(125)))));
+            this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnCancel.Font = new System.Drawing.Font("微软雅黑", 10F, System.Drawing.FontStyle.Bold);
+            this.btnCancel.ForeColor = System.Drawing.Color.White;
+            this.btnCancel.Location = new System.Drawing.Point(1070, 35);
+            this.btnCancel.Name = "btnCancel";
+            this.btnCancel.Size = new System.Drawing.Size(100, 35);
+            this.btnCancel.TabIndex = 2;
+            this.btnCancel.Text = "❌ 取消";
+            this.btnCancel.UseVisualStyleBackColor = false;
+
+            //
+            // CreateWorkOrder - 创建工单窗体
+            //
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1878, 794);
-            this.Controls.Add(this.dateTimePicker2);
-            this.Controls.Add(this.dateTimePicker1);
-            this.Controls.Add(this.button4);
-            this.Controls.Add(this.button3);
-            this.Controls.Add(this.textBox16);
-            this.Controls.Add(this.textBox15);
-            this.Controls.Add(this.label19);
-            this.Controls.Add(this.label18);
-            this.Controls.Add(this.dataGridView1);
-            this.Controls.Add(this.label17);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.textBox14);
-            this.Controls.Add(this.label16);
-            this.Controls.Add(this.textBox13);
-            this.Controls.Add(this.textBox12);
-            this.Controls.Add(this.label15);
-            this.Controls.Add(this.textBox11);
-            this.Controls.Add(this.textBox10);
-            this.Controls.Add(this.textBox9);
-            this.Controls.Add(this.label14);
-            this.Controls.Add(this.label13);
-            this.Controls.Add(this.label12);
-            this.Controls.Add(this.textBox8);
-            this.Controls.Add(this.textBox7);
-            this.Controls.Add(this.textBox6);
-            this.Controls.Add(this.label11);
-            this.Controls.Add(this.label10);
-            this.Controls.Add(this.label9);
-            this.Controls.Add(this.label8);
-            this.Controls.Add(this.textBox5);
-            this.Controls.Add(this.textBox4);
-            this.Controls.Add(this.textBox3);
-            this.Controls.Add(this.textBox2);
-            this.Controls.Add(this.label7);
-            this.Controls.Add(this.label6);
-            this.Controls.Add(this.textBox1);
-            this.Controls.Add(this.comboBox3);
-            this.Controls.Add(this.comboBox2);
-            this.Controls.Add(this.comboBox1);
-            this.Controls.Add(this.label5);
-            this.Controls.Add(this.label4);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
-            this.Name = "Create";
-            this.Text = "Create";
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(249)))), ((int)(((byte)(250)))));
+            this.ClientSize = new System.Drawing.Size(1200, 640);
+            this.Controls.Add(this.panelMain);
+            this.Controls.Add(this.panelBottom);
+            this.Controls.Add(this.panelTop);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.Name = "CreateWorkOrder";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.Text = "创建工单";
+
+            // 布局恢复
+            this.panelTop.ResumeLayout(false);
+            this.panelTop.PerformLayout();
+            this.panelMain.ResumeLayout(false);
+            this.panelLeft.ResumeLayout(false);
+            this.panelRight.ResumeLayout(false);
+            this.panelBottom.ResumeLayout(false);
+            this.grpBasicInfo.ResumeLayout(false);
+            this.grpBasicInfo.PerformLayout();
+            this.grpPlanInfo.ResumeLayout(false);
+            this.grpPlanInfo.PerformLayout();
+            this.grpBOMList.ResumeLayout(false);
+            this.grpRemarks.ResumeLayout(false);
+            this.grpRemarks.PerformLayout();
+            this.panelBOMButtons.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dgvBOMList)).EndInit();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
 
-        private System.Windows.Forms.DateTimePicker dateTimePicker2;
-        private System.Windows.Forms.DateTimePicker dateTimePicker1;
-        private System.Windows.Forms.Button button4;
-        private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.TextBox textBox16;
-        private System.Windows.Forms.TextBox textBox15;
-        private System.Windows.Forms.Label label19;
-        private System.Windows.Forms.Label label18;
-        private System.Windows.Forms.DataGridView dataGridView1;
-        private System.Windows.Forms.Label label17;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.TextBox textBox14;
-        private System.Windows.Forms.Label label16;
-        private System.Windows.Forms.TextBox textBox13;
-        private System.Windows.Forms.TextBox textBox12;
-        private System.Windows.Forms.Label label15;
-        private System.Windows.Forms.TextBox textBox11;
-        private System.Windows.Forms.TextBox textBox10;
-        private System.Windows.Forms.TextBox textBox9;
-        private System.Windows.Forms.Label label14;
-        private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.Label label12;
-        private System.Windows.Forms.TextBox textBox8;
-        private System.Windows.Forms.TextBox textBox7;
-        private System.Windows.Forms.TextBox textBox6;
-        private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.TextBox textBox5;
-        private System.Windows.Forms.TextBox textBox4;
-        private System.Windows.Forms.TextBox textBox3;
-        private System.Windows.Forms.TextBox textBox2;
-        private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.ComboBox comboBox3;
-        private System.Windows.Forms.ComboBox comboBox2;
-        private System.Windows.Forms.ComboBox comboBox1;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label1;
+        // 主面板控件
+        private System.Windows.Forms.Panel panelTop;
+        private System.Windows.Forms.Label lblTitle;
+        private System.Windows.Forms.Panel panelMain;
+        private System.Windows.Forms.Panel panelLeft;
+        private System.Windows.Forms.Panel panelRight;
+        private System.Windows.Forms.Panel panelBottom;
+
+        // 基本信息组控件
+        private System.Windows.Forms.GroupBox grpBasicInfo;
+        private System.Windows.Forms.Label lblWorkOrderType;
+        private System.Windows.Forms.ComboBox cmbWorkOrderType;
+        private System.Windows.Forms.Label lblWorkOrderDesc;
+        private System.Windows.Forms.TextBox txtWorkOrderDesc;
+        private System.Windows.Forms.Label lblProductCode;
+        private System.Windows.Forms.ComboBox cmbProductCode;
+        private System.Windows.Forms.Label lblFinishedWorkOrder;
+        private System.Windows.Forms.ComboBox cmbFinishedWorkOrder;
+        private System.Windows.Forms.Label lblBOMCode;
+        private System.Windows.Forms.TextBox txtBOMCode;
+        private System.Windows.Forms.TextBox txtBOMVersion;
+        private System.Windows.Forms.Button btnSelectBOM;
+
+        // 计划信息组控件
+        private System.Windows.Forms.GroupBox grpPlanInfo;
+        private System.Windows.Forms.Label lblPlanStartDate;
+        private System.Windows.Forms.DateTimePicker dtpPlanStartDate;
+        private System.Windows.Forms.Label lblPlanEndDate;
+        private System.Windows.Forms.DateTimePicker dtpPlanEndDate;
+        private System.Windows.Forms.Label lblPlanQuantity;
+        private System.Windows.Forms.TextBox txtPlanQuantity;
+        private System.Windows.Forms.Label lblUnit;
+        private System.Windows.Forms.TextBox txtUnit;
+        private System.Windows.Forms.Label lblProductType;
+        private System.Windows.Forms.TextBox txtProductType;
+
+        // BOM物料清单组控件
+        private System.Windows.Forms.GroupBox grpBOMList;
+        private System.Windows.Forms.DataGridView dgvBOMList;
+        private System.Windows.Forms.Panel panelBOMButtons;
+        private System.Windows.Forms.Button btnAddBOM;
+        private System.Windows.Forms.Button btnRemoveBOM;
+        private System.Windows.Forms.Button btnRefreshBOM;
+
+        // 备注信息组控件
+        private System.Windows.Forms.GroupBox grpRemarks;
+        private System.Windows.Forms.Label lblRemarks;
+        private System.Windows.Forms.TextBox txtRemarks;
+        private System.Windows.Forms.Label lblCreatedBy;
+        private System.Windows.Forms.TextBox txtCreatedBy;
+
+        // 操作按钮
+        private System.Windows.Forms.Button btnSave;
+        private System.Windows.Forms.Button btnCancel;
     }
 }

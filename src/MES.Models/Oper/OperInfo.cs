@@ -39,9 +39,9 @@ namespace MES.Models.Oper
         public int Sequence { get; set; }
 
         /// <summary>
-        /// 工站版本
+        /// 工站版本（隐藏基类成员）
         /// </summary>
-        public string Version { get; set; }
+        public new string Version { get; set; }
 
         /// <summary>
         /// 状态(0:禁用,1:启用)
@@ -49,13 +49,13 @@ namespace MES.Models.Oper
         public int Status { get; set; }
 
         /// <summary>
-        /// 创建时间
+        /// 创建时间（隐藏基类成员）
         /// </summary>
-        public DateTime CreateTime { get; set; }
+        public new DateTime CreateTime { get; set; }
 
         /// <summary>
-        /// 更新时间
+        /// 更新时间（隐藏基类成员）
         /// </summary>
-        public DateTime? UpdateTime { get; set; }
+        public new DateTime? UpdateTime { get; set; }
     }
 }

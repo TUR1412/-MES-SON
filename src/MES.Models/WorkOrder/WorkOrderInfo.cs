@@ -94,9 +94,9 @@ namespace MES.Models.WorkOrder
         public DateTime? PlannedDueDate { get; set; }
 
         /// <summary>
-        /// 创建时间
+        /// 创建时间（隐藏基类成员）
         /// </summary>
-        public DateTime CreateTime { get; set; }
+        public new DateTime CreateTime { get; set; }
 
         /// <summary>
         /// 投产时间

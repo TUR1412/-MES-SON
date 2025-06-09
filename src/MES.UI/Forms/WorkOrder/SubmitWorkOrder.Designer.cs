@@ -28,275 +28,178 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.comboBox2 = new System.Windows.Forms.ComboBox();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
-            this.textBox4 = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
-            this.label7 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.textBox3 = new System.Windows.Forms.TextBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.button4 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
-            this.textBox16 = new System.Windows.Forms.TextBox();
-            this.textBox15 = new System.Windows.Forms.TextBox();
-            this.label19 = new System.Windows.Forms.Label();
-            this.label18 = new System.Windows.Forms.Label();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.label3 = new System.Windows.Forms.Label();
-            this.dateTimePicker2 = new System.Windows.Forms.DateTimePicker();
-            this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
-            this.label2 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            this.btnClose = new System.Windows.Forms.Button();
+            this.btnSubmit = new System.Windows.Forms.Button();
+            this.txtSubmitRemark = new System.Windows.Forms.TextBox();
+            this.lblWorkOrderCount = new System.Windows.Forms.Label();
+            this.dgvWorkOrders = new System.Windows.Forms.DataGridView();
+            this.btnRefresh = new System.Windows.Forms.Button();
+            this.lblWorkOrderNo = new System.Windows.Forms.Label();
+            this.lblWorkOrderType = new System.Windows.Forms.Label();
+            this.lblProductCode = new System.Windows.Forms.Label();
+            this.lblPlanQuantity = new System.Windows.Forms.Label();
+            this.lblStatus = new System.Windows.Forms.Label();
+            this.lblCreatedBy = new System.Windows.Forms.Label();
+            this.lblCreatedDate = new System.Windows.Forms.Label();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvWorkOrders)).BeginInit();
             this.SuspendLayout();
-            // 
-            // comboBox2
-            // 
-            this.comboBox2.Font = new System.Drawing.Font("宋体", 12F);
-            this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Location = new System.Drawing.Point(992, 642);
-            this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(182, 32);
-            this.comboBox2.TabIndex = 176;
-            // 
-            // comboBox1
-            // 
-            this.comboBox1.Font = new System.Drawing.Font("宋体", 12F);
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(656, 642);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(194, 32);
-            this.comboBox1.TabIndex = 175;
-            // 
-            // textBox4
-            // 
-            this.textBox4.Font = new System.Drawing.Font("宋体", 12F);
-            this.textBox4.Location = new System.Drawing.Point(1194, 642);
-            this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(108, 35);
-            this.textBox4.TabIndex = 174;
-            // 
-            // button1
-            // 
-            this.button1.Font = new System.Drawing.Font("黑体", 12F);
-            this.button1.Location = new System.Drawing.Point(1330, 639);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(155, 43);
-            this.button1.TabIndex = 173;
-            this.button1.Text = "变更工艺流";
-            this.button1.UseVisualStyleBackColor = true;
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Font = new System.Drawing.Font("宋体", 12F);
-            this.label7.Location = new System.Drawing.Point(856, 645);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(130, 24);
-            this.label7.TabIndex = 172;
-            this.label7.Text = "工艺流程号";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Font = new System.Drawing.Font("宋体", 12F);
-            this.label6.Location = new System.Drawing.Point(544, 648);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(106, 24);
-            this.label6.TabIndex = 171;
-            this.label6.Text = "是否并行";
-            // 
-            // textBox3
-            // 
-            this.textBox3.Font = new System.Drawing.Font("宋体", 12F);
-            this.textBox3.Location = new System.Drawing.Point(378, 645);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(108, 35);
-            this.textBox3.TabIndex = 170;
-            // 
-            // textBox2
-            // 
-            this.textBox2.Font = new System.Drawing.Font("宋体", 12F);
-            this.textBox2.Location = new System.Drawing.Point(169, 645);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(190, 35);
-            this.textBox2.TabIndex = 169;
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("宋体", 12F);
-            this.label5.Location = new System.Drawing.Point(41, 648);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(82, 24);
-            this.label5.TabIndex = 168;
-            this.label5.Text = "工单号";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("宋体", 12F);
-            this.label4.Location = new System.Drawing.Point(41, 585);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(106, 24);
-            this.label4.TabIndex = 167;
-            this.label4.Text = "变更信息";
-            // 
-            // button4
-            // 
-            this.button4.Font = new System.Drawing.Font("黑体", 12F);
-            this.button4.Location = new System.Drawing.Point(1699, 730);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(94, 43);
-            this.button4.TabIndex = 166;
-            this.button4.Text = "退出";
-            this.button4.UseVisualStyleBackColor = true;
-            // 
-            // button3
-            // 
-            this.button3.Font = new System.Drawing.Font("黑体", 12F);
-            this.button3.Location = new System.Drawing.Point(1560, 730);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(94, 43);
-            this.button3.TabIndex = 165;
-            this.button3.Text = "确定";
-            this.button3.UseVisualStyleBackColor = true;
-            // 
-            // textBox16
-            // 
-            this.textBox16.Font = new System.Drawing.Font("宋体", 12F);
-            this.textBox16.Location = new System.Drawing.Point(1194, 736);
-            this.textBox16.Name = "textBox16";
-            this.textBox16.Size = new System.Drawing.Size(272, 35);
-            this.textBox16.TabIndex = 164;
-            // 
-            // textBox15
-            // 
-            this.textBox15.Font = new System.Drawing.Font("宋体", 12F);
-            this.textBox15.Location = new System.Drawing.Point(120, 736);
-            this.textBox15.Name = "textBox15";
-            this.textBox15.Size = new System.Drawing.Size(853, 35);
-            this.textBox15.TabIndex = 163;
-            // 
-            // label19
-            // 
-            this.label19.AutoSize = true;
-            this.label19.Font = new System.Drawing.Font("微软雅黑", 12F);
-            this.label19.Location = new System.Drawing.Point(1033, 740);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(110, 31);
-            this.label19.TabIndex = 162;
-            this.label19.Text = "用户编号";
-            // 
-            // label18
-            // 
-            this.label18.AutoSize = true;
-            this.label18.Font = new System.Drawing.Font("微软雅黑", 12F);
-            this.label18.Location = new System.Drawing.Point(39, 740);
-            this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(62, 31);
-            this.label18.TabIndex = 161;
-            this.label18.Text = "备注";
-            // 
-            // dataGridView1
-            // 
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(44, 118);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.RowHeadersWidth = 62;
-            this.dataGridView1.RowTemplate.Height = 30;
-            this.dataGridView1.Size = new System.Drawing.Size(1796, 445);
-            this.dataGridView1.TabIndex = 160;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("宋体", 12F);
-            this.label3.Location = new System.Drawing.Point(39, 79);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(106, 24);
-            this.label3.TabIndex = 159;
-            this.label3.Text = "工单清单";
-            // 
-            // dateTimePicker2
-            // 
-            this.dateTimePicker2.Font = new System.Drawing.Font("宋体", 12F);
-            this.dateTimePicker2.Location = new System.Drawing.Point(815, 22);
-            this.dateTimePicker2.Name = "dateTimePicker2";
-            this.dateTimePicker2.Size = new System.Drawing.Size(200, 35);
-            this.dateTimePicker2.TabIndex = 158;
-            // 
-            // dateTimePicker1
-            // 
-            this.dateTimePicker1.Font = new System.Drawing.Font("宋体", 12F);
-            this.dateTimePicker1.Location = new System.Drawing.Point(571, 22);
-            this.dateTimePicker1.Name = "dateTimePicker1";
-            this.dateTimePicker1.Size = new System.Drawing.Size(200, 35);
-            this.dateTimePicker1.TabIndex = 157;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("宋体", 12F);
-            this.label2.Location = new System.Drawing.Point(447, 29);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(106, 24);
-            this.label2.TabIndex = 156;
-            this.label2.Text = "计划日期";
-            // 
-            // textBox1
-            // 
-            this.textBox1.Font = new System.Drawing.Font("宋体", 12F);
-            this.textBox1.Location = new System.Drawing.Point(140, 26);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(259, 35);
-            this.textBox1.TabIndex = 155;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("宋体", 12F);
-            this.label1.Location = new System.Drawing.Point(39, 29);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(82, 24);
-            this.label1.TabIndex = 154;
-            this.label1.Text = "工单号";
-            // 
-            // Submit
-            // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
+            //
+            // btnClose
+            //
+            this.btnClose.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F);
+            this.btnClose.Location = new System.Drawing.Point(750, 500);
+            this.btnClose.Name = "btnClose";
+            this.btnClose.Size = new System.Drawing.Size(100, 35);
+            this.btnClose.TabIndex = 1;
+            this.btnClose.Text = "关闭";
+            this.btnClose.UseVisualStyleBackColor = true;
+            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
+            //
+            // btnSubmit
+            //
+            this.btnSubmit.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F);
+            this.btnSubmit.Location = new System.Drawing.Point(630, 500);
+            this.btnSubmit.Name = "btnSubmit";
+            this.btnSubmit.Size = new System.Drawing.Size(100, 35);
+            this.btnSubmit.TabIndex = 2;
+            this.btnSubmit.Text = "提交工单";
+            this.btnSubmit.UseVisualStyleBackColor = true;
+            this.btnSubmit.Click += new System.EventHandler(this.btnSubmit_Click);
+            //
+            // txtSubmitRemark
+            //
+            this.txtSubmitRemark.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F);
+            this.txtSubmitRemark.Location = new System.Drawing.Point(30, 450);
+            this.txtSubmitRemark.Multiline = true;
+            this.txtSubmitRemark.Name = "txtSubmitRemark";
+            this.txtSubmitRemark.Size = new System.Drawing.Size(820, 35);
+            this.txtSubmitRemark.TabIndex = 3;
+            //
+            // lblWorkOrderCount
+            //
+            this.lblWorkOrderCount.AutoSize = true;
+            this.lblWorkOrderCount.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F);
+            this.lblWorkOrderCount.Location = new System.Drawing.Point(30, 80);
+            this.lblWorkOrderCount.Name = "lblWorkOrderCount";
+            this.lblWorkOrderCount.Size = new System.Drawing.Size(120, 20);
+            this.lblWorkOrderCount.TabIndex = 4;
+            this.lblWorkOrderCount.Text = "工单数量统计";
+            //
+            // dgvWorkOrders
+            //
+            this.dgvWorkOrders.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvWorkOrders.Location = new System.Drawing.Point(30, 110);
+            this.dgvWorkOrders.Name = "dgvWorkOrders";
+            this.dgvWorkOrders.RowHeadersWidth = 62;
+            this.dgvWorkOrders.RowTemplate.Height = 30;
+            this.dgvWorkOrders.Size = new System.Drawing.Size(820, 250);
+            this.dgvWorkOrders.TabIndex = 5;
+            this.dgvWorkOrders.SelectionChanged += new System.EventHandler(this.dgvWorkOrders_SelectionChanged);
+            //
+            // btnRefresh
+            //
+            this.btnRefresh.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F);
+            this.btnRefresh.Location = new System.Drawing.Point(750, 75);
+            this.btnRefresh.Name = "btnRefresh";
+            this.btnRefresh.Size = new System.Drawing.Size(100, 30);
+            this.btnRefresh.TabIndex = 6;
+            this.btnRefresh.Text = "刷新";
+            this.btnRefresh.UseVisualStyleBackColor = true;
+            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
+            //
+            // lblWorkOrderNo
+            //
+            this.lblWorkOrderNo.AutoSize = true;
+            this.lblWorkOrderNo.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F);
+            this.lblWorkOrderNo.Location = new System.Drawing.Point(30, 380);
+            this.lblWorkOrderNo.Name = "lblWorkOrderNo";
+            this.lblWorkOrderNo.Size = new System.Drawing.Size(80, 20);
+            this.lblWorkOrderNo.TabIndex = 7;
+            this.lblWorkOrderNo.Text = "工单号：";
+            //
+            // lblWorkOrderType
+            //
+            this.lblWorkOrderType.AutoSize = true;
+            this.lblWorkOrderType.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F);
+            this.lblWorkOrderType.Location = new System.Drawing.Point(150, 380);
+            this.lblWorkOrderType.Name = "lblWorkOrderType";
+            this.lblWorkOrderType.Size = new System.Drawing.Size(100, 20);
+            this.lblWorkOrderType.TabIndex = 8;
+            this.lblWorkOrderType.Text = "工单类型：";
+            //
+            // lblProductCode
+            //
+            this.lblProductCode.AutoSize = true;
+            this.lblProductCode.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F);
+            this.lblProductCode.Location = new System.Drawing.Point(280, 380);
+            this.lblProductCode.Name = "lblProductCode";
+            this.lblProductCode.Size = new System.Drawing.Size(100, 20);
+            this.lblProductCode.TabIndex = 9;
+            this.lblProductCode.Text = "产品编号：";
+            //
+            // lblPlanQuantity
+            //
+            this.lblPlanQuantity.AutoSize = true;
+            this.lblPlanQuantity.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F);
+            this.lblPlanQuantity.Location = new System.Drawing.Point(410, 380);
+            this.lblPlanQuantity.Name = "lblPlanQuantity";
+            this.lblPlanQuantity.Size = new System.Drawing.Size(100, 20);
+            this.lblPlanQuantity.TabIndex = 10;
+            this.lblPlanQuantity.Text = "计划数量：";
+            //
+            // lblStatus
+            //
+            this.lblStatus.AutoSize = true;
+            this.lblStatus.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F);
+            this.lblStatus.Location = new System.Drawing.Point(540, 380);
+            this.lblStatus.Name = "lblStatus";
+            this.lblStatus.Size = new System.Drawing.Size(60, 20);
+            this.lblStatus.TabIndex = 11;
+            this.lblStatus.Text = "状态：";
+            //
+            // lblCreatedBy
+            //
+            this.lblCreatedBy.AutoSize = true;
+            this.lblCreatedBy.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F);
+            this.lblCreatedBy.Location = new System.Drawing.Point(30, 410);
+            this.lblCreatedBy.Name = "lblCreatedBy";
+            this.lblCreatedBy.Size = new System.Drawing.Size(80, 20);
+            this.lblCreatedBy.TabIndex = 12;
+            this.lblCreatedBy.Text = "创建人：";
+            //
+            // lblCreatedDate
+            //
+            this.lblCreatedDate.AutoSize = true;
+            this.lblCreatedDate.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F);
+            this.lblCreatedDate.Location = new System.Drawing.Point(150, 410);
+            this.lblCreatedDate.Name = "lblCreatedDate";
+            this.lblCreatedDate.Size = new System.Drawing.Size(100, 20);
+            this.lblCreatedDate.TabIndex = 13;
+            this.lblCreatedDate.Text = "创建时间：";
+            //
+            // SubmitWorkOrder
+            //
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1878, 794);
-            this.Controls.Add(this.comboBox2);
-            this.Controls.Add(this.comboBox1);
-            this.Controls.Add(this.textBox4);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.label7);
-            this.Controls.Add(this.label6);
-            this.Controls.Add(this.textBox3);
-            this.Controls.Add(this.textBox2);
-            this.Controls.Add(this.label5);
-            this.Controls.Add(this.label4);
-            this.Controls.Add(this.button4);
-            this.Controls.Add(this.button3);
-            this.Controls.Add(this.textBox16);
-            this.Controls.Add(this.textBox15);
-            this.Controls.Add(this.label19);
-            this.Controls.Add(this.label18);
-            this.Controls.Add(this.dataGridView1);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.dateTimePicker2);
-            this.Controls.Add(this.dateTimePicker1);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.textBox1);
-            this.Controls.Add(this.label1);
-            this.Name = "Submit";
-            this.Text = "Submit";
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            this.ClientSize = new System.Drawing.Size(880, 560);
+            this.Controls.Add(this.lblCreatedDate);
+            this.Controls.Add(this.lblCreatedBy);
+            this.Controls.Add(this.lblStatus);
+            this.Controls.Add(this.lblPlanQuantity);
+            this.Controls.Add(this.lblProductCode);
+            this.Controls.Add(this.lblWorkOrderType);
+            this.Controls.Add(this.lblWorkOrderNo);
+            this.Controls.Add(this.btnRefresh);
+            this.Controls.Add(this.dgvWorkOrders);
+            this.Controls.Add(this.lblWorkOrderCount);
+            this.Controls.Add(this.txtSubmitRemark);
+            this.Controls.Add(this.btnSubmit);
+            this.Controls.Add(this.btnClose);
+            this.Name = "SubmitWorkOrder";
+            this.Text = "提交工单";
+            this.Load += new System.EventHandler(this.SubmitWorkOrder_Load);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.SubmitWorkOrder_FormClosed);
+            ((System.ComponentModel.ISupportInitialize)(this.dgvWorkOrders)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -304,28 +207,18 @@
 
         #endregion
 
-        private System.Windows.Forms.ComboBox comboBox2;
-        private System.Windows.Forms.ComboBox comboBox1;
-        private System.Windows.Forms.TextBox textBox4;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.TextBox textBox3;
-        private System.Windows.Forms.TextBox textBox2;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Button button4;
-        private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.TextBox textBox16;
-        private System.Windows.Forms.TextBox textBox15;
-        private System.Windows.Forms.Label label19;
-        private System.Windows.Forms.Label label18;
-        private System.Windows.Forms.DataGridView dataGridView1;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.DateTimePicker dateTimePicker2;
-        private System.Windows.Forms.DateTimePicker dateTimePicker1;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button btnClose;
+        private System.Windows.Forms.Button btnSubmit;
+        private System.Windows.Forms.TextBox txtSubmitRemark;
+        private System.Windows.Forms.Label lblWorkOrderCount;
+        private System.Windows.Forms.DataGridView dgvWorkOrders;
+        private System.Windows.Forms.Button btnRefresh;
+        private System.Windows.Forms.Label lblWorkOrderNo;
+        private System.Windows.Forms.Label lblWorkOrderType;
+        private System.Windows.Forms.Label lblProductCode;
+        private System.Windows.Forms.Label lblPlanQuantity;
+        private System.Windows.Forms.Label lblStatus;
+        private System.Windows.Forms.Label lblCreatedBy;
+        private System.Windows.Forms.Label lblCreatedDate;
     }
 }
