@@ -887,7 +887,7 @@ namespace MES.UI.Forms
         //private void OpenMaterialForm() { ShowNotImplemented("物料信息管理"); }
         private void OpenMaterialForm() { showMMForm(); }
         private void OpenBOMForm() { ShowBOMManagementForm(); }
-        private void OpenProcessRouteForm() { ShowNotImplemented("工艺路线管理"); }
+        private void OpenProcessRouteForm() { ShowProcessRouteConfigForm(); }
 
         // H成员负责实现的生产管理模块
         private void OpenProductionOrderForm() { ShowProductionOrderForm(); }
@@ -1174,6 +1174,15 @@ namespace MES.UI.Forms
         {
             BOMManagementForm bomForm = new BOMManagementForm();
             bomForm.Show();
+        }
+
+        /// <summary>
+        /// 显示工艺路线配置窗体
+        /// </summary>
+        private void ShowProcessRouteConfigForm()
+        {
+            ProcessRouteConfigForm processRouteForm = new ProcessRouteConfigForm();
+            processRouteForm.Show();
         }
 
         /// <summary>

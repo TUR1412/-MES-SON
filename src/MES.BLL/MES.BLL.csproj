@@ -114,6 +114,7 @@
     <Compile Include="Material\IBOMBLL.cs" />
     <Compile Include="Material\IMaterialBLL.cs" />
     <Compile Include="Material\MaterialBLL.cs" />
+    <Compile Include="Material\ProcessRouteService.cs" />
     <Compile Include="Production\IProductionOrderBLL.cs" />
     <Compile Include="Production\ProductionOrderBLL.cs" />
     <Compile Include="Workshop\IWorkshopBLL.cs" />
