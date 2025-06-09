@@ -68,8 +68,9 @@ namespace MES.UI.Forms.Workshop
             this.panelTop.Controls.Add(this.lblTitle);
             this.panelTop.Dock = System.Windows.Forms.DockStyle.Top;
             this.panelTop.Location = new System.Drawing.Point(0, 0);
+            this.panelTop.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.panelTop.Name = "panelTop";
-            this.panelTop.Size = new System.Drawing.Size(1200, 60);
+            this.panelTop.Size = new System.Drawing.Size(1800, 90);
             this.panelTop.TabIndex = 0;
             // 
             // lblTitle
@@ -77,11 +78,12 @@ namespace MES.UI.Forms.Workshop
             this.lblTitle.AutoSize = true;
             this.lblTitle.Font = new System.Drawing.Font("微软雅黑", 16F, System.Drawing.FontStyle.Bold);
             this.lblTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(53)))), ((int)(((byte)(69)))));
-            this.lblTitle.Location = new System.Drawing.Point(20, 15);
+            this.lblTitle.Location = new System.Drawing.Point(30, 22);
+            this.lblTitle.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Size = new System.Drawing.Size(181, 30);
+            this.lblTitle.Size = new System.Drawing.Size(319, 42);
             this.lblTitle.TabIndex = 0;
-            this.lblTitle.Text = "🔧 设备状态管理";
+            this.lblTitle.Text = "🔧 设备状态管理      ";
             // 
             // panelSearch
             // 
@@ -97,9 +99,10 @@ namespace MES.UI.Forms.Workshop
             this.panelSearch.Controls.Add(this.cmbType);
             this.panelSearch.Controls.Add(this.lblType);
             this.panelSearch.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panelSearch.Location = new System.Drawing.Point(0, 60);
+            this.panelSearch.Location = new System.Drawing.Point(0, 90);
+            this.panelSearch.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.panelSearch.Name = "panelSearch";
-            this.panelSearch.Size = new System.Drawing.Size(1200, 80);
+            this.panelSearch.Size = new System.Drawing.Size(1800, 119);
             this.panelSearch.TabIndex = 1;
             // 
             // btnSearch
@@ -108,9 +111,10 @@ namespace MES.UI.Forms.Workshop
             this.btnSearch.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSearch.Font = new System.Drawing.Font("微软雅黑", 9F);
             this.btnSearch.ForeColor = System.Drawing.Color.White;
-            this.btnSearch.Location = new System.Drawing.Point(1050, 25);
+            this.btnSearch.Location = new System.Drawing.Point(1575, 38);
+            this.btnSearch.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnSearch.Name = "btnSearch";
-            this.btnSearch.Size = new System.Drawing.Size(80, 30);
+            this.btnSearch.Size = new System.Drawing.Size(120, 45);
             this.btnSearch.TabIndex = 8;
             this.btnSearch.Text = "搜索";
             this.btnSearch.UseVisualStyleBackColor = false;
@@ -118,18 +122,20 @@ namespace MES.UI.Forms.Workshop
             // txtSearch
             // 
             this.txtSearch.Font = new System.Drawing.Font("微软雅黑", 9F);
-            this.txtSearch.Location = new System.Drawing.Point(880, 27);
+            this.txtSearch.Location = new System.Drawing.Point(1320, 40);
+            this.txtSearch.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtSearch.Name = "txtSearch";
-            this.txtSearch.Size = new System.Drawing.Size(150, 23);
+            this.txtSearch.Size = new System.Drawing.Size(223, 31);
             this.txtSearch.TabIndex = 7;
             // 
             // lblSearch
             // 
             this.lblSearch.AutoSize = true;
             this.lblSearch.Font = new System.Drawing.Font("微软雅黑", 9F);
-            this.lblSearch.Location = new System.Drawing.Point(820, 30);
+            this.lblSearch.Location = new System.Drawing.Point(1230, 45);
+            this.lblSearch.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblSearch.Name = "lblSearch";
-            this.lblSearch.Size = new System.Drawing.Size(56, 17);
+            this.lblSearch.Size = new System.Drawing.Size(82, 24);
             this.lblSearch.TabIndex = 6;
             this.lblSearch.Text = "关键字：";
             // 
@@ -138,18 +144,20 @@ namespace MES.UI.Forms.Workshop
             this.cmbWorkshop.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbWorkshop.Font = new System.Drawing.Font("微软雅黑", 9F);
             this.cmbWorkshop.FormattingEnabled = true;
-            this.cmbWorkshop.Location = new System.Drawing.Point(80, 27);
+            this.cmbWorkshop.Location = new System.Drawing.Point(120, 40);
+            this.cmbWorkshop.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.cmbWorkshop.Name = "cmbWorkshop";
-            this.cmbWorkshop.Size = new System.Drawing.Size(150, 25);
+            this.cmbWorkshop.Size = new System.Drawing.Size(223, 32);
             this.cmbWorkshop.TabIndex = 1;
             // 
             // lblWorkshop
             // 
             this.lblWorkshop.AutoSize = true;
             this.lblWorkshop.Font = new System.Drawing.Font("微软雅黑", 9F);
-            this.lblWorkshop.Location = new System.Drawing.Point(20, 30);
+            this.lblWorkshop.Location = new System.Drawing.Point(30, 45);
+            this.lblWorkshop.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblWorkshop.Name = "lblWorkshop";
-            this.lblWorkshop.Size = new System.Drawing.Size(56, 17);
+            this.lblWorkshop.Size = new System.Drawing.Size(64, 24);
             this.lblWorkshop.TabIndex = 0;
             this.lblWorkshop.Text = "车间：";
             // 
@@ -158,18 +166,20 @@ namespace MES.UI.Forms.Workshop
             this.cmbStatus.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbStatus.Font = new System.Drawing.Font("微软雅黑", 9F);
             this.cmbStatus.FormattingEnabled = true;
-            this.cmbStatus.Location = new System.Drawing.Point(320, 27);
+            this.cmbStatus.Location = new System.Drawing.Point(480, 40);
+            this.cmbStatus.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.cmbStatus.Name = "cmbStatus";
-            this.cmbStatus.Size = new System.Drawing.Size(120, 25);
+            this.cmbStatus.Size = new System.Drawing.Size(178, 32);
             this.cmbStatus.TabIndex = 3;
             // 
             // lblStatus
             // 
             this.lblStatus.AutoSize = true;
             this.lblStatus.Font = new System.Drawing.Font("微软雅黑", 9F);
-            this.lblStatus.Location = new System.Drawing.Point(260, 30);
+            this.lblStatus.Location = new System.Drawing.Point(390, 45);
+            this.lblStatus.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblStatus.Name = "lblStatus";
-            this.lblStatus.Size = new System.Drawing.Size(56, 17);
+            this.lblStatus.Size = new System.Drawing.Size(64, 24);
             this.lblStatus.TabIndex = 2;
             this.lblStatus.Text = "状态：";
             // 
@@ -178,18 +188,20 @@ namespace MES.UI.Forms.Workshop
             this.cmbType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbType.Font = new System.Drawing.Font("微软雅黑", 9F);
             this.cmbType.FormattingEnabled = true;
-            this.cmbType.Location = new System.Drawing.Point(540, 27);
+            this.cmbType.Location = new System.Drawing.Point(810, 40);
+            this.cmbType.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.cmbType.Name = "cmbType";
-            this.cmbType.Size = new System.Drawing.Size(120, 25);
+            this.cmbType.Size = new System.Drawing.Size(178, 32);
             this.cmbType.TabIndex = 5;
             // 
             // lblType
             // 
             this.lblType.AutoSize = true;
             this.lblType.Font = new System.Drawing.Font("微软雅黑", 9F);
-            this.lblType.Location = new System.Drawing.Point(480, 30);
+            this.lblType.Location = new System.Drawing.Point(720, 45);
+            this.lblType.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblType.Name = "lblType";
-            this.lblType.Size = new System.Drawing.Size(56, 17);
+            this.lblType.Size = new System.Drawing.Size(64, 24);
             this.lblType.TabIndex = 4;
             this.lblType.Text = "类型：";
             // 
@@ -203,9 +215,10 @@ namespace MES.UI.Forms.Workshop
             this.panelButtons.Controls.Add(this.btnStop);
             this.panelButtons.Controls.Add(this.btnAlarm);
             this.panelButtons.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panelButtons.Location = new System.Drawing.Point(0, 140);
+            this.panelButtons.Location = new System.Drawing.Point(0, 209);
+            this.panelButtons.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.panelButtons.Name = "panelButtons";
-            this.panelButtons.Size = new System.Drawing.Size(1200, 60);
+            this.panelButtons.Size = new System.Drawing.Size(1800, 89);
             this.panelButtons.TabIndex = 2;
             // 
             // btnRefresh
@@ -214,9 +227,10 @@ namespace MES.UI.Forms.Workshop
             this.btnRefresh.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnRefresh.Font = new System.Drawing.Font("微软雅黑", 9F);
             this.btnRefresh.ForeColor = System.Drawing.Color.White;
-            this.btnRefresh.Location = new System.Drawing.Point(450, 15);
+            this.btnRefresh.Location = new System.Drawing.Point(675, 22);
+            this.btnRefresh.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnRefresh.Name = "btnRefresh";
-            this.btnRefresh.Size = new System.Drawing.Size(80, 30);
+            this.btnRefresh.Size = new System.Drawing.Size(120, 45);
             this.btnRefresh.TabIndex = 4;
             this.btnRefresh.Text = "刷新";
             this.btnRefresh.UseVisualStyleBackColor = false;
@@ -227,9 +241,10 @@ namespace MES.UI.Forms.Workshop
             this.btnMaintenance.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnMaintenance.Font = new System.Drawing.Font("微软雅黑", 9F);
             this.btnMaintenance.ForeColor = System.Drawing.Color.White;
-            this.btnMaintenance.Location = new System.Drawing.Point(250, 15);
+            this.btnMaintenance.Location = new System.Drawing.Point(375, 22);
+            this.btnMaintenance.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnMaintenance.Name = "btnMaintenance";
-            this.btnMaintenance.Size = new System.Drawing.Size(80, 30);
+            this.btnMaintenance.Size = new System.Drawing.Size(120, 45);
             this.btnMaintenance.TabIndex = 2;
             this.btnMaintenance.Text = "维护";
             this.btnMaintenance.UseVisualStyleBackColor = false;
@@ -240,9 +255,10 @@ namespace MES.UI.Forms.Workshop
             this.btnStart.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnStart.Font = new System.Drawing.Font("微软雅黑", 9F);
             this.btnStart.ForeColor = System.Drawing.Color.White;
-            this.btnStart.Location = new System.Drawing.Point(50, 15);
+            this.btnStart.Location = new System.Drawing.Point(75, 22);
+            this.btnStart.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnStart.Name = "btnStart";
-            this.btnStart.Size = new System.Drawing.Size(80, 30);
+            this.btnStart.Size = new System.Drawing.Size(120, 45);
             this.btnStart.TabIndex = 0;
             this.btnStart.Text = "启动";
             this.btnStart.UseVisualStyleBackColor = false;
@@ -253,9 +269,10 @@ namespace MES.UI.Forms.Workshop
             this.btnStop.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnStop.Font = new System.Drawing.Font("微软雅黑", 9F);
             this.btnStop.ForeColor = System.Drawing.Color.White;
-            this.btnStop.Location = new System.Drawing.Point(150, 15);
+            this.btnStop.Location = new System.Drawing.Point(225, 22);
+            this.btnStop.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnStop.Name = "btnStop";
-            this.btnStop.Size = new System.Drawing.Size(80, 30);
+            this.btnStop.Size = new System.Drawing.Size(120, 45);
             this.btnStop.TabIndex = 1;
             this.btnStop.Text = "停止";
             this.btnStop.UseVisualStyleBackColor = false;
@@ -266,9 +283,10 @@ namespace MES.UI.Forms.Workshop
             this.btnAlarm.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnAlarm.Font = new System.Drawing.Font("微软雅黑", 9F);
             this.btnAlarm.ForeColor = System.Drawing.Color.White;
-            this.btnAlarm.Location = new System.Drawing.Point(350, 15);
+            this.btnAlarm.Location = new System.Drawing.Point(525, 22);
+            this.btnAlarm.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnAlarm.Name = "btnAlarm";
-            this.btnAlarm.Size = new System.Drawing.Size(80, 30);
+            this.btnAlarm.Size = new System.Drawing.Size(120, 45);
             this.btnAlarm.TabIndex = 3;
             this.btnAlarm.Text = "报警";
             this.btnAlarm.UseVisualStyleBackColor = false;
@@ -277,9 +295,10 @@ namespace MES.UI.Forms.Workshop
             // 
             this.panelMain.Controls.Add(this.dgvEquipment);
             this.panelMain.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelMain.Location = new System.Drawing.Point(0, 200);
+            this.panelMain.Location = new System.Drawing.Point(0, 298);
+            this.panelMain.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.panelMain.Name = "panelMain";
-            this.panelMain.Size = new System.Drawing.Size(1200, 400);
+            this.panelMain.Size = new System.Drawing.Size(1800, 602);
             this.panelMain.TabIndex = 3;
             // 
             // dgvEquipment
@@ -291,11 +310,13 @@ namespace MES.UI.Forms.Workshop
             this.dgvEquipment.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvEquipment.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvEquipment.Location = new System.Drawing.Point(0, 0);
+            this.dgvEquipment.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.dgvEquipment.Name = "dgvEquipment";
             this.dgvEquipment.ReadOnly = true;
+            this.dgvEquipment.RowHeadersWidth = 62;
             this.dgvEquipment.RowTemplate.Height = 23;
             this.dgvEquipment.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvEquipment.Size = new System.Drawing.Size(1200, 400);
+            this.dgvEquipment.Size = new System.Drawing.Size(1800, 602);
             this.dgvEquipment.TabIndex = 0;
             // 
             // panelBottom
@@ -305,18 +326,20 @@ namespace MES.UI.Forms.Workshop
             this.panelBottom.Controls.Add(this.lblSummary);
             this.panelBottom.Controls.Add(this.lblLastUpdate);
             this.panelBottom.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panelBottom.Location = new System.Drawing.Point(0, 600);
+            this.panelBottom.Location = new System.Drawing.Point(0, 900);
+            this.panelBottom.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.panelBottom.Name = "panelBottom";
-            this.panelBottom.Size = new System.Drawing.Size(1200, 40);
+            this.panelBottom.Size = new System.Drawing.Size(1800, 60);
             this.panelBottom.TabIndex = 4;
             // 
             // lblTotal
             // 
             this.lblTotal.AutoSize = true;
             this.lblTotal.Font = new System.Drawing.Font("微软雅黑", 9F);
-            this.lblTotal.Location = new System.Drawing.Point(20, 12);
+            this.lblTotal.Location = new System.Drawing.Point(30, 18);
+            this.lblTotal.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblTotal.Name = "lblTotal";
-            this.lblTotal.Size = new System.Drawing.Size(68, 17);
+            this.lblTotal.Size = new System.Drawing.Size(103, 24);
             this.lblTotal.TabIndex = 0;
             this.lblTotal.Text = "共 0 台设备";
             // 
@@ -324,9 +347,10 @@ namespace MES.UI.Forms.Workshop
             // 
             this.lblSummary.AutoSize = true;
             this.lblSummary.Font = new System.Drawing.Font("微软雅黑", 9F);
-            this.lblSummary.Location = new System.Drawing.Point(200, 12);
+            this.lblSummary.Location = new System.Drawing.Point(300, 18);
+            this.lblSummary.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblSummary.Name = "lblSummary";
-            this.lblSummary.Size = new System.Drawing.Size(200, 17);
+            this.lblSummary.Size = new System.Drawing.Size(315, 24);
             this.lblSummary.TabIndex = 1;
             this.lblSummary.Text = "运行：0 | 停止：0 | 故障：0 | 维护：0";
             // 
@@ -335,9 +359,10 @@ namespace MES.UI.Forms.Workshop
             this.lblLastUpdate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblLastUpdate.AutoSize = true;
             this.lblLastUpdate.Font = new System.Drawing.Font("微软雅黑", 9F);
-            this.lblLastUpdate.Location = new System.Drawing.Point(1000, 12);
+            this.lblLastUpdate.Location = new System.Drawing.Point(1500, 18);
+            this.lblLastUpdate.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblLastUpdate.Name = "lblLastUpdate";
-            this.lblLastUpdate.Size = new System.Drawing.Size(180, 17);
+            this.lblLastUpdate.Size = new System.Drawing.Size(283, 24);
             this.lblLastUpdate.TabIndex = 2;
             this.lblLastUpdate.Text = "最后更新：2025-06-09 09:11:51";
             // 
@@ -347,17 +372,18 @@ namespace MES.UI.Forms.Workshop
             // 
             // EquipmentStatusForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1200, 640);
+            this.ClientSize = new System.Drawing.Size(1800, 960);
             this.Controls.Add(this.panelMain);
             this.Controls.Add(this.panelBottom);
             this.Controls.Add(this.panelButtons);
             this.Controls.Add(this.panelSearch);
             this.Controls.Add(this.panelTop);
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "EquipmentStatusForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "设备状态管理";
+            this.Text = "设备状态管理    ";
             this.panelTop.ResumeLayout(false);
             this.panelTop.PerformLayout();
             this.panelSearch.ResumeLayout(false);

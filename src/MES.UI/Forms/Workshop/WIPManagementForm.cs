@@ -683,6 +683,11 @@ namespace MES.UI.Forms.Workshop
                 MessageBox.Show(string.Format("搜索在制品失败：{0}", ex.Message), "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        private void lblTitle_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 
     /// <summary>
