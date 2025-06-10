@@ -15,6 +15,9 @@ namespace MES.Common.Logging
         private static LogLevel _logLevel;
         private static bool _isInitialized = false;
 
+        // 🚀 调试输出捕获 - 自动化调试支持
+        private static StreamWriter _debugWriter = null;
+
         /// <summary>
         /// 初始化日志管理器
         /// </summary>
@@ -47,6 +50,9 @@ namespace MES.Common.Logging
                     {
                         Directory.CreateDirectory(_logPath);
                     }
+
+                    // 🚀 初始化调试输出捕获
+                    InitializeDebugCapture();
 
                     _isInitialized = true;
                     Info("日志管理器初始化完成");
@@ -124,6 +130,9 @@ namespace MES.Common.Logging
 
                     File.AppendAllText(logFilePath, logEntry + Environment.NewLine);
 
+                    // 🚀 同时输出到调试捕获文件（所有级别）
+                    WriteToDebugCapture(logEntry);
+
                     // 如果是错误或致命错误，同时输出到控制台
                     if (level >= LogLevel.Error)
                     {
@@ -159,6 +168,50 @@ namespace MES.Common.Logging
             }
 
             return logEntry;
+        }
+
+        /// <summary>
+        /// 🚀 初始化调试输出捕获
+        /// </summary>
+        private static void InitializeDebugCapture()
+        {
+            try
+            {
+                var debugLogPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "debug_logmanager.log");
+
+                // 创建独立的LogManager调试输出文件（覆盖模式，避免混乱）
+                var fileStream = new FileStream(debugLogPath, FileMode.Create, FileAccess.Write, FileShare.Read);
+                _debugWriter = new StreamWriter(fileStream);
+                _debugWriter.AutoFlush = true;
+
+                // 写入LogManager启动标记
+                _debugWriter.WriteLine("");
+                _debugWriter.WriteLine("🚀 LogManager调试捕获已启动！");
+                _debugWriter.WriteLine("=".PadRight(80, '='));
+            }
+            catch (Exception ex)
+            {
+                // 如果调试捕获初始化失败，不影响正常日志功能
+                Console.WriteLine(string.Format("调试捕获初始化失败: {0}", ex.Message));
+            }
+        }
+
+        /// <summary>
+        /// 🚀 写入到调试捕获文件
+        /// </summary>
+        private static void WriteToDebugCapture(string logEntry)
+        {
+            try
+            {
+                if (_debugWriter != null)
+                {
+                    _debugWriter.WriteLine(logEntry);
+                }
+            }
+            catch (Exception)
+            {
+                // 调试捕获失败不影响正常日志功能，静默处理
+            }
         }
 
         /// <summary>
