@@ -37,7 +37,6 @@ namespace MES.UI.Forms.Workshop
             _workshops = new List<WorkshopInfo>();
 
             InitializeForm();
-            LoadData();
         }
 
         /// <summary>
@@ -314,6 +313,18 @@ namespace MES.UI.Forms.Workshop
             cmbWorkshop.SelectedIndexChanged += CmbWorkshop_SelectedIndexChanged;
             cmbStatus.SelectedIndexChanged += CmbStatus_SelectedIndexChanged;
             cmbType.SelectedIndexChanged += CmbType_SelectedIndexChanged;
+
+            // 绑定窗体Load事件
+            this.Load += EquipmentStatusForm_Load;
+        }
+
+        /// <summary>
+        /// 窗体加载事件
+        /// </summary>
+        private void EquipmentStatusForm_Load(object sender, EventArgs e)
+        {
+            // 在窗体加载时加载数据，而不是在构造函数中
+            LoadData();
         }
 
         /// <summary>

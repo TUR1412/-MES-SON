@@ -60,7 +60,7 @@ namespace MES.DAL.Workshop
                 ProductionEndTime = row["end_time"] != DBNull.Value ? Convert.ToDateTime(row["end_time"]) : (DateTime?)null,
                 OperatorId = row["operator_id"] != DBNull.Value ? Convert.ToInt32(row["operator_id"]) : 0,
                 OperatorName = row["operator_name"] != DBNull.Value ? row["operator_name"].ToString() : null,
-                Remarks = row["remarks"] != DBNull.Value ? row["remarks"].ToString() : null,
+                Remarks = row["remark"] != DBNull.Value ? row["remark"].ToString() : null,
                 CreateTime = Convert.ToDateTime(row["create_time"]),
                 CreateUserId = row["create_user_id"] != DBNull.Value ? (int?)Convert.ToInt32(row["create_user_id"]) : null,
                 CreateUserName = row["create_user_name"] != DBNull.Value ? row["create_user_name"].ToString() : null,
@@ -269,12 +269,12 @@ namespace MES.DAL.Workshop
             sql = @"INSERT INTO batch_info
                           (batch_number, workshop_id, workshop_name, production_order_id, production_order_number,
                            product_code, product_name, planned_quantity, actual_quantity, unit,
-                           batch_status, start_time, end_time, operator_id, operator_name, remarks,
+                           batch_status, start_time, end_time, operator_id, operator_name,
                            create_time, create_user_id, create_user_name, is_deleted, remark, version)
                           VALUES
                           (@batchNumber, @workshopId, @workshopName, @productionOrderId, @productionOrderNumber,
                            @productCode, @productName, @plannedQuantity, @actualQuantity, @unit,
-                           @batchStatus, @startTime, @endTime, @operatorId, @operatorName, @remarks,
+                           @batchStatus, @startTime, @endTime, @operatorId, @operatorName,
                            @createTime, @createUserId, @createUserName, @isDeleted, @remark, @version)";
 
             parameters = new[]
@@ -294,7 +294,6 @@ namespace MES.DAL.Workshop
                 DatabaseHelper.CreateParameter("@endTime", entity.ProductionEndTime),
                 DatabaseHelper.CreateParameter("@operatorId", entity.OperatorId),
                 DatabaseHelper.CreateParameter("@operatorName", entity.OperatorName),
-                DatabaseHelper.CreateParameter("@remarks", entity.Remarks),
                 DatabaseHelper.CreateParameter("@createTime", entity.CreateTime),
                 DatabaseHelper.CreateParameter("@createUserId", entity.CreateUserId),
                 DatabaseHelper.CreateParameter("@createUserName", entity.CreateUserName),
@@ -319,7 +318,7 @@ namespace MES.DAL.Workshop
                           product_code = @productCode, product_name = @productName,
                           planned_quantity = @plannedQuantity, actual_quantity = @actualQuantity, unit = @unit,
                           batch_status = @batchStatus, start_time = @startTime, end_time = @endTime,
-                          operator_id = @operatorId, operator_name = @operatorName, remarks = @remarks,
+                          operator_id = @operatorId, operator_name = @operatorName,
                           update_time = @updateTime, update_user_id = @updateUserId, update_user_name = @updateUserName,
                           remark = @remark, version = @version
                           WHERE id = @id AND is_deleted = 0";
@@ -341,7 +340,6 @@ namespace MES.DAL.Workshop
                 DatabaseHelper.CreateParameter("@endTime", entity.ProductionEndTime),
                 DatabaseHelper.CreateParameter("@operatorId", entity.OperatorId),
                 DatabaseHelper.CreateParameter("@operatorName", entity.OperatorName),
-                DatabaseHelper.CreateParameter("@remarks", entity.Remarks),
                 DatabaseHelper.CreateParameter("@updateTime", entity.UpdateTime),
                 DatabaseHelper.CreateParameter("@updateUserId", entity.UpdateUserId),
                 DatabaseHelper.CreateParameter("@updateUserName", entity.UpdateUserName),

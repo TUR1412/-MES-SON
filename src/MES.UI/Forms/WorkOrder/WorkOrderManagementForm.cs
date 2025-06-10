@@ -1,6 +1,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Linq;
 using MES.Common.Logging;
 using MES.BLL.WorkOrder;
 using MES.Models.WorkOrder;
@@ -135,12 +136,27 @@ namespace MES.UI.Forms.WorkOrder
         }
 
         /// <summary>
-        /// 根据产品ID获取产品名称（简化实现）
+        /// 根据产品ID获取产品名称
         /// </summary>
         private string GetProductName(int productId)
         {
-            // 这里应该调用产品BLL获取产品名称，暂时返回默认值
-            return string.Format("产品{0}", productId);
+            try
+            {
+                if (productId <= 0)
+                {
+                    return "未指定产品";
+                }
+
+                // 这里应该调用产品BLL获取产品名称
+                // 由于当前项目中没有产品管理模块，暂时使用默认格式
+                // 在实际项目中，应该调用 ProductBLL.GetProductById(productId).ProductName
+                return string.Format("产品{0}", productId);
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error(string.Format("获取产品名称失败，产品ID: {0}", productId), ex);
+                return string.Format("产品{0}", productId);
+            }
         }
 
         /// <summary>
@@ -338,13 +354,31 @@ namespace MES.UI.Forms.WorkOrder
         {
             try
             {
-                // 实现搜索逻辑
                 string keyword = txtSearch.Text.Trim();
-                // 这里应该调用BLL进行搜索，暂时使用空实现
-                MessageBox.Show("搜索功能待实现", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                if (string.IsNullOrEmpty(keyword))
+                {
+                    // 如果搜索关键词为空，重新加载所有数据
+                    LoadWorkOrderData();
+                    return;
+                }
+
+                // 使用BLL进行真实搜索
+                var searchResults = _workOrderBLL.SearchWorkOrders(keyword);
+                var dataTable = ConvertWorkOrdersToDataTable(searchResults);
+                dgvWorkOrders.DataSource = dataTable;
+
+                // 设置列标题
+                SetupDataGridColumns();
+
+                // 更新统计信息
+                lblTotal.Text = string.Format("共 {0} 条工单记录", searchResults.Count);
+
+                LogManager.Info(string.Format("搜索工单完成，关键词：{0}，结果数量：{1}", keyword, searchResults.Count));
             }
             catch (Exception ex)
             {
+                LogManager.Error(string.Format("搜索工单失败：{0}", ex.Message), ex);
                 MessageBox.Show(string.Format("搜索失败：{0}", ex.Message), "错误",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -364,12 +398,47 @@ namespace MES.UI.Forms.WorkOrder
                     return;
                 }
 
-                // 实现显示工单详情逻辑
-                MessageBox.Show(string.Format("显示工单详情：{0}", workOrderNo), "工单详情",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                // 从BLL获取工单详情
+                var allWorkOrders = _workOrderBLL.GetAllWorkOrders();
+                var workOrder = allWorkOrders.FirstOrDefault(w => w.WorkOrderNum == workOrderNo);
+
+                if (workOrder == null)
+                {
+                    MessageBox.Show(string.Format("未找到工单号为 {0} 的工单", workOrderNo), "提示",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // 构建详情信息
+                var details = string.Format(
+                    "工单详情\n\n" +
+                    "工单号：{0}\n" +
+                    "产品ID：{1}\n" +
+                    "产品名称：{2}\n" +
+                    "计划数量：{3}\n" +
+                    "已完成数量：{4}\n" +
+                    "状态：{5}\n" +
+                    "创建时间：{6}\n" +
+                    "计划完成时间：{7}\n" +
+                    "描述：{8}",
+                    workOrder.WorkOrderNum,
+                    workOrder.ProductId,
+                    GetProductName(workOrder.ProductId),
+                    workOrder.PlannedQuantity,
+                    workOrder.OutputQuantity,
+                    GetStatusText(workOrder.WorkOrderStatus),
+                    workOrder.CreateTime.ToString("yyyy-MM-dd HH:mm:ss"),
+                    workOrder.PlannedDueDate != null ? workOrder.PlannedDueDate.Value.ToString("yyyy-MM-dd HH:mm:ss") : "未设置",
+                    workOrder.Description ?? "无"
+                );
+
+                MessageBox.Show(details, "工单详情", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                LogManager.Info(string.Format("查看工单详情：{0}", workOrderNo));
             }
             catch (Exception ex)
             {
+                LogManager.Error(string.Format("显示工单详情失败：{0}", ex.Message), ex);
                 MessageBox.Show(string.Format("显示工单详情失败：{0}", ex.Message), "错误",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }

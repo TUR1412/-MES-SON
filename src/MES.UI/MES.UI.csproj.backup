@@ -90,7 +90,7 @@
       <HintPath>..\..\packages\System.Memory.4.5.5\lib\net461\System.Memory.dll</HintPath>
     </Reference>
     <Reference Include="System.Numerics" />
-    <Reference Include="System.Numerics.Vectors, Version=4.5.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+    <Reference Include="System.Numerics.Vectors, Version=4.1.5.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\System.Numerics.Vectors.4.5.0\lib\net462\System.Numerics.Vectors.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -153,13 +153,12 @@
     <Compile Include="Forms\SystemManagement\AboutForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\SystemManagement\DatabaseDiagnosticForm.cs">
+    <Compile Include="Forms\System\DatabaseTestForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\SystemManagement\DatabaseDiagnosticForm.Designer.cs">
-      <DependentUpon>DatabaseDiagnosticForm.cs</DependentUpon>
+    <Compile Include="Forms\System\DatabaseTestForm.Designer.cs">
+      <DependentUpon>DatabaseTestForm.cs</DependentUpon>
     </Compile>
-
     <Compile Include="Forms\Material\MaterialManagementForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -296,10 +295,6 @@
       <Project>{D4E5F6A7-B8C9-0123-DEF0-456789012345}</Project>
       <Name>MES.Models</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MES.DAL\MES.DAL.csproj">
-      <Project>{C3D4E5F6-A7B8-9012-CDEF-345678901234}</Project>
-      <Name>MES.DAL</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Forms\Batch\CancelBatch.resx">
@@ -368,10 +363,9 @@
     <EmbeddedResource Include="Forms\Workshop\EquipmentStatusForm.resx">
       <DependentUpon>EquipmentStatusForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\SystemManagement\DatabaseDiagnosticForm.resx">
-      <DependentUpon>DatabaseDiagnosticForm.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\System\DatabaseTestForm.resx">
+      <DependentUpon>DatabaseTestForm.cs</DependentUpon>
     </EmbeddedResource>
-
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

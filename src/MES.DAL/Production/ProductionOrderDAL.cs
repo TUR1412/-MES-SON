@@ -63,7 +63,7 @@ namespace MES.DAL.Production
                 ResponsiblePerson = row["responsible_person"] != DBNull.Value ? row["responsible_person"].ToString() : null,
                 CustomerName = row["customer_name"] != DBNull.Value ? row["customer_name"].ToString() : null,
                 SalesOrderNumber = row["sales_order_number"] != DBNull.Value ? row["sales_order_number"].ToString() : null,
-                Remarks = row["remarks"] != DBNull.Value ? row["remarks"].ToString() : null,
+                Remarks = row["remark"] != DBNull.Value ? row["remark"].ToString() : null,
                 CreateTime = Convert.ToDateTime(row["create_time"]),
                 CreateUserName = row["create_user_name"] != DBNull.Value ? row["create_user_name"].ToString() : null,
                 IsDeleted = Convert.ToBoolean(row["is_deleted"])
@@ -251,7 +251,7 @@ namespace MES.DAL.Production
             sql = @"INSERT INTO production_order_info
                           (order_no, product_code, product_name, planned_quantity, actual_quantity, unit,
                            plan_start_time, plan_end_time, actual_start_time, actual_end_time,
-                           status, priority, workshop_id, workshop_name, responsible_person, customer_name, sales_order_number, remarks,
+                           status, priority, workshop_id, workshop_name, responsible_person, customer_name, sales_order_number, remark,
                            create_time, create_user_name, is_deleted)
                           VALUES
                           (@orderNumber, @productCode, @productName, @plannedQuantity, @actualQuantity, @unit,
@@ -302,7 +302,7 @@ namespace MES.DAL.Production
                           plan_start_time = @plannedStartTime, plan_end_time = @plannedEndTime,
                           actual_start_time = @actualStartTime, actual_end_time = @actualEndTime,
                           status = @status, priority = @priority, workshop_id = @workshopId, workshop_name = @workshopName,
-                          responsible_person = @responsiblePerson, customer_name = @customer, sales_order_number = @salesOrderNumber, remarks = @remarks,
+                          responsible_person = @responsiblePerson, customer_name = @customer, sales_order_number = @salesOrderNumber, remark = @remarks,
                           update_time = @updateTime, update_user_name = @updateUserName
                           WHERE id = @id AND is_deleted = 0";
 

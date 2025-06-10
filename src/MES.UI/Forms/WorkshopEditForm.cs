@@ -48,8 +48,16 @@ namespace MES.UI.Forms
             _isEditMode = true;
             if (workshop == null) throw new ArgumentNullException("workshop");
             _currentWorkshop = workshop;
-            
+
             InitializeForm();
+            this.Load += WorkshopEditForm_Load;
+        }
+
+        /// <summary>
+        /// 窗体加载事件
+        /// </summary>
+        private void WorkshopEditForm_Load(object sender, EventArgs e)
+        {
             LoadWorkshopData();
         }
 

@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using MySql.Data.MySqlClient;
@@ -513,6 +513,35 @@ namespace MES.DAL.WorkOrder
             {
                 LogManager.Error(string.Format("提交工单失败，工单号: {0}, 提交备注: {1}", workOrderNo, submitRemark), ex);
                 throw new MESException("提交工单失败", ex);
+            }
+        }
+
+        /// <summary>
+        /// 根据日期获取最大序号
+        /// </summary>
+        /// <param name="date">日期</param>
+        /// <returns>最大序号</returns>
+        public int GetMaxSequenceByDate(DateTime date)
+        {
+            try
+            {
+                string sql = @"SELECT IFNULL(MAX(CAST(SUBSTRING(work_order_num, -4) AS UNSIGNED)), 0) AS max_sequence
+                              FROM work_order_info
+                              WHERE DATE(create_time) = @date
+                              AND work_order_num REGEXP '^WO[0-9]{8}[0-9]{4}$'";
+
+                var parameters = new[]
+                {
+                    DatabaseHelper.CreateParameter("@date", date.Date)
+                };
+
+                var result = DatabaseHelper.ExecuteScalar(sql, parameters);
+                return result != null ? Convert.ToInt32(result) : 0;
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error(string.Format("获取日期最大序号失败，日期: {0}", date.ToString("yyyy-MM-dd")), ex);
+                throw new MESException("获取最大序号失败", ex);
             }
         }
     }

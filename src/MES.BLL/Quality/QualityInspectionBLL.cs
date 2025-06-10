@@ -364,9 +364,29 @@ namespace MES.BLL.Quality
         {
             try
             {
-                // 简化实现：暂时返回true，实际应该更新数据库
-                LogManager.Info(string.Format("提交检验记录审核，ID: {0}", id));
-                return true;
+                // 调用DAL层更新检验记录状态为待审核
+                var inspection = _qualityInspectionDAL.GetById(id);
+                if (inspection == null)
+                {
+                    throw new ArgumentException(string.Format("未找到ID为{0}的检验记录", id));
+                }
+
+                // 更新状态为待审核
+                inspection.ReviewStatus = 1; // 1-待审核
+                inspection.UpdateTime = DateTime.Now;
+
+                bool result = _qualityInspectionDAL.Update(inspection);
+
+                if (result)
+                {
+                    LogManager.Info(string.Format("提交检验记录审核成功，ID: {0}", id));
+                }
+                else
+                {
+                    LogManager.Error(string.Format("提交检验记录审核失败，ID: {0}", id));
+                }
+
+                return result;
             }
             catch (Exception ex)
             {

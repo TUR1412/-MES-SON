@@ -27,6 +27,14 @@ namespace MES.UI.Forms.Common
         {
             InitializeComponent();
             _bomBLL = new BOMBLL();
+            this.Load += BOMSelectForm_Load;
+        }
+
+        /// <summary>
+        /// 窗体加载事件
+        /// </summary>
+        private void BOMSelectForm_Load(object sender, EventArgs e)
+        {
             LoadBOMData();
         }
 

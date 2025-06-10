@@ -31,7 +31,6 @@ namespace MES.UI.Forms.Batch
             InitializeComponent();
             _batchBLL = new BatchBLL();
             InitializeEvents();
-            LoadBatchData();
             LogManager.Info("批次管理窗体初始化完成");
         }
 
@@ -182,9 +181,12 @@ namespace MES.UI.Forms.Batch
         {
             // 设置窗体状态
             this.WindowState = FormWindowState.Maximized;
-            
+
             // 初始化状态下拉框
             cmbStatus.SelectedIndex = 0; // 选择"全部状态"
+
+            // 在窗体加载时加载数据，而不是在构造函数中
+            LoadBatchData();
         }
 
         /// <summary>

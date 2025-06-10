@@ -91,6 +91,39 @@ namespace MES.DAL.Core
             }
         }
 
+        /// <summary>
+        /// 测试数据库连接并返回详细信息
+        /// </summary>
+        /// <returns>连接测试结果信息</returns>
+        public static string TestConnectionWithDetails()
+        {
+            try
+            {
+                using (var connection = CreateConnection())
+                {
+                    connection.Open();
+                    if (connection.State == ConnectionState.Open)
+                    {
+                        var serverVersion = connection.ServerVersion;
+                        var database = connection.Database;
+                        var connectionString = GetConnectionString();
+                        return string.Format("连接成功！\n服务器版本: {0}\n数据库: {1}\n连接字符串: {2}",
+                            serverVersion, database, connectionString);
+                    }
+                    else
+                    {
+                        return string.Format("连接失败！连接状态: {0}", connection.State);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("数据库连接测试失败", ex);
+                var connectionString = GetConnectionString();
+                return string.Format("连接失败！错误信息: {0}\n连接字符串: {1}", ex.Message, connectionString);
+            }
+        }
+
         #endregion
 
         #region 参数化查询执行

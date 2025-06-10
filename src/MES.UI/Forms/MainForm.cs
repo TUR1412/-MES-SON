@@ -544,6 +544,9 @@ namespace MES.UI.Forms
                 case "系统配置":
                     OpenSystemConfigForm();
                     break;
+                case "数据库诊断":
+                    OpenDatabaseDiagnosticForm();
+                    break;
                 case "关于系统":
                     ShowAbout();
                     break;
@@ -959,6 +962,8 @@ namespace MES.UI.Forms
             }
         }
 
+
+
         /// <summary>
         /// 显示UI框架信息
         /// </summary>
@@ -1312,6 +1317,25 @@ namespace MES.UI.Forms
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+        /// <summary>
+        /// 打开数据库诊断工具
+        /// </summary>
+        private void OpenDatabaseDiagnosticForm()
+        {
+            try
+            {
+                var diagnosticForm = new MES.UI.Forms.SystemManagement.DatabaseDiagnosticForm();
+                diagnosticForm.ShowDialog();
+                LogManager.Info("打开数据库诊断工具");
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("打开数据库诊断工具失败", ex);
+                MessageBox.Show(string.Format("打开数据库诊断工具失败：{0}", ex.Message), "错误",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
         /// <summary>
         /// 显示关于对话框
         /// </summary>

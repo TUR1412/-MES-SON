@@ -46,17 +46,27 @@ namespace MES.DAL.Material
             {
                 Id = Convert.ToInt32(row["id"]),
                 BOMCode = row["bom_code"] != DBNull.Value ? row["bom_code"].ToString() : null,
-                ProductId = Convert.ToInt32(row["product_id"]),
-                BOMVersion = row["bom_version"] != DBNull.Value ? row["bom_version"].ToString() : null,
+                ProductId = row["product_id"] != DBNull.Value ? Convert.ToInt32(row["product_id"]) : 0,
+                ProductCode = row["product_code"] != DBNull.Value ? row["product_code"].ToString() : null,
+                ProductName = row["product_name"] != DBNull.Value ? row["product_name"].ToString() : null,
+                MaterialId = row["material_id"] != DBNull.Value ? Convert.ToInt32(row["material_id"]) : 0,
+                MaterialCode = row["material_code"] != DBNull.Value ? row["material_code"].ToString() : null,
+                MaterialName = row["material_name"] != DBNull.Value ? row["material_name"].ToString() : null,
+                Quantity = row["quantity"] != DBNull.Value ? Convert.ToDecimal(row["quantity"]) : 0,
+                Unit = row["unit"] != DBNull.Value ? row["unit"].ToString() : "个",
+                LossRate = row["loss_rate"] != DBNull.Value ? Convert.ToDecimal(row["loss_rate"]) : 0,
+                SubstituteMaterial = row["substitute_material"] != DBNull.Value ? row["substitute_material"].ToString() : null,
+                BOMVersion = row["version"] != DBNull.Value ? row["version"].ToString() : null,
                 BOMType = row["bom_type"] != DBNull.Value ? row["bom_type"].ToString() : null,
-                EffectiveDate = Convert.ToDateTime(row["effective_date"]),
+                EffectiveDate = row["effective_date"] != DBNull.Value ? Convert.ToDateTime(row["effective_date"]) : DateTime.Now,
                 ExpireDate = row["expire_date"] != DBNull.Value ? Convert.ToDateTime(row["expire_date"]) : (DateTime?)null,
-                Status = Convert.ToBoolean(row["status"]),
-                CreateTime = Convert.ToDateTime(row["create_time"]),
+                Status = row["status"] != DBNull.Value && (row["status"].ToString() == "有效" || row["status"].ToString() == "1" || row["status"].ToString().ToLower() == "true"),
+                Remarks = row["description"] != DBNull.Value ? row["description"].ToString() : null,
+                CreateTime = row["create_time"] != DBNull.Value ? Convert.ToDateTime(row["create_time"]) : DateTime.Now,
                 CreateUserName = row["create_user_name"] != DBNull.Value ? row["create_user_name"].ToString() : null,
                 UpdateTime = row["update_time"] != DBNull.Value ? Convert.ToDateTime(row["update_time"]) : (DateTime?)null,
                 UpdateUserName = row["update_user_name"] != DBNull.Value ? row["update_user_name"].ToString() : null,
-                IsDeleted = Convert.ToBoolean(row["is_deleted"])
+                IsDeleted = row["is_deleted"] != DBNull.Value ? Convert.ToBoolean(row["is_deleted"]) : false
             };
         }
 
@@ -125,7 +135,7 @@ namespace MES.DAL.Material
         protected override bool BuildInsertSql(BOMInfo entity, out string sql, out MySqlParameter[] parameters)
         {
             sql = @"INSERT INTO bom_info
-                          (bom_code, product_id, bom_version, bom_type, effective_date, expire_date, status,
+                          (bom_code, product_id, version, bom_type, effective_date, expire_date, status,
                            create_time, create_user_name, is_deleted)
                           VALUES
                           (@bomCode, @productId, @bomVersion, @bomType, @effectiveDate, @expireDate, @status,
@@ -158,7 +168,7 @@ namespace MES.DAL.Material
         protected override bool BuildUpdateSql(BOMInfo entity, out string sql, out MySqlParameter[] parameters)
         {
             sql = @"UPDATE bom_info SET
-                          bom_code = @bomCode, product_id = @productId, bom_version = @bomVersion,
+                          bom_code = @bomCode, product_id = @productId, version = @bomVersion,
                           bom_type = @bomType, effective_date = @effectiveDate, expire_date = @expireDate,
                           status = @status, update_time = @updateTime, update_user_name = @updateUserName
                           WHERE id = @id AND is_deleted = 0";

@@ -349,3 +349,209 @@ LogManager.Warning("查询物料列表");                      // 不必要的�
 ---
 
 **重要声明**: 本规范为MES项目的技术基石，所有开发人员和AI助手都必须严格遵循。任何违反都将被视为严重的质量问题，必须立即纠正。
+
+---
+
+# 数据库设计与操作指南
+
+> **整合说明**: 原database-guide.md内容已整合到此文档中
+> **更新时间**: 2025-06-10 18:52:41
+
+## 🗄️ 数据库架构设计
+
+### 数据库连接配置
+```csharp
+// 标准数据库连接字符串
+private const string CONNECTION_STRING =
+    "Server=localhost;Database=mes_db;Uid=root;Pwd=Qwe.123;CharSet=utf8mb4;SslMode=none;";
+```
+
+### 核心数据表设计
+
+#### 1. 用户管理表 (已移除)
+**注意**: 根据项目需求，用户管理功能已完全移除，不需要相关表结构。
+
+#### 2. 生产管理核心表
+
+**工单表 (work_orders)**
+```sql
+CREATE TABLE work_orders (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    work_order_no VARCHAR(50) UNIQUE NOT NULL,
+    product_id INT NOT NULL,
+    quantity INT NOT NULL,
+    status ENUM('待开始', '进行中', '已完成', '已取消') DEFAULT '待开始',
+    priority ENUM('低', '中', '高', '紧急') DEFAULT '中',
+    planned_start_date DATETIME,
+    planned_end_date DATETIME,
+    actual_start_date DATETIME,
+    actual_end_date DATETIME,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+```
+
+**产品表 (products)**
+```sql
+CREATE TABLE products (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    product_code VARCHAR(50) UNIQUE NOT NULL,
+    product_name VARCHAR(100) NOT NULL,
+    specification TEXT,
+    unit VARCHAR(20) DEFAULT '个',
+    status ENUM('启用', '禁用') DEFAULT '启用',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+```
+
+**BOM表 (bom_items)**
+```sql
+CREATE TABLE bom_items (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    parent_product_id INT NOT NULL,
+    child_product_id INT NOT NULL,
+    quantity DECIMAL(10,4) NOT NULL,
+    unit VARCHAR(20) DEFAULT '个',
+    sequence_no INT DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (parent_product_id) REFERENCES products(id),
+    FOREIGN KEY (child_product_id) REFERENCES products(id)
+);
+```
+
+#### 3. 车间管理表
+
+**车间表 (workshops)**
+```sql
+CREATE TABLE workshops (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    workshop_code VARCHAR(50) UNIQUE NOT NULL,
+    workshop_name VARCHAR(100) NOT NULL,
+    description TEXT,
+    status ENUM('启用', '禁用') DEFAULT '启用',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+```
+
+**设备表 (equipment)**
+```sql
+CREATE TABLE equipment (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    equipment_code VARCHAR(50) UNIQUE NOT NULL,
+    equipment_name VARCHAR(100) NOT NULL,
+    workshop_id INT NOT NULL,
+    equipment_type VARCHAR(50),
+    status ENUM('运行', '停机', '维护', '故障') DEFAULT '停机',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (workshop_id) REFERENCES workshops(id)
+);
+```
+
+#### 4. 工艺管理表
+
+**工艺路线表 (process_routes)**
+```sql
+CREATE TABLE process_routes (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    route_code VARCHAR(50) UNIQUE NOT NULL,
+    route_name VARCHAR(100) NOT NULL,
+    product_id INT NOT NULL,
+    version VARCHAR(20) DEFAULT '1.0',
+    status ENUM('启用', '禁用') DEFAULT '启用',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (product_id) REFERENCES products(id)
+);
+```
+
+**工艺步骤表 (process_steps)**
+```sql
+CREATE TABLE process_steps (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    route_id INT NOT NULL,
+    step_no INT NOT NULL,
+    step_name VARCHAR(100) NOT NULL,
+    workshop_id INT NOT NULL,
+    equipment_id INT,
+    standard_time INT DEFAULT 0, -- 标准工时(分钟)
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (route_id) REFERENCES process_routes(id),
+    FOREIGN KEY (workshop_id) REFERENCES workshops(id),
+    FOREIGN KEY (equipment_id) REFERENCES equipment(id)
+);
+```
+
+### 数据库操作规范
+
+#### 1. 连接管理
+```csharp
+// 使用using语句确保连接正确释放
+using (var connection = new MySqlConnection(CONNECTION_STRING))
+{
+    connection.Open();
+    // 执行数据库操作
+}
+```
+
+#### 2. 参数化查询 (必须)
+```csharp
+// ✅ 正确的参数化查询
+var sql = "SELECT * FROM products WHERE product_code = @code";
+var command = new MySqlCommand(sql, connection);
+command.Parameters.AddWithValue("@code", productCode);
+
+// ❌ 禁止字符串拼接
+var sql = string.Format("SELECT * FROM products WHERE product_code = '{0}'", productCode); // 危险!
+```
+
+#### 3. 事务处理
+```csharp
+using (var transaction = connection.BeginTransaction())
+{
+    try
+    {
+        // 执行多个相关操作
+        // ...
+        transaction.Commit();
+    }
+    catch (Exception ex)
+    {
+        transaction.Rollback();
+        throw;
+    }
+}
+```
+
+#### 4. 错误处理
+```csharp
+try
+{
+    // 数据库操作
+}
+catch (MySqlException ex)
+{
+    LogManager.Error(string.Format("数据库操作失败: {0}", ex.Message), ex);
+    throw new ApplicationException("数据库操作失败，请稍后重试");
+}
+```
+
+### 数据库维护规范
+
+#### 1. 备份策略
+- **每日备份**: 自动执行数据库完整备份
+- **增量备份**: 每小时执行增量备份
+- **备份验证**: 定期验证备份文件的完整性
+
+#### 2. 性能优化
+- **索引管理**: 为常用查询字段建立适当索引
+- **查询优化**: 定期分析慢查询并优化
+- **数据清理**: 定期清理过期的临时数据
+
+#### 3. 安全管理
+- **访问控制**: 严格控制数据库访问权限
+- **密码策略**: 定期更换数据库密码
+- **审计日志**: 记录重要的数据库操作日志

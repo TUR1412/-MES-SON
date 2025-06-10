@@ -373,24 +373,37 @@ namespace MES.UI.Forms.Production
                 var result = ShowOrderEditDialog(null);
                 if (result != null)
                 {
-                    // 生成新ID
-                    result.Id = orderList.Count > 0 ? orderList.Max(o => o.Id) + 1 : 1;
+                    // 设置创建时间和更新时间
                     result.CreateTime = DateTime.Now;
                     result.UpdateTime = DateTime.Now;
 
-                    // 添加到列表
-                    orderList.Add(result);
+                    // 调用BLL层保存到数据库
+                    bool saveResult = _productionOrderBLL.AddProductionOrder(result);
 
-                    // 刷新显示
-                    RefreshDataGridView();
+                    if (saveResult)
+                    {
+                        // 重新加载数据以获取最新的ID
+                        LoadProductionOrderData();
 
-                    // 选中新添加的订单
-                    SelectOrderById(result.Id);
+                        // 刷新显示
+                        RefreshDataGridView();
 
-                    MessageBox.Show("生产订单添加成功！", "成功",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        // 尝试选中新添加的订单
+                        if (!string.IsNullOrEmpty(result.OrderNo))
+                        {
+                            SelectOrderByNo(result.OrderNo);
+                        }
 
-                    LogManager.Info(string.Format("添加生产订单：{0} - {1}", result.OrderNo, result.ProductName));
+                        MessageBox.Show("生产订单添加成功！", "成功",
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                        LogManager.Info(string.Format("添加生产订单：{0} - {1}", result.OrderNo, result.ProductName));
+                    }
+                    else
+                    {
+                        MessageBox.Show("保存生产订单失败，请检查数据库连接", "错误",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
             }
             catch (Exception ex)
@@ -419,40 +432,33 @@ namespace MES.UI.Forms.Production
                 var result = ShowOrderEditDialog(currentOrder);
                 if (result != null)
                 {
-                    // 更新订单信息
-                    var originalOrder = orderList.FirstOrDefault(o => o.Id == currentOrder.Id);
-                    if (originalOrder != null)
+                    // 设置更新时间
+                    result.UpdateTime = DateTime.Now;
+
+                    // 调用BLL层更新到数据库
+                    bool updateResult = _productionOrderBLL.UpdateProductionOrder(result);
+
+                    if (updateResult)
                     {
-                        originalOrder.OrderNo = result.OrderNo;
-                        originalOrder.ProductCode = result.ProductCode;
-                        originalOrder.ProductName = result.ProductName;
-                        originalOrder.Quantity = result.Quantity;
-                        originalOrder.ActualQuantity = result.ActualQuantity;
-                        originalOrder.Unit = result.Unit;
-                        originalOrder.Status = result.Status;
-                        originalOrder.Priority = result.Priority;
-                        originalOrder.WorkshopName = result.WorkshopName;
-                        originalOrder.ResponsiblePerson = result.ResponsiblePerson;
-                        originalOrder.PlanStartTime = result.PlanStartTime;
-                        originalOrder.PlanEndTime = result.PlanEndTime;
-                        originalOrder.ActualStartTime = result.ActualStartTime;
-                        originalOrder.ActualEndTime = result.ActualEndTime;
-                        originalOrder.CustomerName = result.CustomerName;
-                        originalOrder.SalesOrderNumber = result.SalesOrderNumber;
-                        originalOrder.Remarks = result.Remarks;
-                        originalOrder.UpdateTime = DateTime.Now;
+                        // 重新加载数据以获取最新状态
+                        LoadProductionOrderData();
 
                         // 刷新显示
                         RefreshDataGridView();
 
                         // 重新选中编辑的订单
-                        SelectOrderById(originalOrder.Id);
+                        SelectOrderById(result.Id);
 
                         MessageBox.Show("生产订单编辑成功！", "成功",
                             MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                         LogManager.Info(string.Format("编辑生产订单：{0} - {1}",
-                            originalOrder.OrderNo, originalOrder.ProductName));
+                            result.OrderNo, result.ProductName));
+                    }
+                    else
+                    {
+                        MessageBox.Show("更新生产订单失败，请检查数据库连接", "错误",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
             }
@@ -487,17 +493,28 @@ namespace MES.UI.Forms.Production
 
                 if (result == DialogResult.Yes)
                 {
-                    // 从列表中移除
-                    orderList.RemoveAll(o => o.Id == currentOrder.Id);
+                    // 调用BLL层删除数据库记录
+                    bool deleteResult = _productionOrderBLL.DeleteProductionOrder(currentOrder.Id);
 
-                    // 刷新显示
-                    RefreshDataGridView();
+                    if (deleteResult)
+                    {
+                        // 重新加载数据
+                        LoadProductionOrderData();
 
-                    MessageBox.Show("生产订单删除成功！", "成功",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        // 刷新显示
+                        RefreshDataGridView();
 
-                    LogManager.Info(string.Format("删除生产订单：{0} - {1}",
-                        currentOrder.OrderNo, currentOrder.ProductName));
+                        MessageBox.Show("生产订单删除成功！", "成功",
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                        LogManager.Info(string.Format("删除生产订单：{0} - {1}",
+                            currentOrder.OrderNo, currentOrder.ProductName));
+                    }
+                    else
+                    {
+                        MessageBox.Show("删除生产订单失败，请检查数据库连接", "错误",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
             }
             catch (Exception ex)
@@ -557,6 +574,31 @@ namespace MES.UI.Forms.Production
             catch (Exception ex)
             {
                 LogManager.Error("选中订单失败", ex);
+            }
+        }
+
+        /// <summary>
+        /// 根据订单号选中订单
+        /// </summary>
+        private void SelectOrderByNo(string orderNo)
+        {
+            try
+            {
+                for (int i = 0; i < dataGridViewOrders.Rows.Count; i++)
+                {
+                    var order = dataGridViewOrders.Rows[i].DataBoundItem as ProductionOrderInfo;
+                    if (order != null && order.OrderNo == orderNo)
+                    {
+                        dataGridViewOrders.ClearSelection();
+                        dataGridViewOrders.Rows[i].Selected = true;
+                        dataGridViewOrders.CurrentCell = dataGridViewOrders.Rows[i].Cells[0];
+                        break;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("根据订单号选中订单失败", ex);
             }
         }
 

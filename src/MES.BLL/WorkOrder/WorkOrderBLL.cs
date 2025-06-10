@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using MES.Models.WorkOrder;
 using MES.DAL.WorkOrder;
+using MES.Common.Logging;
 
 namespace MES.BLL.WorkOrder
 {
@@ -31,9 +32,34 @@ namespace MES.BLL.WorkOrder
         {
             try
             {
-                // 这里应该调用DAL层保存工单
-                // 暂时返回true模拟成功
-                return true;
+                if (workOrder == null)
+                {
+                    throw new ArgumentNullException("workOrder", "工单信息不能为空");
+                }
+
+                if (string.IsNullOrWhiteSpace(workOrder.WorkOrderNo))
+                {
+                    throw new ArgumentException("工单号不能为空", "WorkOrderNo");
+                }
+
+                // 转换为DAL层的实体模型
+                var workOrderInfo = new WorkOrderInfo
+                {
+                    WorkOrderNum = workOrder.WorkOrderNo,
+                    WorkOrderType = workOrder.WorkOrderType,
+                    ProductId = 0, // 需要根据ProductCode获取ProductId
+                    PlannedQuantity = workOrder.PlanQuantity,
+                    WorkOrderStatus = 0, // 待开始
+                    PlannedStartTime = workOrder.PlanStartDate,
+                    PlannedDueDate = workOrder.PlanEndDate,
+                    Description = workOrder.Remarks,
+                    CreateTime = DateTime.Now,
+                    CreateUserName = workOrder.CreatedBy ?? "system",
+                    IsDeleted = false
+                };
+
+                // 调用DAL层保存工单
+                return workOrderDAL.Add(workOrderInfo);
             }
             catch (Exception ex)
             {
@@ -100,14 +126,41 @@ namespace MES.BLL.WorkOrder
         {
             try
             {
-                // 这里应该查询数据库获取当日最大序号
-                // 暂时返回随机数模拟
-                Random random = new Random();
-                return random.Next(1, 100);
+                // 调用DAL层获取当日最大序号
+                return workOrderDAL.GetMaxSequenceByDate(date);
             }
             catch (Exception ex)
             {
                 throw new Exception(string.Format("获取最大序号失败：{0}", ex.Message), ex);
+            }
+        }
+
+        /// <summary>
+        /// 搜索工单
+        /// </summary>
+        /// <param name="keyword">搜索关键词</param>
+        /// <returns>工单列表</returns>
+        public List<WorkOrderInfo> SearchWorkOrders(string keyword)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(keyword))
+                {
+                    return GetAllWorkOrders();
+                }
+
+                // 获取所有工单并进行内存过滤
+                var allWorkOrders = workOrderDAL.GetAll();
+                var filteredResults = allWorkOrders.Where(w =>
+                    w.WorkOrderNum.Contains(keyword) ||
+                    (w.Description != null && w.Description.Contains(keyword))
+                ).ToList();
+
+                return filteredResults;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(string.Format("搜索工单失败：{0}", ex.Message), ex);
             }
         }
 
@@ -120,8 +173,26 @@ namespace MES.BLL.WorkOrder
         {
             try
             {
-                // 这里应该调用DAL层保存BOM明细
-                // 暂时返回true模拟成功
+                if (bomDetail == null)
+                {
+                    throw new ArgumentNullException("bomDetail", "BOM明细信息不能为空");
+                }
+
+                if (string.IsNullOrWhiteSpace(bomDetail.WorkOrderNo))
+                {
+                    throw new ArgumentException("工单号不能为空", "WorkOrderNo");
+                }
+
+                if (string.IsNullOrWhiteSpace(bomDetail.MaterialCode))
+                {
+                    throw new ArgumentException("物料编码不能为空", "MaterialCode");
+                }
+
+                // 这里应该调用专门的工单BOM DAL层保存BOM明细
+                // 由于当前架构中没有专门的工单BOM表，暂时记录日志
+                LogManager.Info(string.Format("创建工单BOM：工单号={0}, 物料编码={1}, 需求数量={2}",
+                    bomDetail.WorkOrderNo, bomDetail.MaterialCode, bomDetail.RequiredQuantity));
+
                 return true;
             }
             catch (Exception ex)
