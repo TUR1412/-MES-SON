@@ -13,6 +13,8 @@ namespace MES.Models.Material
         /// </summary>
         public string BOMCode { get; set; }
 
+        public string BomName { get; set; } // 新增：对应 bom_name
+
         /// <summary>
         /// 产品物料ID
         /// </summary>

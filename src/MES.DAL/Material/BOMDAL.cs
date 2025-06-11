@@ -30,35 +30,57 @@ namespace MES.DAL.Material
         }
 
         /// <summary>
-        /// 将DataRow转换为BOMInfo实体对象 (已修复)
+        /// 将DataRow转换为BOMInfo实体对象 (已完全修复)
         /// </summary>
         protected override BOMInfo MapRowToEntity(DataRow row)
         {
-            // 安全地获取每一列的值，如果列不存在或值为DBNull，则使用默认值
-            return new BOMInfo
+            var bom = new BOMInfo();
+
+            // 安全地从DataRow获取值
+            bom.Id = row.Table.Columns.Contains("id") && row["id"] != DBNull.Value ? Convert.ToInt32(row["id"]) : 0;
+            bom.BOMCode = row.Table.Columns.Contains("bom_code") && row["bom_code"] != DBNull.Value ? row["bom_code"].ToString() : string.Empty;
+            bom.BomName = row.Table.Columns.Contains("bom_name") && row["bom_name"] != DBNull.Value ? row["bom_name"].ToString() : string.Empty; // 新增映射
+
+            bom.ProductId = row.Table.Columns.Contains("product_id") && row["product_id"] != DBNull.Value ? Convert.ToInt32(row["product_id"]) : 0;
+            bom.ProductCode = row.Table.Columns.Contains("product_code") && row["product_code"] != DBNull.Value ? row["product_code"].ToString() : string.Empty;
+            bom.ProductName = row.Table.Columns.Contains("product_name") && row["product_name"] != DBNull.Value ? row["product_name"].ToString() : string.Empty;
+
+            bom.MaterialId = row.Table.Columns.Contains("material_id") && row["material_id"] != DBNull.Value ? Convert.ToInt32(row["material_id"]) : 0;
+            bom.MaterialCode = row.Table.Columns.Contains("material_code") && row["material_code"] != DBNull.Value ? row["material_code"].ToString() : string.Empty;
+            bom.MaterialName = row.Table.Columns.Contains("material_name") && row["material_name"] != DBNull.Value ? row["material_name"].ToString() : string.Empty;
+
+            bom.Quantity = row.Table.Columns.Contains("quantity") && row["quantity"] != DBNull.Value ? Convert.ToDecimal(row["quantity"]) : 0;
+            bom.Unit = row.Table.Columns.Contains("unit") && row["unit"] != DBNull.Value ? row["unit"].ToString() : "个";
+            bom.LossRate = row.Table.Columns.Contains("loss_rate") && row["loss_rate"] != DBNull.Value ? Convert.ToDecimal(row["loss_rate"]) : 0;
+            bom.SubstituteMaterial = row.Table.Columns.Contains("substitute_material") && row["substitute_material"] != DBNull.Value ? row["substitute_material"].ToString() : string.Empty;
+
+            // 修正命名不匹配的映射
+            bom.BOMVersion = row.Table.Columns.Contains("version") && row["version"] != DBNull.Value ? row["version"].ToString() : "1.0";
+            bom.Remarks = row.Table.Columns.Contains("description") && row["description"] != DBNull.Value ? row["description"].ToString() : string.Empty;
+
+            bom.BOMType = row.Table.Columns.Contains("bom_type") && row["bom_type"] != DBNull.Value ? row["bom_type"].ToString() : string.Empty;
+            bom.EffectiveDate = row.Table.Columns.Contains("effective_date") && row["effective_date"] != DBNull.Value ? Convert.ToDateTime(row["effective_date"]) : DateTime.MinValue;
+            bom.ExpireDate = row.Table.Columns.Contains("expire_date") && row["expire_date"] != DBNull.Value ? (DateTime?)Convert.ToDateTime(row["expire_date"]) : null;
+
+            // 核心修正：处理字符串状态到布尔值的转换
+            if (row.Table.Columns.Contains("status") && row["status"] != DBNull.Value)
             {
-                Id = row.Table.Columns.Contains("id") && row["id"] != DBNull.Value ? Convert.ToInt32(row["id"]) : 0,
-                BOMCode = row.Table.Columns.Contains("bom_code") && row["bom_code"] != DBNull.Value ? row["bom_code"].ToString() : string.Empty,
-                ProductId = row.Table.Columns.Contains("product_id") && row["product_id"] != DBNull.Value ? Convert.ToInt32(row["product_id"]) : 0,
-                ProductCode = row.Table.Columns.Contains("product_code") && row["product_code"] != DBNull.Value ? row["product_code"].ToString() : string.Empty,
-                ProductName = row.Table.Columns.Contains("product_name") && row["product_name"] != DBNull.Value ? row["product_name"].ToString() : string.Empty,
-                MaterialId = row.Table.Columns.Contains("material_id") && row["material_id"] != DBNull.Value ? Convert.ToInt32(row["material_id"]) : 0,
-                MaterialCode = row.Table.Columns.Contains("material_code") && row["material_code"] != DBNull.Value ? row["material_code"].ToString() : string.Empty,
-                MaterialName = row.Table.Columns.Contains("material_name") && row["material_name"] != DBNull.Value ? row["material_name"].ToString() : string.Empty,
-                Quantity = row.Table.Columns.Contains("quantity") && row["quantity"] != DBNull.Value ? Convert.ToDecimal(row["quantity"]) : 0,
-                Unit = row.Table.Columns.Contains("unit") && row["unit"] != DBNull.Value ? row["unit"].ToString() : "个",
-                LossRate = row.Table.Columns.Contains("loss_rate") && row["loss_rate"] != DBNull.Value ? Convert.ToDecimal(row["loss_rate"]) : 0,
-                SubstituteMaterial = row.Table.Columns.Contains("substitute_material") && row["substitute_material"] != DBNull.Value ? row["substitute_material"].ToString() : string.Empty,
-                BOMVersion = row.Table.Columns.Contains("bom_version") && row["bom_version"] != DBNull.Value ? row["bom_version"].ToString() : "1.0",
-                BOMType = row.Table.Columns.Contains("bom_type") && row["bom_type"] != DBNull.Value ? row["bom_type"].ToString() : "PRODUCTION",
-                EffectiveDate = row.Table.Columns.Contains("effective_date") && row["effective_date"] != DBNull.Value ? Convert.ToDateTime(row["effective_date"]) : DateTime.Now,
-                ExpireDate = row.Table.Columns.Contains("expire_date") && row["expire_date"] != DBNull.Value ? (DateTime?)Convert.ToDateTime(row["expire_date"]) : null,
-                Status = row.Table.Columns.Contains("status") && row["status"] != DBNull.Value ? Convert.ToBoolean(row["status"]) : false,
-                Remarks = row.Table.Columns.Contains("remarks") && row["remarks"] != DBNull.Value ? row["remarks"].ToString() : string.Empty, // 修正：使用 "remarks"
-                CreateTime = row.Table.Columns.Contains("create_time") && row["create_time"] != DBNull.Value ? Convert.ToDateTime(row["create_time"]) : DateTime.MinValue,
-                UpdateTime = row.Table.Columns.Contains("update_time") && row["update_time"] != DBNull.Value ? (DateTime?)Convert.ToDateTime(row["update_time"]) : null,
-                IsDeleted = row.Table.Columns.Contains("is_deleted") && row["is_deleted"] != DBNull.Value ? Convert.ToBoolean(row["is_deleted"]) : false
-            };
+                string statusStr = row["status"].ToString().ToLower();
+                bom.Status = (statusStr == "有效" || statusStr == "1" || statusStr == "true");
+            }
+            else
+            {
+                bom.Status = false;
+            }
+
+            // BaseModel 字段
+            bom.CreateTime = row.Table.Columns.Contains("create_time") && row["create_time"] != DBNull.Value ? Convert.ToDateTime(row["create_time"]) : DateTime.MinValue;
+            bom.CreateUserName = row.Table.Columns.Contains("create_user_name") && row["create_user_name"] != DBNull.Value ? row["create_user_name"].ToString() : string.Empty;
+            bom.UpdateTime = row.Table.Columns.Contains("update_time") && row["update_time"] != DBNull.Value ? (DateTime?)Convert.ToDateTime(row["update_time"]) : null;
+            bom.UpdateUserName = row.Table.Columns.Contains("update_user_name") && row["update_user_name"] != DBNull.Value ? row["update_user_name"].ToString() : string.Empty;
+            bom.IsDeleted = row.Table.Columns.Contains("is_deleted") && row["is_deleted"] != DBNull.Value ? Convert.ToBoolean(row["is_deleted"]) : false;
+
+            return bom;
         }
 
         #endregion
