@@ -143,29 +143,58 @@ namespace MES.BLL.WorkOrder
         /// <summary>
         /// 搜索工单
         /// </summary>
-        /// <param name="keyword">搜索关键词</param>
-        /// <returns>工单列表</returns>
-        public List<WorkOrderInfo> SearchWorkOrders(string keyword)
+        /// <param name="keyword">关键词（工单号或产品名称）</param>
+        /// <param name="status">状态</param>
+        /// <param name="startDate">开始日期</param>
+        /// <param name="endDate">结束日期</param>
+        /// <returns>工单信息列表</returns>
+        public List<WorkOrderInfo> SearchWorkOrders(string keyword = null, string status = null,
+            DateTime? startDate = null, DateTime? endDate = null)
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(keyword))
+                // 获取所有工单
+                var allWorkOrders = GetAllWorkOrders();
+
+                // 应用筛选条件
+                var filteredWorkOrders = allWorkOrders.AsEnumerable();
+
+                // 关键词筛选
+                if (!string.IsNullOrWhiteSpace(keyword))
                 {
-                    return GetAllWorkOrders();
+                    filteredWorkOrders = filteredWorkOrders.Where(w =>
+                        (w.WorkOrderNum != null && w.WorkOrderNum.Contains(keyword)) ||
+                        (w.ProductName != null && w.ProductName.Contains(keyword)) ||
+                        (w.ProductCode != null && w.ProductCode.Contains(keyword)) ||
+                        (w.Description != null && w.Description.Contains(keyword)));
                 }
 
-                // 获取所有工单并进行内存过滤
-                var allWorkOrders = workOrderDAL.GetAll();
-                var filteredResults = allWorkOrders.Where(w =>
-                    w.WorkOrderNum.Contains(keyword) ||
-                    (w.Description != null && w.Description.Contains(keyword))
-                ).ToList();
+                // 状态筛选
+                if (!string.IsNullOrWhiteSpace(status) && status != "全部状态")
+                {
+                    int statusValue = GetStatusValueFromText(status);
+                    filteredWorkOrders = filteredWorkOrders.Where(w => w.WorkOrderStatus == statusValue);
+                }
 
-                return filteredResults;
+                // 日期筛选
+                if (startDate.HasValue)
+                {
+                    filteredWorkOrders = filteredWorkOrders.Where(w =>
+                        w.CreateTime >= startDate.Value.Date);
+                }
+
+                if (endDate.HasValue)
+                {
+                    filteredWorkOrders = filteredWorkOrders.Where(w =>
+                        w.CreateTime <= endDate.Value.Date.AddDays(1).AddSeconds(-1));
+                }
+
+                return filteredWorkOrders.ToList();
             }
             catch (Exception ex)
             {
-                throw new Exception(string.Format("搜索工单失败：{0}", ex.Message), ex);
+                LogManager.Error(string.Format("搜索工单失败：{ex.Message}"), ex);
+                throw new MESException("搜索工单失败", ex);
             }
         }
 
@@ -351,61 +380,7 @@ namespace MES.BLL.WorkOrder
             {
                 throw new Exception(string.Format("提交工单失败：{0}", ex.Message), ex);
             }
-        }
-
-        /// <summary>
-        /// 搜索工单
-        /// </summary>
-        /// <param name="keyword">关键词（工单号或产品名称）</param>
-        /// <param name="status">状态</param>
-        /// <param name="startDate">开始日期</param>
-        /// <param name="endDate">结束日期</param>
-        /// <returns>工单信息列表</returns>
-        public List<WorkOrderInfo> SearchWorkOrders(string keyword = null, string status = null,
-            DateTime? startDate = null, DateTime? endDate = null)
-        {
-            try
-            {
-                // 获取所有工单
-                var allWorkOrders = GetAllWorkOrders();
-
-                // 应用筛选条件
-                var filteredWorkOrders = allWorkOrders.AsEnumerable();
-
-                // 关键词筛选
-                if (!string.IsNullOrWhiteSpace(keyword))
-                {
-                    filteredWorkOrders = filteredWorkOrders.Where(w =>
-                        (w.WorkOrderNum != null && w.WorkOrderNum.Contains(keyword)) ||
-                        (w.ProductName != null && w.ProductName.Contains(keyword)) ||
-                        (w.ProductCode != null && w.ProductCode.Contains(keyword)));
-                }
-
-                // 状态筛选
-                if (!string.IsNullOrWhiteSpace(status) && status != "全部状态")
-                {
-                    int statusValue = GetStatusValueFromText(status);
-                    filteredWorkOrders = filteredWorkOrders.Where(w => w.WorkOrderStatus == statusValue);
-                }
-
-                // 日期筛选
-                if (startDate.HasValue)
-                {
-                    filteredWorkOrders = filteredWorkOrders.Where(w => w.CreateTime >= startDate.Value);
-                }
-
-                if (endDate.HasValue)
-                {
-                    filteredWorkOrders = filteredWorkOrders.Where(w => w.CreateTime <= endDate.Value.AddDays(1));
-                }
-
-                return filteredWorkOrders.ToList();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(string.Format("搜索工单失败：{0}", ex.Message), ex);
-            }
-        }
+        }        
 
         /// <summary>
         /// 从状态文本获取状态值
