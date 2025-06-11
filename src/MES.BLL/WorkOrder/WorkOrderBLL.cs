@@ -17,14 +17,14 @@ namespace MES.BLL.WorkOrder
     /// </summary>
     public class WorkOrderBLL
     {
-        private readonly WorkOrderDAL workOrderDAL;
+        private readonly WorkOrderDAL _workOrderDAL;
 
         /// <summary>
         /// 构造函数
         /// </summary>
         public WorkOrderBLL()
         {
-            workOrderDAL = new WorkOrderDAL();
+            _workOrderDAL = new WorkOrderDAL();
         }
 
 
@@ -64,7 +64,7 @@ namespace MES.BLL.WorkOrder
                 };
 
                 // 调用DAL层保存工单
-                return workOrderDAL.Add(workOrderInfo);
+                return _workOrderDAL.Add(workOrderInfo);
             }
             catch (Exception ex)
             {
@@ -80,11 +80,12 @@ namespace MES.BLL.WorkOrder
         {
             try
             {
-                return workOrderDAL.GetAll();
+                return _workOrderDAL.GetAll();
             }
             catch (Exception ex)
             {
-                throw new Exception(string.Format("获取工单列表失败：{0}", ex.Message), ex);
+                LogManager.Error("BLL: 获取所有工单失败", ex);
+                throw new MESException("获取工单列表失败", ex);
             }
         }
 
@@ -96,29 +97,31 @@ namespace MES.BLL.WorkOrder
         {
             try
             {
-                // 从数据库获取真实的已完成工单数据
-                var workOrders = workOrderDAL.GetFinishedWorkOrders();
+                // 1. 从DAL获取强类型的列表 (这是正确的)
+                List<WorkOrderInfo> workOrders = _workOrderDAL.GetFinishedWorkOrders();
 
+                // 2. 创建一个UI层期望的DataTable结构
                 DataTable table = new DataTable();
                 table.Columns.Add("WorkOrderNo", typeof(string));
-                table.Columns.Add("ProductName", typeof(string));
+                table.Columns.Add("ProductName", typeof(string)); // UI需要这个字段
                 table.Columns.Add("Status", typeof(string));
 
-                // 将真实数据填充到DataTable中
+                // 3. 在BLL内部完成数据转换
                 foreach (var workOrder in workOrders)
                 {
                     table.Rows.Add(
                         workOrder.WorkOrderNum,
-                        workOrder.ProductName ?? "",
+                        workOrder.ProductName, // ★★★ 关键：现在 workOrder.ProductName 有值了
                         GetWorkOrderStatusText(workOrder.WorkOrderStatus)
                     );
                 }
 
-                return table;
+                return table; // 4. 返回UI层期望的DataTable
             }
             catch (Exception ex)
             {
-                throw new Exception(string.Format("获取成品工单列表失败：{0}", ex.Message), ex);
+                LogManager.Error("BLL: 获取已完成工单列表失败", ex);
+                throw new MESException("获取已完成工单列表失败", ex);
             }
         }
 
@@ -132,7 +135,7 @@ namespace MES.BLL.WorkOrder
             try
             {
                 // 调用DAL层获取当日最大序号
-                return workOrderDAL.GetMaxSequenceByDate(date);
+                return _workOrderDAL.GetMaxSequenceByDate(date);
             }
             catch (Exception ex)
             {
@@ -244,7 +247,7 @@ namespace MES.BLL.WorkOrder
             try
             {
                 // 从数据库获取真实的可取消工单数据
-                var workOrders = workOrderDAL.GetCancellableWorkOrders();
+                var workOrders = _workOrderDAL.GetCancellableWorkOrders();
 
                 DataTable table = new DataTable();
                 table.Columns.Add("WorkOrderNo", typeof(string));
@@ -302,7 +305,7 @@ namespace MES.BLL.WorkOrder
                 }
 
                 // 调用DAL层真实更新工单状态为"已取消"
-                return workOrderDAL.CancelWorkOrder(workOrderNo, cancelReason);
+                return _workOrderDAL.CancelWorkOrder(workOrderNo, cancelReason);
             }
             catch (Exception ex)
             {
@@ -321,7 +324,7 @@ namespace MES.BLL.WorkOrder
             try
             {
                 // 从数据库获取真实的可提交工单数据
-                var workOrders = workOrderDAL.GetSubmittableWorkOrders();
+                var workOrders = _workOrderDAL.GetSubmittableWorkOrders();
 
                 DataTable table = new DataTable();
                 table.Columns.Add("WorkOrderNo", typeof(string));
@@ -374,7 +377,7 @@ namespace MES.BLL.WorkOrder
                 }
 
                 // 调用DAL层真实更新工单状态为"已提交"
-                return workOrderDAL.SubmitWorkOrder(workOrderNo, submitRemark);
+                return _workOrderDAL.SubmitWorkOrder(workOrderNo, submitRemark);
             }
             catch (Exception ex)
             {
@@ -407,9 +410,18 @@ namespace MES.BLL.WorkOrder
         {
             try
             {
-                // 从数据库获取指定状态的工单数据
-                var workOrders = workOrderDAL.GetByCondition("work_order_status IN (" + string.Join(",", statuses) + ")");
+                // 1. 从DAL获取强类型列表
+                var resultList = new List<WorkOrderInfo>();
+                if (statuses != null && statuses.Any())
+                {
+                    foreach (var status in statuses)
+                    {
+                        resultList.AddRange(_workOrderDAL.GetByStatus(status));
+                    }
+                }
+                var orderedList = resultList.OrderByDescending(wo => wo.CreateTime).ToList();
 
+                // 2. 创建一个UI层期望的DataTable结构
                 DataTable table = new DataTable();
                 table.Columns.Add("Id", typeof(int));
                 table.Columns.Add("WorkOrderNo", typeof(string));
@@ -420,26 +432,27 @@ namespace MES.BLL.WorkOrder
                 table.Columns.Add("CreatedBy", typeof(string));
                 table.Columns.Add("CreatedDate", typeof(DateTime));
 
-                // 将真实数据填充到DataTable中
-                foreach (var workOrder in workOrders)
+                // 3. 在BLL内部完成数据转换
+                foreach (var workOrder in orderedList)
                 {
                     table.Rows.Add(
-                        workOrder.WorkOrderId,
+                        workOrder.Id,
                         workOrder.WorkOrderNum,
                         workOrder.WorkOrderType,
                         workOrder.ProductCode ?? "",
                         workOrder.PlannedQuantity,
                         GetWorkOrderStatusText(workOrder.WorkOrderStatus),
-                        "系统", // 默认创建人
+                        workOrder.CreateUserName ?? "系统",
                         workOrder.CreateTime
                     );
                 }
 
-                return table;
+                return table; // 4. 返回UI层期望的DataTable
             }
             catch (Exception ex)
             {
-                throw new Exception(string.Format("获取工单列表失败：{0}", ex.Message), ex);
+                LogManager.Error("BLL: 根据状态获取工单列表失败", ex);
+                throw new MESException("获取工单列表失败", ex);
             }
         }
 
@@ -465,7 +478,7 @@ namespace MES.BLL.WorkOrder
                 }
 
                 // 调用DAL层删除工单
-                return workOrderDAL.Delete(workOrderNum, cancelReason);
+                return _workOrderDAL.Delete(workOrderNum, cancelReason);
             }
             catch (Exception ex)
             {

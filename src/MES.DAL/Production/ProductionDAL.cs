@@ -8,6 +8,7 @@ using MES.DAL.Base;
 using MES.DAL.Core;
 using MES.Common.Logging;
 using MES.Common.Exceptions;
+using System.Linq;
 
 namespace MES.DAL.Production
 {
@@ -17,6 +18,7 @@ namespace MES.DAL.Production
     /// </summary>
     public class ProductionDAL : BaseDAL<ProductionInfo>
     {
+
         /// <summary>
         /// 表名
         /// </summary>
@@ -25,8 +27,15 @@ namespace MES.DAL.Production
             get { return "product_info"; }
         }
 
+        /// ★★★ 修正：主键数据库字段名 ★★★
+        /// </summary>
+        protected override string PrimaryKeyField
+        {
+            get { return "id"; } // 使用数据库中的真实字段名 'id'
+        }
+
         /// <summary>
-        /// 主键属性名
+        /// ★★★ 修正：主键模型属性名 ★★★
         /// </summary>
         protected override string PrimaryKey
         {
@@ -40,20 +49,26 @@ namespace MES.DAL.Production
         /// <returns>ProductionInfo实体对象</returns>
         protected override ProductionInfo MapRowToEntity(DataRow row)
         {
-            return new ProductionInfo
+            var entity = new ProductionInfo
             {
-                ProductId = Convert.ToInt32(row["product_id"]),
-                ProductNum = row["product_num"] != DBNull.Value ? row["product_num"].ToString() : null,
-                ProductName = row["product_name"] != DBNull.Value ? row["product_name"].ToString() : null,
-                ProductType = row["product_type"] != DBNull.Value ? row["product_type"].ToString() : null,
-                DetailType = row["detail_type"] != DBNull.Value ? row["detail_type"].ToString() : null,
-                PackageType = row["package_type"] != DBNull.Value ? row["package_type"].ToString() : null,
-                Unit = row["unit"] != DBNull.Value ? row["unit"].ToString() : null,
-                Description = row["description"] != DBNull.Value ? row["description"].ToString() : null,
-                Status = Convert.ToInt32(row["status"]),
+                Id = Convert.ToInt32(row["id"]),
+                ProductId = Convert.ToInt32(row["id"]),
+                ProductNum = row["product_code"]?.ToString(),
+                ProductName = row["product_name"]?.ToString(),
+                ProductType = row["product_type"]?.ToString(),
+                // ★★★ 核心修正：数据库是 'specification'，模型是 'DetailType' ★★★
+                DetailType = row["specification"]?.ToString(),
+                // PackageType 在数据库中不存在，需要从模型中移除或在数据库中添加
+                // PackageType = row["package_type"]?.ToString(), 
+                Unit = row["unit"]?.ToString(),
+                Description = row["description"]?.ToString(),
+                // 数据库中 status 是 varchar，模型是 int，需要转换
+                Status = (row["status"]?.ToString() == "有效" ? 1 : 0),
                 CreateTime = Convert.ToDateTime(row["create_time"]),
-                UpdateTime = row["update_time"] != DBNull.Value ? Convert.ToDateTime(row["update_time"]) : (DateTime?)null
+                UpdateTime = row.Table.Columns.Contains("update_time") && row["update_time"] != DBNull.Value
+                           ? Convert.ToDateTime(row["update_time"]) : (DateTime?)null
             };
+            return entity;
         }
 
         /// <summary>
@@ -65,15 +80,9 @@ namespace MES.DAL.Production
         {
             try
             {
-                if (string.IsNullOrEmpty(productNum))
-                {
-                    throw new ArgumentException("产品编号不能为空", "productNum");
-                }
-
-                var products = GetByCondition("product_num = @productNum",
-                    DatabaseHelper.CreateParameter("@productNum", productNum));
-
-                return products.Count > 0 ? products[0] : null;
+                if (string.IsNullOrEmpty(productNum)) return null;
+                var products = GetByCondition("product_code = @productCode", DatabaseHelper.CreateParameter("@productCode", productNum));
+                return products.FirstOrDefault();
             }
             catch (Exception ex)
             {
@@ -133,26 +142,22 @@ namespace MES.DAL.Production
         protected override bool BuildInsertSql(ProductionInfo entity, out string sql, out MySqlParameter[] parameters)
         {
             sql = @"INSERT INTO product_info
-                  (product_num, product_name, product_type, detail_type, 
-                   package_type, unit, description, status, create_time, update_time)
+                  (product_code, product_name, product_type, specification, unit, description, status, create_time, update_time)
                   VALUES
-                  (@productNum, @productName, @productType, @detailType, 
-                   @packageType, @unit, @description, @status, @createTime, @updateTime)";
+                  (@productCode, @productName, @productType, @specification, @unit, @description, @status, @createTime, @updateTime)";
 
             parameters = new[]
             {
-                DatabaseHelper.CreateParameter("@productNum", entity.ProductNum),
+                DatabaseHelper.CreateParameter("@productCode", entity.ProductNum),
                 DatabaseHelper.CreateParameter("@productName", entity.ProductName),
                 DatabaseHelper.CreateParameter("@productType", entity.ProductType),
-                DatabaseHelper.CreateParameter("@detailType", entity.DetailType),
-                DatabaseHelper.CreateParameter("@packageType", entity.PackageType),
+                DatabaseHelper.CreateParameter("@specification", entity.DetailType), // 映射到specification
                 DatabaseHelper.CreateParameter("@unit", entity.Unit),
                 DatabaseHelper.CreateParameter("@description", entity.Description),
-                DatabaseHelper.CreateParameter("@status", entity.Status),
+                DatabaseHelper.CreateParameter("@status", entity.Status == 1 ? "有效" : "禁用"), // 映射到varchar
                 DatabaseHelper.CreateParameter("@createTime", entity.CreateTime),
                 DatabaseHelper.CreateParameter("@updateTime", entity.UpdateTime)
             };
-
             return true;
         }
 
@@ -164,31 +169,28 @@ namespace MES.DAL.Production
         protected override bool BuildUpdateSql(ProductionInfo entity, out string sql, out MySqlParameter[] parameters)
         {
             sql = @"UPDATE product_info SET
-                  product_num = @productNum, 
+                  product_code = @productCode,
                   product_name = @productName,
                   product_type = @productType, 
-                  detail_type = @detailType,
-                  package_type = @packageType,
+                  specification = @specification,
                   unit = @unit,
                   description = @description,
                   status = @status,
                   update_time = @updateTime
-                  WHERE product_id = @productId";
+                  WHERE id = @id"; // 使用正确的 'id'
 
             parameters = new[]
             {
-                DatabaseHelper.CreateParameter("@productNum", entity.ProductNum),
+                DatabaseHelper.CreateParameter("@productCode", entity.ProductNum),
                 DatabaseHelper.CreateParameter("@productName", entity.ProductName),
                 DatabaseHelper.CreateParameter("@productType", entity.ProductType),
-                DatabaseHelper.CreateParameter("@detailType", entity.DetailType),
-                DatabaseHelper.CreateParameter("@packageType", entity.PackageType),
+                DatabaseHelper.CreateParameter("@specification", entity.DetailType),
                 DatabaseHelper.CreateParameter("@unit", entity.Unit),
                 DatabaseHelper.CreateParameter("@description", entity.Description),
                 DatabaseHelper.CreateParameter("@status", entity.Status),
                 DatabaseHelper.CreateParameter("@updateTime", DateTime.Now),
-                DatabaseHelper.CreateParameter("@productId", entity.ProductId)
+                DatabaseHelper.CreateParameter("@id", entity.Id) // 使用正确的 entity.Id
             };
-
             return true;
         }
 
@@ -205,15 +207,14 @@ namespace MES.DAL.Production
                 string sql = @"UPDATE product_info SET 
                               status = @status, 
                               update_time = @updateTime
-                              WHERE product_id = @productId";
+                              WHERE id = @id"; // 使用正确的 'id'
 
                 var parameters = new[]
                 {
                     DatabaseHelper.CreateParameter("@status", newStatus),
                     DatabaseHelper.CreateParameter("@updateTime", DateTime.Now),
-                    DatabaseHelper.CreateParameter("@productId", productId)
+                    DatabaseHelper.CreateParameter("@id", productId)
                 };
-
                 return DatabaseHelper.ExecuteNonQuery(sql, parameters) > 0;
             }
             catch (Exception ex)
@@ -222,5 +223,7 @@ namespace MES.DAL.Production
                 throw new MESException("更新产品状态失败", ex);
             }
         }
+
+
     }
 }

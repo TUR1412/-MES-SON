@@ -169,24 +169,21 @@ namespace MES.DAL.Production
         {
             try
             {
-                totalCount = 0;
                 if (pageIndex <= 0 || pageSize <= 0)
+                {
+                    totalCount = 0;
+                    return new List<ProductionOrderInfo>();
+                }
+
+                // 1. 获取总数 (使用BaseDAL的方法)
+                totalCount = GetCount();
+
+                if (totalCount == 0)
                 {
                     return new List<ProductionOrderInfo>();
                 }
 
-                // 计算总记录数
-                string countSql = string.Format("SELECT COUNT(*) FROM {0} WHERE is_deleted = 0", TableName);
-                using (var connection = DatabaseHelper.CreateConnection())
-                {
-                    connection.Open();
-                    using (var command = new MySqlCommand(countSql, connection))
-                    {
-                        totalCount = Convert.ToInt32(command.ExecuteScalar());
-                    }
-                }
-
-                // 分页查询
+                // 2. 构建分页查询的SQL
                 int offset = (pageIndex - 1) * pageSize;
                 string sql = string.Format("SELECT * FROM {0} WHERE is_deleted = 0 ORDER BY create_time DESC LIMIT @offset, @pageSize", TableName);
 
@@ -196,8 +193,9 @@ namespace MES.DAL.Production
                     DatabaseHelper.CreateParameter("@pageSize", pageSize)
                 };
 
-                return GetByCondition(sql.Replace(string.Format("SELECT * FROM {0} WHERE is_deleted = 0 ORDER BY create_time DESC LIMIT @offset, @pageSize", TableName),
-                    "1=1 ORDER BY create_time DESC LIMIT @offset, @pageSize"), parameters);
+                // 3. 直接使用 DatabaseHelper 执行，而不是错误地调用 GetByCondition
+                DataTable dataTable = DatabaseHelper.ExecuteQuery(sql, parameters);
+                return ConvertDataTableToList(dataTable);
             }
             catch (Exception ex)
             {

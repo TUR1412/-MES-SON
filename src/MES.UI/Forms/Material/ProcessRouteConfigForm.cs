@@ -21,11 +21,10 @@ namespace MES.UI.Forms.Material
     public partial class ProcessRouteConfigForm : Form
     {
         #region 私有字段
-
+        private readonly IProcessRouteBLL _processRouteBLL = new ProcessRouteBLL();
         private List<ProcessRoute> _processRoutes;
         private List<ProcessStep> _currentSteps;
         private ProcessRoute _selectedRoute;
-        private readonly IProcessRouteBLL _processRouteBLL;
 
         #endregion
 
@@ -37,6 +36,7 @@ namespace MES.UI.Forms.Material
         public ProcessRouteConfigForm()
         {
             InitializeComponent();
+            // 实例化真正的BLL
             _processRouteBLL = new ProcessRouteBLL();
             _processRoutes = new List<ProcessRoute>();
             _currentSteps = new List<ProcessStep>();
@@ -342,6 +342,7 @@ namespace MES.UI.Forms.Material
                     status = GetStatusFromText(cmbStatus.Text);
                 }
 
+                // 调用BLL进行搜索
                 _processRoutes = _processRouteBLL.SearchProcessRoutes(
                     string.IsNullOrEmpty(keyword) ? null : keyword,
                     productId,
@@ -576,6 +577,7 @@ namespace MES.UI.Forms.Material
         {
             try
             {
+                // 调用BLL获取步骤
                 _currentSteps = _processRouteBLL.GetProcessSteps(routeId);
                 dgvSteps.DataSource = new BindingList<ProcessStep>(_currentSteps);
                 if (selectStepId.HasValue)
@@ -678,8 +680,10 @@ namespace MES.UI.Forms.Material
             {
                 try
                 {
+                    // 直接调用BLL删除
                     if (_processRouteBLL.DeleteProcessStep(selectedStep.Id))
                     {
+                        // 成功后刷新步骤列表
                         LoadProcessSteps(_selectedRoute.Id);
                     }
                     else
@@ -700,16 +704,15 @@ namespace MES.UI.Forms.Material
         private void BtnStepUp_Click(object sender, EventArgs e)
         {
             var selectedStep = GetSelectedProcessStep();
-            if (selectedStep == null)
-            {
-                MessageBox.Show("请先选择要移动的工艺步骤。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-            if (selectedStep.StepNumber <= 1) return;
+            if (selectedStep == null) return;
+            if (selectedStep.StepNumber <= 1) return; // 已经是第一个，无需移动
+
             try
             {
+                // 直接调用BLL移动
                 if (_processRouteBLL.MoveProcessStep(_selectedRoute.Id, selectedStep.Id, true))
                 {
+                    // 成功后刷新，并保持选中
                     LoadProcessSteps(_selectedRoute.Id, selectedStep.Id);
                 }
                 else

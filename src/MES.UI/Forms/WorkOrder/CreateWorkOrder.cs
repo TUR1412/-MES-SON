@@ -10,6 +10,7 @@ using MES.BLL.Material;
 using MES.BLL.WorkOrder;
 using MES.UI.Forms.Common;
 using MES.Common.Logging;
+using MES.Models.Production;
 
 namespace MES.UI.Forms.WorkOrder
 {
@@ -202,10 +203,13 @@ namespace MES.UI.Forms.WorkOrder
             {
                 if (productBLL != null)
                 {
-                    DataTable productTable = productBLL.GetAllProducts();
-                    cmbProductCode.DataSource = productTable;
-                    cmbProductCode.DisplayMember = "ProductCode";
-                    cmbProductCode.ValueMember = "ProductCode";
+                    // ★★★ 修改：从获取DataTable改为获取List<ProductionInfo> ★★★
+                    List<ProductionInfo> productList = productBLL.GetAllProducts();
+
+                    cmbProductCode.DataSource = productList;
+                    // ★★★ 修改：DisplayMember和ValueMember使用模型属性名 ★★★
+                    cmbProductCode.DisplayMember = "ProductName"; // 显示产品名称，更友好
+                    cmbProductCode.ValueMember = "ProductNum";   // 对应数据库的product_code
                     cmbProductCode.SelectedIndex = -1;
                 }
             }
@@ -638,9 +642,11 @@ namespace MES.UI.Forms.WorkOrder
             {
                 if (productBLL != null)
                 {
-                    ProductModel product = productBLL.GetProductByCode(productCode);
+                    // ★★★ 修改：从ProductModel改为ProductionInfo ★★★
+                    ProductionInfo product = productBLL.GetProductByCode(productCode);
                     if (product != null)
                     {
+                        // ★★★ 修改：使用ProductionInfo的属性 ★★★
                         txtProductType.Text = product.ProductType;
                         txtUnit.Text = product.Unit;
 

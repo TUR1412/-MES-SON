@@ -113,6 +113,7 @@
     <Compile Include="Material\DTO\MaterialDto.cs" />
     <Compile Include="Material\IBOMBLL.cs" />
     <Compile Include="Material\IMaterialBLL.cs" />
+    <Compile Include="Material\IProductBLL.cs" />
     <Compile Include="Material\MaterialBLL.cs" />
     <Compile Include="Material\IProcessRouteBLL.cs" />
     <Compile Include="Material\ProcessRouteBLL.cs" />

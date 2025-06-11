@@ -6,7 +6,7 @@ using MES.Models.Material;
 namespace MES.BLL.Material
 {
     /// <summary>
-    /// 工艺路线服务类
+    /// 工艺路线服务类（预定废弃）
     /// 提供工艺路线和工艺步骤的业务逻辑处理
     /// </summary>
     public class ProcessRouteService

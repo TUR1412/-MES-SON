@@ -9,6 +9,7 @@ using MES.Models.Material;
 using MES.DAL.Core;
 using MES.Common.Logging;
 using MES.Common.Exceptions;
+using MES.Models.Production;
 
 namespace MES.DAL.Material
 {
@@ -205,6 +206,43 @@ namespace MES.DAL.Material
             }
         }
 
+
+        public List<ProductionInfo> GetAllProducts()
+        {
+            try
+            {
+                string sql = "SELECT p.id, p.product_code, p.product_name, p.product_type, p.detail_type, p.package_type, p.unit, p.description, p.status, p.create_time, p.update_time FROM product_info p WHERE p.is_deleted = 0";
+                var dataTable = DatabaseHelper.ExecuteQuery(sql);
+                var products = new List<ProductionInfo>();
+
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    var product = new ProductionInfo
+                    {
+                        ProductId = Convert.ToInt32(row["id"]),
+                        ProductNum = row["product_code"].ToString(),
+                        ProductName = row["product_name"].ToString(),
+                        ProductType = row["product_type"].ToString(),
+                        DetailType = row["detail_type"].ToString(),
+                        PackageType = row["package_type"].ToString(),
+                        Unit = row["unit"].ToString(),
+                        Description = row["description"].ToString(),
+                        Status = Convert.ToInt32(row["status"]),
+                        CreateTime = Convert.ToDateTime(row["create_time"]),
+                        UpdateTime = row["update_time"] != DBNull.Value ? (DateTime?)Convert.ToDateTime(row["update_time"]) : null
+                    };
+                    products.Add(product);
+                }
+
+                return products;
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("获取产品列表失败", ex);
+                throw new MESException("获取产品列表时发生异常", ex);
+            }
+        }
+
         #endregion
 
         #region 查询和筛选
@@ -304,7 +342,7 @@ namespace MES.DAL.Material
             }
             catch (Exception ex)
             {
-                LogManager.Error(string.Format("获取单个工艺步骤失败：步骤ID={0}", stepId), ex);
+                LogManager.Error($"获取单个工艺步骤失败：步骤ID={stepId}", ex);
                 throw new MESException("数据库操作失败", ex);
             }
         }
@@ -317,37 +355,36 @@ namespace MES.DAL.Material
             try
             {
                 string sql = @"
-                    INSERT INTO process_step (
-                        process_route_id, step_number, step_name, step_type, workstation_id,
-                        standard_time, setup_time, wait_time, description, operation_instructions,
-                        quality_requirements, safety_notes, required_skill_level, is_critical,
-                        requires_inspection, status, create_time, is_deleted
-                    ) VALUES (
-                        @processRouteId, @stepNumber, @stepName, @stepType, @workstationId,
-                        @standardTime, @setupTime, @waitTime, @description, @operationInstructions,
-                        @qualityRequirements, @safetyNotes, @requiredSkillLevel, @isCritical,
-                        @requiresInspection, @status, @createTime, 0
-                    )";
-                var parameters = new[]
-                {
-                    DatabaseHelper.CreateParameter("@processRouteId", step.ProcessRouteId),
-                    DatabaseHelper.CreateParameter("@stepNumber", step.StepNumber),
-                    DatabaseHelper.CreateParameter("@stepName", step.StepName),
-                    DatabaseHelper.CreateParameter("@stepType", (int)step.StepType),
-                    DatabaseHelper.CreateParameter("@workstationId", step.WorkstationId),
-                    DatabaseHelper.CreateParameter("@standardTime", step.StandardTime),
-                    DatabaseHelper.CreateParameter("@setupTime", step.SetupTime),
-                    DatabaseHelper.CreateParameter("@waitTime", step.WaitTime),
-                    DatabaseHelper.CreateParameter("@description", step.Description),
-                    DatabaseHelper.CreateParameter("@operationInstructions", step.OperationInstructions),
-                    DatabaseHelper.CreateParameter("@qualityRequirements", step.QualityRequirements),
-                    DatabaseHelper.CreateParameter("@safetyNotes", step.SafetyNotes),
-                    DatabaseHelper.CreateParameter("@requiredSkillLevel", step.RequiredSkillLevel),
-                    DatabaseHelper.CreateParameter("@isCritical", step.IsCritical),
-                    DatabaseHelper.CreateParameter("@requiresInspection", step.RequiresInspection),
-                    DatabaseHelper.CreateParameter("@status", (int)step.Status),
-                    DatabaseHelper.CreateParameter("@createTime", step.CreateTime)
-                };
+            INSERT INTO process_step (
+                process_route_id, step_number, step_name, step_type, workstation_id,
+                standard_time, setup_time, wait_time, description, operation_instructions,
+                quality_requirements, safety_notes, required_skill_level, is_critical,
+                requires_inspection, status, create_time, is_deleted
+            ) VALUES (
+                @processRouteId, @stepNumber, @stepName, @stepType, @workstationId,
+                @standardTime, @setupTime, @waitTime, @description, @operationInstructions,
+                @qualityRequirements, @safetyNotes, @requiredSkillLevel, @isCritical,
+                @requiresInspection, @status, @createTime, 0
+            )";
+                var parameters = new[] {
+            DatabaseHelper.CreateParameter("@processRouteId", step.ProcessRouteId),
+            DatabaseHelper.CreateParameter("@stepNumber", step.StepNumber),
+            DatabaseHelper.CreateParameter("@stepName", step.StepName),
+            DatabaseHelper.CreateParameter("@stepType", (int)step.StepType),
+            DatabaseHelper.CreateParameter("@workstationId", step.WorkstationId),
+            DatabaseHelper.CreateParameter("@standardTime", step.StandardTime),
+            DatabaseHelper.CreateParameter("@setupTime", step.SetupTime),
+            DatabaseHelper.CreateParameter("@waitTime", step.WaitTime),
+            DatabaseHelper.CreateParameter("@description", step.Description),
+            DatabaseHelper.CreateParameter("@operationInstructions", step.OperationInstructions),
+            DatabaseHelper.CreateParameter("@qualityRequirements", step.QualityRequirements),
+            DatabaseHelper.CreateParameter("@safetyNotes", step.SafetyNotes),
+            DatabaseHelper.CreateParameter("@requiredSkillLevel", step.RequiredSkillLevel),
+            DatabaseHelper.CreateParameter("@isCritical", step.IsCritical),
+            DatabaseHelper.CreateParameter("@requiresInspection", step.RequiresInspection),
+            DatabaseHelper.CreateParameter("@status", (int)step.Status),
+            DatabaseHelper.CreateParameter("@createTime", step.CreateTime)
+        };
                 return DatabaseHelper.ExecuteNonQuery(sql, parameters) > 0;
             }
             catch (Exception ex)
@@ -365,45 +402,35 @@ namespace MES.DAL.Material
             try
             {
                 string sql = @"
-                    UPDATE process_step SET 
-                        step_number = @stepNumber,
-                        step_name = @stepName,
-                        step_type = @stepType,
-                        workstation_id = @workstationId,
-                        standard_time = @standardTime,
-                        setup_time = @setupTime,
-                        wait_time = @waitTime,
-                        description = @description,
-                        operation_instructions = @operationInstructions,
-                        quality_requirements = @qualityRequirements,
-                        safety_notes = @safetyNotes,
-                        required_skill_level = @requiredSkillLevel,
-                        is_critical = @isCritical,
-                        requires_inspection = @requiresInspection,
-                        status = @status,
-                        update_time = @updateTime
-                    WHERE id = @id";
+            UPDATE process_step SET 
+                step_number = @stepNumber, step_name = @stepName, step_type = @stepType,
+                workstation_id = @workstationId, standard_time = @standardTime, setup_time = @setupTime,
+                wait_time = @waitTime, description = @description, operation_instructions = @operationInstructions,
+                quality_requirements = @qualityRequirements, safety_notes = @safetyNotes, 
+                required_skill_level = @requiredSkillLevel, is_critical = @isCritical, 
+                requires_inspection = @requiresInspection, status = @status, update_time = @updateTime
+            WHERE id = @id";
 
                 var parameters = new[]
                 {
-                    DatabaseHelper.CreateParameter("@stepNumber", step.StepNumber),
-                    DatabaseHelper.CreateParameter("@stepName", step.StepName),
-                    DatabaseHelper.CreateParameter("@stepType", (int)step.StepType),
-                    DatabaseHelper.CreateParameter("@workstationId", step.WorkstationId),
-                    DatabaseHelper.CreateParameter("@standardTime", step.StandardTime),
-                    DatabaseHelper.CreateParameter("@setupTime", step.SetupTime),
-                    DatabaseHelper.CreateParameter("@waitTime", step.WaitTime),
-                    DatabaseHelper.CreateParameter("@description", step.Description),
-                    DatabaseHelper.CreateParameter("@operationInstructions", step.OperationInstructions),
-                    DatabaseHelper.CreateParameter("@qualityRequirements", step.QualityRequirements),
-                    DatabaseHelper.CreateParameter("@safetyNotes", step.SafetyNotes),
-                    DatabaseHelper.CreateParameter("@requiredSkillLevel", step.RequiredSkillLevel),
-                    DatabaseHelper.CreateParameter("@isCritical", step.IsCritical),
-                    DatabaseHelper.CreateParameter("@requiresInspection", step.RequiresInspection),
-                    DatabaseHelper.CreateParameter("@status", (int)step.Status),
-                    DatabaseHelper.CreateParameter("@updateTime", DateTime.Now),
-                    DatabaseHelper.CreateParameter("@id", step.Id)
-                };
+            DatabaseHelper.CreateParameter("@stepNumber", step.StepNumber),
+            DatabaseHelper.CreateParameter("@stepName", step.StepName),
+            DatabaseHelper.CreateParameter("@stepType", (int)step.StepType),
+            DatabaseHelper.CreateParameter("@workstationId", step.WorkstationId),
+            DatabaseHelper.CreateParameter("@standardTime", step.StandardTime),
+            DatabaseHelper.CreateParameter("@setupTime", step.SetupTime),
+            DatabaseHelper.CreateParameter("@waitTime", step.WaitTime),
+            DatabaseHelper.CreateParameter("@description", step.Description),
+            DatabaseHelper.CreateParameter("@operationInstructions", step.OperationInstructions),
+            DatabaseHelper.CreateParameter("@qualityRequirements", step.QualityRequirements),
+            DatabaseHelper.CreateParameter("@safetyNotes", step.SafetyNotes),
+            DatabaseHelper.CreateParameter("@requiredSkillLevel", step.RequiredSkillLevel),
+            DatabaseHelper.CreateParameter("@isCritical", step.IsCritical),
+            DatabaseHelper.CreateParameter("@requiresInspection", step.RequiresInspection),
+            DatabaseHelper.CreateParameter("@status", (int)step.Status),
+            DatabaseHelper.CreateParameter("@updateTime", DateTime.Now),
+            DatabaseHelper.CreateParameter("@id", step.Id)
+        };
                 return DatabaseHelper.ExecuteNonQuery(sql, parameters) > 0;
             }
             catch (Exception ex)
@@ -422,9 +449,9 @@ namespace MES.DAL.Material
             {
                 string sql = "UPDATE process_step SET is_deleted = 1, update_time = @updateTime WHERE id = @id";
                 var parameters = new[] {
-                    DatabaseHelper.CreateParameter("@updateTime", DateTime.Now),
-                    DatabaseHelper.CreateParameter("@id", stepId)
-                };
+            DatabaseHelper.CreateParameter("@updateTime", DateTime.Now),
+            DatabaseHelper.CreateParameter("@id", stepId)
+        };
                 return DatabaseHelper.ExecuteNonQuery(sql, parameters) > 0;
             }
             catch (Exception ex)
@@ -456,10 +483,10 @@ namespace MES.DAL.Material
                         var cmd = new MySqlCommand(sql, connection, transaction);
                         cmd.Parameters.AddRange(new[]
                         {
-                            DatabaseHelper.CreateParameter("@stepNumber", step.StepNumber),
-                            DatabaseHelper.CreateParameter("@updateTime", DateTime.Now),
-                            DatabaseHelper.CreateParameter("@id", step.Id)
-                        });
+                    DatabaseHelper.CreateParameter("@stepNumber", step.StepNumber),
+                    DatabaseHelper.CreateParameter("@updateTime", DateTime.Now),
+                    DatabaseHelper.CreateParameter("@id", step.Id)
+                });
                         cmd.ExecuteNonQuery();
                     }
                     transaction.Commit();

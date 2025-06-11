@@ -7,6 +7,7 @@ using MES.Models.Material;
 using MES.DAL.Material;
 using MES.Common.Logging;
 using MES.Common.Exceptions;
+using MES.Models.Production;
 
 namespace MES.BLL.Material
 {
@@ -366,6 +367,21 @@ namespace MES.BLL.Material
             }
         }
 
+
+        public List<ProductionInfo> GetAllProducts()
+        {
+            try
+            {
+                return _processRouteDAL.GetAllProducts();
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("获取产品列表失败", ex);
+                throw new MESException("获取产品列表时发生异常", ex);
+            }
+        }
+
+
         /// <summary>
         /// 根据状态获取工艺路线
         /// </summary>
@@ -408,13 +424,11 @@ namespace MES.BLL.Material
         public bool AddProcessStep(int routeId, ProcessStep step)
         {
             if (routeId <= 0) throw new ArgumentException("工艺路线ID必须大于0", "routeId");
-
             var validation = ValidateProcessStep(step);
-            if (!validation.IsValid)
-            {
-                throw new MESException(validation.GetErrorsString());
-            }
+            if (!validation.IsValid) throw new MESException(validation.GetErrorsString());
 
+            // 业务逻辑：自动设置新步骤的序号为当前数量+1
+            step.StepNumber = GetProcessSteps(routeId).Count + 1;
             step.ProcessRouteId = routeId;
             step.CreateTime = DateTime.Now;
 
@@ -429,16 +443,13 @@ namespace MES.BLL.Material
         public bool UpdateProcessStep(ProcessStep step)
         {
             var validation = ValidateProcessStep(step);
-            if (!validation.IsValid)
-            {
-                throw new MESException(validation.GetErrorsString());
-            }
+            if (!validation.IsValid) throw new MESException(validation.GetErrorsString());
             step.UpdateTime = DateTime.Now;
             return _processRouteDAL.UpdateProcessStep(step);
         }
 
         /// <summary>
-        /// 删除工艺步骤
+        /// 删除工艺步骤(包含核心业务逻辑：重新排序)
         /// </summary>
         /// <param name="stepId">工艺步骤ID</param>
         /// <returns>是否成功</returns>
@@ -446,21 +457,14 @@ namespace MES.BLL.Material
         {
             if (stepId <= 0) throw new ArgumentException("工艺步骤ID必须大于0", "stepId");
 
-            // 1. 获取要删除的步骤，以便知道其所属的路线和原始序号
+            // 1. 获取要删除的步骤，以便知道其所属的路线
             var stepToDelete = _processRouteDAL.GetProcessStepById(stepId);
-            if (stepToDelete == null)
-            {
-                throw new MESException("要删除的工艺步骤不存在。");
-            }
+            if (stepToDelete == null) throw new MESException("要删除的工艺步骤不存在。");
 
-            // 2. 删除步骤
-            bool deleteSuccess = _processRouteDAL.DeleteProcessStep(stepId);
-            if (!deleteSuccess)
-            {
-                return false;
-            }
+            // 2. 逻辑删除该步骤
+            if (!_processRouteDAL.DeleteProcessStep(stepId)) return false;
 
-            // 3. 获取剩余的步骤并重新排序它们的序号
+            // 3. 业务逻辑核心：获取剩余步骤并重新排序
             var remainingSteps = _processRouteDAL.GetProcessStepsByRouteId(stepToDelete.ProcessRouteId);
             var stepsToUpdate = new List<ProcessStep>();
             for (int i = 0; i < remainingSteps.Count; i++)
@@ -473,12 +477,7 @@ namespace MES.BLL.Material
             }
 
             // 4. 批量更新需要调整序号的步骤
-            if (stepsToUpdate.Any())
-            {
-                return _processRouteDAL.UpdateStepNumbers(stepsToUpdate);
-            }
-
-            return true;
+            return stepsToUpdate.Any() ? _processRouteDAL.UpdateStepNumbers(stepsToUpdate) : true;
         }
 
         /// <summary>
@@ -490,39 +489,30 @@ namespace MES.BLL.Material
         /// <returns>是否成功</returns>
         public bool MoveProcessStep(int routeId, int stepId, bool moveUp)
         {
-            try
-            {
-                var steps = _processRouteDAL.GetProcessStepsByRouteId(routeId);
-                var stepToMove = steps.FirstOrDefault(s => s.Id == stepId);
-                if (stepToMove == null)
-                {
-                    throw new MESException("未找到要移动的步骤。");
-                }
+            var steps = _processRouteDAL.GetProcessStepsByRouteId(routeId);
+            var stepToMove = steps.FirstOrDefault(s => s.Id == stepId);
+            if (stepToMove == null) throw new MESException("未找到要移动的步骤。");
 
-                int oldIndex = steps.FindIndex(s => s.Id == stepId);
-                int newIndex = moveUp ? oldIndex - 1 : oldIndex + 1;
+            int oldIndex = steps.FindIndex(s => s.Id == stepId);
+            int newIndex = moveUp ? oldIndex - 1 : oldIndex + 1;
 
-                if (newIndex < 0 || newIndex >= steps.Count)
-                {
-                    return true; // 已经是顶部或底部，视为成功
-                }
+            if (newIndex < 0 || newIndex >= steps.Count) return true; // 已在顶部或底部
 
-                var stepToSwap = steps[newIndex];
+            var stepToSwap = steps[newIndex];
 
-                // 交换步骤序号
-                int tempStepNumber = stepToMove.StepNumber;
-                stepToMove.StepNumber = stepToSwap.StepNumber;
-                stepToSwap.StepNumber = tempStepNumber;
+            // ---核心修改：使用 C# 5.0 兼容的临时变量法交换序号 ---
+    // 1. 定义一个临时变量存储要移动步骤的序号
+            int tempStepNumber = stepToMove.StepNumber;
 
-                // 使用事务一次性更新两个步骤的序号，保证原子性
-                var stepsToUpdate = new List<ProcessStep> { stepToMove, stepToSwap };
-                return _processRouteDAL.UpdateStepNumbers(stepsToUpdate);
-            }
-            catch (Exception ex)
-            {
-                LogManager.Error(string.Format("移动工艺步骤失败：路线ID={0}, 步骤ID={1}", routeId, stepId), ex);
-                throw new MESException("移动工艺步骤时发生异常", ex);
-            }
+            // 2. 将被交换步骤的序号赋值给要移动的步骤
+            stepToMove.StepNumber = stepToSwap.StepNumber;
+
+            // 3. 将临时变量中保存的原始序号赋值给被交换的步骤
+            stepToSwap.StepNumber = tempStepNumber;
+            // --- 修改结束 ---
+
+            // 调用DAL一次性更新两个步骤
+            return _processRouteDAL.UpdateStepNumbers(new List<ProcessStep> { stepToMove, stepToSwap });
         }
 
         #endregion
