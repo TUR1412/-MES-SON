@@ -150,12 +150,7 @@
     <Compile Include="Forms\Material\MaterialEditForm.Designer.cs">
       <DependentUpon>MaterialEditForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\Material\ProcessStepEditForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\Material\ProcessStepEditForm.Designer.cs">
-      <DependentUpon>ProcessStepEditForm.cs</DependentUpon>
-    </Compile>
+
     <Compile Include="Forms\SystemManagement\SystemConfigForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -203,6 +198,9 @@
     </Compile>
     <Compile Include="Forms\Material\ProcessRouteEditForm.Designer.cs">
       <DependentUpon>ProcessRouteEditForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Material\ProcessStepEditForm.cs">
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\Production\ProductionOrderManagementForm.cs">
       <SubType>Form</SubType>
@@ -350,9 +348,7 @@
     <EmbeddedResource Include="Forms\Material\ProcessRouteEditForm.resx">
       <DependentUpon>ProcessRouteEditForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Material\ProcessStepEditForm.resx">
-      <DependentUpon>ProcessStepEditForm.cs</DependentUpon>
-    </EmbeddedResource>
+
     <EmbeddedResource Include="Forms\Production\ProductionOrderManagementForm.resx">
       <DependentUpon>ProductionOrderManagementForm.cs</DependentUpon>
     </EmbeddedResource>
