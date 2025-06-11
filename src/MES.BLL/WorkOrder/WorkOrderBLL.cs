@@ -276,6 +276,8 @@ namespace MES.BLL.WorkOrder
             }
         }
 
+
+
         /// <summary>
         /// 获取可提交的工单列表
         /// </summary>
@@ -414,6 +416,80 @@ namespace MES.BLL.WorkOrder
                 case "已完成": return 2;
                 case "已关闭": return 3;
                 default: return -1;
+            }
+        }
+        /// <summary>
+        /// 根据状态获取工单列表
+        /// </summary>
+        /// <param name="statuses">状态数组</param>
+        /// <returns>工单数据表</returns>
+        public DataTable GetWorkOrdersByStatus(int[] statuses)
+        {
+            try
+            {
+                // 从数据库获取指定状态的工单数据
+                var workOrders = workOrderDAL.GetByCondition("work_order_status IN (" + string.Join(",", statuses) + ")");
+
+                DataTable table = new DataTable();
+                table.Columns.Add("Id", typeof(int));
+                table.Columns.Add("WorkOrderNo", typeof(string));
+                table.Columns.Add("WorkOrderType", typeof(string));
+                table.Columns.Add("ProductCode", typeof(string));
+                table.Columns.Add("PlanQuantity", typeof(decimal));
+                table.Columns.Add("Status", typeof(string));
+                table.Columns.Add("CreatedBy", typeof(string));
+                table.Columns.Add("CreatedDate", typeof(DateTime));
+
+                // 将真实数据填充到DataTable中
+                foreach (var workOrder in workOrders)
+                {
+                    table.Rows.Add(
+                        workOrder.WorkOrderId,
+                        workOrder.WorkOrderNum,
+                        workOrder.WorkOrderType,
+                        workOrder.ProductCode ?? "",
+                        workOrder.PlannedQuantity,
+                        GetWorkOrderStatusText(workOrder.WorkOrderStatus),
+                        "系统", // 默认创建人
+                        workOrder.CreateTime
+                    );
+                }
+
+                return table;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(string.Format("获取工单列表失败：{0}", ex.Message), ex);
+            }
+        }
+
+        /// <summary>
+        /// <summary>
+        /// 删除工单
+        /// </summary>
+        /// <param name="workOrderNum">工单号</param>
+        /// <param name="cancelReason">取消原因</param>
+        /// <returns>是否成功</returns>
+        public bool DeleteWorkOrder(string workOrderNum, string cancelReason)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(workOrderNum))
+                {
+                    throw new ArgumentException("工单号不能为空");
+                }
+
+                if (string.IsNullOrEmpty(cancelReason))
+                {
+                    throw new ArgumentException("取消原因不能为空");
+                }
+
+                // 调用DAL层删除工单
+                return workOrderDAL.Delete(workOrderNum, cancelReason);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(string.Format("删除工单失败：{0}", ex.Message), ex);
             }
         }
 
