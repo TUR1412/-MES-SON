@@ -4,6 +4,8 @@ using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using MES.Common.Configuration;
 using MES.Common.Logging;
+using MES.UI.Framework.Themes;
+using MES.UI.Framework.Controls;
 
 namespace MES.UI.Forms.SystemManagement
 {
@@ -20,7 +22,7 @@ namespace MES.UI.Forms.SystemManagement
         private Label versionLabel;
         private Label copyrightLabel;
         private RichTextBox infoRichTextBox;
-        private Button okButton;
+        private LeagueButton okButton;  // 使用英雄联盟风格按钮
         private Timer animationTimer;
         private int animationStep = 0;
 
@@ -30,6 +32,9 @@ namespace MES.UI.Forms.SystemManagement
             InitializeCustomControls();
             SetupAnimation();
             ApplyModernStyling();
+
+            // 【英雄联盟主题测试】- 步骤1.3单控件测试
+            TestLeagueThemeOnButton();
         }
 
         private void InitializeComponent()
@@ -146,25 +151,16 @@ namespace MES.UI.Forms.SystemManagement
                 Padding = new Padding(30, 15, 30, 15)
             };
 
-            // 确定按钮
-            okButton = new Button
+            // 英雄联盟风格确定按钮
+            okButton = new LeagueButton
             {
-                Text = "✅ 确定",
-                Size = new Size(120, 40),
-                Location = new Point(footerPanel.Width - 150, 15),
+                Text = "⚔️ 确定",
+                Size = new Size(140, 45),
+                Location = new Point(footerPanel.Width - 170, 12),
                 Anchor = AnchorStyles.Right | AnchorStyles.Top,
-                Font = new Font("微软雅黑", 10F, FontStyle.Bold),
-                BackColor = Color.FromArgb(0, 123, 255),
-                ForeColor = Color.White,
-                FlatStyle = FlatStyle.Flat,
-                Cursor = Cursors.Hand
+                Font = new Font("微软雅黑", 11F, FontStyle.Bold)
             };
-            okButton.FlatAppearance.BorderSize = 0;
             okButton.Click += OkButton_Click;
-
-            // 添加按钮悬停效果
-            okButton.MouseEnter += OkButton_MouseEnter;
-            okButton.MouseLeave += OkButton_MouseLeave;
 
             footerPanel.Controls.Add(okButton);
             this.Controls.Add(footerPanel);
@@ -325,14 +321,22 @@ MES制造执行系统是一套专为制造企业设计的综合性生产管理�
             this.Close();
         }
 
-        private void OkButton_MouseEnter(object sender, EventArgs e)
-        {
-            okButton.BackColor = Color.FromArgb(0, 86, 179);
-        }
+        // 英雄联盟按钮已内置悬停效果，无需额外处理
 
-        private void OkButton_MouseLeave(object sender, EventArgs e)
+        /// <summary>
+        /// 【英雄联盟主题测试】- 使用真正的英雄联盟风格按钮
+        /// LeagueButton已内置所有视觉特效，无需额外配置
+        /// </summary>
+        private void TestLeagueThemeOnButton()
         {
-            okButton.BackColor = Color.FromArgb(0, 123, 255);
+            try
+            {
+                LogManager.Info("英雄联盟主题测试：LeagueButton已应用完整视觉特效");
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("英雄联盟主题测试失败", ex);
+            }
         }
 
         protected override void OnFormClosed(FormClosedEventArgs e)

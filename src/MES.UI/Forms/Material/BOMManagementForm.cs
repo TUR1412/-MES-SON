@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using MES.Common.Logging;
 using MES.Models.Material;
 using MES.BLL.Material;
+using MES.BLL.Material.DTO;
 
 namespace MES.UI.Forms.Material
 {
@@ -27,7 +28,33 @@ namespace MES.UI.Forms.Material
         {
             InitializeComponent();
             bomBLL = new BOMBLL();
+
+            // 在窗体加载时应用真实LOL主题
+            this.Load += (sender, e) =>
+            {
+                ApplyLeagueTheme();
+            };
+
             InitializeForm();
+        }
+
+        /// <summary>
+        /// 应用真实LOL主题 - 基于真实LOL客户端设计
+        /// 严格遵循C# 5.0语法规范
+        /// </summary>
+        private void ApplyLeagueTheme()
+        {
+            try
+            {
+                // 使用新的真实LOL主题应用器
+                MES.UI.Framework.Themes.RealLeagueThemeApplier.ApplyRealLeagueTheme(this);
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("应用真实LOL主题失败", ex);
+                MessageBox.Show(string.Format("应用真实LOL主题失败: {0}", ex.Message), "主题错误",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
 
         /// <summary>
@@ -582,12 +609,67 @@ namespace MES.UI.Forms.Material
         {
             try
             {
+                // 将BOMInfo转换为BOMDto
+                BOMDto bomDto = null;
+                if (bom != null)
+                {
+                    bomDto = new BOMDto
+                    {
+                        Id = bom.Id,
+                        BOMCode = bom.BOMCode,
+                        BomName = bom.BomName,
+                        ProductId = bom.ProductId,
+                        ProductCode = bom.ProductCode,
+                        ProductName = bom.ProductName,
+                        MaterialId = bom.MaterialId,
+                        MaterialCode = bom.MaterialCode,
+                        MaterialName = bom.MaterialName,
+                        Quantity = bom.Quantity,
+                        Unit = bom.Unit,
+                        LossRate = bom.LossRate,
+                        SubstituteMaterial = bom.SubstituteMaterial,
+                        Remarks = bom.Remarks,
+                        BOMVersion = bom.BOMVersion,
+                        BOMType = bom.BOMType,
+                        EffectiveDate = bom.EffectiveDate,
+                        ExpireDate = bom.ExpireDate,
+                        Status = bom.Status,
+                        CreateTime = bom.CreateTime,
+                        UpdateTime = bom.UpdateTime
+                    };
+                }
+
                 // 使用真实的BOM编辑窗体
-                using (var editForm = new BOMEditForm(bom))
+                using (var editForm = new BOMEditForm(bomDto))
                 {
                     if (editForm.ShowDialog() == DialogResult.OK)
                     {
-                        return editForm.BOMData;
+                        // 将BOMDto转换回BOMInfo
+                        var resultDto = editForm.BOMData;
+                        return new BOMInfo
+                        {
+                            Id = resultDto.Id,
+                            BOMCode = resultDto.BOMCode,
+                            BomName = resultDto.BomName,
+                            ProductId = resultDto.ProductId,
+                            ProductCode = resultDto.ProductCode,
+                            ProductName = resultDto.ProductName,
+                            MaterialId = resultDto.MaterialId,
+                            MaterialCode = resultDto.MaterialCode,
+                            MaterialName = resultDto.MaterialName,
+                            Quantity = resultDto.Quantity,
+                            Unit = resultDto.Unit,
+                            LossRate = resultDto.LossRate,
+                            SubstituteMaterial = resultDto.SubstituteMaterial,
+                            Remarks = resultDto.Remarks,
+                            BOMVersion = resultDto.BOMVersion,
+                            BOMType = resultDto.BOMType,
+                            EffectiveDate = resultDto.EffectiveDate,
+                            ExpireDate = resultDto.ExpireDate,
+                            Status = resultDto.Status,
+                            CreateTime = resultDto.CreateTime,
+                            UpdateTime = resultDto.UpdateTime
+                        };
                     }
                 }
                 return null;

@@ -1,7 +1,9 @@
 ﻿// MaterialEditForm.cs (最终完善版)
 
 using MES.BLL.Material.DTO;
+using MES.UI.Framework.Themes;
 using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace MES.UI.Forms.Material
@@ -35,7 +37,7 @@ namespace MES.UI.Forms.Material
                 // --- 新增模式 ---
                 this.isNew = true;
                 this.Text = "新增物料";
-                lblTitle.Text = "📦 新增物料信息";
+                lblTitle.Text = "新增物料信息";
                 // 创建一个新的DTO对象，并设置默认值
                 this.MaterialData = new MaterialDto { Status = true };
             }
@@ -44,14 +46,38 @@ namespace MES.UI.Forms.Material
                 // --- 编辑模式 ---
                 this.isNew = false;
                 this.Text = "编辑物料";
-                lblTitle.Text = "📦 编辑物料信息";
+                lblTitle.Text = "编辑物料信息";
                 // 使用传入DTO的副本进行编辑，这样即使用户点击“取消”，主窗体的数据也不会被更改
                 this.MaterialData = materialDto.Clone();
             }
 
             // 在窗体加载时，将数据显示到界面控件上
-            this.Load += (sender, e) => LoadDataToControls();
+            this.Load += (sender, e) =>
+            {
+                ApplyRealLeagueTheme();
+                LoadDataToControls();
+            };
         }
+
+        /// <summary>
+        /// 应用真实LOL主题 - 基于真实LOL客户端设计
+        /// 严格遵循C# 5.0语法规范
+        /// </summary>
+        private void ApplyRealLeagueTheme()
+        {
+            try
+            {
+                // 使用新的真实LOL主题应用器
+                MES.UI.Framework.Themes.RealLeagueThemeApplier.ApplyRealLeagueTheme(this);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(string.Format("应用真实LOL主题失败: {0}", ex.Message), "主题错误",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+
 
         /// <summary>
         /// 将 MaterialData DTO 中的数据显示到窗体控件上。
@@ -68,12 +94,12 @@ namespace MES.UI.Forms.Material
             txtSupplier.Text = MaterialData.Supplier;
 
             // --- 填充可空的数值类型，如果值为null，则显示空字符串 ---
-            txtStandardCost.Text = MaterialData.StandardCost.ToString();
-            txtSafetyStock.Text = MaterialData.SafetyStock.ToString();
-            txtMinStock.Text = MaterialData.MinStock.ToString();
-            txtMaxStock.Text = MaterialData.MaxStock.ToString();
-            txtStockQuantity.Text = MaterialData.StockQuantity.ToString();
-            txtLeadTime.Text = MaterialData.LeadTime.ToString();
+            txtStandardCost.Text = MaterialData.StandardCost.HasValue ? MaterialData.StandardCost.Value.ToString("F2") : "";
+            txtSafetyStock.Text = MaterialData.SafetyStock.HasValue ? MaterialData.SafetyStock.Value.ToString("F2") : "";
+            txtMinStock.Text = MaterialData.MinStock.HasValue ? MaterialData.MinStock.Value.ToString("F2") : "";
+            txtMaxStock.Text = MaterialData.MaxStock.HasValue ? MaterialData.MaxStock.Value.ToString("F2") : "";
+            txtStockQuantity.Text = MaterialData.StockQuantity.HasValue ? MaterialData.StockQuantity.Value.ToString("F2") : "";
+            txtLeadTime.Text = MaterialData.LeadTime.HasValue ? MaterialData.LeadTime.Value.ToString() : "";
 
             // --- 填充布尔和普通数值类型 ---
             txtStatus.Text = MaterialData.Status.ToString(); // 显示 "True" 或 "False"
@@ -187,5 +213,10 @@ namespace MES.UI.Forms.Material
             this.DialogResult = DialogResult.Cancel;
             this.Close();
         }
+
+
+
+
+
     }
 }

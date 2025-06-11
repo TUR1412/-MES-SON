@@ -105,7 +105,7 @@ namespace MES.UI.Forms.WorkOrder
             this.lblTitle.Name = "lblTitle";
             this.lblTitle.Size = new System.Drawing.Size(195, 42);
             this.lblTitle.TabIndex = 0;
-            this.lblTitle.Text = "➕ 创建工单";
+            this.lblTitle.Text = "创建工单";
             // 
             // panelMain
             // 
@@ -155,7 +155,7 @@ namespace MES.UI.Forms.WorkOrder
             this.grpBasicInfo.Size = new System.Drawing.Size(870, 330);
             this.grpBasicInfo.TabIndex = 0;
             this.grpBasicInfo.TabStop = false;
-            this.grpBasicInfo.Text = "📋 基本信息";
+            this.grpBasicInfo.Text = "基本信息";
             // 
             // lblWorkOrderType
             // 

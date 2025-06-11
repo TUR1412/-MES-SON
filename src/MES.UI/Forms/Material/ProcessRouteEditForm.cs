@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using MES.Models.Material;
 using MES.BLL.Material;
 using MES.Models.Production;
+using MES.Common.Logging;
 
 namespace MES.UI.Forms.Material
 {
@@ -60,7 +61,33 @@ namespace MES.UI.Forms.Material
             InitializeComponent();
             _processRouteBLL = new ProcessRouteBLL(); // 关键：实例化BLL
             _productBLL = new ProductBLL();
+
+            // 在窗体加载时应用真实LOL主题
+            this.Load += (sender, e) =>
+            {
+                ApplyLeagueTheme();
+            };
+
             InitializeForm();
+        }
+
+        /// <summary>
+        /// 应用真实LOL主题 - 基于真实LOL客户端设计
+        /// 严格遵循C# 5.0语法规范
+        /// </summary>
+        private void ApplyLeagueTheme()
+        {
+            try
+            {
+                // 使用新的真实LOL主题应用器
+                MES.UI.Framework.Themes.RealLeagueThemeApplier.ApplyRealLeagueTheme(this);
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("应用真实LOL主题失败", ex);
+                MessageBox.Show(string.Format("应用真实LOL主题失败: {0}", ex.Message), "主题错误",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
 
         /// <summary>

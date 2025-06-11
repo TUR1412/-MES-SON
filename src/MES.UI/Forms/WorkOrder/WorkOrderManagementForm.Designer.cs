@@ -78,7 +78,7 @@ namespace MES.UI.Forms.WorkOrder
             this.lblTitle.Name = "lblTitle";
             this.lblTitle.Size = new System.Drawing.Size(259, 42);
             this.lblTitle.TabIndex = 0;
-            this.lblTitle.Text = "📋 工单管理中心";
+            this.lblTitle.Text = "工单管理中心";
             // 
             // panelSearch
             // 
@@ -111,7 +111,7 @@ namespace MES.UI.Forms.WorkOrder
             this.btnSearch.Name = "btnSearch";
             this.btnSearch.Size = new System.Drawing.Size(120, 45);
             this.btnSearch.TabIndex = 8;
-            this.btnSearch.Text = "🔍 搜索";
+            this.btnSearch.Text = "搜索";
             this.btnSearch.UseVisualStyleBackColor = false;
             // 
             // txtSearch

@@ -253,19 +253,19 @@ namespace MES.UI.Forms.Production.Edit
             this.txtCustomerName.Size = new System.Drawing.Size(150, 21);
             this.txtCustomerName.TabIndex = 21;            // 
             // lblSalesOrderNumber
-            // 
+            //
             this.lblSalesOrderNumber.AutoSize = true;
             this.lblSalesOrderNumber.Location = new System.Drawing.Point(250, 165);
             this.lblSalesOrderNumber.Name = "lblSalesOrderNumber";
-            this.lblSalesOrderNumber.Size = new System.Drawing.Size(77, 12);
+            this.lblSalesOrderNumber.Size = new System.Drawing.Size(65, 12);
             this.lblSalesOrderNumber.TabIndex = 22;
-            this.lblSalesOrderNumber.Text = "销售订单号：";
-            // 
+            this.lblSalesOrderNumber.Text = "销售单号：";
+            //
             // txtSalesOrderNumber
-            // 
-            this.txtSalesOrderNumber.Location = new System.Drawing.Point(333, 162);
+            //
+            this.txtSalesOrderNumber.Location = new System.Drawing.Point(321, 162);
             this.txtSalesOrderNumber.Name = "txtSalesOrderNumber";
-            this.txtSalesOrderNumber.Size = new System.Drawing.Size(138, 21);
+            this.txtSalesOrderNumber.Size = new System.Drawing.Size(150, 21);
             this.txtSalesOrderNumber.TabIndex = 23;
             // 
             // lblPlanStartTime
@@ -296,12 +296,12 @@ namespace MES.UI.Forms.Production.Edit
             this.lblPlanEndTime.Text = "计划结束时间：";
             // 
             // dtpPlanEndTime
-            // 
+            //
             this.dtpPlanEndTime.CustomFormat = "yyyy-MM-dd HH:mm";
             this.dtpPlanEndTime.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
             this.dtpPlanEndTime.Location = new System.Drawing.Point(333, 192);
             this.dtpPlanEndTime.Name = "dtpPlanEndTime";
-            this.dtpPlanEndTime.Size = new System.Drawing.Size(138, 21);
+            this.dtpPlanEndTime.Size = new System.Drawing.Size(150, 21);
             this.dtpPlanEndTime.TabIndex = 27;
             // 
             // lblRemarks
@@ -314,12 +314,12 @@ namespace MES.UI.Forms.Production.Edit
             this.lblRemarks.Text = "备注：";
             // 
             // txtRemarks
-            // 
+            //
             this.txtRemarks.Location = new System.Drawing.Point(83, 222);
             this.txtRemarks.Multiline = true;
             this.txtRemarks.Name = "txtRemarks";
-            this.txtRemarks.Size = new System.Drawing.Size(388, 60);
-            this.txtRemarks.TabIndex = 29;            // 
+            this.txtRemarks.Size = new System.Drawing.Size(400, 60);
+            this.txtRemarks.TabIndex = 29;            //
             // btnSave
             // 
             this.btnSave.Location = new System.Drawing.Point(315, 300);
@@ -341,10 +341,10 @@ namespace MES.UI.Forms.Production.Edit
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
             // ProductionOrderEditForm
-            // 
+            //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(484, 335);
+            this.ClientSize = new System.Drawing.Size(500, 350);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.txtRemarks);

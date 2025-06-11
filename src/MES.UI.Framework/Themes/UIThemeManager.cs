@@ -298,5 +298,32 @@ namespace MES.UI.Framework.Themes
         }
 
         #endregion
+
+        #region 英雄联盟主题支持
+
+        /// <summary>
+        /// 获取英雄联盟经典主题配色
+        /// </summary>
+        /// <returns>英雄联盟主题配色方案</returns>
+        public static ThemeColors GetLeagueTheme()
+        {
+            return new ThemeColors
+            {
+                Primary = LeagueColors.PrimaryGold,
+                Secondary = LeagueColors.AccentBlue,
+                Background = LeagueColors.DarkBackground,
+                Surface = LeagueColors.DarkSurface,
+                Text = LeagueColors.TextPrimary,
+                TextSecondary = LeagueColors.TextSecondary,
+                Border = LeagueColors.DarkBorder,
+                Hover = LeagueColors.PrimaryGoldLight,
+                Selected = LeagueColors.AccentBlueLight,
+                Success = LeagueColors.SuccessGreen,
+                Warning = LeagueColors.WarningOrange,
+                Error = LeagueColors.ErrorRed
+            };
+        }
+
+        #endregion
     }
 }

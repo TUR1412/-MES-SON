@@ -114,7 +114,7 @@ namespace MES.UI.Forms.Material
             this.labelTitle.Name = "labelTitle";
             this.labelTitle.Size = new System.Drawing.Size(239, 30);
             this.labelTitle.TabIndex = 0;
-            this.labelTitle.Text = "📋 BOM物料清单管理";
+            this.labelTitle.Text = "BOM物料清单管理";
             //
             // panelSearch
             //

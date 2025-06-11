@@ -79,9 +79,23 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Themes\UIThemeManager.cs" />
+    <Compile Include="Themes\LeagueColors.cs" />
+    <Compile Include="Themes\LOLGradients.cs" />
+    <Compile Include="Themes\LOLGeometry.cs" />
+    <Compile Include="Themes\LOLIcons.cs" />
+    <Compile Include="Themes\LeagueColorsTest.cs" />
+    <Compile Include="Themes\LeagueVisualEffects.cs" />
+    <Compile Include="Themes\LeagueMenuRenderer.cs" />
+    <Compile Include="Themes\LeagueParticleSystem.cs" />
+    <Compile Include="Themes\LeagueAnimationManager.cs" />
+    <Compile Include="Themes\RealLeagueRenderer.cs" />
+    <Compile Include="Themes\RealLeagueThemeApplier.cs" />
     <Compile Include="Resources\IconManager.cs" />
     <Compile Include="Utilities\UIHelper.cs" />
     <Compile Include="Controls\ModernButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\LeagueButton.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Controls\EnhancedDataGridView.cs">

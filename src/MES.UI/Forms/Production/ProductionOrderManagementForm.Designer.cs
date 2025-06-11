@@ -114,10 +114,10 @@ namespace MES.UI.Forms.Production
             this.labelTitle.Name = "labelTitle";
             this.labelTitle.Size = new System.Drawing.Size(289, 42);
             this.labelTitle.TabIndex = 0;
-            this.labelTitle.Text = "📋 生产订单管理   ";
-            // 
+            this.labelTitle.Text = "生产订单管理";
+            //
             // panelSearch
-            // 
+            //
             this.panelSearch.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(249)))), ((int)(((byte)(250)))));
             this.panelSearch.Controls.Add(this.textBoxSearch);
             this.panelSearch.Controls.Add(this.labelSearch);
@@ -126,25 +126,25 @@ namespace MES.UI.Forms.Production
             this.panelSearch.Name = "panelSearch";
             this.panelSearch.Size = new System.Drawing.Size(1400, 50);
             this.panelSearch.TabIndex = 1;
-            // 
+            //
             // textBoxSearch
-            // 
+            //
             this.textBoxSearch.Font = new System.Drawing.Font("微软雅黑", 10F);
             this.textBoxSearch.Location = new System.Drawing.Point(120, 12);
             this.textBoxSearch.Name = "textBoxSearch";
             this.textBoxSearch.Size = new System.Drawing.Size(300, 34);
             this.textBoxSearch.TabIndex = 1;
             this.textBoxSearch.TextChanged += new System.EventHandler(this.textBoxSearch_TextChanged);
-            // 
+            //
             // labelSearch
-            // 
+            //
             this.labelSearch.AutoSize = true;
             this.labelSearch.Font = new System.Drawing.Font("微软雅黑", 10F);
             this.labelSearch.Location = new System.Drawing.Point(20, 15);
             this.labelSearch.Name = "labelSearch";
             this.labelSearch.Size = new System.Drawing.Size(145, 27);
             this.labelSearch.TabIndex = 0;
-            this.labelSearch.Text = "🔍 快速搜索：";
+            this.labelSearch.Text = "快速搜索：";
             // 
             // panelButtons
             // 
@@ -170,12 +170,12 @@ namespace MES.UI.Forms.Production
             this.btnRefresh.Name = "btnRefresh";
             this.btnRefresh.Size = new System.Drawing.Size(100, 35);
             this.btnRefresh.TabIndex = 3;
-            this.btnRefresh.Text = "🔄 刷新";
+            this.btnRefresh.Text = "刷新";
             this.btnRefresh.UseVisualStyleBackColor = false;
             this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
-            // 
+            //
             // btnDelete
-            // 
+            //
             this.btnDelete.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(53)))), ((int)(((byte)(69)))));
             this.btnDelete.FlatAppearance.BorderSize = 0;
             this.btnDelete.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -185,12 +185,12 @@ namespace MES.UI.Forms.Production
             this.btnDelete.Name = "btnDelete";
             this.btnDelete.Size = new System.Drawing.Size(100, 35);
             this.btnDelete.TabIndex = 2;
-            this.btnDelete.Text = "🗑️ 删除";
+            this.btnDelete.Text = "删除";
             this.btnDelete.UseVisualStyleBackColor = false;
             this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
-            // 
+            //
             // btnEdit
-            // 
+            //
             this.btnEdit.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(123)))), ((int)(((byte)(255)))));
             this.btnEdit.FlatAppearance.BorderSize = 0;
             this.btnEdit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -200,12 +200,12 @@ namespace MES.UI.Forms.Production
             this.btnEdit.Name = "btnEdit";
             this.btnEdit.Size = new System.Drawing.Size(100, 35);
             this.btnEdit.TabIndex = 1;
-            this.btnEdit.Text = "✏️ 编辑";
+            this.btnEdit.Text = "编辑";
             this.btnEdit.UseVisualStyleBackColor = false;
             this.btnEdit.Click += new System.EventHandler(this.btnEdit_Click);
-            // 
+            //
             // btnAdd
-            // 
+            //
             this.btnAdd.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(167)))), ((int)(((byte)(69)))));
             this.btnAdd.FlatAppearance.BorderSize = 0;
             this.btnAdd.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -215,7 +215,7 @@ namespace MES.UI.Forms.Production
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.Size = new System.Drawing.Size(100, 35);
             this.btnAdd.TabIndex = 0;
-            this.btnAdd.Text = "➕ 新增";
+            this.btnAdd.Text = "新增";
             this.btnAdd.UseVisualStyleBackColor = false;
             this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
             // 
@@ -257,7 +257,7 @@ namespace MES.UI.Forms.Production
             this.groupBoxOtherInfo.Size = new System.Drawing.Size(600, 190);
             this.groupBoxOtherInfo.TabIndex = 4;
             this.groupBoxOtherInfo.TabStop = false;
-            this.groupBoxOtherInfo.Text = "📝 其他信息";
+            this.groupBoxOtherInfo.Text = "其他信息";
             // 
             // textBoxRemarks
             // 
@@ -335,7 +335,7 @@ namespace MES.UI.Forms.Production
             this.groupBoxTimeInfo.Size = new System.Drawing.Size(600, 90);
             this.groupBoxTimeInfo.TabIndex = 3;
             this.groupBoxTimeInfo.TabStop = false;
-            this.groupBoxTimeInfo.Text = "⏰ 时间信息";
+            this.groupBoxTimeInfo.Text = "时间信息";
             // 
             // dateTimePickerActualEnd
             // 
@@ -430,7 +430,7 @@ namespace MES.UI.Forms.Production
             this.groupBoxStatusInfo.Size = new System.Drawing.Size(600, 90);
             this.groupBoxStatusInfo.TabIndex = 2;
             this.groupBoxStatusInfo.TabStop = false;
-            this.groupBoxStatusInfo.Text = "🎛️ 状态信息";
+            this.groupBoxStatusInfo.Text = "状态信息";
             // 
             // textBoxResponsiblePerson
             // 
@@ -541,7 +541,7 @@ namespace MES.UI.Forms.Production
             this.groupBoxBasicInfo.Size = new System.Drawing.Size(600, 120);
             this.groupBoxBasicInfo.TabIndex = 1;
             this.groupBoxBasicInfo.TabStop = false;
-            this.groupBoxBasicInfo.Text = "📋 基本信息";
+            this.groupBoxBasicInfo.Text = "基本信息";
             // 
             // textBoxUnit
             // 

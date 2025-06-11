@@ -28,84 +28,126 @@ namespace MES.UI.Forms.Material
         /// </summary>
         private void InitializeComponent()
         {
-            this.lblBOMCode = new System.Windows.Forms.Label();
             this.txtBOMCode = new System.Windows.Forms.TextBox();
-            this.lblBOMVersion = new System.Windows.Forms.Label();
-            this.txtBOMVersion = new System.Windows.Forms.TextBox();
-            this.lblBOMType = new System.Windows.Forms.Label();
-            this.cmbBOMType = new System.Windows.Forms.ComboBox();
-            this.lblProductCode = new System.Windows.Forms.Label();
+            this.txtBomName = new System.Windows.Forms.TextBox();
             this.txtProductCode = new System.Windows.Forms.TextBox();
-            this.lblProductName = new System.Windows.Forms.Label();
             this.txtProductName = new System.Windows.Forms.TextBox();
-            this.lblMaterialCode = new System.Windows.Forms.Label();
             this.txtMaterialCode = new System.Windows.Forms.TextBox();
-            this.lblMaterialName = new System.Windows.Forms.Label();
             this.txtMaterialName = new System.Windows.Forms.TextBox();
-            this.lblQuantity = new System.Windows.Forms.Label();
             this.txtQuantity = new System.Windows.Forms.TextBox();
-            this.lblUnit = new System.Windows.Forms.Label();
             this.txtUnit = new System.Windows.Forms.TextBox();
-            this.lblLossRate = new System.Windows.Forms.Label();
             this.txtLossRate = new System.Windows.Forms.TextBox();
-            this.lblSubstituteMaterial = new System.Windows.Forms.Label();
             this.txtSubstituteMaterial = new System.Windows.Forms.TextBox();
-            this.lblEffectiveDate = new System.Windows.Forms.Label();
-            this.dtpEffectiveDate = new System.Windows.Forms.DateTimePicker();
-            this.chkHasExpireDate = new System.Windows.Forms.CheckBox();
-            this.dtpExpireDate = new System.Windows.Forms.DateTimePicker();
-            this.chkStatus = new System.Windows.Forms.CheckBox();
-            this.lblRemarks = new System.Windows.Forms.Label();
             this.txtRemarks = new System.Windows.Forms.TextBox();
+            this.txtBOMVersion = new System.Windows.Forms.TextBox();
+            this.cmbBOMType = new System.Windows.Forms.ComboBox();
+            this.dtpEffectiveDate = new System.Windows.Forms.DateTimePicker();
+            this.dtpExpireDate = new System.Windows.Forms.DateTimePicker();
+            this.chkHasExpireDate = new System.Windows.Forms.CheckBox();
+            this.chkStatus = new System.Windows.Forms.CheckBox();
             this.btnSave = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.label15 = new System.Windows.Forms.Label();
             this.SuspendLayout();
-            // 
-            // lblBOMCode
-            // 
-            this.lblBOMCode.AutoSize = true;
-            this.lblBOMCode.Location = new System.Drawing.Point(45, 45);
-            this.lblBOMCode.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblBOMCode.Name = "lblBOMCode";
-            this.lblBOMCode.Size = new System.Drawing.Size(89, 18);
-            this.lblBOMCode.TabIndex = 0;
-            this.lblBOMCode.Text = "BOM编码：";
             // 
             // txtBOMCode
             // 
-            this.txtBOMCode.Location = new System.Drawing.Point(180, 40);
-            this.txtBOMCode.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtBOMCode.Location = new System.Drawing.Point(120, 20);
             this.txtBOMCode.Name = "txtBOMCode";
-            this.txtBOMCode.Size = new System.Drawing.Size(298, 28);
-            this.txtBOMCode.TabIndex = 1;
+            this.txtBOMCode.Size = new System.Drawing.Size(200, 20);
+            this.txtBOMCode.TabIndex = 0;
             // 
-            // lblBOMVersion
+            // txtBomName
             // 
-            this.lblBOMVersion.AutoSize = true;
-            this.lblBOMVersion.Location = new System.Drawing.Point(525, 45);
-            this.lblBOMVersion.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblBOMVersion.Name = "lblBOMVersion";
-            this.lblBOMVersion.Size = new System.Drawing.Size(89, 18);
-            this.lblBOMVersion.TabIndex = 2;
-            this.lblBOMVersion.Text = "BOM版本：";
+            this.txtBomName.Location = new System.Drawing.Point(120, 50);
+            this.txtBomName.Name = "txtBomName";
+            this.txtBomName.Size = new System.Drawing.Size(200, 20);
+            this.txtBomName.TabIndex = 1;
+            // 
+            // txtProductCode
+            // 
+            this.txtProductCode.Location = new System.Drawing.Point(120, 80);
+            this.txtProductCode.Name = "txtProductCode";
+            this.txtProductCode.Size = new System.Drawing.Size(200, 20);
+            this.txtProductCode.TabIndex = 2;
+            // 
+            // txtProductName
+            // 
+            this.txtProductName.Location = new System.Drawing.Point(120, 110);
+            this.txtProductName.Name = "txtProductName";
+            this.txtProductName.Size = new System.Drawing.Size(200, 20);
+            this.txtProductName.TabIndex = 3;
+            // 
+            // txtMaterialCode
+            // 
+            this.txtMaterialCode.Location = new System.Drawing.Point(120, 140);
+            this.txtMaterialCode.Name = "txtMaterialCode";
+            this.txtMaterialCode.Size = new System.Drawing.Size(200, 20);
+            this.txtMaterialCode.TabIndex = 4;
+            // 
+            // txtMaterialName
+            // 
+            this.txtMaterialName.Location = new System.Drawing.Point(120, 170);
+            this.txtMaterialName.Name = "txtMaterialName";
+            this.txtMaterialName.Size = new System.Drawing.Size(200, 20);
+            this.txtMaterialName.TabIndex = 5;
+            // 
+            // txtQuantity
+            // 
+            this.txtQuantity.Location = new System.Drawing.Point(120, 200);
+            this.txtQuantity.Name = "txtQuantity";
+            this.txtQuantity.Size = new System.Drawing.Size(100, 20);
+            this.txtQuantity.TabIndex = 6;
+            // 
+            // txtUnit
+            // 
+            this.txtUnit.Location = new System.Drawing.Point(280, 200);
+            this.txtUnit.Name = "txtUnit";
+            this.txtUnit.Size = new System.Drawing.Size(80, 20);
+            this.txtUnit.TabIndex = 7;
+            // 
+            // txtLossRate
+            // 
+            this.txtLossRate.Location = new System.Drawing.Point(120, 230);
+            this.txtLossRate.Name = "txtLossRate";
+            this.txtLossRate.Size = new System.Drawing.Size(100, 20);
+            this.txtLossRate.TabIndex = 8;
+            // 
+            // txtSubstituteMaterial
+            // 
+            this.txtSubstituteMaterial.Location = new System.Drawing.Point(120, 260);
+            this.txtSubstituteMaterial.Name = "txtSubstituteMaterial";
+            this.txtSubstituteMaterial.Size = new System.Drawing.Size(200, 20);
+            this.txtSubstituteMaterial.TabIndex = 9;
+            // 
+            // txtRemarks
+            //
+            this.txtRemarks.Location = new System.Drawing.Point(120, 290);
+            this.txtRemarks.Multiline = true;
+            this.txtRemarks.Name = "txtRemarks";
+            this.txtRemarks.Size = new System.Drawing.Size(200, 50);
+            this.txtRemarks.TabIndex = 10;
             // 
             // txtBOMVersion
-            // 
-            this.txtBOMVersion.Location = new System.Drawing.Point(645, 40);
-            this.txtBOMVersion.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            //
+            this.txtBOMVersion.Location = new System.Drawing.Point(550, 30);
             this.txtBOMVersion.Name = "txtBOMVersion";
-            this.txtBOMVersion.Size = new System.Drawing.Size(178, 28);
-            this.txtBOMVersion.TabIndex = 3;
-            // 
-            // lblBOMType
-            // 
-            this.lblBOMType.AutoSize = true;
-            this.lblBOMType.Location = new System.Drawing.Point(45, 105);
-            this.lblBOMType.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblBOMType.Name = "lblBOMType";
-            this.lblBOMType.Size = new System.Drawing.Size(89, 18);
-            this.lblBOMType.TabIndex = 4;
-            this.lblBOMType.Text = "BOM类型：";
+            this.txtBOMVersion.Size = new System.Drawing.Size(200, 20);
+            this.txtBOMVersion.TabIndex = 11;
             // 
             // cmbBOMType
             // 
@@ -113,296 +155,248 @@ namespace MES.UI.Forms.Material
             this.cmbBOMType.FormattingEnabled = true;
             this.cmbBOMType.Items.AddRange(new object[] {
             "PRODUCTION",
-            "ENGINEERING",
-            "MAINTENANCE"});
-            this.cmbBOMType.Location = new System.Drawing.Point(180, 100);
-            this.cmbBOMType.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            "ENGINEERING"});
+            this.cmbBOMType.Location = new System.Drawing.Point(550, 70);
             this.cmbBOMType.Name = "cmbBOMType";
-            this.cmbBOMType.Size = new System.Drawing.Size(298, 26);
-            this.cmbBOMType.TabIndex = 5;
-            // 
-            // lblProductCode
-            // 
-            this.lblProductCode.AutoSize = true;
-            this.lblProductCode.Location = new System.Drawing.Point(45, 165);
-            this.lblProductCode.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblProductCode.Name = "lblProductCode";
-            this.lblProductCode.Size = new System.Drawing.Size(98, 18);
-            this.lblProductCode.TabIndex = 6;
-            this.lblProductCode.Text = "产品编码：";
-            // 
-            // txtProductCode
-            // 
-            this.txtProductCode.Location = new System.Drawing.Point(180, 160);
-            this.txtProductCode.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.txtProductCode.Name = "txtProductCode";
-            this.txtProductCode.Size = new System.Drawing.Size(298, 28);
-            this.txtProductCode.TabIndex = 7;
-            // 
-            // lblProductName
-            // 
-            this.lblProductName.AutoSize = true;
-            this.lblProductName.Location = new System.Drawing.Point(525, 165);
-            this.lblProductName.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblProductName.Name = "lblProductName";
-            this.lblProductName.Size = new System.Drawing.Size(98, 18);
-            this.lblProductName.TabIndex = 8;
-            this.lblProductName.Text = "产品名称：";
-            // 
-            // txtProductName
-            // 
-            this.txtProductName.Location = new System.Drawing.Point(645, 160);
-            this.txtProductName.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.txtProductName.Name = "txtProductName";
-            this.txtProductName.Size = new System.Drawing.Size(178, 28);
-            this.txtProductName.TabIndex = 9;
-            // 
-            // lblMaterialCode
-            // 
-            this.lblMaterialCode.AutoSize = true;
-            this.lblMaterialCode.Location = new System.Drawing.Point(45, 225);
-            this.lblMaterialCode.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblMaterialCode.Name = "lblMaterialCode";
-            this.lblMaterialCode.Size = new System.Drawing.Size(98, 18);
-            this.lblMaterialCode.TabIndex = 10;
-            this.lblMaterialCode.Text = "物料编码：";
-            // 
-            // txtMaterialCode
-            // 
-            this.txtMaterialCode.Location = new System.Drawing.Point(180, 220);
-            this.txtMaterialCode.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.txtMaterialCode.Name = "txtMaterialCode";
-            this.txtMaterialCode.Size = new System.Drawing.Size(298, 28);
-            this.txtMaterialCode.TabIndex = 11;
-            // 
-            // lblMaterialName
-            // 
-            this.lblMaterialName.AutoSize = true;
-            this.lblMaterialName.Location = new System.Drawing.Point(525, 225);
-            this.lblMaterialName.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblMaterialName.Name = "lblMaterialName";
-            this.lblMaterialName.Size = new System.Drawing.Size(98, 18);
-            this.lblMaterialName.TabIndex = 12;
-            this.lblMaterialName.Text = "物料名称：";
-            // 
-            // txtMaterialName
-            // 
-            this.txtMaterialName.Location = new System.Drawing.Point(645, 220);
-            this.txtMaterialName.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.txtMaterialName.Name = "txtMaterialName";
-            this.txtMaterialName.Size = new System.Drawing.Size(178, 28);
-            this.txtMaterialName.TabIndex = 13;
-            // 
-            // lblQuantity
-            // 
-            this.lblQuantity.AutoSize = true;
-            this.lblQuantity.Location = new System.Drawing.Point(45, 285);
-            this.lblQuantity.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblQuantity.Name = "lblQuantity";
-            this.lblQuantity.Size = new System.Drawing.Size(62, 18);
-            this.lblQuantity.TabIndex = 14;
-            this.lblQuantity.Text = "数量：";
-            // 
-            // txtQuantity
-            // 
-            this.txtQuantity.Location = new System.Drawing.Point(180, 280);
-            this.txtQuantity.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.txtQuantity.Name = "txtQuantity";
-            this.txtQuantity.Size = new System.Drawing.Size(148, 28);
-            this.txtQuantity.TabIndex = 15;
-            // 
-            // lblUnit
-            // 
-            this.lblUnit.AutoSize = true;
-            this.lblUnit.Location = new System.Drawing.Point(375, 285);
-            this.lblUnit.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblUnit.Name = "lblUnit";
-            this.lblUnit.Size = new System.Drawing.Size(62, 18);
-            this.lblUnit.TabIndex = 16;
-            this.lblUnit.Text = "单位：";
-            // 
-            // txtUnit
-            // 
-            this.txtUnit.Location = new System.Drawing.Point(450, 280);
-            this.txtUnit.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.txtUnit.Name = "txtUnit";
-            this.txtUnit.Size = new System.Drawing.Size(118, 28);
-            this.txtUnit.TabIndex = 17;
-            // 
-            // lblLossRate
-            // 
-            this.lblLossRate.AutoSize = true;
-            this.lblLossRate.Location = new System.Drawing.Point(600, 285);
-            this.lblLossRate.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblLossRate.Name = "lblLossRate";
-            this.lblLossRate.Size = new System.Drawing.Size(107, 18);
-            this.lblLossRate.TabIndex = 18;
-            this.lblLossRate.Text = "损耗率(%)：";
-            // 
-            // txtLossRate
-            // 
-            this.txtLossRate.Location = new System.Drawing.Point(720, 280);
-            this.txtLossRate.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.txtLossRate.Name = "txtLossRate";
-            this.txtLossRate.Size = new System.Drawing.Size(103, 28);
-            this.txtLossRate.TabIndex = 19;
-            // 
-            // lblSubstituteMaterial
-            // 
-            this.lblSubstituteMaterial.AutoSize = true;
-            this.lblSubstituteMaterial.Location = new System.Drawing.Point(45, 345);
-            this.lblSubstituteMaterial.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblSubstituteMaterial.Name = "lblSubstituteMaterial";
-            this.lblSubstituteMaterial.Size = new System.Drawing.Size(98, 18);
-            this.lblSubstituteMaterial.TabIndex = 20;
-            this.lblSubstituteMaterial.Text = "替代物料：";
-            // 
-            // txtSubstituteMaterial
-            // 
-            this.txtSubstituteMaterial.Location = new System.Drawing.Point(180, 340);
-            this.txtSubstituteMaterial.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.txtSubstituteMaterial.Name = "txtSubstituteMaterial";
-            this.txtSubstituteMaterial.Size = new System.Drawing.Size(643, 28);
-            this.txtSubstituteMaterial.TabIndex = 21;
-            // 
-            // lblEffectiveDate
-            // 
-            this.lblEffectiveDate.AutoSize = true;
-            this.lblEffectiveDate.Location = new System.Drawing.Point(45, 405);
-            this.lblEffectiveDate.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblEffectiveDate.Name = "lblEffectiveDate";
-            this.lblEffectiveDate.Size = new System.Drawing.Size(98, 18);
-            this.lblEffectiveDate.TabIndex = 22;
-            this.lblEffectiveDate.Text = "生效日期：";
+            this.cmbBOMType.Size = new System.Drawing.Size(200, 21);
+            this.cmbBOMType.TabIndex = 12;
             // 
             // dtpEffectiveDate
-            // 
-            this.dtpEffectiveDate.Location = new System.Drawing.Point(180, 400);
-            this.dtpEffectiveDate.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            //
+            this.dtpEffectiveDate.Location = new System.Drawing.Point(550, 110);
             this.dtpEffectiveDate.Name = "dtpEffectiveDate";
-            this.dtpEffectiveDate.Size = new System.Drawing.Size(298, 28);
-            this.dtpEffectiveDate.TabIndex = 23;
+            this.dtpEffectiveDate.Size = new System.Drawing.Size(200, 20);
+            this.dtpEffectiveDate.TabIndex = 13;
+            // 
+            // dtpExpireDate
+            //
+            this.dtpExpireDate.Location = new System.Drawing.Point(550, 190);
+            this.dtpExpireDate.Name = "dtpExpireDate";
+            this.dtpExpireDate.Size = new System.Drawing.Size(200, 20);
+            this.dtpExpireDate.TabIndex = 14;
             // 
             // chkHasExpireDate
-            // 
+            //
             this.chkHasExpireDate.AutoSize = true;
-            this.chkHasExpireDate.Location = new System.Drawing.Point(525, 405);
-            this.chkHasExpireDate.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.chkHasExpireDate.Location = new System.Drawing.Point(400, 150);
             this.chkHasExpireDate.Name = "chkHasExpireDate";
-            this.chkHasExpireDate.Size = new System.Drawing.Size(106, 22);
-            this.chkHasExpireDate.TabIndex = 24;
-            this.chkHasExpireDate.Text = "失效日期";
+            this.chkHasExpireDate.Size = new System.Drawing.Size(96, 17);
+            this.chkHasExpireDate.TabIndex = 15;
+            this.chkHasExpireDate.Text = "设置失效日期";
             this.chkHasExpireDate.UseVisualStyleBackColor = true;
             this.chkHasExpireDate.CheckedChanged += new System.EventHandler(this.chkHasExpireDate_CheckedChanged);
             // 
-            // dtpExpireDate
-            // 
-            this.dtpExpireDate.Enabled = false;
-            this.dtpExpireDate.Location = new System.Drawing.Point(645, 400);
-            this.dtpExpireDate.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.dtpExpireDate.Name = "dtpExpireDate";
-            this.dtpExpireDate.Size = new System.Drawing.Size(178, 28);
-            this.dtpExpireDate.TabIndex = 25;
-            // 
             // chkStatus
-            // 
+            //
             this.chkStatus.AutoSize = true;
-            this.chkStatus.Checked = true;
-            this.chkStatus.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkStatus.Location = new System.Drawing.Point(45, 465);
-            this.chkStatus.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.chkStatus.Location = new System.Drawing.Point(550, 230);
             this.chkStatus.Name = "chkStatus";
-            this.chkStatus.Size = new System.Drawing.Size(70, 22);
-            this.chkStatus.TabIndex = 26;
+            this.chkStatus.Size = new System.Drawing.Size(48, 17);
+            this.chkStatus.TabIndex = 16;
             this.chkStatus.Text = "启用";
             this.chkStatus.UseVisualStyleBackColor = true;
             // 
-            // lblRemarks
-            // 
-            this.lblRemarks.AutoSize = true;
-            this.lblRemarks.Location = new System.Drawing.Point(45, 525);
-            this.lblRemarks.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblRemarks.Name = "lblRemarks";
-            this.lblRemarks.Size = new System.Drawing.Size(62, 18);
-            this.lblRemarks.TabIndex = 27;
-            this.lblRemarks.Text = "备注：";
-            // 
-            // txtRemarks
-            // 
-            this.txtRemarks.Location = new System.Drawing.Point(180, 520);
-            this.txtRemarks.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.txtRemarks.Multiline = true;
-            this.txtRemarks.Name = "txtRemarks";
-            this.txtRemarks.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtRemarks.Size = new System.Drawing.Size(643, 118);
-            this.txtRemarks.TabIndex = 28;
-            // 
             // btnSave
-            // 
-            this.btnSave.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
-            this.btnSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSave.ForeColor = System.Drawing.Color.White;
-            this.btnSave.Location = new System.Drawing.Point(525, 675);
-            this.btnSave.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            //
+            this.btnSave.Location = new System.Drawing.Point(600, 420);
             this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(135, 52);
-            this.btnSave.TabIndex = 29;
+            this.btnSave.Size = new System.Drawing.Size(80, 35);
+            this.btnSave.TabIndex = 17;
             this.btnSave.Text = "保存";
-            this.btnSave.UseVisualStyleBackColor = false;
+            this.btnSave.UseVisualStyleBackColor = true;
             this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
-            // 
+            //
             // btnCancel
-            // 
-            this.btnCancel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(149)))), ((int)(((byte)(165)))), ((int)(((byte)(166)))));
-            this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCancel.ForeColor = System.Drawing.Color.White;
-            this.btnCancel.Location = new System.Drawing.Point(690, 675);
-            this.btnCancel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            //
+            this.btnCancel.Location = new System.Drawing.Point(690, 420);
             this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(135, 52);
-            this.btnCancel.TabIndex = 30;
+            this.btnCancel.Size = new System.Drawing.Size(80, 35);
+            this.btnCancel.TabIndex = 18;
             this.btnCancel.Text = "取消";
-            this.btnCancel.UseVisualStyleBackColor = false;
+            this.btnCancel.UseVisualStyleBackColor = true;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
-            // BOMEditForm
+            // label1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(20, 23);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(53, 13);
+            this.label1.TabIndex = 19;
+            this.label1.Text = "BOM编码";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(20, 53);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(53, 13);
+            this.label2.TabIndex = 20;
+            this.label2.Text = "BOM名称";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(20, 83);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(53, 13);
+            this.label3.TabIndex = 21;
+            this.label3.Text = "产品编码";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(20, 113);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(53, 13);
+            this.label4.TabIndex = 22;
+            this.label4.Text = "产品名称";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(20, 143);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(53, 13);
+            this.label5.TabIndex = 23;
+            this.label5.Text = "物料编码";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(20, 173);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(53, 13);
+            this.label6.TabIndex = 24;
+            this.label6.Text = "物料名称";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(20, 203);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(29, 13);
+            this.label7.TabIndex = 25;
+            this.label7.Text = "数量";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(240, 203);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(29, 13);
+            this.label8.TabIndex = 26;
+            this.label8.Text = "单位";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(20, 233);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(65, 13);
+            this.label9.TabIndex = 27;
+            this.label9.Text = "损耗率(%)";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(20, 263);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(53, 13);
+            this.label10.TabIndex = 28;
+            this.label10.Text = "替代料";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(20, 293);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(29, 13);
+            this.label11.TabIndex = 29;
+            this.label11.Text = "备注";
+            // 
+            // label12
+            //
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(450, 33);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(53, 13);
+            this.label12.TabIndex = 30;
+            this.label12.Text = "BOM版本";
+            // 
+            // label13
+            //
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(450, 73);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(53, 13);
+            this.label13.TabIndex = 31;
+            this.label13.Text = "BOM类型";
+            // 
+            // label14
+            //
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(450, 113);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(53, 13);
+            this.label14.TabIndex = 32;
+            this.label14.Text = "生效日期";
+            //
+            // label15
+            //
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(450, 193);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(53, 13);
+            this.label15.TabIndex = 33;
+            this.label15.Text = "失效日期";
+            //
+            // BOMEditForm
+            //
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(876, 763);
+            this.ClientSize = new System.Drawing.Size(800, 500);
+            this.BackColor = System.Drawing.Color.White;
+            this.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.Controls.Add(this.label15);
+            this.Controls.Add(this.label14);
+            this.Controls.Add(this.label13);
+            this.Controls.Add(this.label12);
+            this.Controls.Add(this.label11);
+            this.Controls.Add(this.label10);
+            this.Controls.Add(this.label9);
+            this.Controls.Add(this.label8);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnSave);
-            this.Controls.Add(this.txtRemarks);
-            this.Controls.Add(this.lblRemarks);
             this.Controls.Add(this.chkStatus);
-            this.Controls.Add(this.dtpExpireDate);
             this.Controls.Add(this.chkHasExpireDate);
+            this.Controls.Add(this.dtpExpireDate);
             this.Controls.Add(this.dtpEffectiveDate);
-            this.Controls.Add(this.lblEffectiveDate);
-            this.Controls.Add(this.txtSubstituteMaterial);
-            this.Controls.Add(this.lblSubstituteMaterial);
-            this.Controls.Add(this.txtLossRate);
-            this.Controls.Add(this.lblLossRate);
-            this.Controls.Add(this.txtUnit);
-            this.Controls.Add(this.lblUnit);
-            this.Controls.Add(this.txtQuantity);
-            this.Controls.Add(this.lblQuantity);
-            this.Controls.Add(this.txtMaterialName);
-            this.Controls.Add(this.lblMaterialName);
-            this.Controls.Add(this.txtMaterialCode);
-            this.Controls.Add(this.lblMaterialCode);
-            this.Controls.Add(this.txtProductName);
-            this.Controls.Add(this.lblProductName);
-            this.Controls.Add(this.txtProductCode);
-            this.Controls.Add(this.lblProductCode);
             this.Controls.Add(this.cmbBOMType);
-            this.Controls.Add(this.lblBOMType);
             this.Controls.Add(this.txtBOMVersion);
-            this.Controls.Add(this.lblBOMVersion);
+            this.Controls.Add(this.txtRemarks);
+            this.Controls.Add(this.txtSubstituteMaterial);
+            this.Controls.Add(this.txtLossRate);
+            this.Controls.Add(this.txtUnit);
+            this.Controls.Add(this.txtQuantity);
+            this.Controls.Add(this.txtMaterialName);
+            this.Controls.Add(this.txtMaterialCode);
+            this.Controls.Add(this.txtProductName);
+            this.Controls.Add(this.txtProductCode);
+            this.Controls.Add(this.txtBomName);
             this.Controls.Add(this.txtBOMCode);
-            this.Controls.Add(this.lblBOMCode);
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "BOMEditForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "BOM编辑";
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -411,36 +405,39 @@ namespace MES.UI.Forms.Material
 
         #endregion
 
-        private System.Windows.Forms.Label lblBOMCode;
         private System.Windows.Forms.TextBox txtBOMCode;
-        private System.Windows.Forms.Label lblBOMVersion;
-        private System.Windows.Forms.TextBox txtBOMVersion;
-        private System.Windows.Forms.Label lblBOMType;
-        private System.Windows.Forms.ComboBox cmbBOMType;
-        private System.Windows.Forms.Label lblProductCode;
+        private System.Windows.Forms.TextBox txtBomName;
         private System.Windows.Forms.TextBox txtProductCode;
-        private System.Windows.Forms.Label lblProductName;
         private System.Windows.Forms.TextBox txtProductName;
-        private System.Windows.Forms.Label lblMaterialCode;
         private System.Windows.Forms.TextBox txtMaterialCode;
-        private System.Windows.Forms.Label lblMaterialName;
         private System.Windows.Forms.TextBox txtMaterialName;
-        private System.Windows.Forms.Label lblQuantity;
         private System.Windows.Forms.TextBox txtQuantity;
-        private System.Windows.Forms.Label lblUnit;
         private System.Windows.Forms.TextBox txtUnit;
-        private System.Windows.Forms.Label lblLossRate;
         private System.Windows.Forms.TextBox txtLossRate;
-        private System.Windows.Forms.Label lblSubstituteMaterial;
         private System.Windows.Forms.TextBox txtSubstituteMaterial;
-        private System.Windows.Forms.Label lblEffectiveDate;
-        private System.Windows.Forms.DateTimePicker dtpEffectiveDate;
-        private System.Windows.Forms.CheckBox chkHasExpireDate;
-        private System.Windows.Forms.DateTimePicker dtpExpireDate;
-        private System.Windows.Forms.CheckBox chkStatus;
-        private System.Windows.Forms.Label lblRemarks;
         private System.Windows.Forms.TextBox txtRemarks;
+        private System.Windows.Forms.TextBox txtBOMVersion;
+        private System.Windows.Forms.ComboBox cmbBOMType;
+        private System.Windows.Forms.DateTimePicker dtpEffectiveDate;
+        private System.Windows.Forms.DateTimePicker dtpExpireDate;
+        private System.Windows.Forms.CheckBox chkHasExpireDate;
+        private System.Windows.Forms.CheckBox chkStatus;
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.Button btnCancel;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label label15;
     }
 }

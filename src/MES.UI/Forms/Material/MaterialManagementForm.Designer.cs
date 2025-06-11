@@ -111,7 +111,7 @@ namespace MES.UI.Forms.Material
             this.labelTitle.Name = "labelTitle";
             this.labelTitle.Size = new System.Drawing.Size(132, 30);
             this.labelTitle.TabIndex = 0;
-            this.labelTitle.Text = "📦 物料管理";
+            this.labelTitle.Text = "物料管理";
 
             //
             // panelSearch
@@ -136,7 +136,7 @@ namespace MES.UI.Forms.Material
             this.labelSearch.Name = "labelSearch";
             this.labelSearch.Size = new System.Drawing.Size(79, 20);
             this.labelSearch.TabIndex = 0;
-            this.labelSearch.Text = "🔍 搜索：";
+            this.labelSearch.Text = "搜索：";
 
             //
             // textBoxSearch
@@ -175,7 +175,7 @@ namespace MES.UI.Forms.Material
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.Size = new System.Drawing.Size(100, 40);
             this.btnAdd.TabIndex = 0;
-            this.btnAdd.Text = "➕ 新增";
+            this.btnAdd.Text = "新增";
             this.btnAdd.UseVisualStyleBackColor = false;
             this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
 
@@ -191,7 +191,7 @@ namespace MES.UI.Forms.Material
             this.btnEdit.Name = "btnEdit";
             this.btnEdit.Size = new System.Drawing.Size(100, 40);
             this.btnEdit.TabIndex = 1;
-            this.btnEdit.Text = "✏️ 编辑";
+            this.btnEdit.Text = "编辑";
             this.btnEdit.UseVisualStyleBackColor = false;
             this.btnEdit.Click += new System.EventHandler(this.btnEdit_Click);
 
@@ -207,7 +207,7 @@ namespace MES.UI.Forms.Material
             this.btnDelete.Name = "btnDelete";
             this.btnDelete.Size = new System.Drawing.Size(100, 40);
             this.btnDelete.TabIndex = 2;
-            this.btnDelete.Text = "🗑️ 删除";
+            this.btnDelete.Text = "删除";
             this.btnDelete.UseVisualStyleBackColor = false;
             this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
 
@@ -223,7 +223,7 @@ namespace MES.UI.Forms.Material
             this.btnRefresh.Name = "btnRefresh";
             this.btnRefresh.Size = new System.Drawing.Size(100, 40);
             this.btnRefresh.TabIndex = 3;
-            this.btnRefresh.Text = "🔄 刷新";
+            this.btnRefresh.Text = "刷新";
             this.btnRefresh.UseVisualStyleBackColor = false;
             this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
 
@@ -294,7 +294,7 @@ namespace MES.UI.Forms.Material
             this.groupBoxBasicInfo.Size = new System.Drawing.Size(520, 250);
             this.groupBoxBasicInfo.TabIndex = 0;
             this.groupBoxBasicInfo.TabStop = false;
-            this.groupBoxBasicInfo.Text = "📋 基本信息";
+            this.groupBoxBasicInfo.Text = "基本信息";
 
             //
             // labelMaterialCode
@@ -405,7 +405,7 @@ namespace MES.UI.Forms.Material
             this.groupBoxAdvancedInfo.Size = new System.Drawing.Size(520, 280);
             this.groupBoxAdvancedInfo.TabIndex = 1;
             this.groupBoxAdvancedInfo.TabStop = false;
-            this.groupBoxAdvancedInfo.Text = "📊 详细信息";
+            this.groupBoxAdvancedInfo.Text = "详细信息";
 
             //
             // labelSpecification

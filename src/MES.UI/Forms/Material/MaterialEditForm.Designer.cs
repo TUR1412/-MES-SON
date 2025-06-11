@@ -69,14 +69,14 @@
             this.SuspendLayout();
             // 
             // lbMaterialCode
-            // 
+            //
             this.lbMaterialCode.AutoSize = true;
             this.lbMaterialCode.Font = new System.Drawing.Font("宋体", 12F);
-            this.lbMaterialCode.Location = new System.Drawing.Point(-26, 32);
+            this.lbMaterialCode.Location = new System.Drawing.Point(20, 32);
             this.lbMaterialCode.Name = "lbMaterialCode";
-            this.lbMaterialCode.Size = new System.Drawing.Size(154, 24);
+            this.lbMaterialCode.Size = new System.Drawing.Size(96, 24);
             this.lbMaterialCode.TabIndex = 0;
-            this.lbMaterialCode.Text = "    物料编码";
+            this.lbMaterialCode.Text = "物料编码";
             // 
             // txtMaterialCode
             // 
@@ -87,14 +87,14 @@
             this.txtMaterialCode.TabIndex = 1;
             // 
             // lbMaterialName
-            // 
+            //
             this.lbMaterialName.AutoSize = true;
             this.lbMaterialName.Font = new System.Drawing.Font("宋体", 12F);
-            this.lbMaterialName.Location = new System.Drawing.Point(-26, 85);
+            this.lbMaterialName.Location = new System.Drawing.Point(20, 85);
             this.lbMaterialName.Name = "lbMaterialName";
-            this.lbMaterialName.Size = new System.Drawing.Size(154, 24);
+            this.lbMaterialName.Size = new System.Drawing.Size(96, 24);
             this.lbMaterialName.TabIndex = 0;
-            this.lbMaterialName.Text = "    物料名称";
+            this.lbMaterialName.Text = "物料名称";
             // 
             // txtMaterialName
             // 
@@ -105,14 +105,14 @@
             this.txtMaterialName.TabIndex = 1;
             // 
             // lbMaterialType
-            // 
+            //
             this.lbMaterialType.AutoSize = true;
             this.lbMaterialType.Font = new System.Drawing.Font("宋体", 12F);
-            this.lbMaterialType.Location = new System.Drawing.Point(-26, 142);
+            this.lbMaterialType.Location = new System.Drawing.Point(20, 142);
             this.lbMaterialType.Name = "lbMaterialType";
-            this.lbMaterialType.Size = new System.Drawing.Size(154, 24);
+            this.lbMaterialType.Size = new System.Drawing.Size(96, 24);
             this.lbMaterialType.TabIndex = 0;
-            this.lbMaterialType.Text = "    物料类型";
+            this.lbMaterialType.Text = "物料类型";
             // 
             // txtMaterialType
             // 
@@ -136,68 +136,68 @@
             this.txtMaterialType.TabIndex = 2;
             // 
             // lbSpecification
-            // 
+            //
             this.lbSpecification.AutoSize = true;
             this.lbSpecification.Font = new System.Drawing.Font("宋体", 12F);
-            this.lbSpecification.Location = new System.Drawing.Point(-26, 195);
+            this.lbSpecification.Location = new System.Drawing.Point(20, 195);
             this.lbSpecification.Name = "lbSpecification";
-            this.lbSpecification.Size = new System.Drawing.Size(154, 24);
+            this.lbSpecification.Size = new System.Drawing.Size(96, 24);
             this.lbSpecification.TabIndex = 0;
-            this.lbSpecification.Text = "    规格型号";
-            // 
+            this.lbSpecification.Text = "规格型号";
+            //
             // txtSpecification
-            // 
+            //
             this.txtSpecification.Font = new System.Drawing.Font("宋体", 11F);
             this.txtSpecification.Location = new System.Drawing.Point(147, 191);
             this.txtSpecification.Name = "txtSpecification";
             this.txtSpecification.Size = new System.Drawing.Size(300, 33);
             this.txtSpecification.TabIndex = 1;
-            // 
+            //
             // lbUnit
-            // 
+            //
             this.lbUnit.AutoSize = true;
             this.lbUnit.Font = new System.Drawing.Font("宋体", 12F);
-            this.lbUnit.Location = new System.Drawing.Point(-26, 249);
+            this.lbUnit.Location = new System.Drawing.Point(20, 249);
             this.lbUnit.Name = "lbUnit";
-            this.lbUnit.Size = new System.Drawing.Size(154, 24);
+            this.lbUnit.Size = new System.Drawing.Size(96, 24);
             this.lbUnit.TabIndex = 0;
-            this.lbUnit.Text = "    计量单位";
-            // 
+            this.lbUnit.Text = "计量单位";
+            //
             // txtUnit
-            // 
+            //
             this.txtUnit.Font = new System.Drawing.Font("宋体", 11F);
             this.txtUnit.Location = new System.Drawing.Point(147, 245);
             this.txtUnit.Name = "txtUnit";
             this.txtUnit.Size = new System.Drawing.Size(300, 33);
             this.txtUnit.TabIndex = 1;
-            // 
+            //
             // lbCategory
-            // 
+            //
             this.lbCategory.AutoSize = true;
             this.lbCategory.Font = new System.Drawing.Font("宋体", 12F);
-            this.lbCategory.Location = new System.Drawing.Point(-26, 302);
+            this.lbCategory.Location = new System.Drawing.Point(20, 302);
             this.lbCategory.Name = "lbCategory";
-            this.lbCategory.Size = new System.Drawing.Size(154, 24);
+            this.lbCategory.Size = new System.Drawing.Size(96, 24);
             this.lbCategory.TabIndex = 0;
-            this.lbCategory.Text = "    物料分类";
-            // 
+            this.lbCategory.Text = "物料分类";
+            //
             // txtCategory
-            // 
+            //
             this.txtCategory.Font = new System.Drawing.Font("宋体", 11F);
             this.txtCategory.Location = new System.Drawing.Point(147, 298);
             this.txtCategory.Name = "txtCategory";
             this.txtCategory.Size = new System.Drawing.Size(300, 33);
             this.txtCategory.TabIndex = 1;
-            // 
+            //
             // label7
-            // 
+            //
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("宋体", 12F);
-            this.label7.Location = new System.Drawing.Point(-26, 356);
+            this.label7.Location = new System.Drawing.Point(20, 356);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(154, 24);
+            this.label7.Size = new System.Drawing.Size(72, 24);
             this.label7.TabIndex = 0;
-            this.label7.Text = "      供应商";
+            this.label7.Text = "供应商";
             // 
             // txtSupplier
             // 
@@ -208,145 +208,145 @@
             this.txtSupplier.TabIndex = 1;
             // 
             // lbSupplier
-            // 
+            //
             this.lbSupplier.AutoSize = true;
             this.lbSupplier.Font = new System.Drawing.Font("宋体", 12F);
-            this.lbSupplier.Location = new System.Drawing.Point(486, 32);
+            this.lbSupplier.Location = new System.Drawing.Point(520, 32);
             this.lbSupplier.Name = "lbSupplier";
-            this.lbSupplier.Size = new System.Drawing.Size(154, 24);
+            this.lbSupplier.Size = new System.Drawing.Size(96, 24);
             this.lbSupplier.TabIndex = 0;
-            this.lbSupplier.Text = "    标准成本";
-            // 
+            this.lbSupplier.Text = "标准成本";
+            //
             // txtStandardCost
-            // 
+            //
             this.txtStandardCost.Font = new System.Drawing.Font("宋体", 11F);
-            this.txtStandardCost.Location = new System.Drawing.Point(659, 28);
+            this.txtStandardCost.Location = new System.Drawing.Point(647, 28);
             this.txtStandardCost.Name = "txtStandardCost";
             this.txtStandardCost.Size = new System.Drawing.Size(300, 33);
             this.txtStandardCost.TabIndex = 1;
-            // 
+            //
             // label9
-            // 
+            //
             this.label9.AutoSize = true;
             this.label9.Font = new System.Drawing.Font("宋体", 12F);
-            this.label9.Location = new System.Drawing.Point(486, 85);
+            this.label9.Location = new System.Drawing.Point(520, 85);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(154, 24);
+            this.label9.Size = new System.Drawing.Size(96, 24);
             this.label9.TabIndex = 0;
-            this.label9.Text = "    安全库存";
-            // 
+            this.label9.Text = "安全库存";
+            //
             // txtSafetyStock
-            // 
+            //
             this.txtSafetyStock.Font = new System.Drawing.Font("宋体", 11F);
-            this.txtSafetyStock.Location = new System.Drawing.Point(659, 81);
+            this.txtSafetyStock.Location = new System.Drawing.Point(647, 81);
             this.txtSafetyStock.Name = "txtSafetyStock";
             this.txtSafetyStock.Size = new System.Drawing.Size(300, 33);
             this.txtSafetyStock.TabIndex = 1;
-            // 
+            //
             // lbSafetyStock
-            // 
+            //
             this.lbSafetyStock.AutoSize = true;
             this.lbSafetyStock.Font = new System.Drawing.Font("宋体", 12F);
-            this.lbSafetyStock.Location = new System.Drawing.Point(486, 140);
+            this.lbSafetyStock.Location = new System.Drawing.Point(520, 140);
             this.lbSafetyStock.Name = "lbSafetyStock";
-            this.lbSafetyStock.Size = new System.Drawing.Size(154, 24);
+            this.lbSafetyStock.Size = new System.Drawing.Size(96, 24);
             this.lbSafetyStock.TabIndex = 0;
-            this.lbSafetyStock.Text = "    最小库存";
+            this.lbSafetyStock.Text = "最小库存";
             // 
             // txtMinStock
-            // 
+            //
             this.txtMinStock.Font = new System.Drawing.Font("宋体", 11F);
-            this.txtMinStock.Location = new System.Drawing.Point(659, 136);
+            this.txtMinStock.Location = new System.Drawing.Point(647, 136);
             this.txtMinStock.Name = "txtMinStock";
             this.txtMinStock.Size = new System.Drawing.Size(300, 33);
             this.txtMinStock.TabIndex = 1;
-            // 
+            //
             // lbMaxStock
-            // 
+            //
             this.lbMaxStock.AutoSize = true;
             this.lbMaxStock.Font = new System.Drawing.Font("宋体", 12F);
-            this.lbMaxStock.Location = new System.Drawing.Point(486, 195);
+            this.lbMaxStock.Location = new System.Drawing.Point(520, 195);
             this.lbMaxStock.Name = "lbMaxStock";
-            this.lbMaxStock.Size = new System.Drawing.Size(154, 24);
+            this.lbMaxStock.Size = new System.Drawing.Size(96, 24);
             this.lbMaxStock.TabIndex = 0;
-            this.lbMaxStock.Text = "    最大库存";
-            // 
+            this.lbMaxStock.Text = "最大库存";
+            //
             // txtMaxStock
-            // 
+            //
             this.txtMaxStock.Font = new System.Drawing.Font("宋体", 11F);
-            this.txtMaxStock.Location = new System.Drawing.Point(659, 191);
+            this.txtMaxStock.Location = new System.Drawing.Point(647, 191);
             this.txtMaxStock.Name = "txtMaxStock";
             this.txtMaxStock.Size = new System.Drawing.Size(300, 33);
             this.txtMaxStock.TabIndex = 1;
-            // 
+            //
             // lbStockQuantity
-            // 
+            //
             this.lbStockQuantity.AutoSize = true;
             this.lbStockQuantity.Font = new System.Drawing.Font("宋体", 12F);
-            this.lbStockQuantity.Location = new System.Drawing.Point(486, 249);
+            this.lbStockQuantity.Location = new System.Drawing.Point(480, 249);
             this.lbStockQuantity.Name = "lbStockQuantity";
-            this.lbStockQuantity.Size = new System.Drawing.Size(154, 24);
+            this.lbStockQuantity.Size = new System.Drawing.Size(144, 24);
             this.lbStockQuantity.TabIndex = 0;
             this.lbStockQuantity.Text = "当前库存数量";
-            // 
+            //
             // txtStockQuantity
-            // 
+            //
             this.txtStockQuantity.Font = new System.Drawing.Font("宋体", 11F);
-            this.txtStockQuantity.Location = new System.Drawing.Point(659, 245);
+            this.txtStockQuantity.Location = new System.Drawing.Point(647, 245);
             this.txtStockQuantity.Name = "txtStockQuantity";
             this.txtStockQuantity.Size = new System.Drawing.Size(300, 33);
             this.txtStockQuantity.TabIndex = 1;
             // 
             // lbLeadTime
-            // 
+            //
             this.lbLeadTime.AutoSize = true;
             this.lbLeadTime.Font = new System.Drawing.Font("宋体", 12F);
-            this.lbLeadTime.Location = new System.Drawing.Point(456, 302);
+            this.lbLeadTime.Location = new System.Drawing.Point(440, 302);
             this.lbLeadTime.Name = "lbLeadTime";
-            this.lbLeadTime.Size = new System.Drawing.Size(202, 24);
+            this.lbLeadTime.Size = new System.Drawing.Size(192, 24);
             this.lbLeadTime.TabIndex = 0;
             this.lbLeadTime.Text = "采购提前期（天）";
-            // 
+            //
             // txtLeadTime
-            // 
+            //
             this.txtLeadTime.Font = new System.Drawing.Font("宋体", 11F);
-            this.txtLeadTime.Location = new System.Drawing.Point(659, 298);
+            this.txtLeadTime.Location = new System.Drawing.Point(647, 298);
             this.txtLeadTime.Name = "txtLeadTime";
             this.txtLeadTime.Size = new System.Drawing.Size(300, 33);
             this.txtLeadTime.TabIndex = 1;
-            // 
+            //
             // lbStatus
-            // 
+            //
             this.lbStatus.AutoSize = true;
             this.lbStatus.Font = new System.Drawing.Font("宋体", 12F);
-            this.lbStatus.Location = new System.Drawing.Point(456, 356);
+            this.lbStatus.Location = new System.Drawing.Point(520, 356);
             this.lbStatus.Name = "lbStatus";
-            this.lbStatus.Size = new System.Drawing.Size(190, 24);
+            this.lbStatus.Size = new System.Drawing.Size(48, 24);
             this.lbStatus.TabIndex = 0;
-            this.lbStatus.Text = "           状态";
-            // 
+            this.lbStatus.Text = "状态";
+            //
             // txtStatus
-            // 
+            //
             this.txtStatus.Font = new System.Drawing.Font("宋体", 11F);
-            this.txtStatus.Location = new System.Drawing.Point(659, 352);
+            this.txtStatus.Location = new System.Drawing.Point(647, 352);
             this.txtStatus.Name = "txtStatus";
             this.txtStatus.Size = new System.Drawing.Size(300, 33);
             this.txtStatus.TabIndex = 1;
-            // 
+            //
             // lbPrice
-            // 
+            //
             this.lbPrice.AutoSize = true;
             this.lbPrice.Font = new System.Drawing.Font("宋体", 12F);
-            this.lbPrice.Location = new System.Drawing.Point(456, 407);
+            this.lbPrice.Location = new System.Drawing.Point(520, 407);
             this.lbPrice.Name = "lbPrice";
-            this.lbPrice.Size = new System.Drawing.Size(190, 24);
+            this.lbPrice.Size = new System.Drawing.Size(96, 24);
             this.lbPrice.TabIndex = 0;
-            this.lbPrice.Text = "       参考价格";
-            // 
+            this.lbPrice.Text = "参考价格";
+            //
             // txtPrice
-            // 
+            //
             this.txtPrice.Font = new System.Drawing.Font("宋体", 11F);
-            this.txtPrice.Location = new System.Drawing.Point(659, 403);
+            this.txtPrice.Location = new System.Drawing.Point(647, 403);
             this.txtPrice.Name = "txtPrice";
             this.txtPrice.Size = new System.Drawing.Size(300, 33);
             this.txtPrice.TabIndex = 1;
@@ -442,7 +442,7 @@
             this.lblTitle.Name = "lblTitle";
             this.lblTitle.Size = new System.Drawing.Size(288, 37);
             this.lblTitle.TabIndex = 0;
-            this.lblTitle.Text = "📦 物料信息添加&编辑";
+            this.lblTitle.Text = "物料信息添加&编辑";
             // 
             // MaterialEditForm
             // 

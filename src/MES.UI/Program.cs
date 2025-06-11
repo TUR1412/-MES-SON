@@ -43,8 +43,8 @@ namespace MES.UI
                 Application.ThreadException += Application_ThreadException;
                 AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
-                // 启动主窗体
-                Application.Run(new MainForm());
+                // 启动英雄联盟风格主窗体
+                Application.Run(new MainFormLeague());
 
                 LogManager.Info("MES系统正常退出");
             }
