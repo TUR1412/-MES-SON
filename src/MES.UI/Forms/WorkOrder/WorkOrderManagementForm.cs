@@ -5,6 +5,7 @@ using System.Linq;
 using MES.Common.Logging;
 using MES.BLL.WorkOrder;
 using MES.Models.WorkOrder;
+using System.Collections.Generic;
 
 namespace MES.UI.Forms.WorkOrder
 {
@@ -33,6 +34,7 @@ namespace MES.UI.Forms.WorkOrder
             InitializeComponent();
             _workOrderBLL = new WorkOrderBLL();
             InitializeEvents();
+            InitializeSearchControls();
             LoadWorkOrderData();
             LogManager.Info("工单管理窗体初始化完成");
         }
@@ -59,6 +61,30 @@ namespace MES.UI.Forms.WorkOrder
             
             // 窗体事件
             this.Load += WorkOrderManagementForm_Load;
+        }
+
+        private void InitializeSearchControls()
+        {
+            // 设置日期控件格式
+            dtpStartDate.Format = DateTimePickerFormat.Short;
+            dtpEndDate.Format = DateTimePickerFormat.Short;
+
+            // 设置默认日期为今天
+            dtpStartDate.Value = DateTime.Today;
+            dtpEndDate.Value = DateTime.Today;
+
+            // 初始化状态下拉框
+            cmbStatus.Items.Clear();
+            cmbStatus.Items.Add("全部状态");
+            cmbStatus.Items.Add("待开始");
+            cmbStatus.Items.Add("进行中");
+            cmbStatus.Items.Add("已完成");
+            cmbStatus.Items.Add("已关闭");
+            cmbStatus.SelectedIndex = 0;
+
+            // 默认不选中日期
+            dtpStartDate.Checked = false;
+            dtpEndDate.Checked = false;
         }
 
         /// <summary>
@@ -92,7 +118,7 @@ namespace MES.UI.Forms.WorkOrder
         /// <summary>
         /// 将工单列表转换为DataTable
         /// </summary>
-        private System.Data.DataTable ConvertWorkOrdersToDataTable(System.Collections.Generic.List<WorkOrderInfo> workOrders)
+        private System.Data.DataTable ConvertWorkOrdersToDataTable(List<WorkOrderInfo> workOrders)
         {
             var table = new System.Data.DataTable();
             table.Columns.Add("工单号", typeof(string));
@@ -101,19 +127,23 @@ namespace MES.UI.Forms.WorkOrder
             table.Columns.Add("已完成数量", typeof(decimal));
             table.Columns.Add("状态", typeof(string));
             table.Columns.Add("创建时间", typeof(DateTime));
+            table.Columns.Add("计划开始时间", typeof(DateTime));
             table.Columns.Add("计划完成时间", typeof(DateTime));
+            table.Columns.Add("描述", typeof(string));
 
             foreach (var workOrder in workOrders)
             {
                 string statusText = GetStatusText(workOrder.WorkOrderStatus);
                 table.Rows.Add(
                     workOrder.WorkOrderNum,
-                    GetProductName(workOrder.ProductId), // 需要根据ProductId获取产品名称
+                    GetProductName(workOrder.ProductId),
                     workOrder.PlannedQuantity,
                     workOrder.OutputQuantity,
                     statusText,
                     workOrder.CreateTime,
-                    workOrder.PlannedDueDate ?? DateTime.Now.AddDays(7)
+                    workOrder.PlannedStartTime ?? DateTime.MinValue,
+                    workOrder.PlannedDueDate ?? DateTime.MinValue,
+                    workOrder.Description ?? string.Empty
                 );
             }
 
@@ -172,7 +202,14 @@ namespace MES.UI.Forms.WorkOrder
                 dgvWorkOrders.Columns["已完成数量"].Width = 100;
                 dgvWorkOrders.Columns["状态"].Width = 80;
                 dgvWorkOrders.Columns["创建时间"].Width = 120;
+                dgvWorkOrders.Columns["计划开始时间"].Width = 120;
                 dgvWorkOrders.Columns["计划完成时间"].Width = 120;
+                dgvWorkOrders.Columns["描述"].Width = 200;
+
+                // 设置日期列的显示格式
+                dgvWorkOrders.Columns["创建时间"].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm";
+                dgvWorkOrders.Columns["计划开始时间"].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm";
+                dgvWorkOrders.Columns["计划完成时间"].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm";
             }
         }
 
@@ -354,17 +391,29 @@ namespace MES.UI.Forms.WorkOrder
         {
             try
             {
+                // 获取搜索条件
                 string keyword = txtSearch.Text.Trim();
+                string status = cmbStatus.SelectedItem != null ? cmbStatus.SelectedItem.ToString() : null;
+                DateTime? startDate = dtpStartDate.Checked ? dtpStartDate.Value : (DateTime?)null;
+                DateTime? endDate = dtpEndDate.Checked ? dtpEndDate.Value : (DateTime?)null;
 
-                if (string.IsNullOrEmpty(keyword))
+                // 验证日期范围
+                if (startDate.HasValue && endDate.HasValue && startDate > endDate)
                 {
-                    // 如果搜索关键词为空，重新加载所有数据
-                    LoadWorkOrderData();
+                    MessageBox.Show("开始日期不能晚于结束日期", "提示",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
-                // 使用BLL进行真实搜索
-                var searchResults = _workOrderBLL.SearchWorkOrders(keyword);
+                // 调用BLL进行真实搜索
+                var searchResults = _workOrderBLL.SearchWorkOrders(
+                    keyword: string.IsNullOrEmpty(keyword) ? null : keyword,
+                    status: status == "全部状态" ? null : status,
+                    startDate: startDate,
+                    endDate: endDate
+                );
+
+                // 转换为DataTable并绑定到DataGridView
                 var dataTable = ConvertWorkOrdersToDataTable(searchResults);
                 dgvWorkOrders.DataSource = dataTable;
 
@@ -374,7 +423,11 @@ namespace MES.UI.Forms.WorkOrder
                 // 更新统计信息
                 lblTotal.Text = string.Format("共 {0} 条工单记录", searchResults.Count);
 
-                LogManager.Info(string.Format("搜索工单完成，关键词：{0}，结果数量：{1}", keyword, searchResults.Count));
+                LogManager.Info(string.Format("搜索工单完成，关键词：{0}，状态：{1}，日期范围：{2} 到 {3}，结果数量：{4}",
+                    keyword, status,
+                    startDate != null ? startDate.Value.ToString("yyyy-MM-dd") : "不限",
+                    endDate != null ? endDate.Value.ToString("yyyy-MM-dd") : "不限",
+                    searchResults.Count));
             }
             catch (Exception ex)
             {
@@ -468,5 +521,10 @@ namespace MES.UI.Forms.WorkOrder
         }
 
         #endregion
+
+        private void WorkOrderManagementForm_Load_1(object sender, EventArgs e)
+        {
+
+        }
     }
 }

@@ -1,3 +1,5 @@
+// --- START OF FILE ProcessRouteBLL.cs ---
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -5,6 +7,7 @@ using MES.Models.Material;
 using MES.DAL.Material;
 using MES.Common.Logging;
 using MES.Common.Exceptions;
+using MES.Models.Production;
 
 namespace MES.BLL.Material
 {
@@ -105,7 +108,7 @@ namespace MES.BLL.Material
                         var step = processRoute.Steps[i];
                         step.StepNumber = i + 1;
                         step.CreateTime = DateTime.Now;
-                        
+
                         var stepValidation = ValidateProcessStep(step);
                         if (!stepValidation.IsValid)
                         {
@@ -174,7 +177,7 @@ namespace MES.BLL.Material
                         var step = processRoute.Steps[i];
                         step.StepNumber = i + 1;
                         step.ProcessRouteId = processRoute.Id;
-                        
+
                         var stepValidation = ValidateProcessStep(step);
                         if (!stepValidation.IsValid)
                         {
@@ -364,6 +367,21 @@ namespace MES.BLL.Material
             }
         }
 
+
+        public List<ProductionInfo> GetAllProducts()
+        {
+            try
+            {
+                return _processRouteDAL.GetAllProducts();
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("获取产品列表失败", ex);
+                throw new MESException("获取产品列表时发生异常", ex);
+            }
+        }
+
+
         /// <summary>
         /// 根据状态获取工艺路线
         /// </summary>
@@ -393,22 +411,8 @@ namespace MES.BLL.Material
         /// <returns>工艺步骤列表</returns>
         public List<ProcessStep> GetProcessSteps(int routeId)
         {
-            try
-            {
-                if (routeId <= 0)
-                {
-                    throw new ArgumentException("工艺路线ID必须大于0", "routeId");
-                }
-
-                var steps = _processRouteDAL.GetProcessStepsByRouteId(routeId);
-                LogManager.Info(string.Format("获取工艺步骤成功：路线ID={0}, 步骤数量={1}", routeId, steps != null ? steps.Count : 0));
-                return steps ?? new List<ProcessStep>();
-            }
-            catch (Exception ex)
-            {
-                LogManager.Error(string.Format("获取工艺步骤失败：路线ID={0}", routeId), ex);
-                throw new MESException("获取工艺步骤时发生异常", ex);
-            }
+            if (routeId <= 0) throw new ArgumentException("工艺路线ID必须大于0", "routeId");
+            return _processRouteDAL.GetProcessStepsByRouteId(routeId);
         }
 
         /// <summary>
@@ -419,42 +423,16 @@ namespace MES.BLL.Material
         /// <returns>是否成功</returns>
         public bool AddProcessStep(int routeId, ProcessStep step)
         {
-            try
-            {
-                if (routeId <= 0)
-                {
-                    throw new ArgumentException("工艺路线ID必须大于0", "routeId");
-                }
+            if (routeId <= 0) throw new ArgumentException("工艺路线ID必须大于0", "routeId");
+            var validation = ValidateProcessStep(step);
+            if (!validation.IsValid) throw new MESException(validation.GetErrorsString());
 
-                // 验证工艺路线是否存在
-                var route = GetProcessRouteById(routeId);
-                if (route == null)
-                {
-                    throw new MESException(string.Format("工艺路线不存在：ID={0}", routeId));
-                }
+            // 业务逻辑：自动设置新步骤的序号为当前数量+1
+            step.StepNumber = GetProcessSteps(routeId).Count + 1;
+            step.ProcessRouteId = routeId;
+            step.CreateTime = DateTime.Now;
 
-                // 验证工艺步骤
-                var validation = ValidateProcessStep(step);
-                if (!validation.IsValid)
-                {
-                    throw new MESException(validation.GetErrorsString());
-                }
-
-                step.ProcessRouteId = routeId;
-                step.CreateTime = DateTime.Now;
-
-                var result = _processRouteDAL.AddProcessStep(step);
-                if (result)
-                {
-                    LogManager.Info(string.Format("添加工艺步骤成功：路线ID={0}, 步骤名称={1}", routeId, step.StepName));
-                }
-                return result;
-            }
-            catch (Exception ex)
-            {
-                LogManager.Error(string.Format("添加工艺步骤失败：路线ID={0}", routeId), ex);
-                throw new MESException("添加工艺步骤时发生异常", ex);
-            }
+            return _processRouteDAL.AddProcessStep(step);
         }
 
         /// <summary>
@@ -464,51 +442,42 @@ namespace MES.BLL.Material
         /// <returns>是否成功</returns>
         public bool UpdateProcessStep(ProcessStep step)
         {
-            try
-            {
-                // 验证工艺步骤
-                var validation = ValidateProcessStep(step);
-                if (!validation.IsValid)
-                {
-                    throw new MESException(validation.GetErrorsString());
-                }
-
-                step.UpdateTime = DateTime.Now;
-
-                // TODO: 实现更新工艺步骤的DAL方法
-                LogManager.Info(string.Format("更新工艺步骤：ID={0}, 名称={1}", step.Id, step.StepName));
-                return true; // 临时返回true
-            }
-            catch (Exception ex)
-            {
-                LogManager.Error(string.Format("更新工艺步骤失败：ID={0}", step != null ? step.Id : 0), ex);
-                throw new MESException("更新工艺步骤时发生异常", ex);
-            }
+            var validation = ValidateProcessStep(step);
+            if (!validation.IsValid) throw new MESException(validation.GetErrorsString());
+            step.UpdateTime = DateTime.Now;
+            return _processRouteDAL.UpdateProcessStep(step);
         }
 
         /// <summary>
-        /// 删除工艺步骤
+        /// 删除工艺步骤(包含核心业务逻辑：重新排序)
         /// </summary>
         /// <param name="stepId">工艺步骤ID</param>
         /// <returns>是否成功</returns>
         public bool DeleteProcessStep(int stepId)
         {
-            try
-            {
-                if (stepId <= 0)
-                {
-                    throw new ArgumentException("工艺步骤ID必须大于0", "stepId");
-                }
+            if (stepId <= 0) throw new ArgumentException("工艺步骤ID必须大于0", "stepId");
 
-                // TODO: 实现删除工艺步骤的DAL方法
-                LogManager.Info(string.Format("删除工艺步骤：ID={0}", stepId));
-                return true; // 临时返回true
-            }
-            catch (Exception ex)
+            // 1. 获取要删除的步骤，以便知道其所属的路线
+            var stepToDelete = _processRouteDAL.GetProcessStepById(stepId);
+            if (stepToDelete == null) throw new MESException("要删除的工艺步骤不存在。");
+
+            // 2. 逻辑删除该步骤
+            if (!_processRouteDAL.DeleteProcessStep(stepId)) return false;
+
+            // 3. 业务逻辑核心：获取剩余步骤并重新排序
+            var remainingSteps = _processRouteDAL.GetProcessStepsByRouteId(stepToDelete.ProcessRouteId);
+            var stepsToUpdate = new List<ProcessStep>();
+            for (int i = 0; i < remainingSteps.Count; i++)
             {
-                LogManager.Error(string.Format("删除工艺步骤失败：ID={0}", stepId), ex);
-                throw new MESException("删除工艺步骤时发生异常", ex);
+                if (remainingSteps[i].StepNumber != i + 1)
+                {
+                    remainingSteps[i].StepNumber = i + 1;
+                    stepsToUpdate.Add(remainingSteps[i]);
+                }
             }
+
+            // 4. 批量更新需要调整序号的步骤
+            return stepsToUpdate.Any() ? _processRouteDAL.UpdateStepNumbers(stepsToUpdate) : true;
         }
 
         /// <summary>
@@ -520,27 +489,30 @@ namespace MES.BLL.Material
         /// <returns>是否成功</returns>
         public bool MoveProcessStep(int routeId, int stepId, bool moveUp)
         {
-            try
-            {
-                if (routeId <= 0)
-                {
-                    throw new ArgumentException("工艺路线ID必须大于0", "routeId");
-                }
+            var steps = _processRouteDAL.GetProcessStepsByRouteId(routeId);
+            var stepToMove = steps.FirstOrDefault(s => s.Id == stepId);
+            if (stepToMove == null) throw new MESException("未找到要移动的步骤。");
 
-                if (stepId <= 0)
-                {
-                    throw new ArgumentException("工艺步骤ID必须大于0", "stepId");
-                }
+            int oldIndex = steps.FindIndex(s => s.Id == stepId);
+            int newIndex = moveUp ? oldIndex - 1 : oldIndex + 1;
 
-                // TODO: 实现移动工艺步骤的逻辑
-                LogManager.Info(string.Format("移动工艺步骤：路线ID={0}, 步骤ID={1}, 上移={2}", routeId, stepId, moveUp));
-                return true; // 临时返回true
-            }
-            catch (Exception ex)
-            {
-                LogManager.Error(string.Format("移动工艺步骤失败：路线ID={0}, 步骤ID={1}", routeId, stepId), ex);
-                throw new MESException("移动工艺步骤时发生异常", ex);
-            }
+            if (newIndex < 0 || newIndex >= steps.Count) return true; // 已在顶部或底部
+
+            var stepToSwap = steps[newIndex];
+
+            // ---核心修改：使用 C# 5.0 兼容的临时变量法交换序号 ---
+    // 1. 定义一个临时变量存储要移动步骤的序号
+            int tempStepNumber = stepToMove.StepNumber;
+
+            // 2. 将被交换步骤的序号赋值给要移动的步骤
+            stepToMove.StepNumber = stepToSwap.StepNumber;
+
+            // 3. 将临时变量中保存的原始序号赋值给被交换的步骤
+            stepToSwap.StepNumber = tempStepNumber;
+            // --- 修改结束 ---
+
+            // 调用DAL一次性更新两个步骤
+            return _processRouteDAL.UpdateStepNumbers(new List<ProcessStep> { stepToMove, stepToSwap });
         }
 
         #endregion
@@ -555,20 +527,7 @@ namespace MES.BLL.Material
         /// <returns>是否唯一</returns>
         public bool IsRouteCodeUnique(string routeCode, int excludeId = 0)
         {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(routeCode))
-                {
-                    return false;
-                }
-
-                return _processRouteDAL.IsRouteCodeUnique(routeCode, excludeId);
-            }
-            catch (Exception ex)
-            {
-                LogManager.Error(string.Format("验证工艺路线编码唯一性失败：编码={0}", routeCode), ex);
-                return false;
-            }
+            return _processRouteDAL.IsRouteCodeUnique(routeCode, excludeId);
         }
 
         /// <summary>
@@ -578,20 +537,7 @@ namespace MES.BLL.Material
         /// <returns>是否可以删除</returns>
         public bool CanDeleteProcessRoute(int id)
         {
-            try
-            {
-                if (id <= 0)
-                {
-                    return false;
-                }
-
-                return _processRouteDAL.CanDeleteProcessRoute(id);
-            }
-            catch (Exception ex)
-            {
-                LogManager.Error(string.Format("验证工艺路线是否可删除失败：ID={0}", id), ex);
-                return false;
-            }
+            return _processRouteDAL.CanDeleteProcessRoute(id);
         }
 
         /// <summary>
@@ -599,36 +545,29 @@ namespace MES.BLL.Material
         /// </summary>
         /// <param name="processRoute">工艺路线</param>
         /// <returns>验证结果</returns>
-        public ValidationResult ValidateProcessRoute(ProcessRoute processRoute)
+        public ValidationResult ValidateProcessRoute(ProcessRoute route)
         {
             var result = new ValidationResult();
+            if (route == null) { result.AddError("工艺路线对象不能为空。"); return result; }
+            if (string.IsNullOrWhiteSpace(route.RouteCode)) result.AddError("工艺路线编码不能为空。");
+            if (string.IsNullOrWhiteSpace(route.RouteName)) result.AddError("工艺路线名称不能为空。");
+            if (route.ProductId <= 0) result.AddError("必须关联一个产品。");
 
-            if (processRoute == null)
+            // 在编辑工艺路线时，步骤可以为空，因为步骤是单独管理的
+            // if (route.Steps == null || route.Steps.Count == 0) result.AddError("工艺路线必须至少包含一个步骤。");
+
+            // 验证步骤
+            if (route.Steps != null)
             {
-                result.AddError("工艺路线不能为空");
-                return result;
+                foreach (var step in route.Steps)
+                {
+                    var stepValidation = ValidateProcessStep(step);
+                    if (!stepValidation.IsValid)
+                    {
+                        result.AddErrors(stepValidation.Errors);
+                    }
+                }
             }
-
-            if (string.IsNullOrWhiteSpace(processRoute.RouteCode))
-            {
-                result.AddError("工艺路线编码不能为空");
-            }
-
-            if (string.IsNullOrWhiteSpace(processRoute.RouteName))
-            {
-                result.AddError("工艺路线名称不能为空");
-            }
-
-            if (processRoute.ProductId <= 0)
-            {
-                result.AddError("必须选择产品");
-            }
-
-            if (string.IsNullOrWhiteSpace(processRoute.Version))
-            {
-                result.AddError("版本号不能为空");
-            }
-
             return result;
         }
 
@@ -640,33 +579,10 @@ namespace MES.BLL.Material
         public ValidationResult ValidateProcessStep(ProcessStep step)
         {
             var result = new ValidationResult();
-
-            if (step == null)
-            {
-                result.AddError("工艺步骤不能为空");
-                return result;
-            }
-
-            if (step.StepNumber <= 0)
-            {
-                result.AddError("步骤序号必须大于0");
-            }
-
-            if (string.IsNullOrWhiteSpace(step.StepName))
-            {
-                result.AddError("步骤名称不能为空");
-            }
-
-            if (step.WorkstationId <= 0)
-            {
-                result.AddError("必须选择工作站");
-            }
-
-            if (step.StandardTime < 0)
-            {
-                result.AddError("标准工时不能为负数");
-            }
-
+            if (step == null) { result.AddError("工艺步骤对象不能为空。"); return result; }
+            if (string.IsNullOrWhiteSpace(step.StepName)) result.AddError("步骤名称不能为空。");
+            if (step.WorkstationId <= 0) result.AddError("必须指定工作站。");
+            if (step.StandardTime < 0) result.AddError("标准工时不能为负数。");
             return result;
         }
 

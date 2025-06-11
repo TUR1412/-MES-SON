@@ -5,6 +5,10 @@ using System.Linq;
 using MES.Models.WorkOrder;
 using MES.DAL.WorkOrder;
 using MES.Common.Logging;
+using MES.Common.Exceptions;
+using MES.DAL.Production;
+using MES.Models.Production;
+using MES.BLL.Production;
 
 namespace MES.BLL.WorkOrder
 {
@@ -13,15 +17,16 @@ namespace MES.BLL.WorkOrder
     /// </summary>
     public class WorkOrderBLL
     {
-        private readonly WorkOrderDAL workOrderDAL;
+        private readonly WorkOrderDAL _workOrderDAL;
 
         /// <summary>
         /// 构造函数
         /// </summary>
         public WorkOrderBLL()
         {
-            workOrderDAL = new WorkOrderDAL();
+            _workOrderDAL = new WorkOrderDAL();
         }
+
 
         /// <summary>
         /// 创建工单
@@ -59,7 +64,7 @@ namespace MES.BLL.WorkOrder
                 };
 
                 // 调用DAL层保存工单
-                return workOrderDAL.Add(workOrderInfo);
+                return _workOrderDAL.Add(workOrderInfo);
             }
             catch (Exception ex)
             {
@@ -75,11 +80,12 @@ namespace MES.BLL.WorkOrder
         {
             try
             {
-                return workOrderDAL.GetAll();
+                return _workOrderDAL.GetAll();
             }
             catch (Exception ex)
             {
-                throw new Exception(string.Format("获取工单列表失败：{0}", ex.Message), ex);
+                LogManager.Error("BLL: 获取所有工单失败", ex);
+                throw new MESException("获取工单列表失败", ex);
             }
         }
 
@@ -91,29 +97,31 @@ namespace MES.BLL.WorkOrder
         {
             try
             {
-                // 从数据库获取真实的已完成工单数据
-                var workOrders = workOrderDAL.GetFinishedWorkOrders();
+                // 1. 从DAL获取强类型的列表 (这是正确的)
+                List<WorkOrderInfo> workOrders = _workOrderDAL.GetFinishedWorkOrders();
 
+                // 2. 创建一个UI层期望的DataTable结构
                 DataTable table = new DataTable();
                 table.Columns.Add("WorkOrderNo", typeof(string));
-                table.Columns.Add("ProductName", typeof(string));
+                table.Columns.Add("ProductName", typeof(string)); // UI需要这个字段
                 table.Columns.Add("Status", typeof(string));
 
-                // 将真实数据填充到DataTable中
+                // 3. 在BLL内部完成数据转换
                 foreach (var workOrder in workOrders)
                 {
                     table.Rows.Add(
                         workOrder.WorkOrderNum,
-                        workOrder.ProductName ?? "",
+                        workOrder.ProductName, // ★★★ 关键：现在 workOrder.ProductName 有值了
                         GetWorkOrderStatusText(workOrder.WorkOrderStatus)
                     );
                 }
 
-                return table;
+                return table; // 4. 返回UI层期望的DataTable
             }
             catch (Exception ex)
             {
-                throw new Exception(string.Format("获取成品工单列表失败：{0}", ex.Message), ex);
+                LogManager.Error("BLL: 获取已完成工单列表失败", ex);
+                throw new MESException("获取已完成工单列表失败", ex);
             }
         }
 
@@ -127,7 +135,7 @@ namespace MES.BLL.WorkOrder
             try
             {
                 // 调用DAL层获取当日最大序号
-                return workOrderDAL.GetMaxSequenceByDate(date);
+                return _workOrderDAL.GetMaxSequenceByDate(date);
             }
             catch (Exception ex)
             {
@@ -138,29 +146,58 @@ namespace MES.BLL.WorkOrder
         /// <summary>
         /// 搜索工单
         /// </summary>
-        /// <param name="keyword">搜索关键词</param>
-        /// <returns>工单列表</returns>
-        public List<WorkOrderInfo> SearchWorkOrders(string keyword)
+        /// <param name="keyword">关键词（工单号或产品名称）</param>
+        /// <param name="status">状态</param>
+        /// <param name="startDate">开始日期</param>
+        /// <param name="endDate">结束日期</param>
+        /// <returns>工单信息列表</returns>
+        public List<WorkOrderInfo> SearchWorkOrders(string keyword = null, string status = null,
+            DateTime? startDate = null, DateTime? endDate = null)
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(keyword))
+                // 获取所有工单
+                var allWorkOrders = GetAllWorkOrders();
+
+                // 应用筛选条件
+                var filteredWorkOrders = allWorkOrders.AsEnumerable();
+
+                // 关键词筛选
+                if (!string.IsNullOrWhiteSpace(keyword))
                 {
-                    return GetAllWorkOrders();
+                    filteredWorkOrders = filteredWorkOrders.Where(w =>
+                        (w.WorkOrderNum != null && w.WorkOrderNum.Contains(keyword)) ||
+                        (w.ProductName != null && w.ProductName.Contains(keyword)) ||
+                        (w.ProductCode != null && w.ProductCode.Contains(keyword)) ||
+                        (w.Description != null && w.Description.Contains(keyword)));
                 }
 
-                // 获取所有工单并进行内存过滤
-                var allWorkOrders = workOrderDAL.GetAll();
-                var filteredResults = allWorkOrders.Where(w =>
-                    w.WorkOrderNum.Contains(keyword) ||
-                    (w.Description != null && w.Description.Contains(keyword))
-                ).ToList();
+                // 状态筛选
+                if (!string.IsNullOrWhiteSpace(status) && status != "全部状态")
+                {
+                    int statusValue = GetStatusValueFromText(status);
+                    filteredWorkOrders = filteredWorkOrders.Where(w => w.WorkOrderStatus == statusValue);
+                }
 
-                return filteredResults;
+                // 日期筛选
+                if (startDate.HasValue)
+                {
+                    filteredWorkOrders = filteredWorkOrders.Where(w =>
+                        w.CreateTime >= startDate.Value.Date);
+                }
+
+                if (endDate.HasValue)
+                {
+                    filteredWorkOrders = filteredWorkOrders.Where(w =>
+                        w.CreateTime <= endDate.Value.Date.AddDays(1).AddSeconds(-1));
+                }
+
+                return filteredWorkOrders.ToList();
             }
             catch (Exception ex)
             {
-                throw new Exception(string.Format("搜索工单失败：{0}", ex.Message), ex);
+                LogManager.Error(string.Format("搜索工单失败：{ex.Message}"), ex);
+                throw new MESException("搜索工单失败", ex);
             }
         }
 
@@ -210,7 +247,7 @@ namespace MES.BLL.WorkOrder
             try
             {
                 // 从数据库获取真实的可取消工单数据
-                var workOrders = workOrderDAL.GetCancellableWorkOrders();
+                var workOrders = _workOrderDAL.GetCancellableWorkOrders();
 
                 DataTable table = new DataTable();
                 table.Columns.Add("WorkOrderNo", typeof(string));
@@ -268,7 +305,7 @@ namespace MES.BLL.WorkOrder
                 }
 
                 // 调用DAL层真实更新工单状态为"已取消"
-                return workOrderDAL.CancelWorkOrder(workOrderNo, cancelReason);
+                return _workOrderDAL.CancelWorkOrder(workOrderNo, cancelReason);
             }
             catch (Exception ex)
             {
@@ -287,7 +324,7 @@ namespace MES.BLL.WorkOrder
             try
             {
                 // 从数据库获取真实的可提交工单数据
-                var workOrders = workOrderDAL.GetSubmittableWorkOrders();
+                var workOrders = _workOrderDAL.GetSubmittableWorkOrders();
 
                 DataTable table = new DataTable();
                 table.Columns.Add("WorkOrderNo", typeof(string));
@@ -340,67 +377,13 @@ namespace MES.BLL.WorkOrder
                 }
 
                 // 调用DAL层真实更新工单状态为"已提交"
-                return workOrderDAL.SubmitWorkOrder(workOrderNo, submitRemark);
+                return _workOrderDAL.SubmitWorkOrder(workOrderNo, submitRemark);
             }
             catch (Exception ex)
             {
                 throw new Exception(string.Format("提交工单失败：{0}", ex.Message), ex);
             }
-        }
-
-        /// <summary>
-        /// 搜索工单
-        /// </summary>
-        /// <param name="keyword">关键词（工单号或产品名称）</param>
-        /// <param name="status">状态</param>
-        /// <param name="startDate">开始日期</param>
-        /// <param name="endDate">结束日期</param>
-        /// <returns>工单信息列表</returns>
-        public List<WorkOrderInfo> SearchWorkOrders(string keyword = null, string status = null,
-            DateTime? startDate = null, DateTime? endDate = null)
-        {
-            try
-            {
-                // 获取所有工单
-                var allWorkOrders = GetAllWorkOrders();
-
-                // 应用筛选条件
-                var filteredWorkOrders = allWorkOrders.AsEnumerable();
-
-                // 关键词筛选
-                if (!string.IsNullOrWhiteSpace(keyword))
-                {
-                    filteredWorkOrders = filteredWorkOrders.Where(w =>
-                        (w.WorkOrderNum != null && w.WorkOrderNum.Contains(keyword)) ||
-                        (w.ProductName != null && w.ProductName.Contains(keyword)) ||
-                        (w.ProductCode != null && w.ProductCode.Contains(keyword)));
-                }
-
-                // 状态筛选
-                if (!string.IsNullOrWhiteSpace(status) && status != "全部状态")
-                {
-                    int statusValue = GetStatusValueFromText(status);
-                    filteredWorkOrders = filteredWorkOrders.Where(w => w.WorkOrderStatus == statusValue);
-                }
-
-                // 日期筛选
-                if (startDate.HasValue)
-                {
-                    filteredWorkOrders = filteredWorkOrders.Where(w => w.CreateTime >= startDate.Value);
-                }
-
-                if (endDate.HasValue)
-                {
-                    filteredWorkOrders = filteredWorkOrders.Where(w => w.CreateTime <= endDate.Value.AddDays(1));
-                }
-
-                return filteredWorkOrders.ToList();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(string.Format("搜索工单失败：{0}", ex.Message), ex);
-            }
-        }
+        }        
 
         /// <summary>
         /// 从状态文本获取状态值
@@ -427,9 +410,18 @@ namespace MES.BLL.WorkOrder
         {
             try
             {
-                // 从数据库获取指定状态的工单数据
-                var workOrders = workOrderDAL.GetByCondition("work_order_status IN (" + string.Join(",", statuses) + ")");
+                // 1. 从DAL获取强类型列表
+                var resultList = new List<WorkOrderInfo>();
+                if (statuses != null && statuses.Any())
+                {
+                    foreach (var status in statuses)
+                    {
+                        resultList.AddRange(_workOrderDAL.GetByStatus(status));
+                    }
+                }
+                var orderedList = resultList.OrderByDescending(wo => wo.CreateTime).ToList();
 
+                // 2. 创建一个UI层期望的DataTable结构
                 DataTable table = new DataTable();
                 table.Columns.Add("Id", typeof(int));
                 table.Columns.Add("WorkOrderNo", typeof(string));
@@ -440,26 +432,27 @@ namespace MES.BLL.WorkOrder
                 table.Columns.Add("CreatedBy", typeof(string));
                 table.Columns.Add("CreatedDate", typeof(DateTime));
 
-                // 将真实数据填充到DataTable中
-                foreach (var workOrder in workOrders)
+                // 3. 在BLL内部完成数据转换
+                foreach (var workOrder in orderedList)
                 {
                     table.Rows.Add(
-                        workOrder.WorkOrderId,
+                        workOrder.Id,
                         workOrder.WorkOrderNum,
                         workOrder.WorkOrderType,
                         workOrder.ProductCode ?? "",
                         workOrder.PlannedQuantity,
                         GetWorkOrderStatusText(workOrder.WorkOrderStatus),
-                        "系统", // 默认创建人
+                        workOrder.CreateUserName ?? "系统",
                         workOrder.CreateTime
                     );
                 }
 
-                return table;
+                return table; // 4. 返回UI层期望的DataTable
             }
             catch (Exception ex)
             {
-                throw new Exception(string.Format("获取工单列表失败：{0}", ex.Message), ex);
+                LogManager.Error("BLL: 根据状态获取工单列表失败", ex);
+                throw new MESException("获取工单列表失败", ex);
             }
         }
 
@@ -485,14 +478,64 @@ namespace MES.BLL.WorkOrder
                 }
 
                 // 调用DAL层删除工单
-                return workOrderDAL.Delete(workOrderNum, cancelReason);
+                return _workOrderDAL.Delete(workOrderNum, cancelReason);
             }
             catch (Exception ex)
             {
                 throw new Exception(string.Format("删除工单失败：{0}", ex.Message), ex);
             }
         }
+        public bool AddProductionOrder(ProductionOrderInfo productionOrder)
+        {
+            try
+            {
+                // 基本验证
+                if (productionOrder == null)
+                {
+                    LogManager.Error("添加生产订单失败：生产订单信息不能为空");
+                    return false;
+                }
 
+                // 详细验证
+                string validationError = ValidateProductionOrder(productionOrder);
+                if (!string.IsNullOrEmpty(validationError))
+                {
+                    LogManager.Error("添加生产订单验证失败：{validationError}");
+                    return false;
+                }
+
+                // 调用DAL层添加
+                bool result = new ProductionOrderDAL().Add(productionOrder);
+
+                if (!result)
+                {
+                    LogManager.Error("添加生产订单失败，DAL层返回false");
+                }
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("添加生产订单异常：{ex.Message}", ex);
+                throw new MESException("添加生产订单时发生异常", ex);
+            }
+        }
+        private string ValidateProductionOrder(ProductionOrderInfo order)
+        {
+            if (string.IsNullOrEmpty(order.OrderNo))
+                return "订单号不能为空";
+
+            if (string.IsNullOrEmpty(order.ProductCode))
+                return "产品编码不能为空";
+
+            if (order.PlannedQuantity <= 0)
+                return "计划数量必须大于0";
+
+            if (order.PlanStartTime >= order.PlanEndTime)
+                return "计划开始时间必须早于计划结束时间";
+
+            return string.Empty;
+        }
         /// <summary>
         /// 获取工单状态文本
         /// </summary>
@@ -509,7 +552,9 @@ namespace MES.BLL.WorkOrder
                 default: return "未知状态";
             }
         }
+
     }
+
 
     /// <summary>
     /// 工单模型（临时定义，应该在Models项目中）

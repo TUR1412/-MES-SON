@@ -155,6 +155,14 @@ namespace MES.Models.Production
             get { return WorkshopName; }
             set { WorkshopName = value; }
         }
+        /// <summary>
+        /// 创建人
+        /// </summary>
+        public string CreateUserName { get; set; }
+        /// <summary>
+        /// 是否删除
+        /// </summary>
+        public bool IsDeleted { get; set; }
 
         /// <summary>
         /// 负责人
@@ -198,6 +206,7 @@ namespace MES.Models.Production
             Priority = "普通"; // 默认优先级为普通
             ActualQuantity = 0; // 默认实际完成数量为0
             Unit = "个"; // 默认单位
+            IsDeleted = false;
         }
 
         /// <summary>

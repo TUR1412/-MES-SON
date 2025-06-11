@@ -1,3 +1,4 @@
+using MES.Models.Base;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -32,13 +33,8 @@ namespace MES.Models.Material
     /// 工艺路线模型
     /// 定义产品的生产工艺流程路线
     /// </summary>
-    public class ProcessRoute
+    public class ProcessRoute : BaseModel
     {
-        /// <summary>
-        /// 工艺路线ID
-        /// </summary>
-        public int Id { get; set; }
-
         /// <summary>
         /// 工艺路线编码
         /// </summary>
@@ -55,14 +51,14 @@ namespace MES.Models.Material
         public int ProductId { get; set; }
 
         /// <summary>
-        /// 产品名称
+        /// 产品名称 (从关联查询获取)
         /// </summary>
         public string ProductName { get; set; }
 
         /// <summary>
-        /// 版本号
+        /// 版本号 (基类已有同名字段，这里使用string类型覆盖)
         /// </summary>
-        public string Version { get; set; }
+        public new string Version { get; set; }
 
         /// <summary>
         /// 状态
@@ -78,14 +74,10 @@ namespace MES.Models.Material
             {
                 switch (Status)
                 {
-                    case ProcessRouteStatus.Draft:
-                        return "草稿";
-                    case ProcessRouteStatus.Active:
-                        return "启用";
-                    case ProcessRouteStatus.Inactive:
-                        return "停用";
-                    default:
-                        return "未知";
+                    case ProcessRouteStatus.Draft: return "草稿";
+                    case ProcessRouteStatus.Active: return "启用";
+                    case ProcessRouteStatus.Inactive: return "停用";
+                    default: return "未知";
                 }
             }
         }
@@ -101,36 +93,6 @@ namespace MES.Models.Material
         public int CreateUserId { get; set; }
 
         /// <summary>
-        /// 创建人姓名
-        /// </summary>
-        public string CreateUserName { get; set; }
-
-        /// <summary>
-        /// 创建时间
-        /// </summary>
-        public DateTime CreateTime { get; set; }
-
-        /// <summary>
-        /// 更新人ID
-        /// </summary>
-        public int? UpdateUserId { get; set; }
-
-        /// <summary>
-        /// 更新人姓名
-        /// </summary>
-        public string UpdateUserName { get; set; }
-
-        /// <summary>
-        /// 更新时间
-        /// </summary>
-        public DateTime? UpdateTime { get; set; }
-
-        /// <summary>
-        /// 是否删除
-        /// </summary>
-        public bool IsDeleted { get; set; }
-
-        /// <summary>
         /// 工艺步骤列表
         /// </summary>
         public List<ProcessStep> Steps { get; set; }
@@ -141,8 +103,6 @@ namespace MES.Models.Material
         public ProcessRoute()
         {
             Steps = new List<ProcessStep>();
-            CreateTime = DateTime.Now;
-            IsDeleted = false;
             Status = ProcessRouteStatus.Draft;
             Version = "V1.0";
         }

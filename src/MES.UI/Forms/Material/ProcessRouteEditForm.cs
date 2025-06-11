@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using MES.Models.Material;
 using MES.BLL.Material;
+using MES.Models.Production;
 
 namespace MES.UI.Forms.Material
 {
@@ -20,7 +21,8 @@ namespace MES.UI.Forms.Material
         #region 私有字段
 
         private ProcessRoute _processRoute;
-        private readonly IProcessRouteBLL _processRouteBLL;
+        private readonly IProcessRouteBLL _processRouteBLL; // 关键：依赖业务逻辑层接口
+        private readonly IProductBLL _productBLL; // 引入产品BLL接口
         private bool _isEditMode;
 
         #endregion
@@ -33,8 +35,8 @@ namespace MES.UI.Forms.Material
         public ProcessRoute ProcessRoute
         {
             get { return _processRoute; }
-            set 
-            { 
+            set
+            {
                 _processRoute = value;
                 _isEditMode = value != null && value.Id > 0;
                 LoadData();
@@ -56,7 +58,8 @@ namespace MES.UI.Forms.Material
         public ProcessRouteEditForm()
         {
             InitializeComponent();
-            _processRouteBLL = new ProcessRouteBLL();
+            _processRouteBLL = new ProcessRouteBLL(); // 关键：实例化BLL
+            _productBLL = new ProductBLL();
             InitializeForm();
         }
 
@@ -80,13 +83,13 @@ namespace MES.UI.Forms.Material
         {
             // 设置窗体属性
             this.BackColor = Color.White;
-            
+
             // 初始化控件
             InitializeControls();
-            
+
             // 绑定事件
             BindEvents();
-            
+
             // 设置默认值
             SetDefaultValues();
         }
@@ -98,32 +101,32 @@ namespace MES.UI.Forms.Material
         {
             // 初始化产品下拉框
             InitializeProductComboBox();
-            
+
             // 初始化状态下拉框
             InitializeStatusComboBox();
         }
 
         /// <summary>
-        /// 初始化产品下拉框
+        /// 初始化产品下拉框(已修复：从真实数据源加载)
         /// </summary>
         private void InitializeProductComboBox()
         {
             cmbProduct.Items.Clear();
-            
-            // 模拟产品数据（实际项目中应该从数据库加载）
-            var products = new List<ProductInfo>
+            try
             {
-                new ProductInfo { Id = 1, Name = "智能手机主板" },
-                new ProductInfo { Id = 2, Name = "锂电池组" },
-                new ProductInfo { Id = 3, Name = "显示屏模组" },
-                new ProductInfo { Id = 4, Name = "摄像头模组" },
-                new ProductInfo { Id = 5, Name = "充电器" }
-            };
-            
-            cmbProduct.DisplayMember = "Name";
-            cmbProduct.ValueMember = "Id";
-            cmbProduct.DataSource = products;
-            cmbProduct.SelectedIndex = -1;
+                // 通过BLL获取所有产品信息
+                List<ProductionInfo> products = _productBLL.GetAllProducts(); // 使用注入的BLL实例
+
+                // 设置数据源
+                cmbProduct.DataSource = products;
+                cmbProduct.DisplayMember = "ProductName"; // 显示产品名称
+                cmbProduct.ValueMember = "ProductId";   // 产品ID作为值
+                cmbProduct.SelectedIndex = -1; // 默认不选择任何项
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("加载产品列表失败: " + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         /// <summary>
@@ -132,14 +135,14 @@ namespace MES.UI.Forms.Material
         private void InitializeStatusComboBox()
         {
             cmbStatus.Items.Clear();
-            
+
             var statusItems = new List<StatusItem>
             {
                 new StatusItem { Value = ProcessRouteStatus.Draft, Text = "草稿" },
                 new StatusItem { Value = ProcessRouteStatus.Active, Text = "启用" },
                 new StatusItem { Value = ProcessRouteStatus.Inactive, Text = "停用" }
             };
-            
+
             cmbStatus.DisplayMember = "Text";
             cmbStatus.ValueMember = "Value";
             cmbStatus.DataSource = statusItems;
@@ -169,7 +172,7 @@ namespace MES.UI.Forms.Material
         {
             btnSave.Click += BtnSave_Click;
             btnCancel.Click += BtnCancel_Click;
-            
+
             // 表单验证事件
             txtRouteCode.Leave += TxtRouteCode_Leave;
             txtRouteName.Leave += TxtRouteName_Leave;
@@ -199,13 +202,13 @@ namespace MES.UI.Forms.Material
                     txtRouteName.Text = _processRoute.RouteName;
                     txtVersion.Text = _processRoute.Version;
                     txtDescription.Text = _processRoute.Description;
-                    
+
                     // 设置产品选择
                     cmbProduct.SelectedValue = _processRoute.ProductId;
-                    
+
                     // 设置状态选择
                     cmbStatus.SelectedValue = _processRoute.Status;
-                    
+
                     // 编辑模式下编码不可修改
                     txtRouteCode.ReadOnly = true;
                     txtRouteCode.BackColor = Color.FromArgb(248, 249, 250);
@@ -232,7 +235,7 @@ namespace MES.UI.Forms.Material
             txtRouteName.Text = "";
             txtDescription.Text = "";
             cmbProduct.SelectedIndex = -1;
-            
+
             txtRouteCode.ReadOnly = false;
             txtRouteCode.BackColor = Color.White;
         }
@@ -258,33 +261,31 @@ namespace MES.UI.Forms.Material
 
                 if (_isEditMode)
                 {
+                    // 编辑模式：调用BLL的更新方法
                     processRoute.Id = _processRoute.Id;
                     result = _processRouteBLL.UpdateProcessRoute(processRoute);
                 }
                 else
                 {
+                    // 新增模式：调用BLL的新增方法
                     result = _processRouteBLL.AddProcessRoute(processRoute);
                 }
 
                 if (result)
                 {
-                    _processRoute = processRoute;
                     IsSuccess = true;
-                    MessageBox.Show("保存成功", "提示",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    this.DialogResult = DialogResult.OK;
+                    MessageBox.Show("保存成功", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    this.DialogResult = DialogResult.OK; // 设置对话框结果，通知父窗体刷新
                     this.Close();
                 }
                 else
                 {
-                    MessageBox.Show("保存失败", "错误",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("保存失败", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(string.Format("保存失败：{0}", ex.Message), "错误",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(string.Format("保存失败：{0}", ex.Message), "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -363,7 +364,7 @@ namespace MES.UI.Forms.Material
             // 验证路线编码
             if (string.IsNullOrWhiteSpace(txtRouteCode.Text))
             {
-                MessageBox.Show("请输入工艺路线编码", "验证失败", 
+                MessageBox.Show("请输入工艺路线编码", "验证失败",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txtRouteCode.Focus();
                 return false;
@@ -372,7 +373,7 @@ namespace MES.UI.Forms.Material
             // 验证路线名称
             if (string.IsNullOrWhiteSpace(txtRouteName.Text))
             {
-                MessageBox.Show("请输入工艺路线名称", "验证失败", 
+                MessageBox.Show("请输入工艺路线名称", "验证失败",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txtRouteName.Focus();
                 return false;
@@ -381,7 +382,7 @@ namespace MES.UI.Forms.Material
             // 验证产品选择
             if (cmbProduct.SelectedValue == null)
             {
-                MessageBox.Show("请选择产品", "验证失败", 
+                MessageBox.Show("请选择产品", "验证失败",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 cmbProduct.Focus();
                 return false;
@@ -390,7 +391,7 @@ namespace MES.UI.Forms.Material
             // 验证版本号
             if (string.IsNullOrWhiteSpace(txtVersion.Text))
             {
-                MessageBox.Show("请输入版本号", "验证失败", 
+                MessageBox.Show("请输入版本号", "验证失败",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txtVersion.Focus();
                 return false;
@@ -415,6 +416,12 @@ namespace MES.UI.Forms.Material
                 Status = (ProcessRouteStatus)cmbStatus.SelectedValue,
                 Description = txtDescription.Text.Trim()
             };
+
+            // ★★★ 核心修正：如果是在编辑模式下，必须继承原有的工艺步骤列表 ★★★
+            if (_isEditMode && _processRoute != null)
+            {
+                processRoute.Steps = _processRoute.Steps;
+            }
 
             return processRoute;
         }

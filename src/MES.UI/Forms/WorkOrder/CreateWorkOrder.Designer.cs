@@ -472,6 +472,7 @@ namespace MES.UI.Forms.WorkOrder
             this.dgvBOMList.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvBOMList.Size = new System.Drawing.Size(1702, 565);
             this.dgvBOMList.TabIndex = 0;
+            this.dgvBOMList.Visible = false;
             // 
             // panelBOMButtons
             // 
@@ -608,7 +609,7 @@ namespace MES.UI.Forms.WorkOrder
             this.btnSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSave.Font = new System.Drawing.Font("微软雅黑", 10F, System.Drawing.FontStyle.Bold);
             this.btnSave.ForeColor = System.Drawing.Color.White;
-            this.btnSave.Location = new System.Drawing.Point(1425, 52);
+            this.btnSave.Location = new System.Drawing.Point(1292, 53);
             this.btnSave.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(150, 52);
@@ -622,7 +623,7 @@ namespace MES.UI.Forms.WorkOrder
             this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCancel.Font = new System.Drawing.Font("微软雅黑", 10F, System.Drawing.FontStyle.Bold);
             this.btnCancel.ForeColor = System.Drawing.Color.White;
-            this.btnCancel.Location = new System.Drawing.Point(1605, 52);
+            this.btnCancel.Location = new System.Drawing.Point(1462, 53);
             this.btnCancel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(150, 52);

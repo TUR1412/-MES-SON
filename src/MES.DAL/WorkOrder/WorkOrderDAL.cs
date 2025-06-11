@@ -1,4 +1,4 @@
-﻿﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using MySql.Data.MySqlClient;
@@ -8,6 +8,7 @@ using MES.DAL.Base;
 using MES.DAL.Core;
 using MES.Common.Logging;
 using MES.Common.Exceptions;
+using MES.Models.Production;
 
 namespace MES.DAL.WorkOrder
 {
@@ -40,11 +41,12 @@ namespace MES.DAL.WorkOrder
         /// <returns>WorkOrderInfo实体对象</returns>
         protected override WorkOrderInfo MapRowToEntity(DataRow row)
         {
-            return new WorkOrderInfo
+            var workOrder = new WorkOrderInfo
             {
-                WorkOrderId = Convert.ToInt32(row["work_order_id"]),
-                WorkOrderNum = row["work_order_num"] != DBNull.Value ? row["work_order_num"].ToString() : null,
-                WorkOrderType = row["work_order_type"] != DBNull.Value ? row["work_order_type"].ToString() : null,
+                Id = Convert.ToInt32(row["id"]),
+                WorkOrderId = Convert.ToInt32(row["id"]), // 兼容旧属性
+                WorkOrderNum = row["work_order_num"]?.ToString(),
+                WorkOrderType = row["work_order_type"]?.ToString(),
                 ProductId = Convert.ToInt32(row["product_id"]),
                 FlowId = Convert.ToInt32(row["flow_id"]),
                 BOMId = Convert.ToInt32(row["bom_id"]),
@@ -53,24 +55,28 @@ namespace MES.DAL.WorkOrder
                 OutputQuantity = Convert.ToDecimal(row["output_quantity"]),
                 ScrapQuantity = Convert.ToDecimal(row["scrap_quantity"]),
                 WorkOrderStatus = Convert.ToInt32(row["work_order_status"]),
-                ProcessStatus = row["process_status"] != DBNull.Value ? row["process_status"].ToString() : null,
+                ProcessStatus = row["process_status"]?.ToString(),
                 LockStatus = Convert.ToInt32(row["lock_status"]),
                 FactoryId = Convert.ToInt32(row["factory_id"]),
-                HotType = row["hot_type"] != DBNull.Value ? row["hot_type"].ToString() : null,
-                PlannedStartTime = row["planned_start_time"] != DBNull.Value ? Convert.ToDateTime(row["planned_start_time"]) : (DateTime?)null,
-                PlannedDueDate = row["planned_due_date"] != DBNull.Value ? Convert.ToDateTime(row["planned_due_date"]) : (DateTime?)null,
+                HotType = row["hot_type"]?.ToString(),
+                PlannedStartTime = row["planned_start_time"] != DBNull.Value ? (DateTime?)Convert.ToDateTime(row["planned_start_time"]) : null,
+                PlannedDueDate = row["planned_due_date"] != DBNull.Value ? (DateTime?)Convert.ToDateTime(row["planned_due_date"]) : null,
                 CreateTime = Convert.ToDateTime(row["create_time"]),
-                ProductionStartTime = row["production_start_time"] != DBNull.Value ? Convert.ToDateTime(row["production_start_time"]) : (DateTime?)null,
-                CompletionTime = row["completion_time"] != DBNull.Value ? Convert.ToDateTime(row["completion_time"]) : (DateTime?)null,
-                CloseTime = row["close_time"] != DBNull.Value ? Convert.ToDateTime(row["close_time"]) : (DateTime?)null,
-                WorkOrderVersion = row["work_order_version"] != DBNull.Value ? row["work_order_version"].ToString() : null,
-                ParentWorkOrderVersion = row["parent_work_order_version"] != DBNull.Value ? row["parent_work_order_version"].ToString() : null,
-                ProductOrderNo = row["product_order_no"] != DBNull.Value ? row["product_order_no"].ToString() : null,
-                ProductOrderVersion = row["product_order_version"] != DBNull.Value ? row["product_order_version"].ToString() : null,
-                SalesOrderNo = row["sales_order_no"] != DBNull.Value ? row["sales_order_no"].ToString() : null,
-                MainBatchNo = row["main_batch_no"] != DBNull.Value ? row["main_batch_no"].ToString() : null,
-                Description = row["description"] != DBNull.Value ? row["description"].ToString() : null
+                ProductionStartTime = row["production_start_time"] != DBNull.Value ? (DateTime?)Convert.ToDateTime(row["production_start_time"]) : null,
+                CompletionTime = row["completion_time"] != DBNull.Value ? (DateTime?)Convert.ToDateTime(row["completion_time"]) : null,
+                CloseTime = row["close_time"] != DBNull.Value ? (DateTime?)Convert.ToDateTime(row["close_time"]) : null,
+                WorkOrderVersion = row["work_order_version"]?.ToString(),
+                ParentWorkOrderVersion = row["parent_work_order_version"]?.ToString(),
+                ProductOrderNo = row["product_order_no"]?.ToString(),
+                ProductOrderVersion = row["product_order_version"]?.ToString(),
+                SalesOrderNo = row["sales_order_no"]?.ToString(),
+                MainBatchNo = row["main_batch_no"]?.ToString(),
+                Description = row["description"]?.ToString(),
+                // ★★★ 核心修正：从 JOIN 的结果中获取 ProductName ★★★
+                ProductCode = row.Table.Columns.Contains("product_code") ? row["product_code"]?.ToString() : null,
+                ProductName = row.Table.Columns.Contains("product_name") ? row["product_name"]?.ToString() : null
             };
+            return workOrder;
         }
 
         /// <summary>
@@ -100,16 +106,30 @@ namespace MES.DAL.WorkOrder
         }
 
         /// <summary>
-        /// 根据工单状态获取工单列表
+        /// 根据状态获取工单列表
         /// </summary>
-        /// <param name="status">工单状态(0:未开始,1:进行中,2:已完成,3:已关闭)</param>
-        /// <returns>工单列表</returns>
         public List<WorkOrderInfo> GetByStatus(int status)
         {
             try
             {
-                return GetByCondition("work_order_status = @status",
-                    DatabaseHelper.CreateParameter("@status", status));
+                // ★★★ 核心修正：使用 JOIN 查询 ★★★
+                const string sql = @"
+                    SELECT 
+                        wo.*, 
+                        p.product_name,
+                        p.product_code
+                    FROM 
+                        work_order_info wo
+                    LEFT JOIN 
+                        product_info p ON wo.product_id = p.id
+                    WHERE 
+                        wo.is_deleted = 0 AND wo.work_order_status = @status
+                    ORDER BY 
+                        wo.id DESC";
+
+                var parameters = new[] { DatabaseHelper.CreateParameter("@status", status) };
+                DataTable dataTable = DatabaseHelper.ExecuteQuery(sql, parameters);
+                return ConvertDataTableToList(dataTable);
             }
             catch (Exception ex)
             {
@@ -315,19 +335,19 @@ namespace MES.DAL.WorkOrder
         protected override bool BuildInsertSql(WorkOrderInfo entity, out string sql, out MySqlParameter[] parameters)
         {
             sql = @"INSERT INTO work_order_info
-                          (work_order_num, work_order_type, product_id, flow_id, bom_id,
-                           planned_quantity, input_quantity, output_quantity, scrap_quantity,
-                           work_order_status, process_status, lock_status, factory_id, hot_type,
-                           planned_start_time, planned_due_date, create_time, production_start_time,
-                           completion_time, close_time, work_order_version, parent_work_order_version,
-                           product_order_no, product_order_version, sales_order_no, main_batch_no, description)
-                          VALUES
-                          (@workOrderNum, @workOrderType, @productId, @flowId, @bomId,
-                           @plannedQuantity, @inputQuantity, @outputQuantity, @scrapQuantity,
-                           @workOrderStatus, @processStatus, @lockStatus, @factoryId, @hotType,
-                           @plannedStartTime, @plannedDueDate, @createTime, @productionStartTime,
-                           @completionTime, @closeTime, @workOrderVersion, @parentWorkOrderVersion,
-                           @productOrderNo, @productOrderVersion, @salesOrderNo, @mainBatchNo, @description)";
+            (work_order_num, work_order_type, product_id, flow_id, bom_id,
+             planned_quantity, input_quantity, output_quantity, scrap_quantity,
+             work_order_status, process_status, lock_status, factory_id, hot_type,
+             planned_start_time, planned_due_date, create_time, production_start_time,
+             completion_time, close_time, work_order_version, parent_work_order_version,
+             product_order_no, product_order_version, sales_order_no, main_batch_no, description)
+            VALUES
+            (@workOrderNum, @workOrderType, @productId, @flowId, @bomId,
+             @plannedQuantity, @inputQuantity, @outputQuantity, @scrapQuantity,
+             @workOrderStatus, @processStatus, @lockStatus, @factoryId, @hotType,
+             @plannedStartTime, @plannedDueDate, @createTime, @productionStartTime,
+             @completionTime, @closeTime, @workOrderVersion, @parentWorkOrderVersion,
+             @productOrderNo, @productOrderVersion, @salesOrderNo, @mainBatchNo, @description)";
 
             parameters = new[]
             {
@@ -371,34 +391,34 @@ namespace MES.DAL.WorkOrder
         protected override bool BuildUpdateSql(WorkOrderInfo entity, out string sql, out MySqlParameter[] parameters)
         {
             sql = @"UPDATE work_order_info SET
-                          work_order_num = @workOrderNum, 
-                          work_order_type = @workOrderType,
-                          product_id = @productId, 
-                          flow_id = @flowId,
-                          bom_id = @bomId,
-                          planned_quantity = @plannedQuantity,
-                          input_quantity = @inputQuantity,
-                          output_quantity = @outputQuantity,
-                          scrap_quantity = @scrapQuantity,
-                          work_order_status = @workOrderStatus,
-                          process_status = @processStatus,
-                          lock_status = @lockStatus,
-                          factory_id = @factoryId,
-                          hot_type = @hotType,
-                          planned_start_time = @plannedStartTime,
-                          planned_due_date = @plannedDueDate,
-                          production_start_time = @productionStartTime,
-                          completion_time = @completionTime,
-                          close_time = @closeTime,
-                          work_order_version = @workOrderVersion,
-                          parent_work_order_version = @parentWorkOrderVersion,
-                          product_order_no = @productOrderNo,
-                          product_order_version = @productOrderVersion,
-                          sales_order_no = @salesOrderNo,
-                          main_batch_no = @mainBatchNo,
-                          description = @description,
-                          update_time = @updateTime
-                          WHERE work_order_id = @workOrderId";
+            work_order_num = @workOrderNum, 
+            work_order_type = @workOrderType,
+            product_id = @productId, 
+            flow_id = @flowId,
+            bom_id = @bomId,
+            planned_quantity = @plannedQuantity,
+            input_quantity = @inputQuantity,
+            output_quantity = @outputQuantity,
+            scrap_quantity = @scrapQuantity,
+            work_order_status = @workOrderStatus,
+            process_status = @processStatus,
+            lock_status = @lockStatus,
+            factory_id = @factoryId,
+            hot_type = @hotType,
+            planned_start_time = @plannedStartTime,
+            planned_due_date = @plannedDueDate,
+            production_start_time = @productionStartTime,
+            completion_time = @completionTime,
+            close_time = @closeTime,
+            work_order_version = @workOrderVersion,
+            parent_work_order_version = @parentWorkOrderVersion,
+            product_order_no = @productOrderNo,
+            product_order_version = @productOrderVersion,
+            sales_order_no = @salesOrderNo,
+            main_batch_no = @mainBatchNo,
+            description = @description,
+            update_time = @updateTime
+            WHERE work_order_id = @workOrderId";
 
             parameters = new[]
             {
@@ -472,6 +492,37 @@ namespace MES.DAL.WorkOrder
         }
 
         /// <summary>
+        /// ★★★ 核心修正：重写 GetAll 方法，使用 LEFT JOIN 获取产品名称 ★★★
+        /// </summary>
+        public override List<WorkOrderInfo> GetAll()
+        {
+            try
+            {
+                const string sql = @"
+                    SELECT 
+                        wo.*, 
+                        p.product_name,
+                        p.product_code
+                    FROM 
+                        work_order_info wo
+                    LEFT JOIN 
+                        product_info p ON wo.product_id = p.id
+                    WHERE 
+                        wo.is_deleted = 0
+                    ORDER BY 
+                        wo.id DESC";
+
+                DataTable dataTable = DatabaseHelper.ExecuteQuery(sql);
+                return ConvertDataTableToList(dataTable);
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("获取所有工单（带产品名称）失败", ex);
+                throw new MESException("数据库查询失败", ex);
+            }
+        }
+
+        /// <summary>
         /// 获取已完成的工单列表
         /// </summary>
         /// <returns>已完成的工单列表</returns>
@@ -479,8 +530,23 @@ namespace MES.DAL.WorkOrder
         {
             try
             {
-                // 获取状态为已完成(2)的工单
-                return GetByCondition("work_order_status = 2 ORDER BY completion_time DESC");
+                // ★★★ 核心修正：使用 JOIN 查询 ★★★
+                const string sql = @"
+                    SELECT 
+                        wo.*, 
+                        p.product_name,
+                        p.product_code
+                    FROM 
+                        work_order_info wo
+                    LEFT JOIN 
+                        product_info p ON wo.product_id = p.id
+                    WHERE 
+                        wo.is_deleted = 0 AND wo.work_order_status = 2
+                    ORDER BY 
+                        wo.completion_time DESC";
+
+                DataTable dataTable = DatabaseHelper.ExecuteQuery(sql);
+                return ConvertDataTableToList(dataTable);
             }
             catch (Exception ex)
             {

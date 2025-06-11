@@ -324,3 +324,7 @@ src/MES.BLL/bin/Debug/MES.BLL.dll
 src/MES.BLL/bin/Debug/MES.BLL.pdb
 src/MES.BLL/obj/Debug/MES.BLL.dll
 src/MES.BLL/obj/Debug/MES.BLL.pdb
+/src/MES.UI
+/.gitignore
+/src/MES.DAL/.vs/MES.DAL.csproj.dtbcache.json
+/src/MES.UI/App.config
