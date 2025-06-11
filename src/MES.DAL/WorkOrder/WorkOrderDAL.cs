@@ -1,4 +1,4 @@
-﻿﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using MySql.Data.MySqlClient;
@@ -8,6 +8,7 @@ using MES.DAL.Base;
 using MES.DAL.Core;
 using MES.Common.Logging;
 using MES.Common.Exceptions;
+using MES.Models.Production;
 
 namespace MES.DAL.WorkOrder
 {
@@ -266,6 +267,47 @@ namespace MES.DAL.WorkOrder
                 throw new MESException("更新工单数量信息失败", ex);
             }
         }
+
+        /// <summary>
+        /// 删除工单（软删除）
+        /// </summary>
+        /// <param name="workOrderId">工单ID</param>
+        /// <param name="cancelReason">取消原因</param>
+        /// <returns>是否成功</returns>
+        public bool Delete(string workOrderNum, string cancelReason)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(workOrderNum))
+                {
+                    throw new ArgumentException("工单号不能为空", "workOrderNum");
+                }
+
+                string sql = @"UPDATE work_order_info SET 
+                      is_deleted = 1,
+                      delete_time = @deleteTime,
+                      delete_user_id = @deleteUserId,
+                      delete_user_name = @deleteUserName,
+                      description = CONCAT(IFNULL(description, ''), ' [取消原因: ', @cancelReason, ']')
+                      WHERE work_order_num = @workOrderNum";
+
+                var parameters = new[]
+                {
+            DatabaseHelper.CreateParameter("@deleteTime", DateTime.Now),
+            DatabaseHelper.CreateParameter("@deleteUserId", 0), // 系统用户
+            DatabaseHelper.CreateParameter("@deleteUserName", "系统"),
+            DatabaseHelper.CreateParameter("@cancelReason", cancelReason),
+            DatabaseHelper.CreateParameter("@workOrderNum", workOrderNum)
+        };
+
+                return DatabaseHelper.ExecuteNonQuery(sql, parameters) > 0;
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error(string.Format("删除工单失败，工单号: {0}", workOrderNum), ex);
+                throw new MESException("删除工单失败", ex);
+            }
+        }
         /// <summary>
         /// 构建INSERT SQL语句
         /// </summary>
@@ -274,19 +316,19 @@ namespace MES.DAL.WorkOrder
         protected override bool BuildInsertSql(WorkOrderInfo entity, out string sql, out MySqlParameter[] parameters)
         {
             sql = @"INSERT INTO work_order_info
-                          (work_order_num, work_order_type, product_id, flow_id, bom_id,
-                           planned_quantity, input_quantity, output_quantity, scrap_quantity,
-                           work_order_status, process_status, lock_status, factory_id, hot_type,
-                           planned_start_time, planned_due_date, create_time, production_start_time,
-                           completion_time, close_time, work_order_version, parent_work_order_version,
-                           product_order_no, product_order_version, sales_order_no, main_batch_no, description)
-                          VALUES
-                          (@workOrderNum, @workOrderType, @productId, @flowId, @bomId,
-                           @plannedQuantity, @inputQuantity, @outputQuantity, @scrapQuantity,
-                           @workOrderStatus, @processStatus, @lockStatus, @factoryId, @hotType,
-                           @plannedStartTime, @plannedDueDate, @createTime, @productionStartTime,
-                           @completionTime, @closeTime, @workOrderVersion, @parentWorkOrderVersion,
-                           @productOrderNo, @productOrderVersion, @salesOrderNo, @mainBatchNo, @description)";
+            (work_order_num, work_order_type, product_id, flow_id, bom_id,
+             planned_quantity, input_quantity, output_quantity, scrap_quantity,
+             work_order_status, process_status, lock_status, factory_id, hot_type,
+             planned_start_time, planned_due_date, create_time, production_start_time,
+             completion_time, close_time, work_order_version, parent_work_order_version,
+             product_order_no, product_order_version, sales_order_no, main_batch_no, description)
+            VALUES
+            (@workOrderNum, @workOrderType, @productId, @flowId, @bomId,
+             @plannedQuantity, @inputQuantity, @outputQuantity, @scrapQuantity,
+             @workOrderStatus, @processStatus, @lockStatus, @factoryId, @hotType,
+             @plannedStartTime, @plannedDueDate, @createTime, @productionStartTime,
+             @completionTime, @closeTime, @workOrderVersion, @parentWorkOrderVersion,
+             @productOrderNo, @productOrderVersion, @salesOrderNo, @mainBatchNo, @description)";
 
             parameters = new[]
             {
@@ -330,34 +372,34 @@ namespace MES.DAL.WorkOrder
         protected override bool BuildUpdateSql(WorkOrderInfo entity, out string sql, out MySqlParameter[] parameters)
         {
             sql = @"UPDATE work_order_info SET
-                          work_order_num = @workOrderNum, 
-                          work_order_type = @workOrderType,
-                          product_id = @productId, 
-                          flow_id = @flowId,
-                          bom_id = @bomId,
-                          planned_quantity = @plannedQuantity,
-                          input_quantity = @inputQuantity,
-                          output_quantity = @outputQuantity,
-                          scrap_quantity = @scrapQuantity,
-                          work_order_status = @workOrderStatus,
-                          process_status = @processStatus,
-                          lock_status = @lockStatus,
-                          factory_id = @factoryId,
-                          hot_type = @hotType,
-                          planned_start_time = @plannedStartTime,
-                          planned_due_date = @plannedDueDate,
-                          production_start_time = @productionStartTime,
-                          completion_time = @completionTime,
-                          close_time = @closeTime,
-                          work_order_version = @workOrderVersion,
-                          parent_work_order_version = @parentWorkOrderVersion,
-                          product_order_no = @productOrderNo,
-                          product_order_version = @productOrderVersion,
-                          sales_order_no = @salesOrderNo,
-                          main_batch_no = @mainBatchNo,
-                          description = @description,
-                          update_time = @updateTime
-                          WHERE work_order_id = @workOrderId";
+            work_order_num = @workOrderNum, 
+            work_order_type = @workOrderType,
+            product_id = @productId, 
+            flow_id = @flowId,
+            bom_id = @bomId,
+            planned_quantity = @plannedQuantity,
+            input_quantity = @inputQuantity,
+            output_quantity = @outputQuantity,
+            scrap_quantity = @scrapQuantity,
+            work_order_status = @workOrderStatus,
+            process_status = @processStatus,
+            lock_status = @lockStatus,
+            factory_id = @factoryId,
+            hot_type = @hotType,
+            planned_start_time = @plannedStartTime,
+            planned_due_date = @plannedDueDate,
+            production_start_time = @productionStartTime,
+            completion_time = @completionTime,
+            close_time = @closeTime,
+            work_order_version = @workOrderVersion,
+            parent_work_order_version = @parentWorkOrderVersion,
+            product_order_no = @productOrderNo,
+            product_order_version = @productOrderVersion,
+            sales_order_no = @salesOrderNo,
+            main_batch_no = @mainBatchNo,
+            description = @description,
+            update_time = @updateTime
+            WHERE work_order_id = @workOrderId";
 
             parameters = new[]
             {

@@ -5,6 +5,10 @@ using System.Linq;
 using MES.Models.WorkOrder;
 using MES.DAL.WorkOrder;
 using MES.Common.Logging;
+using MES.Common.Exceptions;
+using MES.DAL.Production;
+using MES.Models.Production;
+using MES.BLL.Production;
 
 namespace MES.BLL.WorkOrder
 {
@@ -22,6 +26,7 @@ namespace MES.BLL.WorkOrder
         {
             workOrderDAL = new WorkOrderDAL();
         }
+
 
         /// <summary>
         /// 创建工单
@@ -276,6 +281,8 @@ namespace MES.BLL.WorkOrder
             }
         }
 
+
+
         /// <summary>
         /// 获取可提交的工单列表
         /// </summary>
@@ -416,7 +423,131 @@ namespace MES.BLL.WorkOrder
                 default: return -1;
             }
         }
+        /// <summary>
+        /// 根据状态获取工单列表
+        /// </summary>
+        /// <param name="statuses">状态数组</param>
+        /// <returns>工单数据表</returns>
+        public DataTable GetWorkOrdersByStatus(int[] statuses)
+        {
+            try
+            {
+                // 从数据库获取指定状态的工单数据
+                var workOrders = workOrderDAL.GetByCondition("work_order_status IN (" + string.Join(",", statuses) + ")");
 
+                DataTable table = new DataTable();
+                table.Columns.Add("Id", typeof(int));
+                table.Columns.Add("WorkOrderNo", typeof(string));
+                table.Columns.Add("WorkOrderType", typeof(string));
+                table.Columns.Add("ProductCode", typeof(string));
+                table.Columns.Add("PlanQuantity", typeof(decimal));
+                table.Columns.Add("Status", typeof(string));
+                table.Columns.Add("CreatedBy", typeof(string));
+                table.Columns.Add("CreatedDate", typeof(DateTime));
+
+                // 将真实数据填充到DataTable中
+                foreach (var workOrder in workOrders)
+                {
+                    table.Rows.Add(
+                        workOrder.WorkOrderId,
+                        workOrder.WorkOrderNum,
+                        workOrder.WorkOrderType,
+                        workOrder.ProductCode ?? "",
+                        workOrder.PlannedQuantity,
+                        GetWorkOrderStatusText(workOrder.WorkOrderStatus),
+                        "系统", // 默认创建人
+                        workOrder.CreateTime
+                    );
+                }
+
+                return table;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(string.Format("获取工单列表失败：{0}", ex.Message), ex);
+            }
+        }
+
+        /// <summary>
+        /// <summary>
+        /// 删除工单
+        /// </summary>
+        /// <param name="workOrderNum">工单号</param>
+        /// <param name="cancelReason">取消原因</param>
+        /// <returns>是否成功</returns>
+        public bool DeleteWorkOrder(string workOrderNum, string cancelReason)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(workOrderNum))
+                {
+                    throw new ArgumentException("工单号不能为空");
+                }
+
+                if (string.IsNullOrEmpty(cancelReason))
+                {
+                    throw new ArgumentException("取消原因不能为空");
+                }
+
+                // 调用DAL层删除工单
+                return workOrderDAL.Delete(workOrderNum, cancelReason);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(string.Format("删除工单失败：{0}", ex.Message), ex);
+            }
+        }
+        public bool AddProductionOrder(ProductionOrderInfo productionOrder)
+        {
+            try
+            {
+                // 基本验证
+                if (productionOrder == null)
+                {
+                    LogManager.Error("添加生产订单失败：生产订单信息不能为空");
+                    return false;
+                }
+
+                // 详细验证
+                string validationError = ValidateProductionOrder(productionOrder);
+                if (!string.IsNullOrEmpty(validationError))
+                {
+                    LogManager.Error("添加生产订单验证失败：{validationError}");
+                    return false;
+                }
+
+                // 调用DAL层添加
+                bool result = new ProductionOrderDAL().Add(productionOrder);
+
+                if (!result)
+                {
+                    LogManager.Error("添加生产订单失败，DAL层返回false");
+                }
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("添加生产订单异常：{ex.Message}", ex);
+                throw new MESException("添加生产订单时发生异常", ex);
+            }
+        }
+        private string ValidateProductionOrder(ProductionOrderInfo order)
+        {
+            if (string.IsNullOrEmpty(order.OrderNo))
+                return "订单号不能为空";
+
+            if (string.IsNullOrEmpty(order.ProductCode))
+                return "产品编码不能为空";
+
+            if (order.PlannedQuantity <= 0)
+                return "计划数量必须大于0";
+
+            if (order.PlanStartTime >= order.PlanEndTime)
+                return "计划开始时间必须早于计划结束时间";
+
+            return string.Empty;
+        }
         /// <summary>
         /// 获取工单状态文本
         /// </summary>
@@ -433,7 +564,9 @@ namespace MES.BLL.WorkOrder
                 default: return "未知状态";
             }
         }
+
     }
+
 
     /// <summary>
     /// 工单模型（临时定义，应该在Models项目中）

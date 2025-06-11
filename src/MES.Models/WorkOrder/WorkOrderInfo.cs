@@ -4,14 +4,19 @@ using MES.Models.Base;
 namespace MES.Models.WorkOrder
 {
     /// <summary>
-    /// 工单
+    /// 工单信息
     /// </summary>
     public class WorkOrderInfo : BaseModel
     {
         /// <summary>
-        /// 工单ID
+        /// 主键ID
         /// </summary>
-        public int WorkOrderId { get; set; }
+        public int Id { get; set; }
+
+        /// <summary>
+        /// 工单ID（兼容旧系统）
+        /// </summary>
+        public int WorkOrderId { get; set; } = 0;
 
         /// <summary>
         /// 工单号
@@ -51,27 +56,27 @@ namespace MES.Models.WorkOrder
         /// <summary>
         /// 计划数量
         /// </summary>
-        public decimal PlannedQuantity { get; set; }
+        public decimal PlannedQuantity { get; set; } = 0.0000m;
 
         /// <summary>
         /// 投入数量
         /// </summary>
-        public decimal InputQuantity { get; set; }
+        public decimal InputQuantity { get; set; } = 0.0000m;
 
         /// <summary>
         /// 产出数量
         /// </summary>
-        public decimal OutputQuantity { get; set; }
+        public decimal OutputQuantity { get; set; } = 0.0000m;
 
         /// <summary>
         /// 报废数量
         /// </summary>
-        public decimal ScrapQuantity { get; set; }
+        public decimal ScrapQuantity { get; set; } = 0.0000m;
 
         /// <summary>
         /// 工单状态(0:未开始,1:进行中,2:已完成,3:已关闭)
         /// </summary>
-        public int WorkOrderStatus { get; set; }
+        public int WorkOrderStatus { get; set; } = 0;
 
         /// <summary>
         /// 工艺状态
@@ -81,12 +86,12 @@ namespace MES.Models.WorkOrder
         /// <summary>
         /// 锁定状态(0:未锁定,1:已锁定)
         /// </summary>
-        public int LockStatus { get; set; }
+        public int LockStatus { get; set; } = 0;
 
         /// <summary>
         /// 工厂ID
         /// </summary>
-        public int FactoryId { get; set; }
+        public int FactoryId { get; set; } = 0;
 
         /// <summary>
         /// Hot类型
@@ -102,11 +107,6 @@ namespace MES.Models.WorkOrder
         /// 计划到期日
         /// </summary>
         public DateTime? PlannedDueDate { get; set; }
-
-        /// <summary>
-        /// 创建时间（隐藏基类成员）
-        /// </summary>
-        public new DateTime CreateTime { get; set; }
 
         /// <summary>
         /// 投产时间
@@ -157,6 +157,60 @@ namespace MES.Models.WorkOrder
         /// 说明
         /// </summary>
         public string Description { get; set; }
+
+        /// <summary>
+        /// 创建人ID
+        /// </summary>
+        public int? CreateUserId { get; set; }
+
+        /// <summary>
+        /// 创建人姓名
+        /// </summary>
+        public string CreateUserName { get; set; }
+
+        /// <summary>
+        /// 最后修改时间
+        /// </summary>
+        public DateTime? UpdateTime { get; set; }
+
+        /// <summary>
+        /// 最后修改人ID
+        /// </summary>
+        public int? UpdateUserId { get; set; }
+
+        /// <summary>
+        /// 最后修改人姓名
+        /// </summary>
+        public string UpdateUserName { get; set; }
+
+        /// <summary>
+        /// 是否删除（软删除标记）
+        /// </summary>
+        public bool IsDeleted { get; set; } = false;
+
+        /// <summary>
+        /// 删除时间
+        /// </summary>
+        public DateTime? DeleteTime { get; set; }
+
+        /// <summary>
+        /// 删除人ID
+        /// </summary>
+        public int? DeleteUserId { get; set; }
+
+        /// <summary>
+        /// 删除人姓名
+        /// </summary>
+        public string DeleteUserName { get; set; }
+
+        /// <summary>
+        /// 备注
+        /// </summary>
+        public string Remark { get; set; }
+
+        /// <summary>
+        /// 版本号（用于乐观锁）
+        /// </summary>
+        public int Version { get; set; } = 1;
     }
 }
-

@@ -150,19 +150,19 @@ namespace MES.UI.Forms.WorkOrder
             {
                 this.Cursor = Cursors.WaitCursor;
 
-                // 只加载可取消状态的工单（已创建、已提交但未开始生产）
-                workOrderDataTable = workOrderBLL.GetCancellableWorkOrders();
+                // 加载状态为待开始(0)和已完成(2)的工单
+                workOrderDataTable = workOrderBLL.GetWorkOrdersByStatus(new[] { 0, 2 });
 
                 if (workOrderDataTable != null && workOrderDataTable.Rows.Count > 0)
                 {
                     dgvWorkOrders.DataSource = workOrderDataTable;
                     SetupDataGridColumns();
-                    lblWorkOrderCount.Text = string.Format("共 {0} 条可取消工单", workOrderDataTable.Rows.Count);
+                    lblWorkOrderCount.Text = string.Format("共 {0} 条工单", workOrderDataTable.Rows.Count);
                 }
                 else
                 {
                     dgvWorkOrders.DataSource = null;
-                    lblWorkOrderCount.Text = "暂无可取消的工单";
+                    lblWorkOrderCount.Text = "暂无符合条件的工单";
                 }
 
                 LogManager.Info(string.Format("加载工单数据完成，共 {0} 条记录",
@@ -343,8 +343,12 @@ namespace MES.UI.Forms.WorkOrder
             {
                 this.Cursor = Cursors.WaitCursor;
 
-                // 调用业务逻辑层取消工单
-                bool success = workOrderBLL.CancelWorkOrder(selectedWorkOrderNo, txtCancelReason.Text.Trim());
+                // 获取选中的工单号
+                var selectedRow = dgvWorkOrders.SelectedRows[0];
+                string workOrderNo = selectedRow.Cells["WorkOrderNo"].Value.ToString();
+
+                // 调用业务逻辑层删除工单
+                bool success = workOrderBLL.DeleteWorkOrder(workOrderNo, txtCancelReason.Text.Trim());
 
                 if (success)
                 {
@@ -352,7 +356,7 @@ namespace MES.UI.Forms.WorkOrder
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                     LogManager.Info(string.Format("工单 [{0}] 取消成功，取消原因：{1}",
-                        selectedWorkOrderNo, txtCancelReason.Text.Trim()));
+                        workOrderNo, txtCancelReason.Text.Trim()));
 
                     // 清空取消原因
                     txtCancelReason.Clear();
@@ -360,10 +364,10 @@ namespace MES.UI.Forms.WorkOrder
                     // 重新加载数据
                     LoadWorkOrderData();
 
-                    // 如果没有更多可取消的工单，关闭窗体
+                    // 如果没有更多工单，关闭窗体
                     if (workOrderDataTable == null || workOrderDataTable.Rows.Count == 0)
                     {
-                        MessageBox.Show("已无可取消的工单，窗体将关闭。", "提示",
+                        MessageBox.Show("已无符合条件的工单，窗体将关闭。", "提示",
                             MessageBoxButtons.OK, MessageBoxIcon.Information);
                         this.Close();
                     }
@@ -449,5 +453,10 @@ namespace MES.UI.Forms.WorkOrder
         }
 
         #endregion
+
+        private void CancelWorkOrder_Load_1(object sender, EventArgs e)
+        {
+
+        }
     }
 }

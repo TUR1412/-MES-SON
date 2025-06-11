@@ -7,6 +7,8 @@ using MES.BLL.WorkOrder;
 using MES.Models.WorkOrder;
 using MES.Common.Logging;
 using MES.Common.Exceptions;
+using MES.BLL.Production;
+using MES.Models.Production;
 
 namespace MES.UI.Forms.WorkOrder
 {
@@ -18,9 +20,10 @@ namespace MES.UI.Forms.WorkOrder
     {
         #region 私有字段
 
-        private WorkOrderBLL workOrderBLL;
-        private DataTable workOrderDataTable;
-        private string selectedWorkOrderNo;
+        private WorkOrderBLL _workOrderBLL;
+        private ProductionOrderBLL _productionOrderBLL;
+        private DataTable _workOrderDataTable;
+        private string _selectedWorkOrderNo;
 
         #endregion
 
@@ -48,7 +51,8 @@ namespace MES.UI.Forms.WorkOrder
         {
             try
             {
-                workOrderBLL = new WorkOrderBLL();
+                _workOrderBLL = new WorkOrderBLL();
+                _productionOrderBLL = new ProductionOrderBLL();
                 LogManager.Info("提交工单窗体业务逻辑初始化完成");
             }
             catch (Exception ex)
@@ -150,14 +154,14 @@ namespace MES.UI.Forms.WorkOrder
             {
                 this.Cursor = Cursors.WaitCursor;
 
-                // 只加载可提交状态的工单（已创建但未提交）
-                workOrderDataTable = workOrderBLL.GetSubmittableWorkOrders();
+                // 只加载状态为待开始的工单
+                _workOrderDataTable = _workOrderBLL.GetWorkOrdersByStatus(new[] { 0 });
 
-                if (workOrderDataTable != null && workOrderDataTable.Rows.Count > 0)
+                if (_workOrderDataTable != null && _workOrderDataTable.Rows.Count > 0)
                 {
-                    dgvWorkOrders.DataSource = workOrderDataTable;
+                    dgvWorkOrders.DataSource = _workOrderDataTable;
                     SetupDataGridColumns();
-                    lblWorkOrderCount.Text = string.Format("共 {0} 条可提交工单", workOrderDataTable.Rows.Count);
+                    lblWorkOrderCount.Text = string.Format("共 {0} 条可提交工单", _workOrderDataTable.Rows.Count);
                 }
                 else
                 {
@@ -166,7 +170,7 @@ namespace MES.UI.Forms.WorkOrder
                 }
 
                 LogManager.Info(string.Format("加载工单数据完成，共 {0} 条记录",
-                    workOrderDataTable != null ? workOrderDataTable.Rows.Count : 0));
+                    _workOrderDataTable != null ? _workOrderDataTable.Rows.Count : 0));
             }
             catch (Exception ex)
             {
@@ -238,17 +242,17 @@ namespace MES.UI.Forms.WorkOrder
                 if (dgvWorkOrders.SelectedRows.Count > 0)
                 {
                     var selectedRow = dgvWorkOrders.SelectedRows[0];
-                    selectedWorkOrderNo = selectedRow.Cells["WorkOrderNo"].Value != null ? selectedRow.Cells["WorkOrderNo"].Value.ToString() : null;
+                    _selectedWorkOrderNo = selectedRow.Cells["WorkOrderNo"].Value != null ? selectedRow.Cells["WorkOrderNo"].Value.ToString() : null;
 
                     // 显示工单详细信息
                     ShowWorkOrderDetails(selectedRow);
 
                     // 启用提交按钮
-                    btnSubmit.Enabled = !string.IsNullOrEmpty(selectedWorkOrderNo);
+                    btnSubmit.Enabled = !string.IsNullOrEmpty(_selectedWorkOrderNo);
                 }
                 else
                 {
-                    selectedWorkOrderNo = null;
+                    _selectedWorkOrderNo = null;
                     ClearWorkOrderDetails();
                     btnSubmit.Enabled = false;
                 }
@@ -302,7 +306,7 @@ namespace MES.UI.Forms.WorkOrder
         {
             try
             {
-                if (string.IsNullOrEmpty(selectedWorkOrderNo))
+                if (string.IsNullOrEmpty(_selectedWorkOrderNo))
                 {
                     MessageBox.Show("请先选择要提交的工单！", "提示",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -310,7 +314,7 @@ namespace MES.UI.Forms.WorkOrder
                 }
 
                 var result = MessageBox.Show(
-                    string.Format("确认要提交工单 [{0}] 吗？\n\n提交后工单将进入生产准备状态。", selectedWorkOrderNo),
+                    string.Format("确认要提交工单 [{0}] 吗？\n\n提交后工单将进入生产准备状态。", _selectedWorkOrderNo),
                     "确认提交", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
                 if (result == DialogResult.Yes)
@@ -335,42 +339,60 @@ namespace MES.UI.Forms.WorkOrder
             {
                 this.Cursor = Cursors.WaitCursor;
 
-                // 调用业务逻辑层提交工单
-                string submitRemark = string.IsNullOrWhiteSpace(txtSubmitRemark.Text) ? "正常提交" : txtSubmitRemark.Text.Trim();
-                bool success = workOrderBLL.SubmitWorkOrder(selectedWorkOrderNo, submitRemark);
+                // 获取选中的工单信息
+                var selectedRow = dgvWorkOrders.SelectedRows[0];
+                var workOrderNo = selectedRow.Cells["WorkOrderNo"].Value.ToString();
+                var productCode = selectedRow.Cells["ProductCode"].Value.ToString();
+                var planQuantity = Convert.ToDecimal(selectedRow.Cells["PlanQuantity"].Value);
+                var createdBy = selectedRow.Cells["CreatedBy"].Value.ToString();
 
-                if (success)
+                // 创建生产订单
+                var productionOrder = new ProductionOrderInfo
                 {
-                    MessageBox.Show("工单提交成功！", "成功",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    OrderNo = "PO" + DateTime.Now.ToString("yyyyMMdd") + workOrderNo.Substring(2),
+                    ProductCode = productCode,
+                    ProductName = productCode, // 使用产品编码作为名称
+                    PlannedQuantity = planQuantity,
+                    PlanStartTime = DateTime.Now,
+                    PlanEndTime = DateTime.Now.AddDays(7),
+                    Status = "待开始",
+                    Priority = "普通",
+                    WorkshopName = "默认车间", // 应该从数据库获取实际车间
+                    ResponsiblePerson = createdBy,
+                    CreateTime = DateTime.Now,
+                    CreateUserName = createdBy,
+                    Unit = "个" // 添加单位信息
+                };
 
-                    LogManager.Info(string.Format("工单 [{0}] 提交成功，备注：{1}",
-                        selectedWorkOrderNo, submitRemark));
+                // 更新工单状态为进行中
+                bool updateSuccess = _workOrderBLL.SubmitWorkOrder(workOrderNo, txtSubmitRemark.Text.Trim());
 
-                    // 清空提交备注
-                    txtSubmitRemark.Clear();
-
-                    // 重新加载数据
-                    LoadWorkOrderData();
-
-                    // 如果没有更多可提交的工单，关闭窗体
-                    if (workOrderDataTable == null || workOrderDataTable.Rows.Count == 0)
-                    {
-                        MessageBox.Show("已无可提交的工单，窗体将关闭。", "提示",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        this.Close();
-                    }
-                }
-                else
+                if (!updateSuccess)
                 {
-                    MessageBox.Show("工单提交失败，请检查工单状态或联系系统管理员！", "失败",
+                    MessageBox.Show("工单状态更新失败，请检查日志获取详细信息", "失败",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                MessageBox.Show("工单提交成功！", "成功",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                // 清空提交备注
+                txtSubmitRemark.Clear();
+
+                // 重新加载数据
+                LoadWorkOrderData();
+
+                // 如果没有更多可提交的工单，关闭窗体
+                if (_workOrderDataTable == null || _workOrderDataTable.Rows.Count == 0)
+                {
+                    this.Close();
                 }
             }
             catch (Exception ex)
             {
                 LogManager.Error("执行提交工单操作失败", ex);
-                MessageBox.Show(string.Format("提交工单失败：{0}", ex.Message), "错误",
+                MessageBox.Show("提交工单失败：{ex.Message}", "错误",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
