@@ -35,6 +35,7 @@ namespace MES.UI.Forms.Material
                 // --- 新增模式 ---
                 this.isNew = true;
                 this.Text = "新增物料";
+                lblTitle.Text = "📦 新增物料信息";
                 // 创建一个新的DTO对象，并设置默认值
                 this.MaterialData = new MaterialDto { Status = true };
             }
@@ -43,6 +44,7 @@ namespace MES.UI.Forms.Material
                 // --- 编辑模式 ---
                 this.isNew = false;
                 this.Text = "编辑物料";
+                lblTitle.Text = "📦 编辑物料信息";
                 // 使用传入DTO的副本进行编辑，这样即使用户点击“取消”，主窗体的数据也不会被更改
                 this.MaterialData = materialDto.Clone();
             }

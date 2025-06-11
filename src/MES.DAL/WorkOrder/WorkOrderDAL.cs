@@ -266,6 +266,47 @@ namespace MES.DAL.WorkOrder
                 throw new MESException("更新工单数量信息失败", ex);
             }
         }
+
+        /// <summary>
+        /// 删除工单（软删除）
+        /// </summary>
+        /// <param name="workOrderId">工单ID</param>
+        /// <param name="cancelReason">取消原因</param>
+        /// <returns>是否成功</returns>
+        public bool Delete(string workOrderNum, string cancelReason)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(workOrderNum))
+                {
+                    throw new ArgumentException("工单号不能为空", "workOrderNum");
+                }
+
+                string sql = @"UPDATE work_order_info SET 
+                      is_deleted = 1,
+                      delete_time = @deleteTime,
+                      delete_user_id = @deleteUserId,
+                      delete_user_name = @deleteUserName,
+                      description = CONCAT(IFNULL(description, ''), ' [取消原因: ', @cancelReason, ']')
+                      WHERE work_order_num = @workOrderNum";
+
+                var parameters = new[]
+                {
+            DatabaseHelper.CreateParameter("@deleteTime", DateTime.Now),
+            DatabaseHelper.CreateParameter("@deleteUserId", 0), // 系统用户
+            DatabaseHelper.CreateParameter("@deleteUserName", "系统"),
+            DatabaseHelper.CreateParameter("@cancelReason", cancelReason),
+            DatabaseHelper.CreateParameter("@workOrderNum", workOrderNum)
+        };
+
+                return DatabaseHelper.ExecuteNonQuery(sql, parameters) > 0;
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error(string.Format("删除工单失败，工单号: {0}", workOrderNum), ex);
+                throw new MESException("删除工单失败", ex);
+            }
+        }
         /// <summary>
         /// 构建INSERT SQL语句
         /// </summary>
