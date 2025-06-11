@@ -417,6 +417,12 @@ namespace MES.UI.Forms.Material
                 Description = txtDescription.Text.Trim()
             };
 
+            // ★★★ 核心修正：如果是在编辑模式下，必须继承原有的工艺步骤列表 ★★★
+            if (_isEditMode && _processRoute != null)
+            {
+                processRoute.Steps = _processRoute.Steps;
+            }
+
             return processRoute;
         }
 

@@ -140,50 +140,42 @@ namespace MES.DAL.Material
         /// <returns>是否成功</returns>
         public bool UpdateProcessRoute(ProcessRoute processRoute)
         {
-            using (var connection = DatabaseHelper.CreateConnection())
+            // 因为此方法现在只更新主表，不再需要事务
+            try
             {
-                connection.Open();
-                var transaction = connection.BeginTransaction();
-                try
+                const string sql = @"
+                    UPDATE process_route SET 
+                        route_code = @routeCode, 
+                        route_name = @routeName, 
+                        product_id = @productId, 
+                        version = @version, 
+                        status = @status, 
+                        description = @description, 
+                        update_user_id = @updateUserId, 
+                        update_user_name = @updateUserName, 
+                        update_time = @updateTime 
+                    WHERE id = @id";
+
+                var parameters = new[]
                 {
-                    string sql = "UPDATE process_route SET route_code = @routeCode, route_name = @routeName, product_id = @productId, version = @version, status = @status, description = @description, update_user_id = @updateUserId, update_user_name = @updateUserName, update_time = @updateTime WHERE id = @id";
-                    var cmd = new MySqlCommand(sql, connection, transaction);
-                    cmd.Parameters.AddRange(new[]
-                    {
-                        DatabaseHelper.CreateParameter("@routeCode", processRoute.RouteCode),
-                        DatabaseHelper.CreateParameter("@routeName", processRoute.RouteName),
-                        DatabaseHelper.CreateParameter("@productId", processRoute.ProductId),
-                        DatabaseHelper.CreateParameter("@version", processRoute.Version),
-                        DatabaseHelper.CreateParameter("@status", (int)processRoute.Status),
-                        DatabaseHelper.CreateParameter("@description", processRoute.Description),
-                        DatabaseHelper.CreateParameter("@updateUserId", processRoute.UpdateUserId),
-                        DatabaseHelper.CreateParameter("@updateUserName", processRoute.UpdateUserName),
-                        DatabaseHelper.CreateParameter("@updateTime", processRoute.UpdateTime),
-                        DatabaseHelper.CreateParameter("@id", processRoute.Id)
-                    });
+                    DatabaseHelper.CreateParameter("@routeCode", processRoute.RouteCode),
+                    DatabaseHelper.CreateParameter("@routeName", processRoute.RouteName),
+                    DatabaseHelper.CreateParameter("@productId", processRoute.ProductId),
+                    DatabaseHelper.CreateParameter("@version", processRoute.Version),
+                    DatabaseHelper.CreateParameter("@status", (int)processRoute.Status),
+                    DatabaseHelper.CreateParameter("@description", processRoute.Description),
+                    DatabaseHelper.CreateParameter("@updateUserId", processRoute.UpdateUserId),
+                    DatabaseHelper.CreateParameter("@updateUserName", processRoute.UpdateUserName),
+                    DatabaseHelper.CreateParameter("@updateTime", processRoute.UpdateTime),
+                    DatabaseHelper.CreateParameter("@id", processRoute.Id)
+                };
 
-                    cmd.ExecuteNonQuery();
-
-                    // 先删除所有旧步骤，再添加所有新步骤，保证数据一致性
-                    DeleteAllProcessStepsByRouteIdInTransaction(processRoute.Id, connection, transaction);
-                    if (processRoute.Steps != null)
-                    {
-                        foreach (var step in processRoute.Steps)
-                        {
-                            step.ProcessRouteId = processRoute.Id;
-                            AddProcessStepInTransaction(step, connection, transaction);
-                        }
-                    }
-
-                    transaction.Commit();
-                    return true;
-                }
-                catch (Exception ex)
-                {
-                    transaction.Rollback();
-                    LogManager.Error(string.Format("更新工艺路线失败：编码={0}", processRoute?.RouteCode), ex);
-                    throw new MESException("数据库事务操作失败", ex);
-                }
+                return DatabaseHelper.ExecuteNonQuery(sql, parameters) > 0;
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error($"更新工艺路线失败：ID={processRoute?.Id}", ex);
+                throw new MESException("数据库操作失败", ex);
             }
         }
 
