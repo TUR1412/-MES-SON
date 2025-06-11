@@ -158,6 +158,8 @@ namespace MES.UI.Forms.Material
                 MaterialEditForm editForm = new MaterialEditForm(null); // null表示新增模式
                 if (editForm.ShowDialog() == DialogResult.OK)
                 {
+                    // 保存新增的数据
+                    SaveMaterialData(editForm.MaterialData);
                     LoadMaterialData(); // 刷新数据
                 }
             }
@@ -214,17 +216,17 @@ namespace MES.UI.Forms.Material
                 if (selectedMaterial != null)
                 {
                     DialogResult result = MessageBox.Show(
-                        string.Format("确定要删除物料 [{0}] {1} 吗？",
+                        string.Format("确定要永久删除物料 [{0}] {1} 吗？\n\n警告：此操作将从数据库中彻底删除该记录，无法恢复！",
                             selectedMaterial.MaterialCode, selectedMaterial.MaterialName),
-                        "确认删除",
+                        "确认永久删除",
                         MessageBoxButtons.YesNo,
-                        MessageBoxIcon.Question);
+                        MessageBoxIcon.Warning);
 
                     if (result == DialogResult.Yes)
                     {
                         materialBLL.DeleteMaterial(selectedMaterial.Id);
                         LoadMaterialData(); // 刷新数据
-                        MessageBox.Show("删除成功！", "提示",
+                        MessageBox.Show("物料已永久删除！", "删除成功",
                             MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                 }

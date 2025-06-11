@@ -120,12 +120,31 @@ namespace MES.BLL.Material
         {
             try
             {
-                return _bomDAL.Delete(id);
+                // 使用物理删除，真实从数据库中移除记录
+                return _bomDAL.PhysicalDelete(id);
             }
             catch (Exception ex)
             {
                 LogManager.Error(string.Format("删除BOM信息失败，ID: {0}", id), ex);
                 throw new MESException(string.Format("删除BOM信息失败，ID: {0}", id), ex);
+            }
+        }
+
+        /// <summary>
+        /// 逻辑删除BOM（软删除，可恢复）
+        /// </summary>
+        /// <param name="id">BOM ID</param>
+        /// <returns>删除是否成功</returns>
+        public bool SoftDeleteBOM(int id)
+        {
+            try
+            {
+                return _bomDAL.Delete(id);
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error(string.Format("逻辑删除BOM信息失败，ID: {0}", id), ex);
+                throw new MESException(string.Format("逻辑删除BOM信息失败，ID: {0}", id), ex);
             }
         }
 

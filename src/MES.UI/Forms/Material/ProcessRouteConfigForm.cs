@@ -517,8 +517,8 @@ namespace MES.UI.Forms.Material
                 return;
             }
 
-            var result = MessageBox.Show(string.Format("确定要删除工艺路线 '{0}' 吗？", _selectedRoute.RouteName),
-                "确认删除", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            var result = MessageBox.Show(string.Format("确定要永久删除工艺路线 '{0}' 吗？\n\n警告：此操作将从数据库中彻底删除该记录及其所有工艺步骤，无法恢复！", _selectedRoute.RouteName),
+                "确认永久删除", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
 
             if (result == DialogResult.Yes)
             {

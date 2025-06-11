@@ -104,6 +104,7 @@ namespace MES.UI.Forms.Material
             // --- 填充布尔和普通数值类型 ---
             txtStatus.Text = MaterialData.Status.ToString(); // 显示 "True" 或 "False"
             txtPrice.Text = MaterialData.Price.ToString("F2"); // 格式化为两位小数
+            txtRemark.Text = MaterialData.Remark ?? "";
 
             // --- UI交互逻辑 ---
             // 新增时，物料编码允许编辑；编辑时，为防止误改，设为只读
@@ -178,8 +179,7 @@ namespace MES.UI.Forms.Material
             }
 
             // --- 6. 收集备注 ---
-            // 假设您已将最后一个TextBox命名为txtRemark
-            // MaterialData.Remark = txtRemark.Text.Trim();
+            MaterialData.Remark = txtRemark.Text.Trim();
 
             // 所有验证和数据收集均已通过
             return true;

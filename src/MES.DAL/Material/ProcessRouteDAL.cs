@@ -188,13 +188,64 @@ namespace MES.DAL.Material
         {
             try
             {
-                string sql = "UPDATE process_route SET is_deleted = 1, update_time = @updateTime WHERE id = @id";
-                return DatabaseHelper.ExecuteNonQuery(sql, new[] { DatabaseHelper.CreateParameter("@updateTime", DateTime.Now), DatabaseHelper.CreateParameter("@id", id) }) > 0;
+                // 使用物理删除，真实从数据库中移除记录
+                return PhysicalDeleteProcessRoute(id);
             }
             catch (Exception ex)
             {
                 LogManager.Error(string.Format("删除工艺路线失败：ID={0}", id), ex);
                 throw new MESException("数据库操作失败", ex);
+            }
+        }
+
+        /// <summary>
+        /// 逻辑删除工艺路线（软删除，可恢复）
+        /// </summary>
+        /// <param name="id">工艺路线ID</param>
+        /// <returns>是否删除成功</returns>
+        public bool SoftDeleteProcessRoute(int id)
+        {
+            try
+            {
+                string sql = "UPDATE process_route SET is_deleted = 1, update_time = @updateTime WHERE id = @id";
+                return DatabaseHelper.ExecuteNonQuery(sql, new[] { DatabaseHelper.CreateParameter("@updateTime", DateTime.Now), DatabaseHelper.CreateParameter("@id", id) }) > 0;
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error(string.Format("逻辑删除工艺路线失败：ID={0}", id), ex);
+                throw new MESException("数据库操作失败", ex);
+            }
+        }
+
+        /// <summary>
+        /// 物理删除工艺路线（真实删除，不可恢复）
+        /// </summary>
+        /// <param name="id">工艺路线ID</param>
+        /// <returns>是否删除成功</returns>
+        public bool PhysicalDeleteProcessRoute(int id)
+        {
+            try
+            {
+                // 先删除相关的工艺步骤
+                string deleteStepsSQL = "DELETE FROM process_step WHERE process_route_id = @id";
+                DatabaseHelper.ExecuteNonQuery(deleteStepsSQL, new[] { DatabaseHelper.CreateParameter("@id", id) });
+
+                // 再删除工艺路线
+                string deleteRouteSQL = "DELETE FROM process_route WHERE id = @id";
+                int rowsAffected = DatabaseHelper.ExecuteNonQuery(deleteRouteSQL, new[] { DatabaseHelper.CreateParameter("@id", id) });
+
+                bool success = rowsAffected > 0;
+                if (success)
+                {
+                    LogManager.Info(string.Format("物理删除ProcessRoute成功，ID: {0}", id));
+                }
+
+                return success;
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error(string.Format("物理删除ProcessRoute失败，ID: {0}", id), ex);
+                throw new MESException("物理删除工艺路线失败", ex);
             }
         }
 

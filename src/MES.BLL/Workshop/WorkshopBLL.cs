@@ -113,11 +113,12 @@ namespace MES.BLL.Workshop
                 // 检查车间是否有正在进行的生产任务
                 // TODO: 这里需要与生产订单模块集成，检查是否有正在进行的生产任务
                 
-                bool result = _workshopDAL.Delete(id);
+                // 执行物理删除
+                bool result = _workshopDAL.PhysicalDelete(id);
                 
                 if (result)
                 {
-                    LogManager.Info(string.Format("成功删除车间：ID={0}, 车间编码={1}", id, existingWorkshop.WorkshopCode));
+                    LogManager.Info(string.Format("物理删除车间成功：ID={0}, 车间编码={1}", id, existingWorkshop.WorkshopCode));
                 }
                 else
                 {

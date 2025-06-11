@@ -120,11 +120,12 @@ namespace MES.BLL.Production
                     return false;
                 }
 
-                bool result = _productionOrderDAL.Delete(id);
+                // 执行物理删除
+                bool result = _productionOrderDAL.PhysicalDelete(id);
                 
                 if (result)
                 {
-                    LogManager.Info(string.Format("成功删除生产订单：ID={0}, 订单号={1}", id, existingOrder.OrderNumber));
+                    LogManager.Info(string.Format("物理删除生产订单成功：ID={0}, 订单号={1}", id, existingOrder.OrderNumber));
                 }
                 else
                 {

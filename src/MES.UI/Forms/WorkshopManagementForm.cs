@@ -317,15 +317,15 @@ namespace MES.UI.Forms
                     return;
                 }
 
-                var result = MessageBox.Show(string.Format("确定要删除车间 '{0}' 吗？", selectedWorkshop.WorkshopName),
-                    "确认删除", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                var result = MessageBox.Show(string.Format("确定要永久删除车间 '{0}' 吗？\n\n警告：此操作将从数据库中彻底删除该记录，无法恢复！", selectedWorkshop.WorkshopName),
+                    "确认永久删除", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
                 
                 if (result == DialogResult.Yes)
                 {
                     bool success = _workshopBLL.DeleteWorkshop(selectedWorkshop.Id);
                     if (success)
                     {
-                        MessageBox.Show("删除成功", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show("车间已永久删除！", "删除成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         LoadWorkshops();
                     }
                     else

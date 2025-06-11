@@ -290,6 +290,38 @@ namespace MES.DAL.Material
             }
         }
 
+        /// <summary>
+        /// 物理删除物料（真实删除，不可恢复）
+        /// </summary>
+        /// <param name="id">物料ID</param>
+        /// <returns>是否删除成功</returns>
+        public bool PhysicalDelete(int id)
+        {
+            try
+            {
+                string sql = "DELETE FROM material_info WHERE id = @id";
+                var parameters = new[]
+                {
+                    DatabaseHelper.CreateParameter("@id", id)
+                };
+
+                int rowsAffected = DatabaseHelper.ExecuteNonQuery(sql, parameters);
+
+                bool success = rowsAffected > 0;
+                if (success)
+                {
+                    LogManager.Info(string.Format("物理删除MaterialInfo成功，ID: {0}", id));
+                }
+
+                return success;
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error(string.Format("物理删除MaterialInfo失败，ID: {0}", id), ex);
+                throw new MESException("物理删除物料失败", ex);
+            }
+        }
+
         #endregion
 
         #region SQL构建实现

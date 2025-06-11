@@ -58,6 +58,8 @@
             this.txtStatus = new System.Windows.Forms.TextBox();
             this.lbPrice = new System.Windows.Forms.Label();
             this.txtPrice = new System.Windows.Forms.TextBox();
+            this.lbRemark = new System.Windows.Forms.Label();
+            this.txtRemark = new System.Windows.Forms.TextBox();
             this.btnSave = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.mySqlDataAdapter1 = new MySql.Data.MySqlClient.MySqlDataAdapter();
@@ -350,13 +352,32 @@
             this.txtPrice.Name = "txtPrice";
             this.txtPrice.Size = new System.Drawing.Size(300, 33);
             this.txtPrice.TabIndex = 1;
+            //
+            // lbRemark
+            //
+            this.lbRemark.AutoSize = true;
+            this.lbRemark.Font = new System.Drawing.Font("宋体", 12F);
+            this.lbRemark.Location = new System.Drawing.Point(20, 407);
+            this.lbRemark.Name = "lbRemark";
+            this.lbRemark.Size = new System.Drawing.Size(48, 24);
+            this.lbRemark.TabIndex = 0;
+            this.lbRemark.Text = "备注";
+            //
+            // txtRemark
+            //
+            this.txtRemark.Font = new System.Drawing.Font("宋体", 11F);
+            this.txtRemark.Location = new System.Drawing.Point(147, 403);
+            this.txtRemark.Multiline = true;
+            this.txtRemark.Name = "txtRemark";
+            this.txtRemark.Size = new System.Drawing.Size(300, 80);
+            this.txtRemark.TabIndex = 1;
             // 
             // btnSave
-            // 
+            //
             this.btnSave.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
             this.btnSave.Font = new System.Drawing.Font("宋体", 11F);
             this.btnSave.ForeColor = System.Drawing.Color.White;
-            this.btnSave.Location = new System.Drawing.Point(512, 613);
+            this.btnSave.Location = new System.Drawing.Point(512, 650);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(171, 59);
             this.btnSave.TabIndex = 3;
@@ -365,11 +386,11 @@
             this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             // 
             // btnCancel
-            // 
+            //
             this.btnCancel.BackColor = System.Drawing.Color.White;
             this.btnCancel.Font = new System.Drawing.Font("宋体", 11F);
             this.btnCancel.ForeColor = System.Drawing.Color.Black;
-            this.btnCancel.Location = new System.Drawing.Point(797, 613);
+            this.btnCancel.Location = new System.Drawing.Point(797, 650);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(171, 59);
             this.btnCancel.TabIndex = 3;
@@ -416,9 +437,11 @@
             this.panel1.Controls.Add(this.txtSafetyStock);
             this.panel1.Controls.Add(this.lbSupplier);
             this.panel1.Controls.Add(this.txtStandardCost);
+            this.panel1.Controls.Add(this.lbRemark);
+            this.panel1.Controls.Add(this.txtRemark);
             this.panel1.Location = new System.Drawing.Point(12, 104);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1007, 485);
+            this.panel1.Size = new System.Drawing.Size(1007, 520);
             this.panel1.TabIndex = 4;
             // 
             // panelTop
@@ -445,10 +468,10 @@
             this.lblTitle.Text = "物料信息添加&编辑";
             // 
             // MaterialEditForm
-            // 
+            //
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1064, 695);
+            this.ClientSize = new System.Drawing.Size(1064, 730);
             this.Controls.Add(this.panelTop);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.btnCancel);
@@ -495,6 +518,8 @@
         private System.Windows.Forms.TextBox txtStatus;
         private System.Windows.Forms.Label lbPrice;
         private System.Windows.Forms.TextBox txtPrice;
+        private System.Windows.Forms.Label lbRemark;
+        private System.Windows.Forms.TextBox txtRemark;
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.Button btnCancel;
         private MySql.Data.MySqlClient.MySqlDataAdapter mySqlDataAdapter1;

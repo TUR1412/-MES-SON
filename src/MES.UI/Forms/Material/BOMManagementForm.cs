@@ -514,9 +514,9 @@ namespace MES.UI.Forms.Material
                 }
 
                 var result = MessageBox.Show(
-                    string.Format("确认要删除BOM记录 [{0} - {1}] 吗？\n\n此操作不可撤销！",
+                    string.Format("确认要永久删除BOM记录 [{0} - {1}] 吗？\n\n警告：此操作将从数据库中彻底删除该记录，无法恢复！",
                         currentBom.BOMCode, currentBom.ProductName),
-                    "确认删除",
+                    "确认永久删除",
                     MessageBoxButtons.YesNo,
                     MessageBoxIcon.Warning);
 
@@ -529,7 +529,7 @@ namespace MES.UI.Forms.Material
                         LoadBOMData();
                         RefreshDataGridView();
 
-                        MessageBox.Show("BOM记录删除成功！", "成功",
+                        MessageBox.Show("BOM记录已永久删除！", "删除成功",
                             MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                         LogManager.Info(string.Format("删除BOM记录：{0} - {1}",
