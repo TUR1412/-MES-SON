@@ -4,6 +4,8 @@ using System.Windows.Forms;
 using MES.Common.Logging;
 using MES.BLL.Workshop;
 using MES.Models.Workshop;
+using System.Collections.Generic;
+using System.Data;
 
 namespace MES.UI.Forms.Batch
 {
@@ -30,34 +32,8 @@ namespace MES.UI.Forms.Batch
         {
             InitializeComponent();
             _batchBLL = new BatchBLL();
-
-            // 在窗体加载时应用真实LOL主题
-            this.Load += (sender, e) =>
-            {
-                ApplyLeagueTheme();
-            };
-
             InitializeEvents();
             LogManager.Info("批次管理窗体初始化完成");
-        }
-
-        /// <summary>
-        /// 应用真实LOL主题 - 基于真实LOL客户端设计
-        /// 严格遵循C# 5.0语法规范
-        /// </summary>
-        private void ApplyLeagueTheme()
-        {
-            try
-            {
-                // 使用新的真实LOL主题应用器
-                MES.UI.Framework.Themes.RealLeagueThemeApplier.ApplyRealLeagueTheme(this);
-            }
-            catch (Exception ex)
-            {
-                LogManager.Error("应用真实LOL主题失败", ex);
-                MessageBox.Show(string.Format("应用真实LOL主题失败: {0}", ex.Message), "主题错误",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
         }
 
         #endregion
@@ -70,16 +46,17 @@ namespace MES.UI.Forms.Batch
         private void InitializeEvents()
         {
             // 按钮事件绑定
-            this.btnCreateBatch.Click += BtnCreateBatch_Click;
+            this.btnCreateBatch.Click -= btnCreateBatch_Click_1;
+            this.btnCreateBatch.Click += btnCreateBatch_Click_1;
             this.btnCancelBatch.Click += BtnCancelBatch_Click;
             this.btnRefresh.Click += BtnRefresh_Click;
             this.btnSearch.Click += BtnSearch_Click;
             this.btnBatchDetails.Click += BtnBatchDetails_Click;
-            
+
             // 数据网格事件
             this.dgvBatches.SelectionChanged += DgvBatches_SelectionChanged;
             this.dgvBatches.CellDoubleClick += DgvBatches_CellDoubleClick;
-            
+
             // 窗体事件
             this.Load += BatchManagementForm_Load;
         }
@@ -172,10 +149,10 @@ namespace MES.UI.Forms.Batch
         {
             var totalCount = dgvBatches.Rows.Count;
             lblTotal.Text = string.Format("共 {0} 条批次记录", totalCount);
-            
+
             // 统计各状态数量
             int activeCount = 0, completedCount = 0, pausedCount = 0;
-            
+
             foreach (DataGridViewRow row in dgvBatches.Rows)
             {
                 var status = row.Cells["状态"].Value != null ? row.Cells["状态"].Value.ToString() : "";
@@ -192,7 +169,7 @@ namespace MES.UI.Forms.Batch
                         break;
                 }
             }
-            
+
             lblStatistics.Text = string.Format("进行中: {0} | 已完成: {1} | 已暂停: {2}", activeCount, completedCount, pausedCount);
         }
 
@@ -208,8 +185,6 @@ namespace MES.UI.Forms.Batch
             // 设置窗体状态
             this.WindowState = FormWindowState.Maximized;
 
-            // 初始化状态下拉框
-            cmbStatus.SelectedIndex = 0; // 选择"全部状态"
 
             // 在窗体加载时加载数据，而不是在构造函数中
             LoadBatchData();
@@ -218,29 +193,7 @@ namespace MES.UI.Forms.Batch
         /// <summary>
         /// 创建批次按钮点击事件
         /// </summary>
-        private void BtnCreateBatch_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                if (createForm == null || createForm.IsDisposed)
-                {
-                    createForm = new CreateBatch();
-                }
-                
-                createForm.ShowDialog(this);
-                
-                // 刷新数据
-                LoadBatchData();
-                
-                LogManager.Info("打开创建批次窗体");
-            }
-            catch (Exception ex)
-            {
-                LogManager.Error("打开创建批次窗体失败", ex);
-                MessageBox.Show(string.Format("打开创建批次窗体失败：{0}", ex.Message), "错误",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
+
 
         /// <summary>
         /// 取消批次按钮点击事件
@@ -255,11 +208,11 @@ namespace MES.UI.Forms.Batch
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
-                
+
                 var selectedRow = dgvBatches.SelectedRows[0];
                 var batchNo = selectedRow.Cells["批次号"].Value != null ? selectedRow.Cells["批次号"].Value.ToString() : "";
                 var status = selectedRow.Cells["状态"].Value != null ? selectedRow.Cells["状态"].Value.ToString() : "";
-                
+
                 // 检查批次状态
                 if (status == "已完成" || status == "已取消")
                 {
@@ -267,17 +220,17 @@ namespace MES.UI.Forms.Batch
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
-                
+
                 if (cancelForm == null || cancelForm.IsDisposed)
                 {
                     cancelForm = new CancelBatch();
                 }
-                
+
                 cancelForm.ShowDialog(this);
-                
+
                 // 刷新数据
                 LoadBatchData();
-                
+
                 LogManager.Info(string.Format("打开取消批次窗体，批次号：{0}", batchNo));
             }
             catch (Exception ex)
@@ -299,15 +252,15 @@ namespace MES.UI.Forms.Batch
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
-            
+
             var selectedRow = dgvBatches.SelectedRows[0];
             var batchNo = selectedRow.Cells["批次号"].Value != null ? selectedRow.Cells["批次号"].Value.ToString() : "";
             var productName = selectedRow.Cells["产品名称"].Value != null ? selectedRow.Cells["产品名称"].Value.ToString() : "";
             var status = selectedRow.Cells["状态"].Value != null ? selectedRow.Cells["状态"].Value.ToString() : "";
-            
+
             var details = string.Format("批次详情\n\n批次号：{0}\n产品名称：{1}\n当前状态：{2}",
                 batchNo, productName, status);
-            
+
             MessageBox.Show(details, "批次详情", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
@@ -324,46 +277,15 @@ namespace MES.UI.Forms.Batch
         /// </summary>
         private void BtnSearch_Click(object sender, EventArgs e)
         {
-            SearchBatches();
+            SearchesBatches();
         }
 
         /// <summary>
         /// 搜索批次
         /// </summary>
-        private void SearchBatches()
+        private void SearchesBatches()
         {
-            try
-            {
-                // 获取搜索条件（这里简化实现，实际项目中应该有搜索输入框）
-                string keyword = ""; // 可以从搜索框获取
-                string status = null; // 可以从状态下拉框获取
-                DateTime? startDate = null; // 可以从日期选择器获取
-                DateTime? endDate = null; // 可以从日期选择器获取
 
-                // 使用BLL进行搜索
-                var searchResults = _batchBLL.SearchBatches(keyword, status, startDate, endDate);
-
-                // 更新显示
-                var dataTable = ConvertBatchesToDataTable(searchResults);
-                dgvBatches.DataSource = dataTable;
-
-                // 设置列标题
-                SetupDataGridColumns();
-
-                // 更新统计信息
-                UpdateStatistics();
-
-                MessageBox.Show(string.Format("搜索完成，找到 {0} 条批次记录", searchResults.Count), "搜索结果",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                LogManager.Info(string.Format("搜索批次完成：结果数量={0}", searchResults.Count));
-            }
-            catch (Exception ex)
-            {
-                LogManager.Error("搜索批次失败", ex);
-                MessageBox.Show(string.Format("搜索批次失败：{0}", ex.Message), "错误",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
         }
 
         /// <summary>
@@ -412,5 +334,87 @@ namespace MES.UI.Forms.Batch
         }
 
         #endregion
+
+        private void btnCreateBatch_Click_1(object sender, EventArgs e)
+        {
+            // 检查是否已有窗体实例
+            if (createForm != null && !createForm.IsDisposed)
+            {
+                createForm.Focus();
+                return;
+            }
+
+            try
+            {
+                createForm = new CreateBatch();
+                createForm.StartPosition = FormStartPosition.CenterParent;
+                createForm.FormBorderStyle = FormBorderStyle.FixedDialog;
+                createForm.MaximizeBox = false;
+                createForm.MinimizeBox = false;
+
+                var result = createForm.ShowDialog(this);
+
+                if (result == DialogResult.OK)
+                {
+                    // 刷新批次数据
+                    LoadBatchData();
+                    MessageBox.Show("批次创建成功", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("创建批次过程中发生错误", ex);
+                MessageBox.Show(string.Format("创建批次失败：{0}", ex.Message),
+                    "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                if (createForm != null)
+                {
+                    createForm.Dispose();
+                    createForm = null;
+                }
+            }
+        }
+
+        private void btnSearch_Click_1(object sender, EventArgs e)
+        {
+
+        }
+        /// <summary>
+        /// 从DataTable更新统计信息
+        /// </summary>
+        private void UpdateStatisticsFromDataTable(DataTable dt)
+        {
+            int total = dt.Rows.Count;
+            int inProgress = 0;
+            int completed = 0;
+            int paused = 0;
+
+            foreach (DataRow row in dt.Rows)
+            {
+                string status = row["状态"] != null ? row["状态"].ToString() : "";
+                switch (status)
+                {
+                    case "进行中":
+                        inProgress++;
+                        break;
+                    case "已完成":
+                        completed++;
+                        break;
+                    case "已暂停":
+                        paused++;
+                        break;
+                }
+            }
+
+            lblTotal.Text = "共 " + total + " 条记录";
+            lblStatistics.Text = string.Format("进行中: {0} | 已完成: {1} | 已暂停: {2}",
+                inProgress, completed, paused);
+        }
+        private void BatchManagementForm_Load_1(object sender, EventArgs e)
+        {
+
+        }
     }
 }
