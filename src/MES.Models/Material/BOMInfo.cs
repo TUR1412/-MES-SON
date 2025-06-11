@@ -4,7 +4,7 @@ using MES.Models.Base;
 namespace MES.Models.Material
 {
     /// <summary>
-    /// BOM物料清单模型 - L成员负责完善 (已由天帝修复)
+    /// BOM物料清单模型 - L成员负责完善
     /// </summary>
     public class BOMInfo : BaseModel
     {
@@ -13,10 +13,7 @@ namespace MES.Models.Material
         /// </summary>
         public string BOMCode { get; set; }
 
-        /// <summary>
-        /// BOM名称 (新增属性，对应数据库bom_name)
-        /// </summary>
-        public string BomName { get; set; }
+        public string BomName { get; set; } // 新增：对应 bom_name
 
         /// <summary>
         /// 产品物料ID
@@ -69,12 +66,12 @@ namespace MES.Models.Material
         public string SubstituteMaterial { get; set; }
 
         /// <summary>
-        /// 备注 (对应数据库description)
+        /// 备注
         /// </summary>
         public string Remarks { get; set; }
 
         /// <summary>
-        /// BOM版本 (对应数据库version)
+        /// BOM版本
         /// </summary>
         public string BOMVersion { get; set; }
 
@@ -94,7 +91,7 @@ namespace MES.Models.Material
         public DateTime? ExpireDate { get; set; }
 
         /// <summary>
-        /// 状态：true-启用，false-禁用 (对应数据库status)
+        /// 状态：1-启用，0-禁用
         /// </summary>
         public bool Status { get; set; }
 
@@ -115,7 +112,6 @@ namespace MES.Models.Material
             LossRate = 0;
             SubstituteMaterial = string.Empty;
             Remarks = string.Empty;
-            BomName = string.Empty;
         }
 
         /// <summary>
@@ -123,8 +119,30 @@ namespace MES.Models.Material
         /// </summary>
         public BOMInfo Clone()
         {
-            // 使用MemberwiseClone以简化克隆过程并自动处理新属性
-            return (BOMInfo)this.MemberwiseClone();
+            return new BOMInfo
+            {
+                Id = this.Id,
+                BOMCode = this.BOMCode,
+                ProductId = this.ProductId,
+                ProductCode = this.ProductCode,
+                ProductName = this.ProductName,
+                MaterialId = this.MaterialId,
+                MaterialCode = this.MaterialCode,
+                MaterialName = this.MaterialName,
+                Quantity = this.Quantity,
+                Unit = this.Unit,
+                LossRate = this.LossRate,
+                SubstituteMaterial = this.SubstituteMaterial,
+                BOMVersion = this.BOMVersion,
+                BOMType = this.BOMType,
+                EffectiveDate = this.EffectiveDate,
+                ExpireDate = this.ExpireDate,
+                Status = this.Status,
+                Remarks = this.Remarks,
+                CreateTime = this.CreateTime,
+                UpdateTime = this.UpdateTime,
+                Version = this.Version
+            };
         }
     }
 }

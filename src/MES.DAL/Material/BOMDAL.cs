@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
 using MySql.Data.MySqlClient;
 using MES.Models.Material;
@@ -6,13 +7,13 @@ using MES.DAL.Base;
 using MES.DAL.Core;
 using MES.Common.Logging;
 using MES.Common.Exceptions;
-using System.Collections.Generic;
 
 namespace MES.DAL.Material
 {
     /// <summary>
     /// BOM物料清单数据访问类
     /// 提供BOM相关的数据库操作功能
+    /// 注意：此类需要L成员根据实际BOM表结构进行完善
     /// </summary>
     public class BOMDAL : BaseDAL<BOMInfo>
     {
@@ -25,11 +26,11 @@ namespace MES.DAL.Material
 
         protected override string PrimaryKey
         {
-            get { return "id"; } // 数据库主键是 id
+            get { return "Id"; }
         }
 
         /// <summary>
-        /// 将DataRow转换为BOMInfo实体对象 (已由天帝完全修复)
+        /// 将DataRow转换为BOMInfo实体对象 (已完全修复)
         /// </summary>
         protected override BOMInfo MapRowToEntity(DataRow row)
         {
@@ -38,7 +39,7 @@ namespace MES.DAL.Material
             // 安全地从DataRow获取值
             bom.Id = row.Table.Columns.Contains("id") && row["id"] != DBNull.Value ? Convert.ToInt32(row["id"]) : 0;
             bom.BOMCode = row.Table.Columns.Contains("bom_code") && row["bom_code"] != DBNull.Value ? row["bom_code"].ToString() : string.Empty;
-            bom.BomName = row.Table.Columns.Contains("bom_name") && row["bom_name"] != DBNull.Value ? row["bom_name"].ToString() : string.Empty;
+            bom.BomName = row.Table.Columns.Contains("bom_name") && row["bom_name"] != DBNull.Value ? row["bom_name"].ToString() : string.Empty; // 新增映射
 
             bom.ProductId = row.Table.Columns.Contains("product_id") && row["product_id"] != DBNull.Value ? Convert.ToInt32(row["product_id"]) : 0;
             bom.ProductCode = row.Table.Columns.Contains("product_code") && row["product_code"] != DBNull.Value ? row["product_code"].ToString() : string.Empty;
@@ -53,7 +54,7 @@ namespace MES.DAL.Material
             bom.LossRate = row.Table.Columns.Contains("loss_rate") && row["loss_rate"] != DBNull.Value ? Convert.ToDecimal(row["loss_rate"]) : 0;
             bom.SubstituteMaterial = row.Table.Columns.Contains("substitute_material") && row["substitute_material"] != DBNull.Value ? row["substitute_material"].ToString() : string.Empty;
 
-            // 核心修正：修正命名不匹配的映射
+            // 修正命名不匹配的映射
             bom.BOMVersion = row.Table.Columns.Contains("version") && row["version"] != DBNull.Value ? row["version"].ToString() : "1.0";
             bom.Remarks = row.Table.Columns.Contains("description") && row["description"] != DBNull.Value ? row["description"].ToString() : string.Empty;
 
@@ -74,20 +75,23 @@ namespace MES.DAL.Material
 
             // BaseModel 字段
             bom.CreateTime = row.Table.Columns.Contains("create_time") && row["create_time"] != DBNull.Value ? Convert.ToDateTime(row["create_time"]) : DateTime.MinValue;
-            bom.CreateUserId = row.Table.Columns.Contains("create_user_id") && row["create_user_id"] != DBNull.Value ? (int?)Convert.ToInt32(row["create_user_id"]) : null;
             bom.CreateUserName = row.Table.Columns.Contains("create_user_name") && row["create_user_name"] != DBNull.Value ? row["create_user_name"].ToString() : string.Empty;
             bom.UpdateTime = row.Table.Columns.Contains("update_time") && row["update_time"] != DBNull.Value ? (DateTime?)Convert.ToDateTime(row["update_time"]) : null;
-            bom.UpdateUserId = row.Table.Columns.Contains("update_user_id") && row["update_user_id"] != DBNull.Value ? (int?)Convert.ToInt32(row["update_user_id"]) : null;
             bom.UpdateUserName = row.Table.Columns.Contains("update_user_name") && row["update_user_name"] != DBNull.Value ? row["update_user_name"].ToString() : string.Empty;
-            bom.IsDeleted = row.Table.Columns.Contains("is_deleted") && row["is_deleted"] != DBNull.Value ? Convert.ToBoolean(Convert.ToInt32(row["is_deleted"])) : false;
+            bom.IsDeleted = row.Table.Columns.Contains("is_deleted") && row["is_deleted"] != DBNull.Value ? Convert.ToBoolean(row["is_deleted"]) : false;
 
             return bom;
         }
 
         #endregion
 
-        #region BOM特有操作 (无需修改)
+        #region BOM特有操作
 
+        /// <summary>
+        /// 根据产品ID获取BOM列表
+        /// </summary>
+        /// <param name="productId">产品ID</param>
+        /// <returns>BOM列表</returns>
         public List<BOMInfo> GetByProductId(int productId)
         {
             try
@@ -102,106 +106,140 @@ namespace MES.DAL.Material
             }
         }
 
+        /// <summary>
+        /// 根据BOM编码获取BOM信息
+        /// </summary>
+        /// <param name="bomCode">BOM编码</param>
+        /// <returns>BOM信息</returns>
+        public BOMInfo GetByBOMCode(string bomCode)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(bomCode))
+                {
+                    throw new ArgumentException("BOM编码不能为空", "bomCode");
+                }
+
+                var boms = GetByCondition("bom_code = @bomCode",
+                    DatabaseHelper.CreateParameter("@bomCode", bomCode));
+
+                return boms.Count > 0 ? boms[0] : null;
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error(string.Format("根据BOM编码获取BOM失败，BOM编码: {0}", bomCode), ex);
+                throw new MESException("获取BOM信息失败", ex);
+            }
+        }
+
+        // TODO: L成员需要根据实际业务需求实现BOM详细查询方法
+
+        // TODO: L成员需要根据实际业务需求实现其他BOM操作方法
+
         #endregion
 
-        #region SQL构建实现
+        #region SQL构建实现 (已修复)
 
+        /// <summary>
+        /// 构建INSERT SQL语句 (已修复)
+        /// </summary>
         protected override bool BuildInsertSql(BOMInfo entity, out string sql, out MySqlParameter[] parameters)
         {
             sql = @"INSERT INTO bom_info
-                          (bom_code, bom_name, product_id, product_code, product_name, material_id, material_code, material_name, 
-                           quantity, unit, loss_rate, substitute_material, version, bom_type, 
-                           effective_date, expire_date, status, description, 
-                           create_time, create_user_id, create_user_name, is_deleted)
+                          (bom_code, product_id, product_code, product_name, material_id, material_code, material_name, 
+                           quantity, unit, loss_rate, substitute_material, bom_version, bom_type, 
+                           effective_date, expire_date, status, remarks, 
+                           create_time, create_user_name, is_deleted, version)
                           VALUES
-                          (@bom_code, @bom_name, @product_id, @product_code, @product_name, @material_id, @material_code, @material_name, 
-                           @quantity, @unit, @loss_rate, @substitute_material, @version, @bom_type,
-                           @effective_date, @expire_date, @status, @description, 
-                           @create_time, @create_user_id, @create_user_name, @is_deleted)";
+                          (@bomCode, @productId, @productCode, @productName, @materialId, @materialCode, @materialName, 
+                           @quantity, @unit, @lossRate, @substituteMaterial, @bomVersion, @bomType,
+                           @effectiveDate, @expireDate, @status, @remarks, 
+                           @createTime, @createUserName, @isDeleted, @version)";
 
             parameters = new[]
             {
-                DatabaseHelper.CreateParameter("@bom_code", entity.BOMCode),
-                DatabaseHelper.CreateParameter("@bom_name", entity.BomName),
-                DatabaseHelper.CreateParameter("@product_id", entity.ProductId),
-                DatabaseHelper.CreateParameter("@product_code", entity.ProductCode),
-                DatabaseHelper.CreateParameter("@product_name", entity.ProductName),
-                DatabaseHelper.CreateParameter("@material_id", entity.MaterialId),
-                DatabaseHelper.CreateParameter("@material_code", entity.MaterialCode),
-                DatabaseHelper.CreateParameter("@material_name", entity.MaterialName),
+                DatabaseHelper.CreateParameter("@bomCode", entity.BOMCode),
+                DatabaseHelper.CreateParameter("@productId", entity.ProductId),
+                DatabaseHelper.CreateParameter("@productCode", entity.ProductCode),
+                DatabaseHelper.CreateParameter("@productName", entity.ProductName),
+                DatabaseHelper.CreateParameter("@materialId", entity.MaterialId),
+                DatabaseHelper.CreateParameter("@materialCode", entity.MaterialCode),
+                DatabaseHelper.CreateParameter("@materialName", entity.MaterialName),
                 DatabaseHelper.CreateParameter("@quantity", entity.Quantity),
                 DatabaseHelper.CreateParameter("@unit", entity.Unit),
-                DatabaseHelper.CreateParameter("@loss_rate", entity.LossRate),
-                DatabaseHelper.CreateParameter("@substitute_material", entity.SubstituteMaterial),
-                DatabaseHelper.CreateParameter("@version", entity.BOMVersion),
-                DatabaseHelper.CreateParameter("@bom_type", entity.BOMType),
-                DatabaseHelper.CreateParameter("@effective_date", entity.EffectiveDate),
-                DatabaseHelper.CreateParameter("@expire_date", entity.ExpireDate),
-                DatabaseHelper.CreateParameter("@status", entity.Status ? "有效" : "无效"), // 转换回数据库的字符串格式
-                DatabaseHelper.CreateParameter("@description", entity.Remarks),
-                DatabaseHelper.CreateParameter("@create_time", entity.CreateTime),
-                DatabaseHelper.CreateParameter("@create_user_id", entity.CreateUserId),
-                DatabaseHelper.CreateParameter("@create_user_name", entity.CreateUserName),
-                DatabaseHelper.CreateParameter("@is_deleted", entity.IsDeleted)
+                DatabaseHelper.CreateParameter("@lossRate", entity.LossRate),
+                DatabaseHelper.CreateParameter("@substituteMaterial", entity.SubstituteMaterial),
+                DatabaseHelper.CreateParameter("@bomVersion", entity.BOMVersion),
+                DatabaseHelper.CreateParameter("@bomType", entity.BOMType),
+                DatabaseHelper.CreateParameter("@effectiveDate", entity.EffectiveDate),
+                DatabaseHelper.CreateParameter("@expireDate", entity.ExpireDate),
+                DatabaseHelper.CreateParameter("@status", entity.Status),
+                DatabaseHelper.CreateParameter("@remarks", entity.Remarks),
+                DatabaseHelper.CreateParameter("@createTime", entity.CreateTime),
+                DatabaseHelper.CreateParameter("@createUserName", entity.CreateUserName),
+                DatabaseHelper.CreateParameter("@isDeleted", entity.IsDeleted),
+                DatabaseHelper.CreateParameter("@version", entity.Version)
             };
 
             return true;
         }
 
+        /// <summary>
+        /// 构建UPDATE SQL语句 (已修复)
+        /// </summary>
         protected override bool BuildUpdateSql(BOMInfo entity, out string sql, out MySqlParameter[] parameters)
         {
             sql = @"UPDATE bom_info SET
-                          bom_code = @bom_code,
-                          bom_name = @bom_name,
-                          product_id = @product_id,
-                          product_code = @product_code,
-                          product_name = @product_name,
-                          material_id = @material_id,
-                          material_code = @material_code,
-                          material_name = @material_name,
+                          bom_code = @bomCode,
+                          product_id = @productId,
+                          product_code = @productCode,
+                          product_name = @productName,
+                          material_id = @materialId,
+                          material_code = @materialCode,
+                          material_name = @materialName,
                           quantity = @quantity,
                           unit = @unit,
-                          loss_rate = @loss_rate,
-                          substitute_material = @substitute_material,
-                          version = @version,
-                          bom_type = @bom_type,
-                          effective_date = @effective_date,
-                          expire_date = @expire_date,
+                          loss_rate = @lossRate,
+                          substitute_material = @substituteMaterial,
+                          bom_version = @bomVersion,
+                          bom_type = @bomType,
+                          effective_date = @effectiveDate,
+                          expire_date = @expireDate,
                           status = @status,
-                          description = @description,
-                          update_time = @update_time,
-                          update_user_id = @update_user_id,
-                          update_user_name = @update_user_name
+                          remarks = @remarks,
+                          update_time = @updateTime,
+                          update_user_name = @updateUserName,
+                          version = @version
                           WHERE id = @id AND is_deleted = 0";
 
             parameters = new[]
             {
-                DatabaseHelper.CreateParameter("@bom_code", entity.BOMCode),
-                DatabaseHelper.CreateParameter("@bom_name", entity.BomName),
-                DatabaseHelper.CreateParameter("@product_id", entity.ProductId),
-                DatabaseHelper.CreateParameter("@product_code", entity.ProductCode),
-                DatabaseHelper.CreateParameter("@product_name", entity.ProductName),
-                DatabaseHelper.CreateParameter("@material_id", entity.MaterialId),
-                DatabaseHelper.CreateParameter("@material_code", entity.MaterialCode),
-                DatabaseHelper.CreateParameter("@material_name", entity.MaterialName),
+                DatabaseHelper.CreateParameter("@bomCode", entity.BOMCode),
+                DatabaseHelper.CreateParameter("@productId", entity.ProductId),
+                DatabaseHelper.CreateParameter("@productCode", entity.ProductCode),
+                DatabaseHelper.CreateParameter("@productName", entity.ProductName),
+                DatabaseHelper.CreateParameter("@materialId", entity.MaterialId),
+                DatabaseHelper.CreateParameter("@materialCode", entity.MaterialCode),
+                DatabaseHelper.CreateParameter("@materialName", entity.MaterialName),
                 DatabaseHelper.CreateParameter("@quantity", entity.Quantity),
                 DatabaseHelper.CreateParameter("@unit", entity.Unit),
-                DatabaseHelper.CreateParameter("@loss_rate", entity.LossRate),
-                DatabaseHelper.CreateParameter("@substitute_material", entity.SubstituteMaterial),
-                DatabaseHelper.CreateParameter("@version", entity.BOMVersion),
-                DatabaseHelper.CreateParameter("@bom_type", entity.BOMType),
-                DatabaseHelper.CreateParameter("@effective_date", entity.EffectiveDate),
-                DatabaseHelper.CreateParameter("@expire_date", entity.ExpireDate),
-                DatabaseHelper.CreateParameter("@status", entity.Status ? "有效" : "无效"), // 转换回数据库的字符串格式
-                DatabaseHelper.CreateParameter("@description", entity.Remarks),
-                DatabaseHelper.CreateParameter("@update_time", entity.UpdateTime),
-                DatabaseHelper.CreateParameter("@update_user_id", entity.UpdateUserId),
-                DatabaseHelper.CreateParameter("@update_user_name", entity.UpdateUserName),
+                DatabaseHelper.CreateParameter("@lossRate", entity.LossRate),
+                DatabaseHelper.CreateParameter("@substituteMaterial", entity.SubstituteMaterial),
+                DatabaseHelper.CreateParameter("@bomVersion", entity.BOMVersion),
+                DatabaseHelper.CreateParameter("@bomType", entity.BOMType),
+                DatabaseHelper.CreateParameter("@effectiveDate", entity.EffectiveDate),
+                DatabaseHelper.CreateParameter("@expireDate", entity.ExpireDate),
+                DatabaseHelper.CreateParameter("@status", entity.Status),
+                DatabaseHelper.CreateParameter("@remarks", entity.Remarks),
+                DatabaseHelper.CreateParameter("@updateTime", entity.UpdateTime),
+                DatabaseHelper.CreateParameter("@updateUserName", entity.UpdateUserName),
+                DatabaseHelper.CreateParameter("@version", entity.Version),
                 DatabaseHelper.CreateParameter("@id", entity.Id)
             };
 
             return true;
         }
+
         #endregion
     }
 }
