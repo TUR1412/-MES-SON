@@ -1,3 +1,5 @@
+// --- START OF FILE ProcessRouteConfigForm.cs ---
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -54,15 +56,15 @@ namespace MES.UI.Forms.Material
             // 设置窗体属性
             this.WindowState = FormWindowState.Maximized;
             this.MinimumSize = new Size(1200, 640);
-            
+
             // 初始化控件
             InitializeControls();
             InitializeDataGridViews();
             InitializeComboBoxes();
-            
+
             // 绑定事件
             BindEvents();
-            
+
             // 加载数据
             LoadData();
         }
@@ -75,7 +77,7 @@ namespace MES.UI.Forms.Material
             // 设置分割容器
             splitContainer.SplitterWidth = 5;
             splitContainer.BackColor = Color.FromArgb(233, 236, 239);
-            
+
             // 设置面板边距
             panelLeft.Padding = new Padding(10);
             panelRight.Padding = new Padding(10);
@@ -88,7 +90,7 @@ namespace MES.UI.Forms.Material
         {
             // 配置工艺路线表格
             ConfigureRoutesDataGridView();
-            
+
             // 配置工艺步骤表格
             ConfigureStepsDataGridView();
         }
@@ -104,7 +106,7 @@ namespace MES.UI.Forms.Material
             dgvRoutes.ReadOnly = true;
             dgvRoutes.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvRoutes.MultiSelect = false;
-            
+
             // 添加列
             dgvRoutes.Columns.Add(new DataGridViewTextBoxColumn
             {
@@ -124,7 +126,7 @@ namespace MES.UI.Forms.Material
                 Width = 120,
                 ReadOnly = true
             });
-            
+
             dgvRoutes.Columns.Add(new DataGridViewTextBoxColumn
             {
                 Name = "RouteName",
@@ -133,7 +135,7 @@ namespace MES.UI.Forms.Material
                 Width = 150,
                 ReadOnly = true
             });
-            
+
             dgvRoutes.Columns.Add(new DataGridViewTextBoxColumn
             {
                 Name = "ProductName",
@@ -142,7 +144,7 @@ namespace MES.UI.Forms.Material
                 Width = 120,
                 ReadOnly = true
             });
-            
+
             dgvRoutes.Columns.Add(new DataGridViewTextBoxColumn
             {
                 Name = "Version",
@@ -151,7 +153,7 @@ namespace MES.UI.Forms.Material
                 Width = 80,
                 ReadOnly = true
             });
-            
+
             dgvRoutes.Columns.Add(new DataGridViewTextBoxColumn
             {
                 Name = "Status",
@@ -160,7 +162,7 @@ namespace MES.UI.Forms.Material
                 Width = 80,
                 ReadOnly = true
             });
-            
+
             dgvRoutes.Columns.Add(new DataGridViewTextBoxColumn
             {
                 Name = "CreateTime",
@@ -183,8 +185,17 @@ namespace MES.UI.Forms.Material
             dgvSteps.ReadOnly = true;
             dgvSteps.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvSteps.MultiSelect = false;
-            
+
             // 添加列
+            dgvSteps.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Id", // 新增ID列，用于获取选中步骤
+                HeaderText = "ID",
+                DataPropertyName = "Id",
+                Visible = false,
+                ReadOnly = true
+            });
+
             dgvSteps.Columns.Add(new DataGridViewTextBoxColumn
             {
                 Name = "StepNumber",
@@ -193,7 +204,7 @@ namespace MES.UI.Forms.Material
                 Width = 80,
                 ReadOnly = true
             });
-            
+
             dgvSteps.Columns.Add(new DataGridViewTextBoxColumn
             {
                 Name = "StepName",
@@ -202,7 +213,7 @@ namespace MES.UI.Forms.Material
                 Width = 150,
                 ReadOnly = true
             });
-            
+
             dgvSteps.Columns.Add(new DataGridViewTextBoxColumn
             {
                 Name = "WorkstationName",
@@ -211,7 +222,7 @@ namespace MES.UI.Forms.Material
                 Width = 120,
                 ReadOnly = true
             });
-            
+
             dgvSteps.Columns.Add(new DataGridViewTextBoxColumn
             {
                 Name = "StandardTime",
@@ -220,13 +231,13 @@ namespace MES.UI.Forms.Material
                 Width = 120,
                 ReadOnly = true
             });
-            
+
             dgvSteps.Columns.Add(new DataGridViewTextBoxColumn
             {
                 Name = "Description",
                 HeaderText = "步骤描述",
                 DataPropertyName = "Description",
-                Width = 200,
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill, // 自动填充剩余空间
                 ReadOnly = true
             });
         }
@@ -239,8 +250,12 @@ namespace MES.UI.Forms.Material
             // 产品下拉框
             cmbProduct.Items.Clear();
             cmbProduct.Items.Add("全部产品");
+            // 实际项目中应从数据库加载产品列表
+            cmbProduct.Items.Add("智能手机主板");
+            cmbProduct.Items.Add("锂电池组");
+            cmbProduct.Items.Add("显示屏模组");
             cmbProduct.SelectedIndex = 0;
-            
+
             // 状态下拉框
             cmbStatus.Items.Clear();
             cmbStatus.Items.Add("全部状态");
@@ -264,21 +279,21 @@ namespace MES.UI.Forms.Material
             txtSearch.KeyPress += TxtSearch_KeyPress;
             cmbProduct.SelectedIndexChanged += SearchCondition_Changed;
             cmbStatus.SelectedIndexChanged += SearchCondition_Changed;
-            
+
             // 工艺路线操作按钮事件
             btnAdd.Click += BtnAdd_Click;
             btnEdit.Click += BtnEdit_Click;
             btnDelete.Click += BtnDelete_Click;
             btnCopy.Click += BtnCopy_Click;
             btnRefresh.Click += BtnRefresh_Click;
-            
+
             // 工艺步骤操作按钮事件
             btnAddStep.Click += BtnAddStep_Click;
             btnEditStep.Click += BtnEditStep_Click;
             btnDeleteStep.Click += BtnDeleteStep_Click;
             btnStepUp.Click += BtnStepUp_Click;
             btnStepDown.Click += BtnStepDown_Click;
-            
+
             // 表格选择事件
             dgvRoutes.SelectionChanged += DgvRoutes_SelectionChanged;
             dgvSteps.SelectionChanged += DgvSteps_SelectionChanged;
@@ -338,7 +353,7 @@ namespace MES.UI.Forms.Material
                     status);
 
                 // 绑定到表格
-                dgvRoutes.DataSource = _processRoutes;
+                dgvRoutes.DataSource = new BindingList<ProcessRoute>(_processRoutes);
 
                 // 清空工艺步骤
                 _currentSteps.Clear();
@@ -354,7 +369,7 @@ namespace MES.UI.Forms.Material
 
                 // 如果数据库加载失败，使用空列表避免程序崩溃
                 _processRoutes = new List<ProcessRoute>();
-                dgvRoutes.DataSource = _processRoutes;
+                dgvRoutes.DataSource = new BindingList<ProcessRoute>(_processRoutes);
                 _currentSteps.Clear();
                 dgvSteps.DataSource = null;
                 _selectedRoute = null;
@@ -712,7 +727,7 @@ namespace MES.UI.Forms.Material
 
                 if (_selectedRoute != null)
                 {
-                    LoadProcessSteps(_selectedRoute.Steps);
+                    LoadProcessSteps(_selectedRoute.Id);
                 }
             }
             else
@@ -728,28 +743,34 @@ namespace MES.UI.Forms.Material
         /// <summary>
         /// 加载工艺步骤
         /// </summary>
-        private void LoadProcessSteps(List<ProcessStep> steps)
+        private void LoadProcessSteps(int routeId, int? selectStepId = null)
         {
             try
             {
-                if (_selectedRoute != null)
-                {
-                    // 从数据库重新加载工艺步骤
-                    _currentSteps = _processRouteBLL.GetProcessSteps(_selectedRoute.Id);
-                }
-                else
-                {
-                    _currentSteps = steps != null ? steps.OrderBy(s => s.StepNumber).ToList() : new List<ProcessStep>();
-                }
+                // 从数据库重新加载工艺步骤
+                _currentSteps = _processRouteBLL.GetProcessSteps(routeId);
+                dgvSteps.DataSource = new BindingList<ProcessStep>(_currentSteps);
 
-                dgvSteps.DataSource = _currentSteps;
+                // 如果需要，选中指定的步骤
+                if (selectStepId.HasValue)
+                {
+                    foreach (DataGridViewRow row in dgvSteps.Rows)
+                    {
+                        if (Convert.ToInt32(row.Cells["Id"].Value) == selectStepId.Value)
+                        {
+                            row.Selected = true;
+                            dgvSteps.FirstDisplayedScrollingRowIndex = row.Index;
+                            break;
+                        }
+                    }
+                }
             }
             catch (Exception ex)
             {
                 MessageBox.Show(string.Format("加载工艺步骤失败：{0}", ex.Message), "错误",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 _currentSteps = new List<ProcessStep>();
-                dgvSteps.DataSource = _currentSteps;
+                dgvSteps.DataSource = new BindingList<ProcessStep>(_currentSteps);
             }
         }
 
@@ -772,47 +793,40 @@ namespace MES.UI.Forms.Material
         {
             if (_selectedRoute == null)
             {
-                MessageBox.Show("请先选择工艺路线", "提示",
+                MessageBox.Show("请先选择一条工艺路线以添加步骤。", "提示",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             try
             {
-                // 创建新的工艺步骤
+                // 模拟一个简单的编辑界面，实际应弹出专门的步骤编辑窗体
+                string stepName = ShowInputDialog("请输入新步骤的名称：", "新增工艺步骤");
+                if (string.IsNullOrWhiteSpace(stepName)) return;
+
                 var newStep = new ProcessStep
                 {
-                    ProcessRouteId = _selectedRoute.Id,
                     StepNumber = GetNextStepNumber(),
-                    StepName = "新工艺步骤",
-                    Description = "",
-                    StandardTime = 0,
-                    OperationInstructions = "",
-                    QualityRequirements = "",
-                    Status = ProcessStepStatus.Active,
-                    CreateTime = DateTime.Now,
-                    UpdateTime = DateTime.Now
+                    StepName = stepName,
+                    WorkstationId = 1, // 简化：默认为1，实际应有选择
+                    StandardTime = 10, // 简化：默认为10
                 };
 
-                // 使用BLL添加工艺步骤
                 bool result = _processRouteBLL.AddProcessStep(_selectedRoute.Id, newStep);
 
                 if (result)
                 {
-                    LoadProcessSteps(_selectedRoute.Steps);
-                    MessageBox.Show("新增工艺步骤成功", "提示",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    LoadProcessSteps(_selectedRoute.Id); // 刷新步骤列表
+                    MessageBox.Show("新增工艺步骤成功。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else
                 {
-                    MessageBox.Show("新增工艺步骤失败", "错误",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("新增工艺步骤失败。", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(string.Format("新增步骤失败：{0}", ex.Message), "错误",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("新增步骤失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -821,52 +835,39 @@ namespace MES.UI.Forms.Material
         /// </summary>
         private void BtnEditStep_Click(object sender, EventArgs e)
         {
-            if (dgvSteps.SelectedRows.Count == 0)
+            var selectedStep = GetSelectedProcessStep();
+            if (selectedStep == null)
             {
-                MessageBox.Show("请先选择要编辑的工艺步骤", "提示",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("请先选择要编辑的工艺步骤。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             try
             {
-                // 获取选中的工艺步骤
-                var selectedStep = GetSelectedProcessStep();
-                if (selectedStep == null)
+                // 模拟编辑
+                string newStepName = ShowInputDialog("请输入新的步骤名称：", "编辑工艺步骤", selectedStep.StepName);
+                if (string.IsNullOrWhiteSpace(newStepName) || newStepName == selectedStep.StepName)
                 {
-                    MessageBox.Show("请先选择要编辑的工艺步骤", "提示",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
+                    return; // 用户取消或未做修改
                 }
 
-                // 简化的编辑实现：弹出输入框修改步骤名称
-                string newStepName = ShowInputDialog("请输入新的步骤名称：", "编辑工艺步骤", selectedStep.StepName);
+                selectedStep.StepName = newStepName;
 
-                if (!string.IsNullOrWhiteSpace(newStepName) && newStepName != selectedStep.StepName)
+                bool result = _processRouteBLL.UpdateProcessStep(selectedStep);
+
+                if (result)
                 {
-                    selectedStep.StepName = newStepName;
-                    selectedStep.UpdateTime = DateTime.Now;
-
-                    // 使用BLL更新工艺步骤
-                    bool result = _processRouteBLL.UpdateProcessStep(selectedStep);
-
-                    if (result)
-                    {
-                        LoadProcessSteps(_selectedRoute.Steps);
-                        MessageBox.Show("编辑工艺步骤成功", "提示",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
-                    else
-                    {
-                        MessageBox.Show("编辑工艺步骤失败", "错误",
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
+                    LoadProcessSteps(_selectedRoute.Id, selectedStep.Id); // 刷新并选中编辑的行
+                    MessageBox.Show("编辑工艺步骤成功。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show("编辑工艺步骤失败。", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(string.Format("编辑步骤失败：{0}", ex.Message), "错误",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("编辑步骤失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -875,47 +876,35 @@ namespace MES.UI.Forms.Material
         /// </summary>
         private void BtnDeleteStep_Click(object sender, EventArgs e)
         {
-            if (dgvSteps.SelectedRows.Count == 0)
+            var selectedStep = GetSelectedProcessStep();
+            if (selectedStep == null)
             {
-                MessageBox.Show("请先选择要删除的工艺步骤", "提示",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("请先选择要删除的工艺步骤。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            var result = MessageBox.Show("确定要删除选中的工艺步骤吗？",
+            var confirmResult = MessageBox.Show("确定要删除步骤 '{selectedStep.StepName}' 吗？",
                 "确认删除", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
-            if (result == DialogResult.Yes)
+            if (confirmResult == DialogResult.Yes)
             {
                 try
                 {
-                    // 实现删除步骤逻辑
-                    var selectedStep = GetSelectedProcessStep();
-                    if (selectedStep != null)
+                    bool result = _processRouteBLL.DeleteProcessStep(selectedStep.Id);
+
+                    if (result)
                     {
-                        bool deleteResult = _processRouteBLL.DeleteProcessStep(selectedStep.Id);
-                        if (deleteResult)
-                        {
-                            LoadProcessSteps(_selectedRoute.Steps);
-                            MessageBox.Show("删除成功", "提示",
-                                MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        }
-                        else
-                        {
-                            MessageBox.Show("删除失败", "错误",
-                                MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
+                        LoadProcessSteps(_selectedRoute.Id); // 刷新步骤列表
+                        MessageBox.Show("删除工艺步骤成功。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                     else
                     {
-                        MessageBox.Show("请先选择要删除的工艺步骤", "提示",
-                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show("删除工艺步骤失败。", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(string.Format("删除步骤失败：{0}", ex.Message), "错误",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("删除步骤失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -925,51 +914,35 @@ namespace MES.UI.Forms.Material
         /// </summary>
         private void BtnStepUp_Click(object sender, EventArgs e)
         {
-            if (dgvSteps.SelectedRows.Count == 0)
+            var selectedStep = GetSelectedProcessStep();
+            if (selectedStep == null)
             {
-                MessageBox.Show("请先选择要移动的工艺步骤", "提示",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("请先选择要移动的工艺步骤。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (selectedStep.StepNumber <= 1)
+            {
+                MessageBox.Show("该步骤已是第一个，无法上移。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
             try
             {
-                // 实现步骤上移逻辑
-                var selectedStep = GetSelectedProcessStep();
-                if (selectedStep == null)
-                {
-                    MessageBox.Show("请先选择要移动的工艺步骤", "提示",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-
-                // 检查是否已经是第一个步骤
-                if (selectedStep.StepNumber <= 1)
-                {
-                    MessageBox.Show("该步骤已经是第一个步骤，无法上移", "提示",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    return;
-                }
-
-                // 使用BLL实现步骤上移
                 bool result = _processRouteBLL.MoveProcessStep(_selectedRoute.Id, selectedStep.Id, true);
 
                 if (result)
                 {
-                    LoadProcessSteps(_selectedRoute.Steps);
-                    MessageBox.Show("步骤上移成功", "提示",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    LoadProcessSteps(_selectedRoute.Id, selectedStep.Id); // 刷新并选中移动的行
                 }
                 else
                 {
-                    MessageBox.Show("步骤上移失败", "错误",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("步骤上移失败。", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(string.Format("移动失败：{0}", ex.Message), "错误",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("移动失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -978,52 +951,35 @@ namespace MES.UI.Forms.Material
         /// </summary>
         private void BtnStepDown_Click(object sender, EventArgs e)
         {
-            if (dgvSteps.SelectedRows.Count == 0)
+            var selectedStep = GetSelectedProcessStep();
+            if (selectedStep == null)
             {
-                MessageBox.Show("请先选择要移动的工艺步骤", "提示",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("请先选择要移动的工艺步骤。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (selectedStep.StepNumber >= _currentSteps.Count)
+            {
+                MessageBox.Show("该步骤已是最后一个，无法下移。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
             try
             {
-                // 实现步骤下移逻辑
-                var selectedStep = GetSelectedProcessStep();
-                if (selectedStep == null)
-                {
-                    MessageBox.Show("请先选择要移动的工艺步骤", "提示",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-
-                // 检查是否已经是最后一个步骤
-                int maxStepNumber = _currentSteps.Count > 0 ? _currentSteps.Max(s => s.StepNumber) : 0;
-                if (selectedStep.StepNumber >= maxStepNumber)
-                {
-                    MessageBox.Show("该步骤已经是最后一个步骤，无法下移", "提示",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    return;
-                }
-
-                // 使用BLL实现步骤下移
                 bool result = _processRouteBLL.MoveProcessStep(_selectedRoute.Id, selectedStep.Id, false);
 
                 if (result)
                 {
-                    LoadProcessSteps(_selectedRoute.Steps);
-                    MessageBox.Show("步骤下移成功", "提示",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    LoadProcessSteps(_selectedRoute.Id, selectedStep.Id); // 刷新并选中移动的行
                 }
                 else
                 {
-                    MessageBox.Show("步骤下移失败", "错误",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("步骤下移失败。", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(string.Format("移动失败：{0}", ex.Message), "错误",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("移动失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -1052,13 +1008,19 @@ namespace MES.UI.Forms.Material
         {
             bool hasRoute = _selectedRoute != null;
             bool hasStepSelection = dgvSteps.SelectedRows.Count > 0;
+            int selectedIndex = hasStepSelection ? dgvSteps.SelectedRows[0].Index : -1;
+            int totalSteps = dgvSteps.Rows.Count;
 
             btnAddStep.Enabled = hasRoute;
             btnEditStep.Enabled = hasStepSelection;
             btnDeleteStep.Enabled = hasStepSelection;
-            btnStepUp.Enabled = hasStepSelection;
-            btnStepDown.Enabled = hasStepSelection;
+
+            // 上移按钮：有选中行且不是第一行
+            btnStepUp.Enabled = hasStepSelection && selectedIndex > 0;
+            // 下移按钮：有选中行且不是最后一行
+            btnStepDown.Enabled = hasStepSelection && selectedIndex < (totalSteps - 1);
         }
+
 
         /// <summary>
         /// 更新状态标签

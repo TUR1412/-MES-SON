@@ -1,6 +1,9 @@
+// --- START OF FILE ProcessRouteDAL.cs ---
+
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using MySql.Data.MySqlClient;
 using MES.Models.Material;
 using MES.DAL.Core;
@@ -25,22 +28,13 @@ namespace MES.DAL.Material
         {
             try
             {
-                string sql = @"
-                    SELECT pr.*, p.product_name 
-                    FROM process_route pr
-                    LEFT JOIN product_info p ON pr.product_id = p.id
-                    WHERE pr.is_deleted = 0
-                    ORDER BY pr.create_time DESC";
-
+                string sql = "SELECT pr.*, p.product_name FROM process_route pr LEFT JOIN product_info p ON pr.product_id = p.id WHERE pr.is_deleted = 0 ORDER BY pr.create_time DESC";
                 var dataTable = DatabaseHelper.ExecuteQuery(sql);
                 var routes = ConvertDataTableToProcessRouteList(dataTable);
-
-                // 加载每个路线的工艺步骤
                 foreach (var route in routes)
                 {
                     route.Steps = GetProcessStepsByRouteId(route.Id);
                 }
-
                 return routes;
             }
             catch (Exception ex)
@@ -59,27 +53,17 @@ namespace MES.DAL.Material
         {
             try
             {
-                string sql = @"
-                    SELECT pr.*, p.product_name 
-                    FROM process_route pr
-                    LEFT JOIN product_info p ON pr.product_id = p.id
-                    WHERE pr.id = @id AND pr.is_deleted = 0";
-
-                var parameters = new[]
-                {
-                    DatabaseHelper.CreateParameter("@id", id)
-                };
-
+                string sql = "SELECT pr.*, p.product_name FROM process_route pr LEFT JOIN product_info p ON pr.product_id = p.id WHERE pr.id = @id AND pr.is_deleted = 0";
+                var parameters = new[] { DatabaseHelper.CreateParameter("@id", id) };
                 var dataTable = DatabaseHelper.ExecuteQuery(sql, parameters);
                 var routes = ConvertDataTableToProcessRouteList(dataTable);
-                
+
                 if (routes.Count > 0)
                 {
                     var route = routes[0];
                     route.Steps = GetProcessStepsByRouteId(route.Id);
                     return route;
                 }
-
                 return null;
             }
             catch (Exception ex)
@@ -96,56 +80,55 @@ namespace MES.DAL.Material
         /// <returns>是否成功</returns>
         public bool AddProcessRoute(ProcessRoute processRoute)
         {
-            try
+            using (var connection = DatabaseHelper.CreateConnection())
             {
-                string sql = @"
-                    INSERT INTO process_route (
-                        route_code, route_name, product_id, version, status, description,
-                        create_user_id, create_user_name, create_time, is_deleted
-                    ) VALUES (
-                        @routeCode, @routeName, @productId, @version, @status, @description,
-                        @createUserId, @createUserName, @createTime, @isDeleted
-                    );
-                    SELECT LAST_INSERT_ID();";
-
-                var parameters = new[]
+                connection.Open();
+                var transaction = connection.BeginTransaction();
+                try
                 {
-                    DatabaseHelper.CreateParameter("@routeCode", processRoute.RouteCode),
-                    DatabaseHelper.CreateParameter("@routeName", processRoute.RouteName),
-                    DatabaseHelper.CreateParameter("@productId", processRoute.ProductId),
-                    DatabaseHelper.CreateParameter("@version", processRoute.Version),
-                    DatabaseHelper.CreateParameter("@status", (int)processRoute.Status),
-                    DatabaseHelper.CreateParameter("@description", processRoute.Description ?? (object)DBNull.Value),
-                    DatabaseHelper.CreateParameter("@createUserId", processRoute.CreateUserId),
-                    DatabaseHelper.CreateParameter("@createUserName", processRoute.CreateUserName ?? (object)DBNull.Value),
-                    DatabaseHelper.CreateParameter("@createTime", processRoute.CreateTime),
-                    DatabaseHelper.CreateParameter("@isDeleted", processRoute.IsDeleted)
-                };
+                    string sql = @"
+                        INSERT INTO process_route (route_code, route_name, product_id, version, status, description, create_user_id, create_user_name, create_time, is_deleted) 
+                        VALUES (@routeCode, @routeName, @productId, @version, @status, @description, @createUserId, @createUserName, @createTime, 0);
+                        SELECT LAST_INSERT_ID();";
 
-                var result = DatabaseHelper.ExecuteScalar(sql, parameters);
-                if (result != null)
-                {
-                    processRoute.Id = Convert.ToInt32(result);
-                    
-                    // 添加工艺步骤
-                    if (processRoute.Steps != null && processRoute.Steps.Count > 0)
+                    var cmd = new MySqlCommand(sql, connection, transaction);
+                    cmd.Parameters.AddRange(new[]
                     {
-                        foreach (var step in processRoute.Steps)
-                        {
-                            step.ProcessRouteId = processRoute.Id;
-                            AddProcessStep(step);
-                        }
-                    }
-                    
-                    return true;
-                }
+                        DatabaseHelper.CreateParameter("@routeCode", processRoute.RouteCode),
+                        DatabaseHelper.CreateParameter("@routeName", processRoute.RouteName),
+                        DatabaseHelper.CreateParameter("@productId", processRoute.ProductId),
+                        DatabaseHelper.CreateParameter("@version", processRoute.Version),
+                        DatabaseHelper.CreateParameter("@status", (int)processRoute.Status),
+                        DatabaseHelper.CreateParameter("@description", processRoute.Description),
+                        DatabaseHelper.CreateParameter("@createUserId", processRoute.CreateUserId),
+                        DatabaseHelper.CreateParameter("@createUserName", processRoute.CreateUserName),
+                        DatabaseHelper.CreateParameter("@createTime", processRoute.CreateTime)
+                    });
 
-                return false;
-            }
-            catch (Exception ex)
-            {
-                LogManager.Error(string.Format("添加工艺路线失败：编码={0}", processRoute?.RouteCode), ex);
-                throw new MESException("数据库操作失败", ex);
+                    object result = cmd.ExecuteScalar();
+                    if (result != null)
+                    {
+                        processRoute.Id = Convert.ToInt32(result);
+                        if (processRoute.Steps != null)
+                        {
+                            foreach (var step in processRoute.Steps)
+                            {
+                                step.ProcessRouteId = processRoute.Id;
+                                AddProcessStepInTransaction(step, connection, transaction);
+                            }
+                        }
+                        transaction.Commit();
+                        return true;
+                    }
+                    transaction.Rollback();
+                    return false;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    LogManager.Error(string.Format("添加工艺路线失败：编码={0}", processRoute?.RouteCode), ex);
+                    throw new MESException("数据库事务操作失败", ex);
+                }
             }
         }
 
@@ -156,59 +139,50 @@ namespace MES.DAL.Material
         /// <returns>是否成功</returns>
         public bool UpdateProcessRoute(ProcessRoute processRoute)
         {
-            try
+            using (var connection = DatabaseHelper.CreateConnection())
             {
-                string sql = @"
-                    UPDATE process_route SET
-                        route_code = @routeCode,
-                        route_name = @routeName,
-                        product_id = @productId,
-                        version = @version,
-                        status = @status,
-                        description = @description,
-                        update_user_id = @updateUserId,
-                        update_user_name = @updateUserName,
-                        update_time = @updateTime
-                    WHERE id = @id AND is_deleted = 0";
-
-                var parameters = new[]
+                connection.Open();
+                var transaction = connection.BeginTransaction();
+                try
                 {
-                    DatabaseHelper.CreateParameter("@id", processRoute.Id),
-                    DatabaseHelper.CreateParameter("@routeCode", processRoute.RouteCode),
-                    DatabaseHelper.CreateParameter("@routeName", processRoute.RouteName),
-                    DatabaseHelper.CreateParameter("@productId", processRoute.ProductId),
-                    DatabaseHelper.CreateParameter("@version", processRoute.Version),
-                    DatabaseHelper.CreateParameter("@status", (int)processRoute.Status),
-                    DatabaseHelper.CreateParameter("@description", processRoute.Description ?? (object)DBNull.Value),
-                    DatabaseHelper.CreateParameter("@updateUserId", processRoute.UpdateUserId ?? (object)DBNull.Value),
-                    DatabaseHelper.CreateParameter("@updateUserName", processRoute.UpdateUserName ?? (object)DBNull.Value),
-                    DatabaseHelper.CreateParameter("@updateTime", processRoute.UpdateTime ?? DateTime.Now)
-                };
+                    string sql = "UPDATE process_route SET route_code = @routeCode, route_name = @routeName, product_id = @productId, version = @version, status = @status, description = @description, update_user_id = @updateUserId, update_user_name = @updateUserName, update_time = @updateTime WHERE id = @id";
+                    var cmd = new MySqlCommand(sql, connection, transaction);
+                    cmd.Parameters.AddRange(new[]
+                    {
+                        DatabaseHelper.CreateParameter("@routeCode", processRoute.RouteCode),
+                        DatabaseHelper.CreateParameter("@routeName", processRoute.RouteName),
+                        DatabaseHelper.CreateParameter("@productId", processRoute.ProductId),
+                        DatabaseHelper.CreateParameter("@version", processRoute.Version),
+                        DatabaseHelper.CreateParameter("@status", (int)processRoute.Status),
+                        DatabaseHelper.CreateParameter("@description", processRoute.Description),
+                        DatabaseHelper.CreateParameter("@updateUserId", processRoute.UpdateUserId),
+                        DatabaseHelper.CreateParameter("@updateUserName", processRoute.UpdateUserName),
+                        DatabaseHelper.CreateParameter("@updateTime", processRoute.UpdateTime),
+                        DatabaseHelper.CreateParameter("@id", processRoute.Id)
+                    });
 
-                int result = DatabaseHelper.ExecuteNonQuery(sql, parameters);
-                
-                if (result > 0)
-                {
-                    // 删除原有步骤
-                    DeleteProcessStepsByRouteId(processRoute.Id);
-                    
-                    // 添加新步骤
-                    if (processRoute.Steps != null && processRoute.Steps.Count > 0)
+                    cmd.ExecuteNonQuery();
+
+                    // 先删除所有旧步骤，再添加所有新步骤，保证数据一致性
+                    DeleteAllProcessStepsByRouteIdInTransaction(processRoute.Id, connection, transaction);
+                    if (processRoute.Steps != null)
                     {
                         foreach (var step in processRoute.Steps)
                         {
                             step.ProcessRouteId = processRoute.Id;
-                            AddProcessStep(step);
+                            AddProcessStepInTransaction(step, connection, transaction);
                         }
                     }
+
+                    transaction.Commit();
+                    return true;
                 }
-                
-                return result > 0;
-            }
-            catch (Exception ex)
-            {
-                LogManager.Error(string.Format("更新工艺路线失败：编码={0}", processRoute?.RouteCode), ex);
-                throw new MESException("数据库操作失败", ex);
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    LogManager.Error(string.Format("更新工艺路线失败：编码={0}", processRoute?.RouteCode), ex);
+                    throw new MESException("数据库事务操作失败", ex);
+                }
             }
         }
 
@@ -221,27 +195,8 @@ namespace MES.DAL.Material
         {
             try
             {
-                string sql = @"
-                    UPDATE process_route SET 
-                        is_deleted = 1,
-                        update_time = @updateTime
-                    WHERE id = @id";
-
-                var parameters = new[]
-                {
-                    DatabaseHelper.CreateParameter("@id", id),
-                    DatabaseHelper.CreateParameter("@updateTime", DateTime.Now)
-                };
-
-                int result = DatabaseHelper.ExecuteNonQuery(sql, parameters);
-                
-                if (result > 0)
-                {
-                    // 同时删除相关的工艺步骤
-                    DeleteProcessStepsByRouteId(id);
-                }
-                
-                return result > 0;
+                string sql = "UPDATE process_route SET is_deleted = 1, update_time = @updateTime WHERE id = @id";
+                return DatabaseHelper.ExecuteNonQuery(sql, new[] { DatabaseHelper.CreateParameter("@updateTime", DateTime.Now), DatabaseHelper.CreateParameter("@id", id) }) > 0;
             }
             catch (Exception ex)
             {
@@ -324,19 +279,8 @@ namespace MES.DAL.Material
         {
             try
             {
-                string sql = @"
-                    SELECT ps.*, w.workstation_name
-                    FROM process_step ps
-                    LEFT JOIN workstation_info w ON ps.workstation_id = w.id
-                    WHERE ps.process_route_id = @routeId AND ps.is_deleted = 0
-                    ORDER BY ps.step_number";
-
-                var parameters = new[]
-                {
-                    DatabaseHelper.CreateParameter("@routeId", routeId)
-                };
-
-                var dataTable = DatabaseHelper.ExecuteQuery(sql, parameters);
+                string sql = "SELECT ps.*, w.workstation_name FROM process_step ps LEFT JOIN workstation_info w ON ps.workstation_id = w.id WHERE ps.process_route_id = @routeId AND ps.is_deleted = 0 ORDER BY ps.step_number";
+                var dataTable = DatabaseHelper.ExecuteQuery(sql, new[] { DatabaseHelper.CreateParameter("@routeId", routeId) });
                 return ConvertDataTableToProcessStepList(dataTable);
             }
             catch (Exception ex)
@@ -347,10 +291,27 @@ namespace MES.DAL.Material
         }
 
         /// <summary>
-        /// 添加工艺步骤
+        /// [新增] 根据ID获取单个工艺步骤
         /// </summary>
-        /// <param name="step">工艺步骤</param>
-        /// <returns>是否成功</returns>
+        public ProcessStep GetProcessStepById(int stepId)
+        {
+            try
+            {
+                string sql = "SELECT ps.*, w.workstation_name FROM process_step ps LEFT JOIN workstation_info w ON ps.workstation_id = w.id WHERE ps.id = @id AND ps.is_deleted = 0";
+                var dataTable = DatabaseHelper.ExecuteQuery(sql, new[] { DatabaseHelper.CreateParameter("@id", stepId) });
+                var steps = ConvertDataTableToProcessStepList(dataTable);
+                return steps.FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error(string.Format("获取单个工艺步骤失败：步骤ID={0}", stepId), ex);
+                throw new MESException("数据库操作失败", ex);
+            }
+        }
+
+        /// <summary>
+        /// [新增] 添加单个工艺步骤
+        /// </summary>
         public bool AddProcessStep(ProcessStep step)
         {
             try
@@ -365,9 +326,8 @@ namespace MES.DAL.Material
                         @processRouteId, @stepNumber, @stepName, @stepType, @workstationId,
                         @standardTime, @setupTime, @waitTime, @description, @operationInstructions,
                         @qualityRequirements, @safetyNotes, @requiredSkillLevel, @isCritical,
-                        @requiresInspection, @status, @createTime, @isDeleted
+                        @requiresInspection, @status, @createTime, 0
                     )";
-
                 var parameters = new[]
                 {
                     DatabaseHelper.CreateParameter("@processRouteId", step.ProcessRouteId),
@@ -378,64 +338,199 @@ namespace MES.DAL.Material
                     DatabaseHelper.CreateParameter("@standardTime", step.StandardTime),
                     DatabaseHelper.CreateParameter("@setupTime", step.SetupTime),
                     DatabaseHelper.CreateParameter("@waitTime", step.WaitTime),
-                    DatabaseHelper.CreateParameter("@description", step.Description ?? (object)DBNull.Value),
-                    DatabaseHelper.CreateParameter("@operationInstructions", step.OperationInstructions ?? (object)DBNull.Value),
-                    DatabaseHelper.CreateParameter("@qualityRequirements", step.QualityRequirements ?? (object)DBNull.Value),
-                    DatabaseHelper.CreateParameter("@safetyNotes", step.SafetyNotes ?? (object)DBNull.Value),
+                    DatabaseHelper.CreateParameter("@description", step.Description),
+                    DatabaseHelper.CreateParameter("@operationInstructions", step.OperationInstructions),
+                    DatabaseHelper.CreateParameter("@qualityRequirements", step.QualityRequirements),
+                    DatabaseHelper.CreateParameter("@safetyNotes", step.SafetyNotes),
                     DatabaseHelper.CreateParameter("@requiredSkillLevel", step.RequiredSkillLevel),
                     DatabaseHelper.CreateParameter("@isCritical", step.IsCritical),
                     DatabaseHelper.CreateParameter("@requiresInspection", step.RequiresInspection),
                     DatabaseHelper.CreateParameter("@status", (int)step.Status),
-                    DatabaseHelper.CreateParameter("@createTime", step.CreateTime),
-                    DatabaseHelper.CreateParameter("@isDeleted", step.IsDeleted)
+                    DatabaseHelper.CreateParameter("@createTime", step.CreateTime)
                 };
-
-                int result = DatabaseHelper.ExecuteNonQuery(sql, parameters);
-                return result > 0;
+                return DatabaseHelper.ExecuteNonQuery(sql, parameters) > 0;
             }
             catch (Exception ex)
             {
-                LogManager.Error(string.Format("添加工艺步骤失败：步骤名称={0}", step?.StepName), ex);
+                LogManager.Error("添加工艺步骤失败", ex);
                 throw new MESException("数据库操作失败", ex);
             }
         }
 
         /// <summary>
-        /// 删除工艺路线的所有工艺步骤
+        /// [修改] 更新单个工艺步骤的完整信息
         /// </summary>
-        /// <param name="routeId">工艺路线ID</param>
-        /// <returns>是否成功</returns>
-        public bool DeleteProcessStepsByRouteId(int routeId)
+        public bool UpdateProcessStep(ProcessStep step)
         {
             try
             {
                 string sql = @"
-                    UPDATE process_step SET
-                        is_deleted = 1,
+                    UPDATE process_step SET 
+                        step_number = @stepNumber,
+                        step_name = @stepName,
+                        step_type = @stepType,
+                        workstation_id = @workstationId,
+                        standard_time = @standardTime,
+                        setup_time = @setupTime,
+                        wait_time = @waitTime,
+                        description = @description,
+                        operation_instructions = @operationInstructions,
+                        quality_requirements = @qualityRequirements,
+                        safety_notes = @safetyNotes,
+                        required_skill_level = @requiredSkillLevel,
+                        is_critical = @isCritical,
+                        requires_inspection = @requiresInspection,
+                        status = @status,
                         update_time = @updateTime
-                    WHERE process_route_id = @routeId";
+                    WHERE id = @id";
 
                 var parameters = new[]
                 {
-                    DatabaseHelper.CreateParameter("@routeId", routeId),
-                    DatabaseHelper.CreateParameter("@updateTime", DateTime.Now)
+                    DatabaseHelper.CreateParameter("@stepNumber", step.StepNumber),
+                    DatabaseHelper.CreateParameter("@stepName", step.StepName),
+                    DatabaseHelper.CreateParameter("@stepType", (int)step.StepType),
+                    DatabaseHelper.CreateParameter("@workstationId", step.WorkstationId),
+                    DatabaseHelper.CreateParameter("@standardTime", step.StandardTime),
+                    DatabaseHelper.CreateParameter("@setupTime", step.SetupTime),
+                    DatabaseHelper.CreateParameter("@waitTime", step.WaitTime),
+                    DatabaseHelper.CreateParameter("@description", step.Description),
+                    DatabaseHelper.CreateParameter("@operationInstructions", step.OperationInstructions),
+                    DatabaseHelper.CreateParameter("@qualityRequirements", step.QualityRequirements),
+                    DatabaseHelper.CreateParameter("@safetyNotes", step.SafetyNotes),
+                    DatabaseHelper.CreateParameter("@requiredSkillLevel", step.RequiredSkillLevel),
+                    DatabaseHelper.CreateParameter("@isCritical", step.IsCritical),
+                    DatabaseHelper.CreateParameter("@requiresInspection", step.RequiresInspection),
+                    DatabaseHelper.CreateParameter("@status", (int)step.Status),
+                    DatabaseHelper.CreateParameter("@updateTime", DateTime.Now),
+                    DatabaseHelper.CreateParameter("@id", step.Id)
                 };
-
-                int result = DatabaseHelper.ExecuteNonQuery(sql, parameters);
-                return result >= 0; // 可能没有步骤，所以>=0就算成功
+                return DatabaseHelper.ExecuteNonQuery(sql, parameters) > 0;
             }
             catch (Exception ex)
             {
-                LogManager.Error(string.Format("删除工艺步骤失败：路线ID={0}", routeId), ex);
+                LogManager.Error(string.Format("更新工艺步骤失败：步骤ID={0}", step.Id), ex);
                 throw new MESException("数据库操作失败", ex);
             }
+        }
+
+        /// <summary>
+        /// [新增] 逻辑删除单个工艺步骤
+        /// </summary>
+        public bool DeleteProcessStep(int stepId)
+        {
+            try
+            {
+                string sql = "UPDATE process_step SET is_deleted = 1, update_time = @updateTime WHERE id = @id";
+                var parameters = new[] {
+                    DatabaseHelper.CreateParameter("@updateTime", DateTime.Now),
+                    DatabaseHelper.CreateParameter("@id", stepId)
+                };
+                return DatabaseHelper.ExecuteNonQuery(sql, parameters) > 0;
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error(string.Format("删除工艺步骤失败：步骤ID={0}", stepId), ex);
+                throw new MESException("数据库操作失败", ex);
+            }
+        }
+
+        /// <summary>
+        /// [新增] 在事务中批量更新步骤序号
+        /// </summary>
+        public bool UpdateStepNumbers(List<ProcessStep> stepsToUpdate)
+        {
+            if (stepsToUpdate == null || !stepsToUpdate.Any())
+            {
+                return true;
+            }
+
+            using (var connection = DatabaseHelper.CreateConnection())
+            {
+                connection.Open();
+                var transaction = connection.BeginTransaction();
+                try
+                {
+                    string sql = "UPDATE process_step SET step_number = @stepNumber, update_time = @updateTime WHERE id = @id";
+                    foreach (var step in stepsToUpdate)
+                    {
+                        var cmd = new MySqlCommand(sql, connection, transaction);
+                        cmd.Parameters.AddRange(new[]
+                        {
+                            DatabaseHelper.CreateParameter("@stepNumber", step.StepNumber),
+                            DatabaseHelper.CreateParameter("@updateTime", DateTime.Now),
+                            DatabaseHelper.CreateParameter("@id", step.Id)
+                        });
+                        cmd.ExecuteNonQuery();
+                    }
+                    transaction.Commit();
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    LogManager.Error("批量更新步骤序号失败", ex);
+                    throw new MESException("数据库事务操作失败", ex);
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// 添加工艺步骤（在事务中调用）
+        /// </summary>
+        private void AddProcessStepInTransaction(ProcessStep step, MySqlConnection conn, MySqlTransaction trans)
+        {
+            string sql = @"
+                INSERT INTO process_step (
+                    process_route_id, step_number, step_name, step_type, workstation_id,
+                    standard_time, setup_time, wait_time, description, operation_instructions,
+                    quality_requirements, safety_notes, required_skill_level, is_critical,
+                    requires_inspection, status, create_time, is_deleted
+                ) VALUES (
+                    @processRouteId, @stepNumber, @stepName, @stepType, @workstationId,
+                    @standardTime, @setupTime, @waitTime, @description, @operationInstructions,
+                    @qualityRequirements, @safetyNotes, @requiredSkillLevel, @isCritical,
+                    @requiresInspection, @status, @createTime, 0
+                )";
+            var cmd = new MySqlCommand(sql, conn, trans);
+            cmd.Parameters.AddRange(new[]
+            {
+                DatabaseHelper.CreateParameter("@processRouteId", step.ProcessRouteId),
+                DatabaseHelper.CreateParameter("@stepNumber", step.StepNumber),
+                DatabaseHelper.CreateParameter("@stepName", step.StepName),
+                DatabaseHelper.CreateParameter("@stepType", (int)step.StepType),
+                DatabaseHelper.CreateParameter("@workstationId", step.WorkstationId),
+                DatabaseHelper.CreateParameter("@standardTime", step.StandardTime),
+                DatabaseHelper.CreateParameter("@setupTime", step.SetupTime),
+                DatabaseHelper.CreateParameter("@waitTime", step.WaitTime),
+                DatabaseHelper.CreateParameter("@description", step.Description),
+                DatabaseHelper.CreateParameter("@operationInstructions", step.OperationInstructions),
+                DatabaseHelper.CreateParameter("@qualityRequirements", step.QualityRequirements),
+                DatabaseHelper.CreateParameter("@safetyNotes", step.SafetyNotes),
+                DatabaseHelper.CreateParameter("@requiredSkillLevel", step.RequiredSkillLevel),
+                DatabaseHelper.CreateParameter("@isCritical", step.IsCritical),
+                DatabaseHelper.CreateParameter("@requiresInspection", step.RequiresInspection),
+                DatabaseHelper.CreateParameter("@status", (int)step.Status),
+                DatabaseHelper.CreateParameter("@createTime", step.CreateTime)
+            });
+            cmd.ExecuteNonQuery();
+        }
+
+        /// <summary>
+        /// 软删除指定工艺路线的所有步骤（在事务中使用）
+        /// </summary>
+        private void DeleteAllProcessStepsByRouteIdInTransaction(int routeId, MySqlConnection conn, MySqlTransaction trans)
+        {
+            string sql = "UPDATE process_step SET is_deleted = 1, update_time = @updateTime WHERE process_route_id = @routeId AND is_deleted = 0";
+            var cmd = new MySqlCommand(sql, conn, trans);
+            cmd.Parameters.Add(DatabaseHelper.CreateParameter("@updateTime", DateTime.Now));
+            cmd.Parameters.Add(DatabaseHelper.CreateParameter("@routeId", routeId));
+            cmd.ExecuteNonQuery();
         }
 
         /// <summary>
         /// 将DataTable转换为工艺步骤列表
         /// </summary>
-        /// <param name="dataTable">数据表</param>
-        /// <returns>工艺步骤列表</returns>
         private List<ProcessStep> ConvertDataTableToProcessStepList(DataTable dataTable)
         {
             var steps = new List<ProcessStep>();
