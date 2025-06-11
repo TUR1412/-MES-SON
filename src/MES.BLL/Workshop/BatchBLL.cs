@@ -6,6 +6,7 @@ using MES.DAL.Workshop;
 using MES.Models.Workshop;
 using MES.Common.Logging;
 using MES.Common.Exceptions;
+using MySql.Data.MySqlClient;
 
 namespace MES.BLL.Workshop
 {
@@ -73,41 +74,56 @@ namespace MES.BLL.Workshop
                 }
 
                 // 业务规则验证
-                string validationResult = ValidateBatch(batch);
-                if (!string.IsNullOrEmpty(validationResult))
+                if (string.IsNullOrEmpty(batch.BatchNumber))
                 {
-                    LogManager.Error(string.Format("添加批次失败：{0}", validationResult));
+                    LogManager.Error("添加批次失败：批次编号不能为空");
+                    return false;
+                }
+
+                if (batch.PlannedQuantity <= 0)
+                {
+                    LogManager.Error("添加批次失败：批次数量必须大于0");
                     return false;
                 }
 
                 // 检查批次编号是否已存在
-                if (IsBatchIdExists(batch.BatchId))
+                if (IsBatchIdExists(batch.BatchNumber))
                 {
-                    LogManager.Error(string.Format("添加批次失败：批次编号 {0} 已存在", batch.BatchId));
+                    LogManager.Error(string.Format("添加批次失败：批次编号 {0} 已存在", batch.BatchNumber));
                     return false;
                 }
 
                 // 设置默认值
-                batch.CreateTime = DateTime.Now;
-                batch.UpdateTime = DateTime.Now;
-                batch.IsDeleted = false;
-
-                // 如果未设置状态，默认为创建状态
-                if (batch.Status == 0)
+                if (string.IsNullOrEmpty(batch.BatchStatus))
                 {
-                    batch.Status = 1; // 创建状态
+                    batch.BatchStatus = "待开始";
+                }
+
+                if (batch.CreateTime == DateTime.MinValue)
+                {
+                    batch.CreateTime = DateTime.Now;
+                }
+
+                if (batch.UpdateTime == DateTime.MinValue)
+                {
+                    batch.UpdateTime = DateTime.Now;
+                }
+
+                if (batch.Version <= 0)
+                {
+                    batch.Version = 1;
                 }
 
                 // 调用DAL层添加
                 bool result = _batchDAL.Add(batch);
-                
+
                 if (result)
                 {
-                    LogManager.Info(string.Format("成功添加批次：{0}", batch.BatchId));
+                    LogManager.Info(string.Format("成功添加批次：{0}", batch.BatchNumber));
                 }
                 else
                 {
-                    LogManager.Error(string.Format("添加批次失败：{0}", batch.BatchId));
+                    LogManager.Error(string.Format("添加批次失败：{0}", batch.BatchNumber));
                 }
 
                 return result;
@@ -148,9 +164,9 @@ namespace MES.BLL.Workshop
                     LogManager.Error(string.Format("删除批次失败：批次 {0} 正在生产中，不能删除", existingBatch.BatchId));
                     return false;
                 }
-                
+
                 bool result = _batchDAL.Delete(id);
-                
+
                 if (result)
                 {
                     LogManager.Info(string.Format("成功删除批次：ID={0}, 批次编号={1}", id, existingBatch.BatchId));
@@ -211,7 +227,7 @@ namespace MES.BLL.Workshop
                 batch.UpdateTime = DateTime.Now;
 
                 bool result = _batchDAL.Update(batch);
-                
+
                 if (result)
                 {
                     LogManager.Info(string.Format("成功更新批次：{0}", batch.BatchId));
@@ -345,36 +361,31 @@ namespace MES.BLL.Workshop
         {
             try
             {
-                // 获取状态为待产(2)或生产中(3)的批次
-                var cancellableBatches = new List<BatchInfo>();
-                var waitingBatches = GetBatchesByStatus(2); // 待产状态
-                var productionBatches = GetBatchesByStatus(3); // 生产中状态
-
-                cancellableBatches.AddRange(waitingBatches);
-                cancellableBatches.AddRange(productionBatches);
+                // 直接调用DAL层获取可取消批次
+                var cancellableBatches = _batchDAL.GetCancellableBatches();
 
                 // 转换为DataTable格式
                 var dataTable = new DataTable();
                 dataTable.Columns.Add("Id", typeof(int));
-                dataTable.Columns.Add("BatchNo", typeof(string));
-                dataTable.Columns.Add("WorkOrderNo", typeof(string));
+                dataTable.Columns.Add("BatchNumber", typeof(string));
+                dataTable.Columns.Add("ProductionOrderNumber", typeof(string));
                 dataTable.Columns.Add("ProductCode", typeof(string));
-                dataTable.Columns.Add("BatchQuantity", typeof(decimal));
-                dataTable.Columns.Add("Status", typeof(string));
-                dataTable.Columns.Add("CreatedBy", typeof(string));
-                dataTable.Columns.Add("CreatedDate", typeof(DateTime));
+                dataTable.Columns.Add("PlannedQuantity", typeof(decimal));
+                dataTable.Columns.Add("BatchStatus", typeof(string));
+                dataTable.Columns.Add("CreateUserName", typeof(string));
+                dataTable.Columns.Add("CreateTime", typeof(DateTime));
 
                 foreach (var batch in cancellableBatches)
                 {
                     var row = dataTable.NewRow();
                     row["Id"] = batch.Id;
-                    row["BatchNo"] = batch.BatchId;
-                    row["WorkOrderNo"] = batch.WorkOrderId;
-                    row["ProductCode"] = batch.ProductMaterialId;
-                    row["BatchQuantity"] = batch.Quantity;
-                    row["Status"] = GetStatusText(batch.Status);
-                    row["CreatedBy"] = batch.CreateUserName ?? "系统";
-                    row["CreatedDate"] = batch.CreateTime;
+                    row["BatchNumber"] = batch.BatchNumber;
+                    row["ProductionOrderNumber"] = batch.ProductionOrderNumber;
+                    row["ProductCode"] = batch.ProductCode;
+                    row["PlannedQuantity"] = batch.PlannedQuantity;
+                    row["BatchStatus"] = batch.BatchStatus;
+                    row["CreateUserName"] = batch.CreateUserName ?? "系统";
+                    row["CreateTime"] = batch.CreateTime;
                     dataTable.Rows.Add(row);
                 }
 
@@ -487,64 +498,6 @@ namespace MES.BLL.Workshop
             }
         }
 
-        /// <summary>
-        /// 根据多条件搜索批次
-        /// </summary>
-        /// <param name="keyword">关键词（批次号或产品名称）</param>
-        /// <param name="status">状态</param>
-        /// <param name="startDate">开始日期</param>
-        /// <param name="endDate">结束日期</param>
-        /// <returns>匹配的批次列表</returns>
-        public List<BatchInfo> SearchBatches(string keyword = null, string status = null,
-            DateTime? startDate = null, DateTime? endDate = null)
-        {
-            try
-            {
-                // 获取所有批次
-                var allBatches = GetAllBatches();
-
-                // 应用筛选条件
-                var filteredBatches = allBatches.AsEnumerable();
-
-                // 关键词筛选
-                if (!string.IsNullOrWhiteSpace(keyword))
-                {
-                    filteredBatches = filteredBatches.Where(b =>
-                        (b.BatchNumber != null && b.BatchNumber.Contains(keyword)) ||
-                        (b.ProductName != null && b.ProductName.Contains(keyword)) ||
-                        (b.ProductCode != null && b.ProductCode.Contains(keyword)) ||
-                        (b.ProductionOrderNumber != null && b.ProductionOrderNumber.Contains(keyword)));
-                }
-
-                // 状态筛选
-                if (!string.IsNullOrWhiteSpace(status) && status != "全部状态")
-                {
-                    filteredBatches = filteredBatches.Where(b => b.BatchStatus == status);
-                }
-
-                // 日期筛选
-                if (startDate.HasValue)
-                {
-                    filteredBatches = filteredBatches.Where(b => b.CreateTime >= startDate.Value.Date);
-                }
-
-                if (endDate.HasValue)
-                {
-                    filteredBatches = filteredBatches.Where(b => b.CreateTime <= endDate.Value.Date.AddDays(1));
-                }
-
-                var result = filteredBatches.ToList();
-                LogManager.Info(string.Format("搜索批次完成：关键词={0}, 状态={1}, 开始日期={2}, 结束日期={3}, 结果数量={4}",
-                    keyword, status, startDate, endDate, result.Count));
-
-                return result;
-            }
-            catch (Exception ex)
-            {
-                LogManager.Error(string.Format("搜索批次异常：{0}", ex.Message), ex);
-                throw new MESException("搜索批次时发生异常", ex);
-            }
-        }
 
         /// <summary>
         /// 获取指定日期的最大序号

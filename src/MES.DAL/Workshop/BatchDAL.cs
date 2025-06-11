@@ -267,15 +267,15 @@ namespace MES.DAL.Workshop
         protected override bool BuildInsertSql(BatchInfo entity, out string sql, out MySqlParameter[] parameters)
         {
             sql = @"INSERT INTO batch_info
-                          (batch_number, workshop_id, workshop_name, production_order_id, production_order_number,
-                           product_code, product_name, planned_quantity, actual_quantity, unit,
-                           batch_status, start_time, end_time, operator_id, operator_name,
-                           create_time, create_user_id, create_user_name, is_deleted, remark, version)
-                          VALUES
-                          (@batchNumber, @workshopId, @workshopName, @productionOrderId, @productionOrderNumber,
-                           @productCode, @productName, @plannedQuantity, @actualQuantity, @unit,
-                           @batchStatus, @startTime, @endTime, @operatorId, @operatorName,
-                           @createTime, @createUserId, @createUserName, @isDeleted, @remark, @version)";
+              (batch_number, workshop_id, workshop_name, production_order_id, production_order_number,
+               product_code, product_name, planned_quantity, actual_quantity, unit,
+               batch_status, start_time, end_time, operator_id, operator_name,
+               create_time, create_user_id, create_user_name, is_deleted, remark, version)
+              VALUES
+              (@batchNumber, @workshopId, @workshopName, @productionOrderId, @productionOrderNumber,
+               @productCode, @productName, @plannedQuantity, @actualQuantity, @unit,
+               @batchStatus, @startTime, @endTime, @operatorId, @operatorName,
+               @createTime, @createUserId, @createUserName, @isDeleted, @remark, @version)";
 
             parameters = new[]
             {
@@ -284,21 +284,21 @@ namespace MES.DAL.Workshop
                 DatabaseHelper.CreateParameter("@workshopName", entity.WorkshopName),
                 DatabaseHelper.CreateParameter("@productionOrderId", entity.ProductionOrderId),
                 DatabaseHelper.CreateParameter("@productionOrderNumber", entity.ProductionOrderNumber),
-                DatabaseHelper.CreateParameter("@productCode", entity.ProductCode),
+                DatabaseHelper.CreateParameter("@productCode", entity.ProductCode ?? string.Empty),
                 DatabaseHelper.CreateParameter("@productName", entity.ProductName),
                 DatabaseHelper.CreateParameter("@plannedQuantity", entity.PlannedQuantity),
                 DatabaseHelper.CreateParameter("@actualQuantity", entity.ActualQuantity),
-                DatabaseHelper.CreateParameter("@unit", entity.Unit),
-                DatabaseHelper.CreateParameter("@batchStatus", entity.BatchStatus),
-                DatabaseHelper.CreateParameter("@startTime", entity.ProductionStartTime),
-                DatabaseHelper.CreateParameter("@endTime", entity.ProductionEndTime),
+                DatabaseHelper.CreateParameter("@unit", entity.Unit ?? "个"),
+                DatabaseHelper.CreateParameter("@batchStatus", entity.BatchStatus ?? "待开始"),
+                DatabaseHelper.CreateParameter("@startTime", entity.ProductionStartTime ?? (object)DBNull.Value),
+                DatabaseHelper.CreateParameter("@endTime", entity.ProductionEndTime ?? (object)DBNull.Value),
                 DatabaseHelper.CreateParameter("@operatorId", entity.OperatorId),
-                DatabaseHelper.CreateParameter("@operatorName", entity.OperatorName),
+                DatabaseHelper.CreateParameter("@operatorName", entity.OperatorName ?? string.Empty),
                 DatabaseHelper.CreateParameter("@createTime", entity.CreateTime),
-                DatabaseHelper.CreateParameter("@createUserId", entity.CreateUserId),
-                DatabaseHelper.CreateParameter("@createUserName", entity.CreateUserName),
+                DatabaseHelper.CreateParameter("@createUserId", entity.CreateUserId ?? (object)DBNull.Value),
+                DatabaseHelper.CreateParameter("@createUserName", entity.CreateUserName ?? string.Empty),
                 DatabaseHelper.CreateParameter("@isDeleted", entity.IsDeleted),
-                DatabaseHelper.CreateParameter("@remark", entity.Remark),
+                DatabaseHelper.CreateParameter("@remark", entity.Remark ?? string.Empty),
                 DatabaseHelper.CreateParameter("@version", entity.Version)
             };
 
@@ -363,13 +363,46 @@ namespace MES.DAL.Workshop
         {
             try
             {
-                // 获取状态为待开始或进行中的批次
-                return GetByCondition("batch_status IN ('待开始', '进行中') AND is_deleted = 0 ORDER BY create_time DESC");
+                string sql = "SELECT * FROM batch_info WHERE batch_status IN ('待开始', '进行中') AND is_deleted = 0 ORDER BY create_time DESC";
+                var dataTable = DatabaseHelper.ExecuteQuery(sql);
+
+                var batches = new List<BatchInfo>();
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    batches.Add(MapRowToEntity(row));
+                }
+
+                return batches;
             }
             catch (Exception ex)
             {
                 LogManager.Error("获取可取消批次列表失败", ex);
                 throw new MESException("获取可取消批次列表失败", ex);
+            }
+        }
+        /// <summary>
+        /// 获取所有批次列表
+        /// </summary>
+        /// <returns>获取所有批次列表</returns>
+        public List<BatchInfo> GetAll()
+        {
+            try
+            {
+                string sql = "SELECT * FROM batch_info WHERE is_deleted = 0";
+                var dataTable = DatabaseHelper.ExecuteQuery(sql);
+
+                var batches = new List<BatchInfo>();
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    batches.Add(MapRowToEntity(row));
+                }
+
+                return batches;
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("获取所有批次失败", ex);
+                throw new MESException("获取所有批次失败", ex);
             }
         }
 
@@ -400,6 +433,28 @@ namespace MES.DAL.Workshop
             {
                 LogManager.Error(string.Format("获取日期 {0} 的最大批次序号失败", date.ToString("yyyy-MM-dd")), ex);
                 throw new MESException("获取最大批次序号失败", ex);
+            }
+        }
+
+        public bool Add(BatchInfo entity)
+        {
+            try
+            {
+                string sql;
+                MySqlParameter[] parameters;
+
+                if (!BuildInsertSql(entity, out sql, out parameters))
+                {
+                    return false;
+                }
+
+                int rowsAffected = DatabaseHelper.ExecuteNonQuery(sql, parameters);
+                return rowsAffected > 0;
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error(string.Format("添加批次异常：{0}", ex.Message), ex);
+                throw new MESException("添加批次时发生异常", ex);
             }
         }
 
