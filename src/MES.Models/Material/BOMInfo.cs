@@ -104,6 +104,8 @@ namespace MES.Models.Material
             BOMType = "PRODUCTION";
             EffectiveDate = DateTime.Now;
             Status = true;
+            BOMCode = string.Empty;
+            BomName = string.Empty;
             ProductCode = string.Empty;
             ProductName = string.Empty;
             MaterialCode = string.Empty;
@@ -123,6 +125,7 @@ namespace MES.Models.Material
             {
                 Id = this.Id,
                 BOMCode = this.BOMCode,
+                BomName = this.BomName,
                 ProductId = this.ProductId,
                 ProductCode = this.ProductCode,
                 ProductName = this.ProductName,
