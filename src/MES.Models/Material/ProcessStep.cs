@@ -1,3 +1,4 @@
+using MES.Models.Base;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -62,7 +63,7 @@ namespace MES.Models.Material
     /// 工艺步骤模型
     /// 定义工艺路线中的具体工艺步骤
     /// </summary>
-    public class ProcessStep
+    public class ProcessStep : BaseModel
     {
         /// <summary>
         /// 工艺步骤ID
@@ -198,28 +199,12 @@ namespace MES.Models.Material
             }
         }
 
-        /// <summary>
-        /// 创建时间
-        /// </summary>
-        public DateTime CreateTime { get; set; }
-
-        /// <summary>
-        /// 更新时间
-        /// </summary>
-        public DateTime? UpdateTime { get; set; }
-
-        /// <summary>
-        /// 是否删除
-        /// </summary>
-        public bool IsDeleted { get; set; }
 
         /// <summary>
         /// 构造函数
         /// </summary>
         public ProcessStep()
         {
-            CreateTime = DateTime.Now;
-            IsDeleted = false;
             Status = ProcessStepStatus.Active;
             StepType = ProcessStepType.Processing;
             RequiredSkillLevel = 1;

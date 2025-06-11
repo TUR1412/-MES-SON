@@ -144,6 +144,12 @@
     <Compile Include="Forms\Material\MaterialEditForm.Designer.cs">
       <DependentUpon>MaterialEditForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\Material\ProcessStepEditForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Material\ProcessStepEditForm.Designer.cs">
+      <DependentUpon>ProcessStepEditForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\SystemManagement\SystemConfigForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -159,7 +165,6 @@
     <Compile Include="Forms\SystemManagement\DatabaseDiagnosticForm.Designer.cs">
       <DependentUpon>DatabaseDiagnosticForm.cs</DependentUpon>
     </Compile>
-
     <Compile Include="Forms\Material\MaterialManagementForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -332,6 +337,9 @@
     <EmbeddedResource Include="Forms\Material\ProcessRouteEditForm.resx">
       <DependentUpon>ProcessRouteEditForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Material\ProcessStepEditForm.resx">
+      <DependentUpon>ProcessStepEditForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\Production\ProductionOrderManagementForm.resx">
       <DependentUpon>ProductionOrderManagementForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -371,7 +379,6 @@
     <EmbeddedResource Include="Forms\SystemManagement\DatabaseDiagnosticForm.resx">
       <DependentUpon>DatabaseDiagnosticForm.cs</DependentUpon>
     </EmbeddedResource>
-
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
