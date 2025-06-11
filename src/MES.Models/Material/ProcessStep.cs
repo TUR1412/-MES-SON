@@ -126,6 +126,11 @@ namespace MES.Models.Material
         public string WorkstationName { get; set; }
 
         /// <summary>
+        /// 端口号
+        /// </summary>
+        public string PortNumber { get; set; }
+
+        /// <summary>
         /// 标准工时（分钟）
         /// </summary>
         public decimal StandardTime { get; set; }
@@ -282,6 +287,7 @@ namespace MES.Models.Material
                 StepType = this.StepType,
                 WorkstationId = this.WorkstationId,
                 WorkstationName = this.WorkstationName,
+                PortNumber = this.PortNumber,
                 StandardTime = this.StandardTime,
                 SetupTime = this.SetupTime,
                 WaitTime = this.WaitTime,

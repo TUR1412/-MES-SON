@@ -250,6 +250,15 @@ namespace MES.UI.Forms.Material
 
             dgvSteps.Columns.Add(new DataGridViewTextBoxColumn
             {
+                Name = "PortNumber",
+                HeaderText = "端口号",
+                DataPropertyName = "PortNumber",
+                Width = 100,
+                ReadOnly = true
+            });
+
+            dgvSteps.Columns.Add(new DataGridViewTextBoxColumn
+            {
                 Name = "StandardTime",
                 HeaderText = "标准工时(分钟)",
                 DataPropertyName = "StandardTime",
@@ -729,25 +738,41 @@ namespace MES.UI.Forms.Material
         private void BtnStepUp_Click(object sender, EventArgs e)
         {
             var selectedStep = GetSelectedProcessStep();
-            if (selectedStep == null) return;
-            if (selectedStep.StepNumber <= 1) return; // 已经是第一个，无需移动
+            if (selectedStep == null)
+            {
+                MessageBox.Show("请先选择要上移的工艺步骤。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (_selectedRoute == null)
+            {
+                MessageBox.Show("请先选择工艺路线。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (selectedStep.StepNumber <= 1)
+            {
+                MessageBox.Show("该步骤已经是第一个，无法继续上移。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
 
             try
             {
-                // 直接调用BLL移动
+                // 调用BLL进行上移操作
                 if (_processRouteBLL.MoveProcessStep(_selectedRoute.Id, selectedStep.Id, true))
                 {
-                    // 成功后刷新，并保持选中
+                    // 成功后刷新步骤列表，并保持选中状态
                     LoadProcessSteps(_selectedRoute.Id, selectedStep.Id);
+                    MessageBox.Show("步骤上移成功。", "成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else
                 {
-                    MessageBox.Show("步骤上移失败。", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("步骤上移失败，请检查数据库连接或联系系统管理员。", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(string.Format("移动失败：{0}", ex.Message), "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(string.Format("上移操作失败：{0}", ex.Message), "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -759,24 +784,39 @@ namespace MES.UI.Forms.Material
             var selectedStep = GetSelectedProcessStep();
             if (selectedStep == null)
             {
-                MessageBox.Show("请先选择要移动的工艺步骤。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("请先选择要下移的工艺步骤。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-            if (selectedStep.StepNumber >= _currentSteps.Count) return;
+
+            if (_selectedRoute == null)
+            {
+                MessageBox.Show("请先选择工艺路线。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (selectedStep.StepNumber >= _currentSteps.Count)
+            {
+                MessageBox.Show("该步骤已经是最后一个，无法继续下移。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
             try
             {
+                // 调用BLL进行下移操作
                 if (_processRouteBLL.MoveProcessStep(_selectedRoute.Id, selectedStep.Id, false))
                 {
+                    // 成功后刷新步骤列表，并保持选中状态
                     LoadProcessSteps(_selectedRoute.Id, selectedStep.Id);
+                    MessageBox.Show("步骤下移成功。", "成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else
                 {
-                    MessageBox.Show("步骤下移失败。", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("步骤下移失败，请检查数据库连接或联系系统管理员。", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(string.Format("移动失败：{0}", ex.Message), "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(string.Format("下移操作失败：{0}", ex.Message), "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

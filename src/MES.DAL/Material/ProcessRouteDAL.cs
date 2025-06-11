@@ -302,7 +302,7 @@ namespace MES.DAL.Material
             try
             {
                 string sql = @"
-                    SELECT pr.*, p.product_name 
+                    SELECT pr.*, p.product_name
                     FROM process_route pr
                     LEFT JOIN product_info p ON pr.product_id = p.id
                     WHERE pr.is_deleted = 0";
@@ -347,6 +347,41 @@ namespace MES.DAL.Material
             }
         }
 
+        /// <summary>
+        /// 根据工艺流程ID获取工艺路线列表
+        /// </summary>
+        /// <param name="flowId">工艺流程ID</param>
+        /// <returns>工艺路线列表</returns>
+        public List<ProcessRoute> GetProcessRoutesByFlowId(int flowId)
+        {
+            try
+            {
+                string sql = @"
+                    SELECT pr.*, p.product_name
+                    FROM process_route pr
+                    LEFT JOIN product_info p ON pr.product_id = p.id
+                    WHERE pr.is_deleted = 0 AND pr.process_flow_id = @flowId
+                    ORDER BY pr.create_time DESC";
+
+                var parameters = new[] { DatabaseHelper.CreateParameter("@flowId", flowId) };
+                var dataTable = DatabaseHelper.ExecuteQuery(sql, parameters);
+                var routes = ConvertDataTableToProcessRouteList(dataTable);
+
+                // 加载每个路线的工艺步骤
+                foreach (var route in routes)
+                {
+                    route.Steps = GetProcessStepsByRouteId(route.Id);
+                }
+
+                return routes;
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error(string.Format("根据工艺流程ID获取工艺路线失败：流程ID={0}", flowId), ex);
+                throw new MESException("数据库操作失败", ex);
+            }
+        }
+
         #endregion
 
         #region 工艺步骤操作
@@ -385,7 +420,7 @@ namespace MES.DAL.Material
             }
             catch (Exception ex)
             {
-                LogManager.Error($"获取单个工艺步骤失败：步骤ID={stepId}", ex);
+                LogManager.Error(string.Format("获取单个工艺步骤失败：步骤ID={0}", stepId), ex);
                 throw new MESException("数据库操作失败", ex);
             }
         }
@@ -399,12 +434,12 @@ namespace MES.DAL.Material
             {
                 string sql = @"
             INSERT INTO process_step (
-                process_route_id, step_number, step_name, step_type, workstation_id,
+                process_route_id, step_number, step_name, step_type, workstation_id, port_number,
                 standard_time, setup_time, wait_time, description, operation_instructions,
                 quality_requirements, safety_notes, required_skill_level, is_critical,
                 requires_inspection, status, create_time, is_deleted
             ) VALUES (
-                @processRouteId, @stepNumber, @stepName, @stepType, @workstationId,
+                @processRouteId, @stepNumber, @stepName, @stepType, @workstationId, @portNumber,
                 @standardTime, @setupTime, @waitTime, @description, @operationInstructions,
                 @qualityRequirements, @safetyNotes, @requiredSkillLevel, @isCritical,
                 @requiresInspection, @status, @createTime, 0
@@ -415,6 +450,7 @@ namespace MES.DAL.Material
             DatabaseHelper.CreateParameter("@stepName", step.StepName),
             DatabaseHelper.CreateParameter("@stepType", (int)step.StepType),
             DatabaseHelper.CreateParameter("@workstationId", step.WorkstationId),
+            DatabaseHelper.CreateParameter("@portNumber", step.PortNumber),
             DatabaseHelper.CreateParameter("@standardTime", step.StandardTime),
             DatabaseHelper.CreateParameter("@setupTime", step.SetupTime),
             DatabaseHelper.CreateParameter("@waitTime", step.WaitTime),
@@ -445,12 +481,12 @@ namespace MES.DAL.Material
             try
             {
                 string sql = @"
-            UPDATE process_step SET 
+            UPDATE process_step SET
                 step_number = @stepNumber, step_name = @stepName, step_type = @stepType,
-                workstation_id = @workstationId, standard_time = @standardTime, setup_time = @setupTime,
+                workstation_id = @workstationId, port_number = @portNumber, standard_time = @standardTime, setup_time = @setupTime,
                 wait_time = @waitTime, description = @description, operation_instructions = @operationInstructions,
-                quality_requirements = @qualityRequirements, safety_notes = @safetyNotes, 
-                required_skill_level = @requiredSkillLevel, is_critical = @isCritical, 
+                quality_requirements = @qualityRequirements, safety_notes = @safetyNotes,
+                required_skill_level = @requiredSkillLevel, is_critical = @isCritical,
                 requires_inspection = @requiresInspection, status = @status, update_time = @updateTime
             WHERE id = @id";
 
@@ -460,6 +496,7 @@ namespace MES.DAL.Material
             DatabaseHelper.CreateParameter("@stepName", step.StepName),
             DatabaseHelper.CreateParameter("@stepType", (int)step.StepType),
             DatabaseHelper.CreateParameter("@workstationId", step.WorkstationId),
+            DatabaseHelper.CreateParameter("@portNumber", step.PortNumber),
             DatabaseHelper.CreateParameter("@standardTime", step.StandardTime),
             DatabaseHelper.CreateParameter("@setupTime", step.SetupTime),
             DatabaseHelper.CreateParameter("@waitTime", step.WaitTime),
@@ -511,8 +548,11 @@ namespace MES.DAL.Material
         {
             if (stepsToUpdate == null || !stepsToUpdate.Any())
             {
+                LogManager.Info("批量更新步骤序号：没有需要更新的步骤");
                 return true;
             }
+
+            LogManager.Info(string.Format("开始批量更新步骤序号，共 {0} 个步骤", stepsToUpdate.Count));
 
             using (var connection = DatabaseHelper.CreateConnection())
             {
@@ -521,24 +561,44 @@ namespace MES.DAL.Material
                 try
                 {
                     string sql = "UPDATE process_step SET step_number = @stepNumber, update_time = @updateTime WHERE id = @id";
+                    int updatedCount = 0;
+
                     foreach (var step in stepsToUpdate)
                     {
+                        if (step.Id <= 0)
+                        {
+                            LogManager.Warning(string.Format("跳过无效的步骤ID：{0}", step.Id));
+                            continue;
+                        }
+
                         var cmd = new MySqlCommand(sql, connection, transaction);
                         cmd.Parameters.AddRange(new[]
                         {
-                    DatabaseHelper.CreateParameter("@stepNumber", step.StepNumber),
-                    DatabaseHelper.CreateParameter("@updateTime", DateTime.Now),
-                    DatabaseHelper.CreateParameter("@id", step.Id)
-                });
-                        cmd.ExecuteNonQuery();
+                            DatabaseHelper.CreateParameter("@stepNumber", step.StepNumber),
+                            DatabaseHelper.CreateParameter("@updateTime", step.UpdateTime ?? DateTime.Now),
+                            DatabaseHelper.CreateParameter("@id", step.Id)
+                        });
+
+                        int rowsAffected = cmd.ExecuteNonQuery();
+                        if (rowsAffected > 0)
+                        {
+                            updatedCount++;
+                            LogManager.Info(string.Format("更新步骤序号成功：ID={0}，新序号={1}", step.Id, step.StepNumber));
+                        }
+                        else
+                        {
+                            LogManager.Warning(string.Format("更新步骤序号失败：ID={0}，可能步骤不存在", step.Id));
+                        }
                     }
+
                     transaction.Commit();
+                    LogManager.Info(string.Format("批量更新步骤序号完成，成功更新 {0} 个步骤", updatedCount));
                     return true;
                 }
                 catch (Exception ex)
                 {
                     transaction.Rollback();
-                    LogManager.Error("批量更新步骤序号失败", ex);
+                    LogManager.Error("批量更新步骤序号失败，事务已回滚", ex);
                     throw new MESException("数据库事务操作失败", ex);
                 }
             }
@@ -552,12 +612,12 @@ namespace MES.DAL.Material
         {
             string sql = @"
                 INSERT INTO process_step (
-                    process_route_id, step_number, step_name, step_type, workstation_id,
+                    process_route_id, step_number, step_name, step_type, workstation_id, port_number,
                     standard_time, setup_time, wait_time, description, operation_instructions,
                     quality_requirements, safety_notes, required_skill_level, is_critical,
                     requires_inspection, status, create_time, is_deleted
                 ) VALUES (
-                    @processRouteId, @stepNumber, @stepName, @stepType, @workstationId,
+                    @processRouteId, @stepNumber, @stepName, @stepType, @workstationId, @portNumber,
                     @standardTime, @setupTime, @waitTime, @description, @operationInstructions,
                     @qualityRequirements, @safetyNotes, @requiredSkillLevel, @isCritical,
                     @requiresInspection, @status, @createTime, 0
@@ -570,6 +630,7 @@ namespace MES.DAL.Material
                 DatabaseHelper.CreateParameter("@stepName", step.StepName),
                 DatabaseHelper.CreateParameter("@stepType", (int)step.StepType),
                 DatabaseHelper.CreateParameter("@workstationId", step.WorkstationId),
+                DatabaseHelper.CreateParameter("@portNumber", step.PortNumber),
                 DatabaseHelper.CreateParameter("@standardTime", step.StandardTime),
                 DatabaseHelper.CreateParameter("@setupTime", step.SetupTime),
                 DatabaseHelper.CreateParameter("@waitTime", step.WaitTime),
@@ -621,6 +682,7 @@ namespace MES.DAL.Material
                     StepType = (ProcessStepType)Convert.ToInt32(row["step_type"]),
                     WorkstationId = Convert.ToInt32(row["workstation_id"]),
                     WorkstationName = row["workstation_name"] != DBNull.Value ? row["workstation_name"].ToString() : "",
+                    PortNumber = row["port_number"] != DBNull.Value ? row["port_number"].ToString() : null,
                     StandardTime = Convert.ToDecimal(row["standard_time"]),
                     SetupTime = Convert.ToDecimal(row["setup_time"]),
                     WaitTime = Convert.ToDecimal(row["wait_time"]),

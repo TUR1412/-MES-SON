@@ -12,8 +12,8 @@
 
 [![License](https://img.shields.io/badge/License-MIT-00C851?style=for-the-badge)](LICENSE)
 [![Build Status](https://img.shields.io/badge/Build-Passing-00C851?style=for-the-badge)](https://github.com/TUR1412/-MES-SON)
-[![Version](https://img.shields.io/badge/Version-v2.0.0-FF6900?style=for-the-badge)](https://github.com/TUR1412/-MES-SON/releases)
-[![Last Update](https://img.shields.io/badge/Last%20Update-2025--06--10-00C851?style=for-the-badge)](#)
+[![Version](https://img.shields.io/badge/Version-v2.1.0-FF6900?style=for-the-badge)](https://github.com/TUR1412/-MES-SON/releases)
+[![Last Update](https://img.shields.io/badge/Last%20Update-2025--06--12-00C851?style=for-the-badge)](#)
 
 [![Quality Gate](https://img.shields.io/badge/Quality%20Gate-Passed-00C851?style=for-the-badge)](https://github.com/TUR1412/-MES-SON)
 [![Code Coverage](https://img.shields.io/badge/Coverage-95%25-00C851?style=for-the-badge)](https://github.com/TUR1412/-MES-SON)
@@ -29,9 +29,9 @@
 
 这是一套**革命性的制造执行系统(MES)**，采用前沿的企业级架构设计理念，实现了制造业数字化转型的**技术突破**。系统以**极致的工程化标准**构建，融合了现代软件工程的最佳实践，为制造企业提供从生产规划到质量控制的**端到端智能解决方案**。
 
-### � v2.0.0 技术革命
+### 🚀 v2.1.0 重大版本更新
 
-**🔥 突破性技术创新** - 实现了制造执行系统领域的多项技术突破：
+**🔥 突破性技术创新与用户体验革命** - 实现了制造执行系统领域的多项技术突破：
 
 #### 🎯 核心技术突破
 - ✅ **三重自动化调试系统** - 业界首创的VS2022级别自动化调试解决方案
@@ -39,6 +39,8 @@
 - ✅ **企业级架构重构** - 严格的三层架构，高内聚低耦合设计
 - ✅ **生产数据实时同步** - 毫秒级数据响应，支持高并发访问
 - ✅ **模块化组件设计** - 可插拔的业务模块，支持快速定制扩展
+- 🆕 **游戏风格主题系统** - 全新的LOL主题界面设计，应用于所有二级窗体
+- 🆕 **程序集版本管理** - 完善的依赖冲突解决方案，确保系统稳定性
 
 #### 🏆 性能与质量指标
 - **🚀 响应速度提升**: 数据查询性能提升300%
@@ -566,6 +568,7 @@ graph TD
 
 | 🏷️ 版本 | 📅 发布日期 | 🎯 主要更新 | 👤 发布者 |
 |----------|-------------|-------------|-----------|
+| **🎮 v2.1.0** | 2025-06-12 | 游戏风格主题系统，程序集版本冲突修复 | 死中求死 |
 | **🚀 v2.0.0** | 2025-06-10 | 三重自动化调试系统，技术革命性突破 | 天神下凡 |
 | **🎨 v1.3.0** | 2025-06-07 | SystemConfigForm重构为设计器模式，解决UI问题 | 天帝 |
 | **🚀 v1.2.0** | 2025-06-07 | README重构，简化Git工作流程 | 天帝 |
@@ -573,6 +576,40 @@ graph TD
 | **🎯 v1.0.0** | 2025-06-07 | 项目初始化，基础框架建立，完全可运行版本 | 天帝 |
 
 </div>
+
+### 🎮 v2.1.0 重大版本更新 - "死中求死"
+
+**🔥 游戏风格主题系统与技术架构完善** - 实现了用户体验与系统稳定性的双重突破：
+
+#### 🎯 主要功能改进
+- **🎮 全新游戏风格主题界面** - 基于League of Legends设计的现代化UI系统
+  - 应用于所有二级窗体和对话框（BOMEditForm、ProcessStepEditForm等）
+  - 保持主界面不变，确保用户体验的连续性
+  - 统一的视觉风格和交互体验
+- **🖥️ 主界面视觉效果优化** - 提升用户体验和操作便利性
+  - 优化布局和控件间距
+  - 改进字体渲染和颜色对比度
+  - 增强响应式设计适配
+
+#### 🛠️ 重要Bug修复
+- **🔧 System.Threading.Tasks.Extensions版本冲突** - 彻底解决工艺步骤上下移动异常
+  - 修复FileNotFoundException导致的数据库操作失败
+  - 升级程序集版本从4.2.0.1到4.2.4.0，完美匹配MySQL驱动需求
+  - 更新项目引用配置，确保依赖一致性
+- **💾 数据库操作异常修复** - 解决BeginTransaction失败问题
+  - 完善异常处理机制和错误日志记录
+  - 优化数据库连接池管理
+- **🎨 ProcessStepEditForm主题应用** - 完善LOL主题在工艺步骤编辑窗体中的应用
+
+#### 🏗️ 技术改进
+- **📦 NuGet包版本升级** - 升级多个关键依赖包到最新稳定版本
+  - Microsoft.Bcl.AsyncInterfaces: 9.0.5 → 9.0.6
+  - Microsoft.Extensions.Logging.Abstractions: 7.0.1 → 9.0.6
+  - System.Threading.Tasks.Extensions: 4.5.4 → 4.6.3
+  - MySqlConnector: 2.3.5 → 2.4.0
+- **⚙️ 程序集绑定重定向优化** - 更新配置文件以解决版本冲突
+- **🔍 依赖管理完善** - 优化项目依赖结构，提升编译和运行稳定性
+- **📊 错误处理增强** - 改进异常捕获和日志记录机制
 
 ### 🚀 v2.0.0 技术革命 - "天神下凡"
 

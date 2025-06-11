@@ -367,6 +367,31 @@ namespace MES.BLL.Material
             }
         }
 
+        /// <summary>
+        /// 根据工艺流程ID获取工艺路线
+        /// </summary>
+        /// <param name="flowId">工艺流程ID</param>
+        /// <returns>工艺路线列表</returns>
+        public List<ProcessRoute> GetProcessRoutesByFlowId(int flowId)
+        {
+            try
+            {
+                if (flowId <= 0)
+                {
+                    throw new ArgumentException("工艺流程ID必须大于0", "flowId");
+                }
+
+                var routes = _processRouteDAL.GetProcessRoutesByFlowId(flowId);
+                LogManager.Info(string.Format("根据工艺流程ID获取工艺路线成功：流程ID={0}, 结果数量={1}", flowId, routes != null ? routes.Count : 0));
+                return routes ?? new List<ProcessRoute>();
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error(string.Format("根据工艺流程ID获取工艺路线失败：流程ID={0}", flowId), ex);
+                throw new MESException("获取工艺路线时发生异常", ex);
+            }
+        }
+
 
         public List<ProductionInfo> GetAllProducts()
         {
@@ -489,30 +514,73 @@ namespace MES.BLL.Material
         /// <returns>是否成功</returns>
         public bool MoveProcessStep(int routeId, int stepId, bool moveUp)
         {
-            var steps = _processRouteDAL.GetProcessStepsByRouteId(routeId);
-            var stepToMove = steps.FirstOrDefault(s => s.Id == stepId);
-            if (stepToMove == null) throw new MESException("未找到要移动的步骤。");
+            try
+            {
+                if (routeId <= 0) throw new ArgumentException("工艺路线ID必须大于0", "routeId");
+                if (stepId <= 0) throw new ArgumentException("工艺步骤ID必须大于0", "stepId");
 
-            int oldIndex = steps.FindIndex(s => s.Id == stepId);
-            int newIndex = moveUp ? oldIndex - 1 : oldIndex + 1;
+                // 获取当前路线的所有步骤，按序号排序
+                var steps = _processRouteDAL.GetProcessStepsByRouteId(routeId);
+                if (steps == null || steps.Count == 0)
+                {
+                    throw new MESException("该工艺路线没有工艺步骤。");
+                }
 
-            if (newIndex < 0 || newIndex >= steps.Count) return true; // 已在顶部或底部
+                // 查找要移动的步骤
+                var stepToMove = steps.FirstOrDefault(s => s.Id == stepId);
+                if (stepToMove == null)
+                {
+                    throw new MESException("未找到要移动的工艺步骤。");
+                }
 
-            var stepToSwap = steps[newIndex];
+                // 获取当前步骤在列表中的索引
+                int currentIndex = steps.FindIndex(s => s.Id == stepId);
+                if (currentIndex == -1)
+                {
+                    throw new MESException("无法确定工艺步骤的位置。");
+                }
 
-            // ---核心修改：使用 C# 5.0 兼容的临时变量法交换序号 ---
-    // 1. 定义一个临时变量存储要移动步骤的序号
-            int tempStepNumber = stepToMove.StepNumber;
+                // 计算目标索引
+                int targetIndex = moveUp ? currentIndex - 1 : currentIndex + 1;
 
-            // 2. 将被交换步骤的序号赋值给要移动的步骤
-            stepToMove.StepNumber = stepToSwap.StepNumber;
+                // 检查边界条件
+                if (targetIndex < 0 || targetIndex >= steps.Count)
+                {
+                    LogManager.Info(string.Format("工艺步骤已在{0}，无需移动", moveUp ? "顶部" : "底部"));
+                    return true; // 已在顶部或底部，无需移动
+                }
 
-            // 3. 将临时变量中保存的原始序号赋值给被交换的步骤
-            stepToSwap.StepNumber = tempStepNumber;
-            // --- 修改结束 ---
+                // 获取要交换的步骤
+                var stepToSwap = steps[targetIndex];
 
-            // 调用DAL一次性更新两个步骤
-            return _processRouteDAL.UpdateStepNumbers(new List<ProcessStep> { stepToMove, stepToSwap });
+                // 使用 C# 5.0 兼容的临时变量法交换序号
+                int tempStepNumber = stepToMove.StepNumber;
+                stepToMove.StepNumber = stepToSwap.StepNumber;
+                stepToSwap.StepNumber = tempStepNumber;
+
+                // 设置更新时间
+                stepToMove.UpdateTime = DateTime.Now;
+                stepToSwap.UpdateTime = DateTime.Now;
+
+                // 调用DAL一次性更新两个步骤
+                bool result = _processRouteDAL.UpdateStepNumbers(new List<ProcessStep> { stepToMove, stepToSwap });
+
+                if (result)
+                {
+                    LogManager.Info(string.Format("工艺步骤移动成功：步骤ID={0}，{1}移动", stepId, moveUp ? "上" : "下"));
+                }
+                else
+                {
+                    LogManager.Warning(string.Format("工艺步骤移动失败：步骤ID={0}", stepId));
+                }
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error(string.Format("移动工艺步骤失败：路线ID={0}，步骤ID={1}，方向={2}", routeId, stepId, moveUp ? "上移" : "下移"), ex);
+                throw new MESException("移动工艺步骤时发生异常", ex);
+            }
         }
 
         #endregion

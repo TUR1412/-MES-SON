@@ -56,6 +56,16 @@ namespace MES.Models.Material
         public string ProductName { get; set; }
 
         /// <summary>
+        /// 工艺流程ID
+        /// </summary>
+        public int ProcessFlowId { get; set; }
+
+        /// <summary>
+        /// 工艺流程名称 (从关联查询获取)
+        /// </summary>
+        public string ProcessFlowName { get; set; }
+
+        /// <summary>
         /// 版本号 (基类已有同名字段，这里使用string类型覆盖)
         /// </summary>
         public new string Version { get; set; }
@@ -135,6 +145,31 @@ namespace MES.Models.Material
             {
                 return Steps != null ? Steps.Count : 0;
             }
+        }
+
+        /// <summary>
+        /// 获取工艺步骤数量
+        /// </summary>
+        /// <returns>步骤数量</returns>
+        public int GetStepCount()
+        {
+            return Steps != null ? Steps.Count : 0;
+        }
+
+        /// <summary>
+        /// 获取总标准时间
+        /// </summary>
+        /// <returns>总时间（分钟）</returns>
+        public decimal GetTotalStandardTime()
+        {
+            if (Steps == null) return 0;
+
+            decimal totalTime = 0;
+            foreach (var step in Steps)
+            {
+                totalTime += step.StandardTime;
+            }
+            return totalTime;
         }
 
         /// <summary>

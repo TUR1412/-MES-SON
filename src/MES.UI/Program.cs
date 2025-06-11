@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using Microsoft.Win32;
 using MES.Common.Logging;
 using MES.UI.Forms;
+using MES.DAL.Core;
 
 namespace MES.UI
 {

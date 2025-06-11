@@ -11,7 +11,7 @@
  Target Server Version : 80405 (8.4.5)
  File Encoding         : 65001
 
- Date: 10/06/2025 20:42:59
+ Date: 12/06/2025 00:21:17
 */
 
 SET NAMES utf8mb4;
@@ -119,7 +119,7 @@ INSERT INTO `bom_info` VALUES (13, 'BOM002-003', '笔记本电脑BOM-内存', 2,
 INSERT INTO `bom_info` VALUES (14, 'BOM002-004', '笔记本电脑BOM-键盘', 2, 'P002', '笔记本电脑', '1.0', '有效', '笔记本电脑键盘组件', '2025-06-10 20:40:28', NULL, '系统管理员', NULL, NULL, NULL, 0, NULL, NULL, NULL, '标准BOM', '2025-06-10 20:40:28', '2026-06-10 20:40:28', 4, 'M004', '铝合金外壳', 1.0000, '套', 1.50, NULL);
 INSERT INTO `bom_info` VALUES (15, 'BOM003-001', '无线耳机BOM-驱动单元', 3, 'P003', '无线耳机', '1.0', '有效', '无线耳机驱动单元', '2025-06-10 20:40:44', NULL, '系统管理员', NULL, NULL, NULL, 0, NULL, NULL, NULL, '标准BOM', '2025-06-10 20:40:44', '2026-06-10 20:40:44', 9, 'M009', '扬声器单元', 2.0000, '个', 1.00, NULL);
 INSERT INTO `bom_info` VALUES (16, 'BOM003-002', '无线耳机BOM-电池', 3, 'P003', '无线耳机', '1.0', '有效', '无线耳机电池组件', '2025-06-10 20:40:44', NULL, '系统管理员', NULL, NULL, NULL, 0, NULL, NULL, NULL, '标准BOM', '2025-06-10 20:40:44', '2026-06-10 20:40:44', 6, 'M006', '锂电池3000mAh', 1.0000, '个', 0.50, NULL);
-INSERT INTO `bom_info` VALUES (17, 'BOM003-003', '无线耳机BOM-蓝牙模块', 3, 'P003', '无线耳机', '1.0', '有效', '无线耳机蓝牙模块', '2025-06-10 20:40:44', NULL, '系统管理员', NULL, NULL, NULL, 0, NULL, NULL, NULL, '标准BOM', '2025-06-10 20:40:44', '2026-06-10 20:40:44', 8, 'M008', '蓝牙5.0模块', 1.0000, '个', 1.00, NULL);
+INSERT INTO `bom_info` VALUES (17, 'BOM003-003', '无线耳机BOM-蓝牙模块', 3, 'P003', '无线耳机', '1.0', '有效', '无线耳机蓝牙模块', '2025-06-10 20:40:44', NULL, '系统管理员', '2025-06-11 10:52:42', NULL, NULL, 1, NULL, NULL, NULL, '标准BOM', '2025-06-10 20:40:44', '2026-06-10 20:40:44', 8, 'M008', '蓝牙5.0模块', 1.0000, '个', 1.00, NULL);
 
 -- ----------------------------
 -- Table structure for equipment_fault_log
@@ -253,12 +253,12 @@ CREATE TABLE `material_info`  (
   INDEX `idx_status`(`status` ASC) USING BTREE,
   INDEX `idx_is_deleted`(`is_deleted` ASC) USING BTREE,
   INDEX `idx_material_type_status`(`material_type` ASC, `status` ASC, `is_deleted` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 11 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '物料信息表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 16 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '物料信息表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of material_info
 -- ----------------------------
-INSERT INTO `material_info` VALUES (1, 'MAT001', '钢板A型', '原材料', '金属材料', '1000*2000*5mm', '张', 150.0000, NULL, 20.00, 200.00, NULL, NULL, 7, NULL, 1, '2025-06-10 16:38:56', NULL, '采购员', '2025-06-10 20:28:33', NULL, '采购员', 0, NULL, NULL, NULL, NULL, 1, NULL);
+INSERT INTO `material_info` VALUES (1, 'MAT001', '钢板A型', '原材料', NULL, '1000*2000*5mm', '张1', NULL, NULL, NULL, NULL, NULL, '', NULL, 0.0000, 1, '2025-06-10 16:38:56', NULL, '采购员', '2025-06-11 23:21:54', NULL, NULL, 0, NULL, NULL, NULL, NULL, 1, NULL);
 INSERT INTO `material_info` VALUES (2, 'MAT002', '螺栓M8', '标准件', '紧固件', 'M8*25', '个', 0.5000, NULL, 500.00, 5000.00, NULL, NULL, 3, NULL, 1, '2025-06-10 16:38:56', NULL, '采购员', '2025-06-10 20:28:33', NULL, '采购员', 0, NULL, NULL, NULL, NULL, 1, NULL);
 INSERT INTO `material_info` VALUES (3, 'MAT003', '电机220V', '电气元件', '动力设备', '220V/1.5KW', '台', 280.0000, NULL, 5.00, 50.00, NULL, NULL, 14, NULL, 1, '2025-06-10 16:38:56', NULL, '采购员', '2025-06-10 20:28:33', NULL, '采购员', 0, NULL, NULL, NULL, NULL, 1, NULL);
 INSERT INTO `material_info` VALUES (4, 'PRD001', '产品A', '成品', '机械产品', 'A型机械设备', '台', 1500.0000, NULL, 2.00, 20.00, NULL, NULL, 0, NULL, 1, '2025-06-10 16:38:56', NULL, '采购员', '2025-06-10 20:28:33', NULL, '采购员', 0, NULL, NULL, NULL, NULL, 1, NULL);
@@ -267,7 +267,7 @@ INSERT INTO `material_info` VALUES (6, 'M006', '锂电池3000mAh', '电子元件
 INSERT INTO `material_info` VALUES (7, 'M007', '10.1寸LCD屏幕', '电子元件', NULL, '1920x1200分辨率 IPS屏幕', '片', NULL, 30.00, NULL, NULL, 200.00, '京东方科技', NULL, 180.0000, 1, '2025-06-10 20:28:51', NULL, '采购员', NULL, NULL, NULL, 0, NULL, NULL, NULL, '平板电脑显示屏', 1, 'B区-02-03');
 INSERT INTO `material_info` VALUES (8, 'M008', '蓝牙5.0模块', '电子元件', NULL, '低功耗蓝牙通信模块', '个', NULL, 50.00, NULL, NULL, 500.00, '联发科技', NULL, 15.8000, 1, '2025-06-10 20:28:51', NULL, '采购员', NULL, NULL, NULL, 0, NULL, NULL, NULL, '无线连接模块', 1, 'A区-01-08');
 INSERT INTO `material_info` VALUES (9, 'M009', '扬声器单元', '电子元件', NULL, '全频段高保真扬声器', '个', NULL, 40.00, NULL, NULL, 300.00, '哈曼卡顿', NULL, 45.0000, 1, '2025-06-10 20:28:51', NULL, '采购员', NULL, NULL, NULL, 0, NULL, NULL, NULL, '音箱核心组件', 1, 'C区-01-02');
-INSERT INTO `material_info` VALUES (10, 'M010', '硅胶表带', '配件', NULL, '医用级硅胶材质表带', '条', NULL, 100.00, NULL, NULL, 1000.00, '富士康精密', NULL, 12.0000, 1, '2025-06-10 20:28:51', NULL, '采购员', NULL, NULL, NULL, 0, NULL, NULL, NULL, '智能手表配件', 1, 'D区-03-01');
+INSERT INTO `material_info` VALUES (10, 'M010', '硅胶表带111', '配件', '', '医用级硅胶材质表带', '条', NULL, 100.00, NULL, NULL, 1000.00, '富士康精密', NULL, 12.0000, 1, '2025-06-10 20:28:51', NULL, '采购员', '2025-06-11 23:26:31', NULL, NULL, 1, NULL, NULL, NULL, '智能手表配件', 1, 'D区-03-01');
 
 -- ----------------------------
 -- Table structure for process_route
@@ -445,17 +445,17 @@ CREATE TABLE `production_order_info`  (
   INDEX `idx_plan_start_time`(`plan_start_time` ASC) USING BTREE,
   INDEX `idx_customer_name`(`customer_name` ASC) USING BTREE,
   INDEX `idx_production_order_status_time`(`status` ASC, `plan_start_time` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '生产订单表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 9 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '生产订单表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of production_order_info
 -- ----------------------------
-INSERT INTO `production_order_info` VALUES (1, 'PO202506090001', 4, 'PRD001', '产品A', 100.0000, 0.0000, '台', '2025-06-10 08:00:00', '2025-06-17 18:00:00', NULL, NULL, '待开始', '普通', 1, '生产车间A', '张三', '客户甲', 'SO202506090001', '2025-06-10 16:38:56', NULL, '系统', NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, 1);
 INSERT INTO `production_order_info` VALUES (2, 'PO202506090002', 5, 'PRD002', '产品B', 50.0000, 10.0000, '台', '2025-06-09 08:00:00', '2025-06-20 18:00:00', NULL, NULL, '进行中', '重要', 1, '生产车间A', '张三', '客户乙', 'SO202506090002', '2025-06-10 16:38:56', NULL, '系统', NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, 1);
 INSERT INTO `production_order_info` VALUES (3, 'PO202506090003', 4, 'PRD001', '产品A', 80.0000, 80.0000, '台', '2025-06-01 08:00:00', '2025-06-08 18:00:00', NULL, NULL, '已完成', '普通', 2, '装配车间B', '李四', '客户丙', 'SO202506090003', '2025-06-10 16:38:56', NULL, '系统', NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, 1);
 INSERT INTO `production_order_info` VALUES (4, 'PO202506100004', 0, 'P004', '智能手表', 200.0000, 0.0000, '块', '2025-06-12 08:00:00', '2025-06-18 18:00:00', NULL, NULL, '待开始', '普通', 2, '装配车间', '李工程师', '科技公司D', 'SO202506100004', '2025-06-10 20:25:22', NULL, '生产计划员', NULL, NULL, NULL, 0, NULL, NULL, NULL, '智能手表批量生产订单', 1);
 INSERT INTO `production_order_info` VALUES (5, 'PO202506100005', 0, 'P005', '平板电脑', 150.0000, 50.0000, '台', '2025-06-10 08:00:00', '2025-06-20 18:00:00', NULL, NULL, '进行中', '高', 1, '加工车间', '王工程师', '教育机构E', 'SO202506100005', '2025-06-10 20:25:22', NULL, '生产计划员', NULL, NULL, NULL, 0, NULL, NULL, NULL, '教育用平板电脑订单', 1);
 INSERT INTO `production_order_info` VALUES (6, 'PO202506100006', 0, 'P006', '智能音箱', 300.0000, 300.0000, '台', '2025-06-01 08:00:00', '2025-06-08 18:00:00', NULL, NULL, '已完成', '普通', 3, '包装车间', '赵工程师', '家居公司F', 'SO202506100006', '2025-06-10 20:25:22', NULL, '生产计划员', NULL, NULL, NULL, 0, NULL, NULL, NULL, '智能音箱大批量订单', 1);
+INSERT INTO `production_order_info` VALUES (8, 'PO20250612001035', 0, '1', '1', 1.0000, 0.0000, '个', '2025-06-13 00:10:35', '2025-06-19 00:10:35', NULL, NULL, '待开始', '普通', 0, '', '', '', '', '2025-06-12 00:10:43', NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, '', 1);
 
 -- ----------------------------
 -- Table structure for wip_info
@@ -569,7 +569,7 @@ CREATE TABLE `work_order_info`  (
   INDEX `idx_factory_id`(`factory_id` ASC) USING BTREE,
   INDEX `idx_planned_start_time`(`planned_start_time` ASC) USING BTREE,
   INDEX `idx_work_order_status_time`(`work_order_status` ASC, `planned_start_time` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '工单信息表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '工单信息表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of work_order_info
@@ -577,6 +577,7 @@ CREATE TABLE `work_order_info`  (
 INSERT INTO `work_order_info` VALUES (1, 0, 'WO202506090001', '生产工单', 1, 0, 0, 100.0000, 0.0000, 0.0000, 0.0000, 0, NULL, 0, 1, NULL, '2025-06-10 08:00:00', '2025-06-17 18:00:00', NULL, NULL, NULL, NULL, NULL, 'PO202506090001', NULL, 'SO202506090001', 'B202506090001', '产品A生产工单', '2025-06-10 16:38:56', NULL, '系统', NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, 1);
 INSERT INTO `work_order_info` VALUES (2, 0, 'WO202506090002', '生产工单', 2, 0, 0, 50.0000, 50.0000, 10.0000, 0.0000, 1, NULL, 0, 1, NULL, '2025-06-09 08:00:00', '2025-06-20 18:00:00', NULL, NULL, NULL, NULL, NULL, 'PO202506090002', NULL, 'SO202506090002', 'B202506090002', '产品B生产工单', '2025-06-10 16:38:56', NULL, '系统', NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, 1);
 INSERT INTO `work_order_info` VALUES (3, 0, 'WO202506090003', '生产工单', 1, 0, 0, 80.0000, 80.0000, 80.0000, 0.0000, 2, NULL, 0, 1, NULL, '2025-06-01 08:00:00', '2025-06-08 18:00:00', NULL, NULL, NULL, NULL, NULL, 'PO202506090003', NULL, 'SO202506090003', 'B202506090003', '产品A生产工单', '2025-06-10 16:38:56', NULL, '系统', NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, 1);
+INSERT INTO `work_order_info` VALUES (4, 0, 'WO202506110001', '生产工单', 0, 0, 0, 11.0000, 0.0000, 0.0000, 0.0000, 0, NULL, 0, 0, NULL, '2025-06-11 10:53:03', '2025-06-18 10:53:03', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, ' [取消原因: 111]', '2025-06-11 10:53:17', NULL, NULL, NULL, NULL, NULL, 1, '2025-06-11 10:54:47', 0, '系统', NULL, 1);
 
 -- ----------------------------
 -- Table structure for workshop_info
@@ -673,7 +674,7 @@ CREATE TABLE `workshop_operation_info`  (
 -- Records of workshop_operation_info
 -- ----------------------------
 INSERT INTO `workshop_operation_info` VALUES (1, 'OP000001', '生产车间A', 'B202506090001', 'PRD001', 100.0000, 0, '待开始', NULL, 0.00, '张三', '2025-06-10 16:38:56', NULL, '系统', NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, 1);
-INSERT INTO `workshop_operation_info` VALUES (2, 'OP000002', '生产车间A', 'B202506090002', 'PRD002', 50.0000, 1, '进行中', '2025-06-09 08:00:00', 20.00, '张三', '2025-06-10 16:38:56', NULL, '系统', NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, 1);
+INSERT INTO `workshop_operation_info` VALUES (2, 'OP000002', '生产车间A', 'B202506090002', 'PRD002', 50.0000, 1, '进行中', '2025-06-11 18:38:33', 20.00, '张三', '2025-06-10 16:38:56', NULL, '系统', '2025-06-11 18:38:33', NULL, '', 0, NULL, NULL, NULL, '', 1);
 INSERT INTO `workshop_operation_info` VALUES (3, 'OP000003', '装配车间B', 'B202506090003', 'PRD001', 80.0000, 3, '已完成', '2025-06-01 08:00:00', 100.00, '李四', '2025-06-10 16:38:56', NULL, '系统', NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, 1);
 
 -- ----------------------------
