@@ -79,6 +79,15 @@ namespace MES.Models.Material
         public bool Status { get; set; }
 
         /// <summary>
+        /// 描述 - 兼容字段（映射到Remark）
+        /// </summary>
+        public string Description
+        {
+            get { return Remark; }
+            set { Remark = value; }
+        }
+
+        /// <summary>
         /// 构造函数
         /// </summary>
         public MaterialInfo()

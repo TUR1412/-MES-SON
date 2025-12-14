@@ -4,11 +4,11 @@
 -- 字符集: utf8mb4
 
 -- 创建数据库
-CREATE DATABASE IF NOT EXISTS `MES_DB` 
+CREATE DATABASE IF NOT EXISTS `mes_system` 
 DEFAULT CHARACTER SET utf8mb4 
 DEFAULT COLLATE utf8mb4_unicode_ci;
 
-USE `MES_DB`;
+USE `mes_system`;
 
 -- ========================================
 -- 系统管理模块表结构
@@ -179,11 +179,57 @@ CREATE TABLE `workshop` (
   CONSTRAINT `fk_workshop_delete_user` FOREIGN KEY (`delete_user_id`) REFERENCES `sys_user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='车间信息表';
 
+-- ========================================
+-- 生产管理模块表结构 (H成员负责) [补齐：生产订单表]
+-- ========================================
+
+-- 生产订单表
+CREATE TABLE `production_order` (
+  `id` int NOT NULL AUTO_INCREMENT COMMENT '生产订单ID',
+  `order_number` varchar(50) NOT NULL COMMENT '订单号',
+  `product_code` varchar(50) NOT NULL COMMENT '产品编码',
+  `product_name` varchar(200) NOT NULL COMMENT '产品名称',
+  `planned_quantity` DECIMAL(18, 4) NOT NULL COMMENT '计划数量',
+  `actual_quantity` DECIMAL(18, 4) NOT NULL DEFAULT 0 COMMENT '实际完成数量',
+  `unit` varchar(20) DEFAULT '' COMMENT '单位',
+  `priority` varchar(50) DEFAULT '普通' COMMENT '优先级',
+  `status` varchar(50) DEFAULT '待开始' COMMENT '状态',
+  `planned_start_time` datetime NOT NULL COMMENT '计划开始时间',
+  `planned_end_time` datetime NOT NULL COMMENT '计划结束时间',
+  `actual_start_time` datetime DEFAULT NULL COMMENT '实际开始时间',
+  `actual_end_time` datetime DEFAULT NULL COMMENT '实际结束时间',
+  `workshop_id` int DEFAULT 0 COMMENT '负责车间ID',
+  `workshop_name` varchar(200) DEFAULT '' COMMENT '车间名称',
+  `customer` varchar(200) DEFAULT '' COMMENT '客户',
+  `sales_order_number` varchar(50) DEFAULT '' COMMENT '销售订单号',
+  `remarks` text COMMENT '备注信息',
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `create_user_id` int DEFAULT NULL COMMENT '创建人ID',
+  `create_user_name` varchar(100) DEFAULT NULL COMMENT '创建人姓名',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `update_user_id` int DEFAULT NULL COMMENT '更新人ID',
+  `update_user_name` varchar(100) DEFAULT NULL COMMENT '更新人姓名',
+  `is_deleted` tinyint NOT NULL DEFAULT '0' COMMENT '是否删除：1-已删除，0-未删除',
+  `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
+  `delete_user_id` int DEFAULT NULL COMMENT '删除人ID',
+  `delete_user_name` varchar(100) DEFAULT NULL COMMENT '删除人姓名',
+  `remark` text COMMENT '备注',
+  `version` int NOT NULL DEFAULT '1' COMMENT '版本号',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_order_number` (`order_number`),
+  KEY `idx_product_code` (`product_code`),
+  KEY `idx_status` (`status`),
+  KEY `idx_priority` (`priority`),
+  KEY `idx_workshop_id` (`workshop_id`),
+  KEY `idx_planned_start_time` (`planned_start_time`),
+  KEY `idx_customer` (`customer`),
+  KEY `idx_is_deleted` (`is_deleted`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='生产订单表';
+
 -- 在制品(WIP)表
 CREATE TABLE `wip` (
   `id` int NOT NULL AUTO_INCREMENT COMMENT '在制品ID',
   `order_id` int NOT NULL COMMENT '关联订单ID',
--- wip 表中的 order_id 字段保留，但未添加外键约束，等待H成员完成生产订单表（production_order）后再补充。
   `material_id` int NOT NULL COMMENT '物料ID',
   `current_stage` varchar(50) DEFAULT NULL COMMENT '当前生产阶段',
   `quantity` int NOT NULL COMMENT '数量',
@@ -210,6 +256,7 @@ CREATE TABLE `wip` (
   CONSTRAINT `fk_wip_create_user` FOREIGN KEY (`create_user_id`) REFERENCES `sys_user` (`id`),
   CONSTRAINT `fk_wip_update_user` FOREIGN KEY (`update_user_id`) REFERENCES `sys_user` (`id`),
   CONSTRAINT `fk_wip_delete_user` FOREIGN KEY (`delete_user_id`) REFERENCES `sys_user` (`id`),
+  CONSTRAINT `fk_wip_order` FOREIGN KEY (`order_id`) REFERENCES `production_order` (`id`) ON DELETE RESTRICT,
   CONSTRAINT `fk_wip_material` FOREIGN KEY (`material_id`) REFERENCES `material_info` (`id`) ON DELETE RESTRICT,
   CONSTRAINT `fk_wip_workshop` FOREIGN KEY (`workshop_id`) REFERENCES `workshop` (`id`) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='在制品管理表';

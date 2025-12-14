@@ -9,6 +9,30 @@ namespace MES.Common.Configuration
     public static class ConfigManager
     {
         /// <summary>
+        /// 数据访问模式
+        /// MySql: 使用数据库（默认）
+        /// InMemory: 使用内存数据（离线模式，便于在未搭建数据库时跑通业务流程）
+        /// </summary>
+        public static string DataAccessMode
+        {
+            get { return GetAppSetting("DataAccessMode", "MySql"); }
+        }
+
+        /// <summary>
+        /// 是否使用内存数据模式（离线）
+        /// </summary>
+        public static bool UseInMemoryData
+        {
+            get
+            {
+                var mode = DataAccessMode ?? string.Empty;
+                return mode.Equals("InMemory", StringComparison.OrdinalIgnoreCase) ||
+                       mode.Equals("Memory", StringComparison.OrdinalIgnoreCase) ||
+                       mode.Equals("Offline", StringComparison.OrdinalIgnoreCase);
+            }
+        }
+
+        /// <summary>
         /// 获取应用程序设置值
         /// </summary>
         /// <param name="key">配置键</param>

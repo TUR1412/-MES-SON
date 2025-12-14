@@ -109,6 +109,43 @@ namespace MES.DAL.Material
             }
         }
 
+        /// <summary>
+        /// 检查BOM编码是否已存在（包括逻辑删除的记录）
+        /// </summary>
+        /// <param name="bomCode">BOM编码</param>
+        /// <param name="excludeId">排除的ID（用于更新时检查）</param>
+        /// <returns>是否已存在</returns>
+        public bool ExistsByBomCode(string bomCode, int excludeId = 0)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(bomCode))
+                {
+                    return false;
+                }
+
+                string whereClause = "bom_code = @bomCode";
+                var parameters = new List<MySqlParameter>
+                {
+                    DatabaseHelper.CreateParameter("@bomCode", bomCode)
+                };
+
+                if (excludeId > 0)
+                {
+                    whereClause += " AND id != @excludeId";
+                    parameters.Add(DatabaseHelper.CreateParameter("@excludeId", excludeId));
+                }
+
+                int count = GetCount(whereClause, parameters.ToArray());
+                return count > 0;
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error(string.Format("检查BOM编码是否存在失败，编码: {0}", bomCode), ex);
+                throw new MESException("检查BOM编码失败", ex);
+            }
+        }
+
         // TODO: L成员需要根据实际业务需求实现BOM详细查询方法
 
         // TODO: L成员需要根据实际业务需求实现其他BOM操作方法

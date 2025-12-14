@@ -58,11 +58,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\src\MES.Common\MES.Common.csproj">
-      <Project>{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}</Project>
+      <Project>{0000E5F6-0000-0000-0000-000000000000}</Project>
       <Name>MES.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\src\MES.DAL\MES.DAL.csproj">
-      <Project>{B2C3D4E5-F6G7-8901-BCDE-F23456789012}</Project>
+      <Project>{C3D4E5F6-A7B8-9012-CDEF-345678901234}</Project>
       <Name>MES.DAL</Name>
     </ProjectReference>
   </ItemGroup>

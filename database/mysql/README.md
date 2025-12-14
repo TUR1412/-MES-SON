@@ -4,6 +4,14 @@
 
 本目录包含MES制造执行系统的完整MySQL数据库脚本，支持MySQL 8.0及以上版本。
 
+## 重要说明（避免“脚本跑了但业务不通”的幽灵问题）
+
+- 当前代码（DAL）主要使用表名：`material_info`、`bom_info`、`production_order` 等。
+- `database/init_database.sql` 已按上述表名与 `MES.UI/App.config` 的默认库名 `mes_system` 对齐，且包含生产订单表。
+- 本目录中的部分脚本历史上使用了 `material`、`bom` 等表名，与当前 DAL 不完全一致；请勿混合执行两套脚本。
+
+建议：优先执行 `database/init_database.sql` 作为单一权威脚本入口。
+
 ## 📁 文件结构
 
 ```

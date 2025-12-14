@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using MySql.Data.MySqlClient;
 using System.Configuration;
+using MES.Common.Configuration;
 using MES.Common.Logging;
 using MES.Common.Exceptions;
 
@@ -23,22 +24,17 @@ namespace MES.DAL.Core
         /// 获取数据库连接字符串
         /// </summary>
         /// <returns>数据库连接字符串</returns>
-        private static string GetConnectionString()
+        public static string GetConnectionString()
         {
             try
             {
-                // 从配置文件获取连接字符串
-                string connectionString = ConfigurationManager.ConnectionStrings["MESConnectionString"] != null ?
-                    ConfigurationManager.ConnectionStrings["MESConnectionString"].ConnectionString : null;
-
-                if (string.IsNullOrEmpty(connectionString))
+                var connectionString = ConfigManager.GetCurrentConnectionString();
+                if (string.IsNullOrWhiteSpace(connectionString))
                 {
-                    // 默认连接字符串（MySQL）
-                    connectionString = "Server=localhost;Database=MES_DB;Uid=root;Pwd=123456;CharSet=utf8mb4;SslMode=none;";
-                    LogManager.Warning("未找到配置的数据库连接字符串，使用默认MySQL连接字符串");
+                    throw new MESException("数据库连接字符串未配置。请在 MES.UI/App.config 的 <connectionStrings> 中配置 MESConnectionString（或通过 appSettings:Environment 切换到测试/生产连接串）。");
                 }
 
-                return connectionString;
+                return connectionString.Trim();
             }
             catch (Exception ex)
             {

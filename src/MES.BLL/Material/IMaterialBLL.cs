@@ -11,6 +11,9 @@ namespace MES.BLL.Material
     {
         List<MaterialInfo> GetAllMaterials();
         MaterialInfo GetMaterialById(int id);
+        MaterialInfo GetMaterialByCode(string materialCode);
+        List<MaterialInfo> SearchMaterials(string keyword);
+        List<MaterialInfo> GetMaterialsByPage(int pageIndex, int pageSize, out int totalCount);
         bool AddMaterial(MaterialInfo material);
         bool UpdateMaterial(MaterialInfo material);
         bool DeleteMaterial(int id);

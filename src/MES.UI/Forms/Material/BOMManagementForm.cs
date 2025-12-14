@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using MES.Common.Logging;
+using MES.BLL.Material;
 using MES.Models.Material;
 
 namespace MES.UI.Forms.Material
@@ -17,6 +18,8 @@ namespace MES.UI.Forms.Material
     /// </summary>
     public partial class BOMManagementForm : Form
     {
+        private readonly IBOMBLL _bomBLL;
+
         private List<BOMInfo> bomList;
         private List<BOMInfo> filteredBomList;
         private BOMInfo currentBom;
@@ -24,6 +27,7 @@ namespace MES.UI.Forms.Material
         public BOMManagementForm()
         {
             InitializeComponent();
+            _bomBLL = new BOMBLL();
             InitializeForm();
         }
 
@@ -42,8 +46,8 @@ namespace MES.UI.Forms.Material
                 // 设置DataGridView
                 SetupDataGridView();
 
-                // 加载示例数据
-                LoadSampleData();
+                // 加载数据（离线/数据库由 BLL 决定）
+                LoadData();
 
                 // 刷新显示
                 RefreshDataGridView();
@@ -160,154 +164,18 @@ namespace MES.UI.Forms.Material
         }
 
         /// <summary>
-        /// 加载示例数据
+        /// 加载BOM数据（离线/数据库由 BLL 决定）
         /// </summary>
-        private void LoadSampleData()
+        private void LoadData()
         {
             bomList.Clear();
 
-            // 添加示例BOM数据
-            bomList.Add(new BOMInfo
+            var data = _bomBLL.GetAllBOMs();
+            if (data != null && data.Count > 0)
             {
-                Id = 1,
-                BOMCode = "BOM-001-001",
-                ProductId = 1,
-                ProductCode = "P001",
-                ProductName = "钢制支架",
-                MaterialId = 101,
-                MaterialCode = "M101",
-                MaterialName = "钢板",
-                Quantity = 2.5m,
-                Unit = "kg",
-                LossRate = 5.0m,
-                BOMVersion = "1.0",
-                BOMType = "PRODUCTION",
-                EffectiveDate = DateTime.Now.AddDays(-30),
-                Status = true,
-                Remarks = "主要结构材料"
-            });
+                bomList.AddRange(data);
+            }
 
-            bomList.Add(new BOMInfo
-            {
-                Id = 2,
-                BOMCode = "BOM-001-002",
-                ProductId = 1,
-                ProductCode = "P001",
-                ProductName = "钢制支架",
-                MaterialId = 102,
-                MaterialCode = "M102",
-                MaterialName = "螺栓",
-                Quantity = 8,
-                Unit = "个",
-                LossRate = 2.0m,
-                BOMVersion = "1.0",
-                BOMType = "PRODUCTION",
-                EffectiveDate = DateTime.Now.AddDays(-30),
-                Status = true,
-                Remarks = "连接件"
-            });
-
-            bomList.Add(new BOMInfo
-            {
-                Id = 3,
-                BOMCode = "BOM-002-001",
-                ProductId = 2,
-                ProductCode = "P002",
-                ProductName = "铝合金外壳",
-                MaterialId = 201,
-                MaterialCode = "M201",
-                MaterialName = "铝合金板",
-                Quantity = 1.2m,
-                Unit = "kg",
-                LossRate = 3.0m,
-                BOMVersion = "2.1",
-                BOMType = "PRODUCTION",
-                EffectiveDate = DateTime.Now.AddDays(-15),
-                Status = true,
-                Remarks = "外壳主体材料"
-            });
-
-            bomList.Add(new BOMInfo
-            {
-                Id = 4,
-                BOMCode = "BOM-002-002",
-                ProductId = 2,
-                ProductCode = "P002",
-                ProductName = "铝合金外壳",
-                MaterialId = 202,
-                MaterialCode = "M202",
-                MaterialName = "密封胶条",
-                Quantity = 0.5m,
-                Unit = "m",
-                LossRate = 10.0m,
-                BOMVersion = "2.1",
-                BOMType = "PRODUCTION",
-                EffectiveDate = DateTime.Now.AddDays(-15),
-                Status = true,
-                Remarks = "防水密封"
-            });
-
-            bomList.Add(new BOMInfo
-            {
-                Id = 5,
-                BOMCode = "BOM-003-001",
-                ProductId = 3,
-                ProductCode = "P003",
-                ProductName = "精密齿轮",
-                MaterialId = 301,
-                MaterialCode = "M301",
-                MaterialName = "合金钢",
-                Quantity = 0.8m,
-                Unit = "kg",
-                LossRate = 8.0m,
-                BOMVersion = "1.5",
-                BOMType = "ENGINEERING",
-                EffectiveDate = DateTime.Now.AddDays(-7),
-                Status = true,
-                Remarks = "高精度加工"
-            });
-
-            bomList.Add(new BOMInfo
-            {
-                Id = 6,
-                BOMCode = "BOM-004-001",
-                ProductId = 4,
-                ProductCode = "P004",
-                ProductName = "电机外壳",
-                MaterialId = 401,
-                MaterialCode = "M401",
-                MaterialName = "铸铁",
-                Quantity = 3.0m,
-                Unit = "kg",
-                LossRate = 4.0m,
-                BOMVersion = "1.0",
-                BOMType = "PRODUCTION",
-                EffectiveDate = DateTime.Now.AddDays(-20),
-                Status = false,
-                Remarks = "已停用版本"
-            });
-
-            bomList.Add(new BOMInfo
-            {
-                Id = 7,
-                BOMCode = "BOM-005-001",
-                ProductId = 5,
-                ProductCode = "P005",
-                ProductName = "不锈钢管件",
-                MaterialId = 501,
-                MaterialCode = "M501",
-                MaterialName = "不锈钢管",
-                Quantity = 1.0m,
-                Unit = "根",
-                LossRate = 1.0m,
-                BOMVersion = "1.2",
-                BOMType = "PRODUCTION",
-                EffectiveDate = DateTime.Now.AddDays(-5),
-                Status = true,
-                Remarks = "标准规格"
-            });
-
-            // 复制到过滤列表
             filteredBomList = new List<BOMInfo>(bomList);
         }
 
@@ -345,9 +213,9 @@ namespace MES.UI.Forms.Material
         {
             try
             {
-                string searchTerm = textBoxSearch.Text.Trim().ToLower();
+                string searchTerm = textBoxSearch.Text.Trim();
 
-                if (string.IsNullOrEmpty(searchTerm))
+                if (string.IsNullOrWhiteSpace(searchTerm))
                 {
                     // 显示所有BOM记录
                     filteredBomList = new List<BOMInfo>(bomList);
@@ -356,12 +224,12 @@ namespace MES.UI.Forms.Material
                 {
                     // 根据BOM编码、产品名称、物料名称进行搜索
                     filteredBomList = bomList.Where(b =>
-                        b.BOMCode.ToLower().Contains(searchTerm) ||
-                        b.ProductName.ToLower().Contains(searchTerm) ||
-                        b.MaterialName.ToLower().Contains(searchTerm) ||
-                        b.ProductCode.ToLower().Contains(searchTerm) ||
-                        b.MaterialCode.ToLower().Contains(searchTerm) ||
-                        b.BOMType.ToLower().Contains(searchTerm)
+                        (b.BOMCode ?? string.Empty).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        (b.ProductName ?? string.Empty).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        (b.MaterialName ?? string.Empty).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        (b.ProductCode ?? string.Empty).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        (b.MaterialCode ?? string.Empty).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        (b.BOMType ?? string.Empty).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0
                     ).ToList();
                 }
 
@@ -498,19 +366,26 @@ namespace MES.UI.Forms.Material
                 var result = ShowBOMEditDialog(null);
                 if (result != null)
                 {
-                    // 生成新ID
-                    result.Id = bomList.Count > 0 ? bomList.Max(b => b.Id) + 1 : 1;
-                    result.CreateTime = DateTime.Now;
-                    result.UpdateTime = DateTime.Now;
+                    var success = _bomBLL.AddBOM(result);
+                    if (!success)
+                    {
+                        MessageBox.Show("BOM记录添加失败！", "失败",
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
 
-                    // 添加到列表
-                    bomList.Add(result);
-
-                    // 刷新显示
+                    // 重新加载 + 刷新显示
+                    LoadData();
                     RefreshDataGridView();
 
-                    // 选中新添加的BOM
-                    SelectBOMById(result.Id);
+                    // 选中新添加的BOM（按编码查找）
+                    var added = bomList.FirstOrDefault(b =>
+                        !string.IsNullOrEmpty(b.BOMCode) &&
+                        b.BOMCode.Equals(result.BOMCode, StringComparison.OrdinalIgnoreCase));
+                    if (added != null)
+                    {
+                        SelectBOMById(added.Id);
+                    }
 
                     MessageBox.Show("BOM记录添加成功！", "成功",
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -545,39 +420,27 @@ namespace MES.UI.Forms.Material
                 var result = ShowBOMEditDialog(currentBom);
                 if (result != null)
                 {
-                    // 更新BOM信息
-                    var originalBom = bomList.FirstOrDefault(b => b.Id == currentBom.Id);
-                    if (originalBom != null)
+                    result.Id = currentBom.Id;
+
+                    var success = _bomBLL.UpdateBOM(result);
+                    if (!success)
                     {
-                        originalBom.BOMCode = result.BOMCode;
-                        originalBom.ProductCode = result.ProductCode;
-                        originalBom.ProductName = result.ProductName;
-                        originalBom.MaterialCode = result.MaterialCode;
-                        originalBom.MaterialName = result.MaterialName;
-                        originalBom.Quantity = result.Quantity;
-                        originalBom.Unit = result.Unit;
-                        originalBom.LossRate = result.LossRate;
-                        originalBom.SubstituteMaterial = result.SubstituteMaterial;
-                        originalBom.BOMVersion = result.BOMVersion;
-                        originalBom.BOMType = result.BOMType;
-                        originalBom.EffectiveDate = result.EffectiveDate;
-                        originalBom.ExpireDate = result.ExpireDate;
-                        originalBom.Status = result.Status;
-                        originalBom.Remarks = result.Remarks;
-                        originalBom.UpdateTime = DateTime.Now;
-
-                        // 刷新显示
-                        RefreshDataGridView();
-
-                        // 重新选中编辑的BOM
-                        SelectBOMById(originalBom.Id);
-
-                        MessageBox.Show("BOM记录编辑成功！", "成功",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                        LogManager.Info(string.Format("编辑BOM记录：{0} - {1}",
-                            originalBom.BOMCode, originalBom.ProductName));
+                        MessageBox.Show("BOM记录编辑失败：记录可能已不存在。", "失败",
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
                     }
+
+                    // 重新加载 + 刷新显示
+                    LoadData();
+                    RefreshDataGridView();
+
+                    // 重新选中编辑的BOM
+                    SelectBOMById(result.Id);
+
+                    MessageBox.Show("BOM记录编辑成功！", "成功",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    LogManager.Info(string.Format("编辑BOM记录：{0} - {1}", result.BOMCode, result.ProductName));
                 }
             }
             catch (Exception ex)
@@ -611,10 +474,16 @@ namespace MES.UI.Forms.Material
 
                 if (result == DialogResult.Yes)
                 {
-                    // 从列表中移除
-                    bomList.RemoveAll(b => b.Id == currentBom.Id);
+                    var success = _bomBLL.DeleteBOM(currentBom.Id);
+                    if (!success)
+                    {
+                        MessageBox.Show("BOM记录删除失败：记录可能已不存在。", "失败",
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
 
-                    // 刷新显示
+                    // 重新加载 + 刷新显示
+                    LoadData();
                     RefreshDataGridView();
 
                     MessageBox.Show("BOM记录删除成功！", "成功",
@@ -643,7 +512,7 @@ namespace MES.UI.Forms.Material
                 textBoxSearch.Text = string.Empty;
 
                 // 重新加载数据
-                LoadSampleData();
+                LoadData();
                 RefreshDataGridView();
 
                 MessageBox.Show("数据刷新成功！", "成功",
@@ -689,39 +558,239 @@ namespace MES.UI.Forms.Material
         /// </summary>
         private BOMInfo ShowBOMEditDialog(BOMInfo bom)
         {
-            // 这里应该打开一个BOM编辑对话框
-            // 为了演示，我们使用简单的逻辑
-            string title = bom == null ? "新增BOM" : "编辑BOM";
-
-            // 简化的编辑逻辑，实际应该使用专门的编辑窗体
-            var editBom = bom != null ? bom.Clone() : new BOMInfo();
-
-            // 暂时返回示例数据用于演示
-            if (bom == null)
+            using (var dialog = new BOMEditDialog(bom))
             {
-                // 新增BOM的示例
-                return new BOMInfo
-                {
-                    BOMCode = "BOM-NEW-" + (bomList.Count + 1).ToString("000"),
-                    ProductCode = "P" + (bomList.Count + 1).ToString("000"),
-                    ProductName = "新产品",
-                    MaterialCode = "M" + (bomList.Count + 1).ToString("000"),
-                    MaterialName = "新物料",
-                    Quantity = 1.0m,
-                    Unit = "个",
-                    LossRate = 0m,
-                    BOMVersion = "1.0",
-                    BOMType = "PRODUCTION",
-                    EffectiveDate = DateTime.Now,
-                    Status = true,
-                    Remarks = "新增BOM记录"
-                };
+                return dialog.ShowDialog(this) == DialogResult.OK ? dialog.Result : null;
             }
-            else
+        }
+
+        private sealed class BOMEditDialog : Form
+        {
+            private readonly TextBox _textBomCode;
+            private readonly TextBox _textProductCode;
+            private readonly TextBox _textProductName;
+            private readonly TextBox _textMaterialCode;
+            private readonly TextBox _textMaterialName;
+            private readonly NumericUpDown _numQuantity;
+            private readonly TextBox _textUnit;
+            private readonly NumericUpDown _numLossRate;
+            private readonly TextBox _textSubstituteMaterial;
+            private readonly DateTimePicker _dtEffectiveDate;
+            private readonly CheckBox _checkHasExpireDate;
+            private readonly DateTimePicker _dtExpireDate;
+            private readonly CheckBox _checkEnabled;
+            private readonly TextBox _textRemarks;
+
+            public BOMInfo Result { get; private set; }
+
+            public BOMEditDialog(BOMInfo bom)
             {
-                // 编辑现有BOM
-                editBom.Remarks = editBom.Remarks + " (已编辑)";
-                return editBom;
+                Text = bom == null ? "新增BOM" : "编辑BOM";
+                StartPosition = FormStartPosition.CenterParent;
+                FormBorderStyle = FormBorderStyle.FixedDialog;
+                MaximizeBox = false;
+                MinimizeBox = false;
+                ShowInTaskbar = false;
+                Width = 620;
+                Height = 650;
+
+                var layout = new TableLayoutPanel();
+                layout.Dock = DockStyle.Fill;
+                layout.Padding = new Padding(12);
+                layout.ColumnCount = 2;
+                layout.RowCount = 13;
+                layout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 140));
+                layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+                for (int i = 0; i < layout.RowCount; i++)
+                {
+                    layout.RowStyles.Add(new RowStyle(SizeType.Absolute, i == 12 ? 110 : 34));
+                }
+
+                _textBomCode = new TextBox { Dock = DockStyle.Fill };
+                _textProductCode = new TextBox { Dock = DockStyle.Fill };
+                _textProductName = new TextBox { Dock = DockStyle.Fill };
+                _textMaterialCode = new TextBox { Dock = DockStyle.Fill };
+                _textMaterialName = new TextBox { Dock = DockStyle.Fill };
+
+                _numQuantity = new NumericUpDown { Dock = DockStyle.Left, Width = 180, DecimalPlaces = 4, Maximum = 99999999, Minimum = 0 };
+                _textUnit = new TextBox { Dock = DockStyle.Fill };
+                _numLossRate = new NumericUpDown { Dock = DockStyle.Left, Width = 180, DecimalPlaces = 4, Maximum = 100, Minimum = 0 };
+                _textSubstituteMaterial = new TextBox { Dock = DockStyle.Fill };
+
+                _dtEffectiveDate = new DateTimePicker { Dock = DockStyle.Left, Width = 220, Format = DateTimePickerFormat.Custom, CustomFormat = "yyyy-MM-dd" };
+                _checkHasExpireDate = new CheckBox { Dock = DockStyle.Left, Text = "设置失效日期" };
+                _dtExpireDate = new DateTimePicker { Dock = DockStyle.Left, Width = 220, Format = DateTimePickerFormat.Custom, CustomFormat = "yyyy-MM-dd", Enabled = false };
+                _checkEnabled = new CheckBox { Dock = DockStyle.Left, Text = "启用", Checked = true };
+                _textRemarks = new TextBox { Dock = DockStyle.Fill, Multiline = true, ScrollBars = ScrollBars.Vertical };
+
+                _checkHasExpireDate.CheckedChanged += (s, e) => { _dtExpireDate.Enabled = _checkHasExpireDate.Checked; };
+
+                AddRow(layout, 0, "BOM编码", _textBomCode);
+                AddRow(layout, 1, "产品编码", _textProductCode);
+                AddRow(layout, 2, "产品名称", _textProductName);
+                AddRow(layout, 3, "子物料编码", _textMaterialCode);
+                AddRow(layout, 4, "子物料名称", _textMaterialName);
+                AddRow(layout, 5, "用量", _numQuantity);
+                AddRow(layout, 6, "单位", _textUnit);
+                AddRow(layout, 7, "损耗率(%)", _numLossRate);
+                AddRow(layout, 8, "替代料编码", _textSubstituteMaterial);
+                AddRow(layout, 9, "生效日期", _dtEffectiveDate);
+
+                var expirePanel = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.LeftToRight, WrapContents = false };
+                expirePanel.Controls.Add(_checkHasExpireDate);
+                expirePanel.Controls.Add(_dtExpireDate);
+                AddRow(layout, 10, "失效日期", expirePanel);
+
+                AddRow(layout, 11, "状态", _checkEnabled);
+                AddRow(layout, 12, "备注", _textRemarks);
+
+                var panelButtons = new FlowLayoutPanel();
+                panelButtons.Dock = DockStyle.Bottom;
+                panelButtons.FlowDirection = FlowDirection.RightToLeft;
+                panelButtons.Padding = new Padding(12);
+                panelButtons.Height = 54;
+
+                var btnOk = new Button { Text = "确定", Width = 90, Height = 30, DialogResult = DialogResult.OK };
+                var btnCancel = new Button { Text = "取消", Width = 90, Height = 30, DialogResult = DialogResult.Cancel };
+                btnOk.Click += (s, e) =>
+                {
+                    if (!TryBuildResult(bom))
+                    {
+                        DialogResult = DialogResult.None;
+                    }
+                };
+
+                panelButtons.Controls.Add(btnOk);
+                panelButtons.Controls.Add(btnCancel);
+
+                Controls.Add(layout);
+                Controls.Add(panelButtons);
+
+                AcceptButton = btnOk;
+                CancelButton = btnCancel;
+
+                if (bom != null)
+                {
+                    _textBomCode.Text = bom.BOMCode ?? string.Empty;
+                    _textProductCode.Text = bom.ProductCode ?? string.Empty;
+                    _textProductName.Text = bom.ProductName ?? string.Empty;
+                    _textMaterialCode.Text = bom.MaterialCode ?? string.Empty;
+                    _textMaterialName.Text = bom.MaterialName ?? string.Empty;
+                    _numQuantity.Value = bom.Quantity;
+                    _textUnit.Text = bom.Unit ?? string.Empty;
+                    _numLossRate.Value = bom.LossRate;
+                    _textSubstituteMaterial.Text = bom.SubstituteMaterial ?? string.Empty;
+                    _dtEffectiveDate.Value = bom.EffectiveDate == DateTime.MinValue ? DateTime.Now : bom.EffectiveDate;
+
+                    if (bom.ExpireDate.HasValue)
+                    {
+                        _checkHasExpireDate.Checked = true;
+                        _dtExpireDate.Value = bom.ExpireDate.Value;
+                    }
+                    else
+                    {
+                        _checkHasExpireDate.Checked = false;
+                        _dtExpireDate.Value = DateTime.Now;
+                    }
+
+                    _checkEnabled.Checked = bom.Status;
+                    _textRemarks.Text = bom.Remarks ?? string.Empty;
+                }
+                else
+                {
+                    _dtEffectiveDate.Value = DateTime.Now;
+                    _dtExpireDate.Value = DateTime.Now;
+                }
+            }
+
+            private static void AddRow(TableLayoutPanel layout, int row, string labelText, Control control)
+            {
+                var label = new Label
+                {
+                    Text = labelText + "：",
+                    Dock = DockStyle.Fill,
+                    TextAlign = ContentAlignment.MiddleRight
+                };
+
+                layout.Controls.Add(label, 0, row);
+                layout.Controls.Add(control, 1, row);
+            }
+
+            private bool TryBuildResult(BOMInfo original)
+            {
+                var bomCode = (_textBomCode.Text ?? string.Empty).Trim();
+                var productCode = (_textProductCode.Text ?? string.Empty).Trim();
+                var productName = (_textProductName.Text ?? string.Empty).Trim();
+                var materialCode = (_textMaterialCode.Text ?? string.Empty).Trim();
+                var materialName = (_textMaterialName.Text ?? string.Empty).Trim();
+
+                if (string.IsNullOrWhiteSpace(bomCode))
+                {
+                    MessageBox.Show("BOM编码不能为空！", "校验失败", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return false;
+                }
+
+                if (string.IsNullOrWhiteSpace(productCode))
+                {
+                    MessageBox.Show("产品编码不能为空！", "校验失败", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return false;
+                }
+
+                if (string.IsNullOrWhiteSpace(productName))
+                {
+                    MessageBox.Show("产品名称不能为空！", "校验失败", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return false;
+                }
+
+                if (string.IsNullOrWhiteSpace(materialCode))
+                {
+                    MessageBox.Show("子物料编码不能为空！", "校验失败", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return false;
+                }
+
+                if (string.IsNullOrWhiteSpace(materialName))
+                {
+                    MessageBox.Show("子物料名称不能为空！", "校验失败", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return false;
+                }
+
+                if (_numQuantity.Value <= 0)
+                {
+                    MessageBox.Show("用量必须大于0！", "校验失败", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return false;
+                }
+
+                var entity = new BOMInfo();
+                if (original != null)
+                {
+                    entity.Id = original.Id;
+                    entity.ProductId = original.ProductId;
+                    entity.MaterialId = original.MaterialId;
+                    entity.BOMVersion = string.IsNullOrWhiteSpace(original.BOMVersion) ? "1.0" : original.BOMVersion;
+                    entity.BOMType = string.IsNullOrWhiteSpace(original.BOMType) ? "PRODUCTION" : original.BOMType;
+                }
+                else
+                {
+                    entity.BOMVersion = "1.0";
+                    entity.BOMType = "PRODUCTION";
+                }
+
+                entity.BOMCode = bomCode;
+                entity.ProductCode = productCode;
+                entity.ProductName = productName;
+                entity.MaterialCode = materialCode;
+                entity.MaterialName = materialName;
+                entity.Quantity = _numQuantity.Value;
+                entity.Unit = (_textUnit.Text ?? string.Empty).Trim();
+                entity.LossRate = _numLossRate.Value;
+                entity.SubstituteMaterial = (_textSubstituteMaterial.Text ?? string.Empty).Trim();
+                entity.EffectiveDate = _dtEffectiveDate.Value.Date;
+                entity.ExpireDate = _checkHasExpireDate.Checked ? (DateTime?)_dtExpireDate.Value.Date : null;
+                entity.Status = _checkEnabled.Checked;
+                entity.Remarks = (_textRemarks.Text ?? string.Empty).Trim();
+
+                Result = entity;
+                return true;
             }
         }
 

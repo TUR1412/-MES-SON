@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using MES.Common.Logging;
+using MES.BLL.Production;
 using MES.Models.Production;
 
 namespace MES.UI.Forms.Production
@@ -17,6 +18,8 @@ namespace MES.UI.Forms.Production
     /// </summary>
     public partial class ProductionExecutionControlForm : Form
     {
+        private readonly IProductionOrderBLL _productionOrderBLL;
+
         private List<ProductionOrderInfo> executionList;
         private List<ProductionOrderInfo> filteredExecutionList;
         private ProductionOrderInfo currentExecution;
@@ -25,6 +28,7 @@ namespace MES.UI.Forms.Production
         public ProductionExecutionControlForm()
         {
             InitializeComponent();
+            _productionOrderBLL = new ProductionOrderBLL();
             InitializeForm();
         }
 
@@ -43,8 +47,8 @@ namespace MES.UI.Forms.Production
                 // 设置DataGridView
                 SetupDataGridView();
 
-                // 加载示例数据
-                LoadSampleData();
+                // 加载数据（离线/数据库由 BLL 决定）
+                LoadData();
 
                 // 初始化定时器
                 InitializeTimer();
@@ -172,9 +176,7 @@ namespace MES.UI.Forms.Production
         {
             try
             {
-                // 模拟实时数据更新
-                UpdateExecutionProgress();
-                RefreshDataGridView();
+                ReloadAndRefresh(true);
             }
             catch (Exception ex)
             {
@@ -183,123 +185,51 @@ namespace MES.UI.Forms.Production
         }
 
         /// <summary>
-        /// 加载示例数据
+        /// 加载执行数据（离线/数据库由 BLL 决定）
         /// </summary>
-        private void LoadSampleData()
+        private void LoadData()
         {
             executionList.Clear();
 
-            // 添加示例执行数据
-            executionList.Add(new ProductionOrderInfo
+            var data = _productionOrderBLL.GetAllProductionOrders();
+            if (data != null && data.Count > 0)
             {
-                Id = 1,
-                OrderNumber = "PO202506080001",
-                ProductName = "钢制支架",
-                Status = "进行中",
-                PlannedQuantity = 100,
-                CompletedQuantity = 85,
-                Workshop = "车间一",
-                Operator = "张三",
-                ActualStartTime = DateTime.Now.AddHours(-4),
-                CreateTime = DateTime.Now.AddDays(-1)
-            });
+                executionList.AddRange(data);
+            }
 
-            executionList.Add(new ProductionOrderInfo
-            {
-                Id = 2,
-                OrderNumber = "PO202506080002",
-                ProductName = "铝合金外壳",
-                Status = "待开始",
-                PlannedQuantity = 200,
-                CompletedQuantity = 0,
-                Workshop = "车间二",
-                Operator = "李四",
-                ActualStartTime = null,
-                CreateTime = DateTime.Now.AddDays(-1)
-            });
-
-            executionList.Add(new ProductionOrderInfo
-            {
-                Id = 3,
-                OrderNumber = "PO202506080003",
-                ProductName = "精密齿轮",
-                Status = "已完成",
-                PlannedQuantity = 50,
-                CompletedQuantity = 50,
-                Workshop = "车间三",
-                Operator = "王五",
-                ActualStartTime = DateTime.Now.AddHours(-8),
-                CreateTime = DateTime.Now.AddDays(-2)
-            });
-
-            executionList.Add(new ProductionOrderInfo
-            {
-                Id = 4,
-                OrderNumber = "PO202506080004",
-                ProductName = "电机外壳",
-                Status = "已暂停",
-                PlannedQuantity = 150,
-                CompletedQuantity = 45,
-                Workshop = "车间一",
-                Operator = "赵六",
-                ActualStartTime = DateTime.Now.AddHours(-6),
-                CreateTime = DateTime.Now.AddDays(-1)
-            });
-
-            executionList.Add(new ProductionOrderInfo
-            {
-                Id = 5,
-                OrderNumber = "PO202506080005",
-                ProductName = "不锈钢管件",
-                Status = "进行中",
-                PlannedQuantity = 300,
-                CompletedQuantity = 180,
-                Workshop = "车间二",
-                Operator = "孙七",
-                ActualStartTime = DateTime.Now.AddHours(-3),
-                CreateTime = DateTime.Now.AddDays(-1)
-            });
-
-            executionList.Add(new ProductionOrderInfo
-            {
-                Id = 6,
-                OrderNumber = "PO202506080006",
-                ProductName = "塑料配件",
-                Status = "进行中",
-                PlannedQuantity = 500,
-                CompletedQuantity = 320,
-                Workshop = "车间三",
-                Operator = "周八",
-                ActualStartTime = DateTime.Now.AddHours(-2),
-                CreateTime = DateTime.Now
-            });
-
-            // 复制到过滤列表
             filteredExecutionList = new List<ProductionOrderInfo>(executionList);
         }
 
-        /// <summary>
-        /// 更新执行进度（模拟实时更新）
-        /// </summary>
-        private void UpdateExecutionProgress()
+        private void ApplySearchFilter()
         {
-            var random = new Random();
+            string searchTerm = textBoxSearch.Text.Trim();
 
-            foreach (var order in executionList)
+            if (string.IsNullOrWhiteSpace(searchTerm))
             {
-                if (order.Status == "进行中" && order.CompletedQuantity < order.PlannedQuantity)
-                {
-                    // 随机增加1-3个完成数量
-                    var increment = random.Next(1, 4);
-                    order.CompletedQuantity = Math.Min(order.CompletedQuantity + increment, order.PlannedQuantity);
+                filteredExecutionList = new List<ProductionOrderInfo>(executionList);
+                return;
+            }
 
-                    // 如果完成了，更新状态
-                    if (order.CompletedQuantity >= order.PlannedQuantity)
-                    {
-                        order.Status = "已完成";
-                        order.ActualEndTime = DateTime.Now;
-                    }
-                }
+            filteredExecutionList = executionList.Where(o =>
+                (o.OrderNumber ?? string.Empty).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                (o.ProductName ?? string.Empty).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                (o.Status ?? string.Empty).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                (o.Workshop ?? string.Empty).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                (o.Operator ?? string.Empty).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0
+            ).ToList();
+        }
+
+        private void ReloadAndRefresh(bool preserveSelection)
+        {
+            var selectedId = preserveSelection && currentExecution != null ? currentExecution.Id : 0;
+
+            LoadData();
+            ApplySearchFilter();
+            RefreshDataGridView();
+
+            if (selectedId > 0)
+            {
+                SelectExecutionById(selectedId);
             }
         }
 
@@ -337,25 +267,7 @@ namespace MES.UI.Forms.Production
         {
             try
             {
-                string searchTerm = textBoxSearch.Text.Trim().ToLower();
-
-                if (string.IsNullOrEmpty(searchTerm))
-                {
-                    // 显示所有执行记录
-                    filteredExecutionList = new List<ProductionOrderInfo>(executionList);
-                }
-                else
-                {
-                    // 根据订单编号、产品名称、状态、车间进行搜索
-                    filteredExecutionList = executionList.Where(o =>
-                        o.OrderNumber.ToLower().Contains(searchTerm) ||
-                        o.ProductName.ToLower().Contains(searchTerm) ||
-                        o.Status.ToLower().Contains(searchTerm) ||
-                        o.Workshop.ToLower().Contains(searchTerm) ||
-                        o.Operator.ToLower().Contains(searchTerm)
-                    ).ToList();
-                }
-
+                ApplySearchFilter();
                 RefreshDataGridView();
             }
             catch (Exception ex)
@@ -493,12 +405,15 @@ namespace MES.UI.Forms.Production
                     return;
                 }
 
-                // 更新状态
-                currentExecution.Status = "进行中";
-                currentExecution.ActualStartTime = DateTime.Now;
+                var success = _productionOrderBLL.StartProductionOrder(currentExecution.Id);
+                if (!success)
+                {
+                    MessageBox.Show("启动执行失败：请检查订单状态是否为'待开始'。", "失败",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
 
-                // 刷新显示
-                RefreshDataGridView();
+                ReloadAndRefresh(true);
 
                 MessageBox.Show("订单执行已开始！", "成功",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -535,11 +450,16 @@ namespace MES.UI.Forms.Production
                     return;
                 }
 
-                // 更新状态
-                currentExecution.Status = "已暂停";
+                var reason = PromptText("暂停原因（可选）", "暂停原因", "手动暂停");
+                var success = _productionOrderBLL.PauseProductionOrder(currentExecution.Id, reason);
+                if (!success)
+                {
+                    MessageBox.Show("暂停执行失败：请检查订单状态是否为'进行中'。", "失败",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
 
-                // 刷新显示
-                RefreshDataGridView();
+                ReloadAndRefresh(true);
 
                 MessageBox.Show("订单执行已暂停！", "成功",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -576,13 +496,23 @@ namespace MES.UI.Forms.Production
                     return;
                 }
 
-                // 更新状态
-                currentExecution.Status = "已完成";
-                currentExecution.CompletedQuantity = currentExecution.PlannedQuantity;
-                currentExecution.ActualEndTime = DateTime.Now;
+                var actualQuantity = PromptDecimal("请输入实际完成数量", "完成数量", currentExecution.PlannedQuantity);
+                if (actualQuantity <= 0)
+                {
+                    MessageBox.Show("实际完成数量必须大于0！", "提示",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
 
-                // 刷新显示
-                RefreshDataGridView();
+                var success = _productionOrderBLL.CompleteProductionOrder(currentExecution.Id, actualQuantity);
+                if (!success)
+                {
+                    MessageBox.Show("完成执行失败：请检查订单状态是否为'进行中'。", "失败",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                ReloadAndRefresh(true);
 
                 MessageBox.Show("订单执行已完成！", "成功",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -609,8 +539,7 @@ namespace MES.UI.Forms.Production
                 textBoxSearch.Text = string.Empty;
 
                 // 重新加载数据
-                LoadSampleData();
-                RefreshDataGridView();
+                ReloadAndRefresh(false);
 
                 MessageBox.Show("数据刷新成功！", "成功",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -645,6 +574,154 @@ namespace MES.UI.Forms.Production
             }
 
             base.OnFormClosed(e);
+        }
+
+        private void SelectExecutionById(int executionId)
+        {
+            try
+            {
+                for (int i = 0; i < dataGridViewExecution.Rows.Count; i++)
+                {
+                    var item = dataGridViewExecution.Rows[i].DataBoundItem as ProductionOrderInfo;
+                    if (item != null && item.Id == executionId)
+                    {
+                        dataGridViewExecution.ClearSelection();
+                        dataGridViewExecution.Rows[i].Selected = true;
+                        dataGridViewExecution.CurrentCell = dataGridViewExecution.Rows[i].Cells[0];
+                        break;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("选中执行记录失败", ex);
+            }
+        }
+
+        private static string PromptText(string title, string label, string defaultValue)
+        {
+            using (var dialog = new Form())
+            {
+                dialog.Text = title;
+                dialog.StartPosition = FormStartPosition.CenterParent;
+                dialog.FormBorderStyle = FormBorderStyle.FixedDialog;
+                dialog.MaximizeBox = false;
+                dialog.MinimizeBox = false;
+                dialog.ShowInTaskbar = false;
+                dialog.Width = 520;
+                dialog.Height = 190;
+
+                var panel = new TableLayoutPanel();
+                panel.Dock = DockStyle.Fill;
+                panel.Padding = new Padding(12);
+                panel.ColumnCount = 2;
+                panel.RowCount = 2;
+                panel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 110));
+                panel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+                panel.RowStyles.Add(new RowStyle(SizeType.Absolute, 34));
+                panel.RowStyles.Add(new RowStyle(SizeType.Absolute, 34));
+
+                var labelControl = new Label
+                {
+                    Text = label + "：",
+                    Dock = DockStyle.Fill,
+                    TextAlign = ContentAlignment.MiddleRight
+                };
+                var input = new TextBox { Dock = DockStyle.Fill, Text = defaultValue ?? string.Empty };
+
+                panel.Controls.Add(labelControl, 0, 0);
+                panel.Controls.Add(input, 1, 0);
+
+                var buttons = new FlowLayoutPanel();
+                buttons.Dock = DockStyle.Fill;
+                buttons.FlowDirection = FlowDirection.RightToLeft;
+
+                var ok = new Button { Text = "确定", Width = 90, DialogResult = DialogResult.OK };
+                var cancel = new Button { Text = "取消", Width = 90, DialogResult = DialogResult.Cancel };
+                buttons.Controls.Add(ok);
+                buttons.Controls.Add(cancel);
+
+                panel.Controls.Add(buttons, 0, 1);
+                panel.SetColumnSpan(buttons, 2);
+
+                dialog.Controls.Add(panel);
+                dialog.AcceptButton = ok;
+                dialog.CancelButton = cancel;
+
+                if (dialog.ShowDialog() == DialogResult.OK)
+                {
+                    return input.Text;
+                }
+
+                return defaultValue ?? string.Empty;
+            }
+        }
+
+        private static decimal PromptDecimal(string title, string label, decimal defaultValue)
+        {
+            using (var dialog = new Form())
+            {
+                dialog.Text = title;
+                dialog.StartPosition = FormStartPosition.CenterParent;
+                dialog.FormBorderStyle = FormBorderStyle.FixedDialog;
+                dialog.MaximizeBox = false;
+                dialog.MinimizeBox = false;
+                dialog.ShowInTaskbar = false;
+                dialog.Width = 520;
+                dialog.Height = 200;
+
+                var panel = new TableLayoutPanel();
+                panel.Dock = DockStyle.Fill;
+                panel.Padding = new Padding(12);
+                panel.ColumnCount = 2;
+                panel.RowCount = 2;
+                panel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 110));
+                panel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+                panel.RowStyles.Add(new RowStyle(SizeType.Absolute, 34));
+                panel.RowStyles.Add(new RowStyle(SizeType.Absolute, 34));
+
+                var labelControl = new Label
+                {
+                    Text = label + "：",
+                    Dock = DockStyle.Fill,
+                    TextAlign = ContentAlignment.MiddleRight
+                };
+                var input = new NumericUpDown
+                {
+                    Dock = DockStyle.Left,
+                    Width = 200,
+                    DecimalPlaces = 4,
+                    Maximum = 99999999,
+                    Minimum = 0,
+                    Value = defaultValue < 0 ? 0 : defaultValue
+                };
+
+                panel.Controls.Add(labelControl, 0, 0);
+                panel.Controls.Add(input, 1, 0);
+
+                var buttons = new FlowLayoutPanel();
+                buttons.Dock = DockStyle.Fill;
+                buttons.FlowDirection = FlowDirection.RightToLeft;
+
+                var ok = new Button { Text = "确定", Width = 90, DialogResult = DialogResult.OK };
+                var cancel = new Button { Text = "取消", Width = 90, DialogResult = DialogResult.Cancel };
+                buttons.Controls.Add(ok);
+                buttons.Controls.Add(cancel);
+
+                panel.Controls.Add(buttons, 0, 1);
+                panel.SetColumnSpan(buttons, 2);
+
+                dialog.Controls.Add(panel);
+                dialog.AcceptButton = ok;
+                dialog.CancelButton = cancel;
+
+                if (dialog.ShowDialog() == DialogResult.OK)
+                {
+                    return input.Value;
+                }
+
+                return defaultValue;
+            }
         }
     }
 }
