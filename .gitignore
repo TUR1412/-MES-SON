@@ -90,6 +90,13 @@ _pkginfo.txt
 # 用户特定文件（MonoDevelop/Xamarin Studio）
 *.userprefs
 
+# Visual Studio 用户配置/缓存
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.csproj.user
+
 # Mono 自动生成的文件
 mono_crash.*
 
@@ -316,6 +323,10 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 .augment-guidelines
+
+# CodeX / 本地代理产物
+.claude/
+Task_Status.md
 src/MES.BLL/bin/Debug/MES.BLL.dll
 src/MES.BLL/bin/Debug/MES.BLL.pdb
 src/MES.BLL/obj/Debug/MES.BLL.dll

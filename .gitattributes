@@ -1,0 +1,24 @@
+# 统一文本归一化（避免 CRLF/LF 反复抖动）
+* text=auto
+
+# Windows / Visual Studio 友好：常见文本文件固定 CRLF
+*.sln text eol=crlf
+*.csproj text eol=crlf
+*.props text eol=crlf
+*.targets text eol=crlf
+*.cs text eol=crlf
+*.config text eol=crlf
+*.resx text eol=crlf
+*.ps1 text eol=crlf
+*.cmd text eol=crlf
+*.bat text eol=crlf
+
+# 二进制文件
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.dll binary
+*.exe binary
+*.pdb binary
