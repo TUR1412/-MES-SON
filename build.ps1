@@ -12,7 +12,7 @@ $root = Split-Path -Parent $PSCommandPath
 Set-Location $root
 
 if (-not (Get-Command dotnet -ErrorAction SilentlyContinue)) {
-  throw '未检测到 dotnet CLI：请先安装 .NET SDK（用于 dotnet msbuild）。'
+  throw 'dotnet CLI not found. Please install .NET SDK (required for dotnet msbuild).'
 }
 
 $targetPath = if ($BuildSolution) { 'MES.sln' } else { 'src\\MES.UI\\MES.UI.csproj' }
@@ -27,5 +27,5 @@ $msbuildArgs = @(
   '/p:GenerateResourceMSBuildArchitecture=x64'
 )
 
-Write-Host "构建目标: $targetPath ($Configuration|$platform)"
+Write-Host "Building: $targetPath ($Configuration|$platform)"
 & dotnet @msbuildArgs
