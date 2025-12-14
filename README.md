@@ -12,8 +12,9 @@
 
 [![License](https://img.shields.io/badge/License-MIT-00C851?style=for-the-badge)](LICENSE)
 [![Build Status](https://img.shields.io/badge/Build-Passing-00C851?style=for-the-badge)](https://github.com/TUR1412/-MES-SON)
-[![Version](https://img.shields.io/badge/Version-v1.9.0-FF6900?style=for-the-badge)](https://github.com/TUR1412/-MES-SON/releases)
-[![Last Update](https://img.shields.io/badge/Last%20Update-2025--06--09-00C851?style=for-the-badge)](#)
+[![CI](https://img.shields.io/github/actions/workflow/status/TUR1412/-MES-SON/build.yml?branch=main&style=for-the-badge)](https://github.com/TUR1412/-MES-SON/actions/workflows/build.yml)
+[![Version](https://img.shields.io/badge/Version-v2.0.1-FF6900?style=for-the-badge)](https://github.com/TUR1412/-MES-SON/releases)
+[![Last Update](https://img.shields.io/badge/Last%20Update-2025--12--14-00C851?style=for-the-badge)](#)
 
 ---
 
@@ -25,7 +26,16 @@
 
 本项目是一套**功能完善、架构先进**的制造执行系统(MES)，在天帝的精心架构设计和技术指导下，实现了生产过程的**全流程数字化管理**。系统采用天帝亲自设计的**企业级三层架构**，具备卓越的可维护性、可扩展性和高性能表现，为制造企业提供从生产计划到产品交付的**完整解决方案**。
 
-### 🔥 v1.9.0 重大更新
+### 🔥 v2.0.1 重大更新 (2025-12-14)
+
+- ✅ **主题与交互融合**：物料 / BOM / 生产执行等核心页面体验增强
+- ✅ **构建修复**：修正 `System.Numerics.Vectors` 引用与重定向，减少本地/CI 构建踩坑
+- ✅ **仓库清理**：移除误提交的 `bin/obj/.vs` 等构建产物（不再污染提交历史）
+- ✅ **CI 自动构建**：新增 GitHub Actions（Windows）对 `MES.sln` 的 Release 构建验证
+- ✅ **一键构建脚本**：新增 `build.ps1`，支持项目/解决方案构建
+
+<details>
+<summary><b>历史版本：v1.9.0 数据库修复</b></summary>
 
 **数据库连接问题彻底解决！** 经过深度修复，所有核心功能模块现已完全正常工作：
 
@@ -37,6 +47,8 @@
 - ✅ **物料管理** - 继续稳定工作
 
 **技术成就**: 修复15+关键字段映射错误，新增完整WorkshopOperation三层架构，数据库连接成功率从0%提升到100%！
+
+</details>
 
 ### ✨ 核心特色
 
@@ -110,6 +122,18 @@ mysql -u root -p < database/init_database.sql
 
 # 3️⃣ 编译运行
 # 使用Visual Studio打开 MES.sln，按F5运行
+```
+
+### 🧱 命令行构建（可选）
+
+> 说明：仓库已不再提交 `bin/obj` 等构建产物，首次编译前请先在 VS 中“还原 NuGet 包”，或使用 `nuget restore`。
+
+```powershell
+# 构建 UI 项目（Debug）
+powershell -ExecutionPolicy Bypass -File build.ps1 -Configuration Debug
+
+# 构建整个解决方案（Release）
+powershell -ExecutionPolicy Bypass -File build.ps1 -Configuration Release -BuildSolution
 ```
 
 ### 🔧 详细配置
