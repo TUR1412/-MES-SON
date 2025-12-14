@@ -221,9 +221,9 @@ namespace MES.UI.Forms.Production
         {
             try
             {
-                string searchTerm = textBoxSearch.Text.Trim().ToLower();
+                string searchTerm = textBoxSearch.Text.Trim();
 
-                if (string.IsNullOrEmpty(searchTerm))
+                if (string.IsNullOrWhiteSpace(searchTerm))
                 {
                     // 显示所有订单
                     filteredOrderList = new List<ProductionOrderInfo>(orderList);
@@ -232,10 +232,10 @@ namespace MES.UI.Forms.Production
                 {
                     // 根据订单编号、产品名称、状态进行搜索
                     filteredOrderList = orderList.Where(o =>
-                        o.OrderNo.ToLower().Contains(searchTerm) ||
-                        o.ProductName.ToLower().Contains(searchTerm) ||
-                        o.Status.ToLower().Contains(searchTerm) ||
-                        o.WorkshopName.ToLower().Contains(searchTerm)
+                        (o.OrderNo ?? string.Empty).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        (o.ProductName ?? string.Empty).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        (o.Status ?? string.Empty).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        (o.WorkshopName ?? string.Empty).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0
                     ).ToList();
                 }
 
@@ -433,33 +433,32 @@ namespace MES.UI.Forms.Production
                 if (result != null)
                 {
                     // 设置更新时间
+                    result.Id = currentOrder.Id;
                     result.UpdateTime = DateTime.Now;
 
                     // 调用BLL层更新到数据库
-                    bool updateResult = _productionOrderBLL.UpdateProductionOrder(result);
-
-                    if (updateResult)
+                    var success = _productionOrderBLL.UpdateProductionOrder(result);
+                    if (!success)
                     {
-                        // 重新加载数据以获取最新状态
-                        LoadProductionOrderData();
-
-                        // 刷新显示
-                        RefreshDataGridView();
-
-                        // 重新选中编辑的订单
-                        SelectOrderById(result.Id);
-
-                        MessageBox.Show("生产订单编辑成功！", "成功",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                        LogManager.Info(string.Format("编辑生产订单：{0} - {1}",
-                            result.OrderNo, result.ProductName));
+                        MessageBox.Show("生产订单编辑失败：记录可能已不存在。", "失败",
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
                     }
-                    else
-                    {
-                        MessageBox.Show("更新生产订单失败，请检查数据库连接", "错误",
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
+
+                    // 重新加载数据以获取最新状态
+                    LoadProductionOrderData();
+
+                    // 刷新显示
+                    RefreshDataGridView();
+
+                    // 重新选中编辑的订单
+                    SelectOrderById(result.Id);
+
+                    MessageBox.Show("生产订单编辑成功！", "成功",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    LogManager.Info(string.Format("编辑生产订单：{0} - {1}",
+                        result.OrderNo, result.ProductName));
                 }
             }
             catch (Exception ex)
@@ -494,27 +493,25 @@ namespace MES.UI.Forms.Production
                 if (result == DialogResult.Yes)
                 {
                     // 调用BLL层删除数据库记录
-                    bool deleteResult = _productionOrderBLL.DeleteProductionOrder(currentOrder.Id);
-
-                    if (deleteResult)
+                    var success = _productionOrderBLL.DeleteProductionOrder(currentOrder.Id);
+                    if (!success)
                     {
-                        // 重新加载数据
-                        LoadProductionOrderData();
-
-                        // 刷新显示
-                        RefreshDataGridView();
-
-                        MessageBox.Show("生产订单删除成功！", "成功",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                        LogManager.Info(string.Format("删除生产订单：{0} - {1}",
-                            currentOrder.OrderNo, currentOrder.ProductName));
+                        MessageBox.Show("生产订单删除失败：记录可能已不存在或状态不允许删除。", "失败",
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
                     }
-                    else
-                    {
-                        MessageBox.Show("删除生产订单失败，请检查数据库连接", "错误",
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
+
+                    // 重新加载数据
+                    LoadProductionOrderData();
+
+                    // 刷新显示
+                    RefreshDataGridView();
+
+                    MessageBox.Show("生产订单删除成功！", "成功",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    LogManager.Info(string.Format("删除生产订单：{0} - {1}",
+                        currentOrder.OrderNo, currentOrder.ProductName));
                 }
             }
             catch (Exception ex)

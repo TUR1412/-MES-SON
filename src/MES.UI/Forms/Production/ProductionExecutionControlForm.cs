@@ -175,9 +175,7 @@ namespace MES.UI.Forms.Production
         {
             try
             {
-                // 模拟实时数据更新
-                UpdateExecutionProgress();
-                RefreshDataGridView();
+                ReloadAndRefresh(true);
             }
             catch (Exception ex)
             {
@@ -194,17 +192,13 @@ namespace MES.UI.Forms.Production
             {
                 executionList.Clear();
 
-                // 从BLL层获取真实数据
                 var orders = _productionOrderBLL.GetAllProductionOrders();
                 if (orders != null && orders.Count > 0)
                 {
                     executionList.AddRange(orders);
                 }
 
-                // 复制到过滤列表
-                filteredExecutionList = new List<ProductionOrderInfo>(executionList);
-
-                LogManager.Info(string.Format("成功加载生产执行数据，共 {0} 条记录", executionList.Count));
+                ApplySearchFilter();
             }
             catch (Exception ex)
             {
@@ -212,8 +206,7 @@ namespace MES.UI.Forms.Production
                 MessageBox.Show("加载生产执行数据失败：" + ex.Message, "错误",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                // 初始化空列表
-                executionList = new List<ProductionOrderInfo>();
+                executionList.Clear();
                 filteredExecutionList = new List<ProductionOrderInfo>();
             }
         }
@@ -277,25 +270,7 @@ namespace MES.UI.Forms.Production
         {
             try
             {
-                string searchTerm = textBoxSearch.Text.Trim().ToLower();
-
-                if (string.IsNullOrEmpty(searchTerm))
-                {
-                    // 显示所有执行记录
-                    filteredExecutionList = new List<ProductionOrderInfo>(executionList);
-                }
-                else
-                {
-                    // 根据订单编号、产品名称、状态、车间进行搜索
-                    filteredExecutionList = executionList.Where(o =>
-                        o.OrderNumber.ToLower().Contains(searchTerm) ||
-                        o.ProductName.ToLower().Contains(searchTerm) ||
-                        o.Status.ToLower().Contains(searchTerm) ||
-                        o.Workshop.ToLower().Contains(searchTerm) ||
-                        o.Operator.ToLower().Contains(searchTerm)
-                    ).ToList();
-                }
-
+                ApplySearchFilter();
                 RefreshDataGridView();
             }
             catch (Exception ex)
@@ -433,12 +408,15 @@ namespace MES.UI.Forms.Production
                     return;
                 }
 
-                // 更新状态
-                currentExecution.Status = "进行中";
-                currentExecution.ActualStartTime = DateTime.Now;
+                var success = _productionOrderBLL.StartProductionOrder(currentExecution.Id);
+                if (!success)
+                {
+                    MessageBox.Show("启动执行失败：请检查订单状态是否为“待开始”。", "失败",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
 
-                // 刷新显示
-                RefreshDataGridView();
+                ReloadAndRefresh(true);
 
                 MessageBox.Show("订单执行已开始！", "成功",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -475,11 +453,21 @@ namespace MES.UI.Forms.Production
                     return;
                 }
 
-                // 更新状态
-                currentExecution.Status = "已暂停";
+                var reason = PromptText("暂停原因（可选）", "暂停原因", "手动暂停");
+                if (reason == null)
+                {
+                    return;
+                }
 
-                // 刷新显示
-                RefreshDataGridView();
+                var success = _productionOrderBLL.PauseProductionOrder(currentExecution.Id, reason);
+                if (!success)
+                {
+                    MessageBox.Show("暂停执行失败：请检查订单状态是否为“进行中”。", "失败",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                ReloadAndRefresh(true);
 
                 MessageBox.Show("订单执行已暂停！", "成功",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -516,13 +504,23 @@ namespace MES.UI.Forms.Production
                     return;
                 }
 
-                // 更新状态
-                currentExecution.Status = "已完成";
-                currentExecution.CompletedQuantity = currentExecution.PlannedQuantity;
-                currentExecution.ActualEndTime = DateTime.Now;
+                var actualQuantity = PromptDecimal("请输入实际完成数量", "完成数量", currentExecution.PlannedQuantity);
+                if (actualQuantity <= 0)
+                {
+                    MessageBox.Show("实际完成数量必须大于0。", "提示",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
 
-                // 刷新显示
-                RefreshDataGridView();
+                var success = _productionOrderBLL.CompleteProductionOrder(currentExecution.Id, actualQuantity);
+                if (!success)
+                {
+                    MessageBox.Show("完成执行失败：请检查订单状态是否为“进行中”。", "失败",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                ReloadAndRefresh(true);
 
                 MessageBox.Show("订单执行已完成！", "成功",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -549,8 +547,7 @@ namespace MES.UI.Forms.Production
                 textBoxSearch.Text = string.Empty;
 
                 // 重新加载数据
-                LoadProductionExecutionData();
-                RefreshDataGridView();
+                ReloadAndRefresh(false);
 
                 MessageBox.Show("数据刷新成功！", "成功",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -563,6 +560,133 @@ namespace MES.UI.Forms.Production
                 MessageBox.Show("刷新数据失败：" + ex.Message, "错误",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void ReloadAndRefresh(bool keepSelection)
+        {
+            int selectedId = (keepSelection && currentExecution != null) ? currentExecution.Id : 0;
+
+            LoadProductionExecutionData();
+            RefreshDataGridView();
+
+            if (selectedId > 0)
+            {
+                SelectExecutionById(selectedId);
+            }
+        }
+
+        private void ApplySearchFilter()
+        {
+            string searchTerm = textBoxSearch.Text.Trim();
+
+            if (string.IsNullOrWhiteSpace(searchTerm))
+            {
+                filteredExecutionList = new List<ProductionOrderInfo>(executionList);
+                return;
+            }
+
+            filteredExecutionList = executionList.Where(o =>
+                (o.OrderNumber ?? string.Empty).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                (o.ProductName ?? string.Empty).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                (o.Status ?? string.Empty).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                (o.Workshop ?? string.Empty).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                (o.Operator ?? string.Empty).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0
+            ).ToList();
+        }
+
+        private void SelectExecutionById(int executionId)
+        {
+            try
+            {
+                for (int i = 0; i < dataGridViewExecution.Rows.Count; i++)
+                {
+                    var item = dataGridViewExecution.Rows[i].DataBoundItem as ProductionOrderInfo;
+                    if (item != null && item.Id == executionId)
+                    {
+                        dataGridViewExecution.ClearSelection();
+                        dataGridViewExecution.Rows[i].Selected = true;
+                        dataGridViewExecution.CurrentCell = dataGridViewExecution.Rows[i].Cells[0];
+                        break;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("重新选中执行记录失败", ex);
+            }
+        }
+
+        private static string PromptText(string prompt, string title, string defaultValue)
+        {
+            using (var form = new Form())
+            using (var label = new Label())
+            using (var textBox = new TextBox())
+            using (var okButton = new Button())
+            using (var cancelButton = new Button())
+            {
+                form.Text = title;
+                form.FormBorderStyle = FormBorderStyle.FixedDialog;
+                form.StartPosition = FormStartPosition.CenterParent;
+                form.MinimizeBox = false;
+                form.MaximizeBox = false;
+                form.Width = 420;
+                form.Height = 160;
+
+                label.Left = 12;
+                label.Top = 12;
+                label.Width = 380;
+                label.Text = prompt;
+
+                textBox.Left = 12;
+                textBox.Top = 40;
+                textBox.Width = 380;
+                textBox.Text = defaultValue ?? string.Empty;
+
+                okButton.Text = "确定";
+                okButton.Left = 232;
+                okButton.Top = 75;
+                okButton.Width = 75;
+                okButton.DialogResult = DialogResult.OK;
+
+                cancelButton.Text = "取消";
+                cancelButton.Left = 317;
+                cancelButton.Top = 75;
+                cancelButton.Width = 75;
+                cancelButton.DialogResult = DialogResult.Cancel;
+
+                form.AcceptButton = okButton;
+                form.CancelButton = cancelButton;
+
+                form.Controls.Add(label);
+                form.Controls.Add(textBox);
+                form.Controls.Add(okButton);
+                form.Controls.Add(cancelButton);
+
+                var result = form.ShowDialog();
+                if (result != DialogResult.OK)
+                {
+                    return null;
+                }
+
+                return textBox.Text ?? string.Empty;
+            }
+        }
+
+        private static decimal PromptDecimal(string prompt, string title, decimal defaultValue)
+        {
+            var input = PromptText(prompt, title, defaultValue.ToString());
+            if (input == null)
+            {
+                return 0;
+            }
+
+            decimal value;
+            if (!decimal.TryParse(input, out value))
+            {
+                return 0;
+            }
+
+            return value;
         }
 
         /// <summary>

@@ -21,12 +21,12 @@ namespace MES.UI.Forms.Material
         private List<BOMInfo> bomList;
         private List<BOMInfo> filteredBomList;
         private BOMInfo currentBom;
-        private BOMBLL bomBLL;
+        private readonly IBOMBLL _bomBLL;
 
         public BOMManagementForm()
         {
             InitializeComponent();
-            bomBLL = new BOMBLL();
+            _bomBLL = new BOMBLL();
             InitializeForm();
         }
 
@@ -171,20 +171,14 @@ namespace MES.UI.Forms.Material
             {
                 bomList.Clear();
 
-                // 从数据库加载真实的BOM数据
-                bomList = bomBLL.GetAllBOMs();
-
-                // 如果数据库中没有数据，可以添加一些示例数据用于演示
-                if (bomList == null || bomList.Count == 0)
+                var data = _bomBLL.GetAllBOMs();
+                if (data != null && data.Count > 0)
                 {
-                    bomList = new List<BOMInfo>();
-                    // 这里可以添加示例数据，但现在我们使用真实的数据库数据
+                    bomList.AddRange(data);
                 }
 
-
-
-            // 复制到过滤列表
-            filteredBomList = new List<BOMInfo>(bomList);
+                // 复制到过滤列表
+                filteredBomList = new List<BOMInfo>(bomList);
             }
             catch (Exception ex)
             {
@@ -228,9 +222,9 @@ namespace MES.UI.Forms.Material
         {
             try
             {
-                string searchTerm = textBoxSearch.Text.Trim().ToLower();
+                string searchTerm = textBoxSearch.Text.Trim();
 
-                if (string.IsNullOrEmpty(searchTerm))
+                if (string.IsNullOrWhiteSpace(searchTerm))
                 {
                     // 显示所有BOM记录
                     filteredBomList = new List<BOMInfo>(bomList);
@@ -239,12 +233,12 @@ namespace MES.UI.Forms.Material
                 {
                     // 根据BOM编码、产品名称、物料名称进行搜索
                     filteredBomList = bomList.Where(b =>
-                        b.BOMCode.ToLower().Contains(searchTerm) ||
-                        b.ProductName.ToLower().Contains(searchTerm) ||
-                        b.MaterialName.ToLower().Contains(searchTerm) ||
-                        b.ProductCode.ToLower().Contains(searchTerm) ||
-                        b.MaterialCode.ToLower().Contains(searchTerm) ||
-                        b.BOMType.ToLower().Contains(searchTerm)
+                        (b.BOMCode ?? string.Empty).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        (b.ProductName ?? string.Empty).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        (b.MaterialName ?? string.Empty).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        (b.ProductCode ?? string.Empty).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        (b.MaterialCode ?? string.Empty).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        (b.BOMType ?? string.Empty).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0
                     ).ToList();
                 }
 
@@ -386,30 +380,32 @@ namespace MES.UI.Forms.Material
                     result.UpdateTime = DateTime.Now;
 
                     // 调用BLL层真正保存到数据库
-                    if (bomBLL.AddBOM(result))
+                    var success = _bomBLL.AddBOM(result);
+                    if (!success)
                     {
-                        // 重新加载数据以获取数据库生成的ID
-                        LoadBOMData();
-                        RefreshDataGridView();
-
-                        // 选中新添加的BOM
-                        var newBom = bomList.FirstOrDefault(b => b.BOMCode == result.BOMCode);
-                        if (newBom != null)
-                        {
-                            SelectBOMById(newBom.Id);
-                        }
-
-                        MessageBox.Show("BOM记录添加成功！", "成功",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                        LogManager.Info(string.Format("添加BOM记录：{0} - {1}",
-                            result.BOMCode, result.ProductName));
+                        MessageBox.Show("BOM记录添加失败！", "失败",
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
                     }
-                    else
+
+                    // 重新加载数据以获取数据库生成的ID
+                    LoadBOMData();
+                    RefreshDataGridView();
+
+                    // 选中新添加的BOM（按编码查找，忽略大小写）
+                    var newBom = bomList.FirstOrDefault(b =>
+                        !string.IsNullOrEmpty(b.BOMCode) &&
+                        b.BOMCode.Equals(result.BOMCode, StringComparison.OrdinalIgnoreCase));
+                    if (newBom != null)
                     {
-                        MessageBox.Show("BOM记录添加失败！", "错误",
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        SelectBOMById(newBom.Id);
                     }
+
+                    MessageBox.Show("BOM记录添加成功！", "成功",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    LogManager.Info(string.Format("添加BOM记录：{0} - {1}",
+                        result.BOMCode, result.ProductName));
                 }
             }
             catch (Exception ex)
@@ -438,30 +434,29 @@ namespace MES.UI.Forms.Material
                 var result = ShowBOMEditDialog(currentBom);
                 if (result != null)
                 {
-                    // 设置更新时间
+                    result.Id = currentBom.Id;
                     result.UpdateTime = DateTime.Now;
 
-                    // 调用BLL层真正更新到数据库
-                    if (bomBLL.UpdateBOM(result))
+                    var success = _bomBLL.UpdateBOM(result);
+                    if (!success)
                     {
-                        // 重新加载数据以获取最新状态
-                        LoadBOMData();
-                        RefreshDataGridView();
-
-                        // 重新选中编辑的BOM
-                        SelectBOMById(result.Id);
-
-                        MessageBox.Show("BOM记录编辑成功！", "成功",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                        LogManager.Info(string.Format("编辑BOM记录：{0} - {1}",
-                            result.BOMCode, result.ProductName));
+                        MessageBox.Show("BOM记录编辑失败：记录可能已不存在。", "失败",
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
                     }
-                    else
-                    {
-                        MessageBox.Show("BOM记录编辑失败！", "错误",
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
+
+                    // 重新加载数据以获取最新状态
+                    LoadBOMData();
+                    RefreshDataGridView();
+
+                    // 重新选中编辑的BOM
+                    SelectBOMById(result.Id);
+
+                    MessageBox.Show("BOM记录编辑成功！", "成功",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    LogManager.Info(string.Format("编辑BOM记录：{0} - {1}",
+                        result.BOMCode, result.ProductName));
                 }
             }
             catch (Exception ex)
@@ -495,24 +490,23 @@ namespace MES.UI.Forms.Material
 
                 if (result == DialogResult.Yes)
                 {
-                    // 调用BLL层真正从数据库删除
-                    if (bomBLL.DeleteBOM(currentBom.Id))
+                    var success = _bomBLL.DeleteBOM(currentBom.Id);
+                    if (!success)
                     {
-                        // 重新加载数据以反映删除结果
-                        LoadBOMData();
-                        RefreshDataGridView();
-
-                        MessageBox.Show("BOM记录删除成功！", "成功",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                        LogManager.Info(string.Format("删除BOM记录：{0} - {1}",
-                            currentBom.BOMCode, currentBom.ProductName));
+                        MessageBox.Show("BOM记录删除失败：记录可能已不存在。", "失败",
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
                     }
-                    else
-                    {
-                        MessageBox.Show("BOM记录删除失败！", "错误",
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
+
+                    // 重新加载数据以反映删除结果
+                    LoadBOMData();
+                    RefreshDataGridView();
+
+                    MessageBox.Show("BOM记录删除成功！", "成功",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    LogManager.Info(string.Format("删除BOM记录：{0} - {1}",
+                        currentBom.BOMCode, currentBom.ProductName));
                 }
             }
             catch (Exception ex)

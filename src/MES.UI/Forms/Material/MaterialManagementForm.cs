@@ -119,9 +119,9 @@ namespace MES.UI.Forms.Material
         {
             try
             {
-                string searchTerm = textBoxSearch.Text.Trim().ToLower();
+                string searchTerm = textBoxSearch.Text.Trim();
 
-                if (string.IsNullOrEmpty(searchTerm))
+                if (string.IsNullOrWhiteSpace(searchTerm))
                 {
                     filteredMaterialList = new List<MaterialDto>(materialList);
                 }
@@ -129,10 +129,10 @@ namespace MES.UI.Forms.Material
                 {
                     // 使用DTO的属性进行客户端筛选
                     filteredMaterialList = materialList.Where(m =>
-                        (m.MaterialCode != null && m.MaterialCode.ToLower().Contains(searchTerm)) ||
-                        (m.MaterialName != null && m.MaterialName.ToLower().Contains(searchTerm)) ||
-                        (m.MaterialType != null && m.MaterialType.ToLower().Contains(searchTerm)) ||
-                        (m.Specification != null && m.Specification.ToLower().Contains(searchTerm))
+                        (m.MaterialCode ?? string.Empty).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        (m.MaterialName ?? string.Empty).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        (m.MaterialType ?? string.Empty).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        (m.Specification ?? string.Empty).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0
                     ).ToList();
                 }
 
@@ -141,7 +141,8 @@ namespace MES.UI.Forms.Material
             catch (Exception ex)
             {
                 LogManager.Error("搜索失败", ex);
-                MessageBox.Show("搜索失败：" + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("搜索失败：" + ex.Message, "错误",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -339,7 +340,81 @@ namespace MES.UI.Forms.Material
         /// 清空详情面板
         /// </summary>
         private void ClearDetailsPanel() { /* ... 此方法无需修改 ... */ }
-        private void SetupDataGridView() { /* ... 此方法无需修改 ... */ }
+        private void SetupDataGridView()
+        {
+            dataGridViewMaterials.AutoGenerateColumns = false;
+            dataGridViewMaterials.Columns.Clear();
+
+            dataGridViewMaterials.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "MaterialCode",
+                HeaderText = "物料编码",
+                DataPropertyName = "MaterialCode",
+                Width = 120,
+                ReadOnly = true
+            });
+
+            dataGridViewMaterials.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "MaterialName",
+                HeaderText = "物料名称",
+                DataPropertyName = "MaterialName",
+                Width = 200,
+                ReadOnly = true
+            });
+
+            dataGridViewMaterials.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "MaterialType",
+                HeaderText = "物料类型",
+                DataPropertyName = "MaterialType",
+                Width = 120,
+                ReadOnly = true
+            });
+
+            dataGridViewMaterials.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Unit",
+                HeaderText = "计量单位",
+                DataPropertyName = "Unit",
+                Width = 80,
+                ReadOnly = true
+            });
+
+            dataGridViewMaterials.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Specification",
+                HeaderText = "规格型号",
+                DataPropertyName = "Specification",
+                Width = 150,
+                ReadOnly = true
+            });
+
+            dataGridViewMaterials.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Supplier",
+                HeaderText = "供应商",
+                DataPropertyName = "Supplier",
+                Width = 120,
+                ReadOnly = true
+            });
+
+            // 设置样式
+            dataGridViewMaterials.EnableHeadersVisualStyles = false;
+            dataGridViewMaterials.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(52, 58, 64);
+            dataGridViewMaterials.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            dataGridViewMaterials.ColumnHeadersDefaultCellStyle.Font = new Font("微软雅黑", 9F, FontStyle.Bold);
+            dataGridViewMaterials.ColumnHeadersHeight = 40;
+
+            dataGridViewMaterials.DefaultCellStyle.Font = new Font("微软雅黑", 9F);
+            dataGridViewMaterials.DefaultCellStyle.BackColor = Color.White;
+            dataGridViewMaterials.DefaultCellStyle.ForeColor = Color.FromArgb(33, 37, 41);
+            dataGridViewMaterials.DefaultCellStyle.SelectionBackColor = Color.FromArgb(0, 123, 255);
+            dataGridViewMaterials.DefaultCellStyle.SelectionForeColor = Color.White;
+
+            dataGridViewMaterials.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(248, 249, 250);
+            dataGridViewMaterials.GridColor = Color.FromArgb(222, 226, 230);
+        }
 
         /// <summary>
         /// 显示物料编辑对话框
