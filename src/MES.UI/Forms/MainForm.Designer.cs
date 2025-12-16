@@ -28,6 +28,7 @@ namespace MES.UI.Forms
         /// </summary>
         private void InitializeComponent()
         {
+            // LOL 终版主页布局仍保留菜单/工具/状态容器（由代码动态填充内容）
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
@@ -62,9 +63,9 @@ namespace MES.UI.Forms
             // 
             // menuStrip1
             // 
-            this.menuStrip1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(245)))), ((int)(((byte)(246)))), ((int)(((byte)(250)))));
+            this.menuStrip1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(25)))), ((int)(((byte)(30)))), ((int)(((byte)(40)))));
             this.menuStrip1.Font = new System.Drawing.Font("微软雅黑", 9.5F, System.Drawing.FontStyle.Bold);
-            this.menuStrip1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(37)))), ((int)(((byte)(41)))));
+            this.menuStrip1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(170)))), ((int)(((byte)(110)))));
             this.menuStrip1.GripMargin = new System.Windows.Forms.Padding(2, 2, 0, 2);
             this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
@@ -77,7 +78,7 @@ namespace MES.UI.Forms
             // 
             // statusStrip1
             // 
-            this.statusStrip1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(249)))), ((int)(((byte)(250)))));
+            this.statusStrip1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(25)))), ((int)(((byte)(35)))));
             this.statusStrip1.Font = new System.Drawing.Font("微软雅黑", 9F);
             this.statusStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.statusStrip1.Location = new System.Drawing.Point(0, 728);
@@ -89,7 +90,7 @@ namespace MES.UI.Forms
             // 
             // toolStrip1
             // 
-            this.toolStrip1.BackColor = System.Drawing.Color.White;
+            this.toolStrip1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(25)))), ((int)(((byte)(35)))));
             this.toolStrip1.Font = new System.Drawing.Font("微软雅黑", 8.5F);
             this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.toolStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
@@ -103,8 +104,8 @@ namespace MES.UI.Forms
             // 
             // panelLeft
             // 
-            this.panelLeft.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(249)))), ((int)(((byte)(250)))));
-            this.panelLeft.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panelLeft.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(25)))), ((int)(((byte)(30)))), ((int)(((byte)(40)))));
+            this.panelLeft.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.panelLeft.Controls.Add(this.panelNavContent);
             this.panelLeft.Controls.Add(this.panelNavFooter);
             this.panelLeft.Controls.Add(this.panelNavHeader);
@@ -116,7 +117,7 @@ namespace MES.UI.Forms
             // 
             // panelNavContent
             // 
-            this.panelNavContent.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(249)))), ((int)(((byte)(250)))));
+            this.panelNavContent.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(25)))), ((int)(((byte)(30)))), ((int)(((byte)(40)))));
             this.panelNavContent.Controls.Add(this.treeViewModules);
             this.panelNavContent.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelNavContent.Location = new System.Drawing.Point(0, 50);
@@ -127,11 +128,11 @@ namespace MES.UI.Forms
             // 
             // treeViewModules
             // 
-            this.treeViewModules.BackColor = System.Drawing.Color.White;
+            this.treeViewModules.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(25)))), ((int)(((byte)(30)))), ((int)(((byte)(40)))));
             this.treeViewModules.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.treeViewModules.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeViewModules.Font = new System.Drawing.Font("微软雅黑", 10F);
-            this.treeViewModules.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(37)))), ((int)(((byte)(41)))));
+            this.treeViewModules.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(170)))), ((int)(((byte)(110)))));
             this.treeViewModules.FullRowSelect = true;
             this.treeViewModules.HideSelection = false;
             this.treeViewModules.ItemHeight = 32;
@@ -144,7 +145,7 @@ namespace MES.UI.Forms
             // 
             // panelNavFooter
             // 
-            this.panelNavFooter.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(249)))), ((int)(((byte)(250)))));
+            this.panelNavFooter.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(25)))), ((int)(((byte)(30)))), ((int)(((byte)(40)))));
             this.panelNavFooter.Controls.Add(this.labelNavInfo);
             this.panelNavFooter.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panelNavFooter.Location = new System.Drawing.Point(0, 637);
@@ -157,7 +158,7 @@ namespace MES.UI.Forms
             // 
             this.labelNavInfo.AutoSize = true;
             this.labelNavInfo.Font = new System.Drawing.Font("微软雅黑", 9F);
-            this.labelNavInfo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(108)))), ((int)(((byte)(117)))), ((int)(((byte)(125)))));
+            this.labelNavInfo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(150)))), ((int)(((byte)(130)))), ((int)(((byte)(90)))));
             this.labelNavInfo.Location = new System.Drawing.Point(15, 10);
             this.labelNavInfo.Name = "labelNavInfo";
             this.labelNavInfo.Size = new System.Drawing.Size(136, 24);
@@ -166,7 +167,7 @@ namespace MES.UI.Forms
             // 
             // panelNavHeader
             // 
-            this.panelNavHeader.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(249)))), ((int)(((byte)(250)))));
+            this.panelNavHeader.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(25)))), ((int)(((byte)(30)))), ((int)(((byte)(40)))));
             this.panelNavHeader.Controls.Add(this.labelNavTitle);
             this.panelNavHeader.Dock = System.Windows.Forms.DockStyle.Top;
             this.panelNavHeader.Location = new System.Drawing.Point(0, 0);
@@ -179,7 +180,7 @@ namespace MES.UI.Forms
             // 
             this.labelNavTitle.AutoSize = true;
             this.labelNavTitle.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Bold);
-            this.labelNavTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(37)))), ((int)(((byte)(41)))));
+            this.labelNavTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(170)))), ((int)(((byte)(110)))));
             this.labelNavTitle.Location = new System.Drawing.Point(15, 15);
             this.labelNavTitle.Name = "labelNavTitle";
             this.labelNavTitle.Size = new System.Drawing.Size(110, 31);
@@ -188,7 +189,7 @@ namespace MES.UI.Forms
             // 
             // splitter1
             // 
-            this.splitter1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(222)))), ((int)(((byte)(226)))), ((int)(((byte)(230)))));
+            this.splitter1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(170)))), ((int)(((byte)(110)))));
             this.splitter1.Location = new System.Drawing.Point(280, 49);
             this.splitter1.Name = "splitter1";
             this.splitter1.Size = new System.Drawing.Size(4, 679);
@@ -197,7 +198,7 @@ namespace MES.UI.Forms
             // 
             // panelMain
             // 
-            this.panelMain.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(249)))), ((int)(((byte)(250)))));
+            this.panelMain.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(20)))), ((int)(((byte)(30)))));
             this.panelMain.Controls.Add(this.panelStatusInfo);
             this.panelMain.Controls.Add(this.panelModuleCards);
             this.panelMain.Controls.Add(this.panelWelcome);
@@ -210,8 +211,8 @@ namespace MES.UI.Forms
             // 
             // panelStatusInfo
             // 
-            this.panelStatusInfo.BackColor = System.Drawing.Color.White;
-            this.panelStatusInfo.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panelStatusInfo.BackColor = System.Drawing.Color.Transparent;
+            this.panelStatusInfo.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.panelStatusInfo.Controls.Add(this.labelTechInfo);
             this.panelStatusInfo.Controls.Add(this.labelStatusTitle);
             this.panelStatusInfo.Dock = System.Windows.Forms.DockStyle.Top;
@@ -224,7 +225,7 @@ namespace MES.UI.Forms
             // labelTechInfo
             // 
             this.labelTechInfo.Font = new System.Drawing.Font("微软雅黑", 11F);
-            this.labelTechInfo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(108)))), ((int)(((byte)(117)))), ((int)(((byte)(125)))));
+            this.labelTechInfo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(150)))), ((int)(((byte)(130)))), ((int)(((byte)(90)))));
             this.labelTechInfo.Location = new System.Drawing.Point(30, 60);
             this.labelTechInfo.Name = "labelTechInfo";
             this.labelTechInfo.Size = new System.Drawing.Size(800, 60);
@@ -236,7 +237,7 @@ namespace MES.UI.Forms
             // 
             this.labelStatusTitle.AutoSize = true;
             this.labelStatusTitle.Font = new System.Drawing.Font("微软雅黑", 14F, System.Drawing.FontStyle.Bold);
-            this.labelStatusTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(25)))), ((int)(((byte)(135)))), ((int)(((byte)(84)))));
+            this.labelStatusTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(170)))), ((int)(((byte)(110)))));
             this.labelStatusTitle.Location = new System.Drawing.Point(30, 20);
             this.labelStatusTitle.Name = "labelStatusTitle";
             this.labelStatusTitle.Size = new System.Drawing.Size(521, 37);
@@ -257,8 +258,8 @@ namespace MES.UI.Forms
             // 
             // btnWorkshopCard
             // 
-            this.btnWorkshopCard.BackColor = System.Drawing.Color.White;
-            this.btnWorkshopCard.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(222)))), ((int)(((byte)(226)))), ((int)(((byte)(230)))));
+            this.btnWorkshopCard.BackColor = System.Drawing.Color.Transparent;
+            this.btnWorkshopCard.FlatAppearance.BorderSize = 0;
             this.btnWorkshopCard.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnWorkshopCard.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Bold);
             this.btnWorkshopCard.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(53)))), ((int)(((byte)(69)))));
@@ -266,13 +267,13 @@ namespace MES.UI.Forms
             this.btnWorkshopCard.Name = "btnWorkshopCard";
             this.btnWorkshopCard.Size = new System.Drawing.Size(280, 160);
             this.btnWorkshopCard.TabIndex = 2;
-            this.btnWorkshopCard.Text = "🏭 车间管理 (S成员)\r\n\r\n• 车间作业管理\r\n• 在制品管理\r\n• 设备状态管理";
+            this.btnWorkshopCard.Text = "▶ 车间管理 (S成员)\r\n\r\n• 车间作业管理\r\n• 在制品管理\r\n• 设备状态管理";
             this.btnWorkshopCard.UseVisualStyleBackColor = false;
             // 
             // btnProductionCard
             // 
-            this.btnProductionCard.BackColor = System.Drawing.Color.White;
-            this.btnProductionCard.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(222)))), ((int)(((byte)(226)))), ((int)(((byte)(230)))));
+            this.btnProductionCard.BackColor = System.Drawing.Color.Transparent;
+            this.btnProductionCard.FlatAppearance.BorderSize = 0;
             this.btnProductionCard.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnProductionCard.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Bold);
             this.btnProductionCard.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(123)))), ((int)(((byte)(255)))));
@@ -280,13 +281,13 @@ namespace MES.UI.Forms
             this.btnProductionCard.Name = "btnProductionCard";
             this.btnProductionCard.Size = new System.Drawing.Size(280, 160);
             this.btnProductionCard.TabIndex = 1;
-            this.btnProductionCard.Text = "⚙️ 生产管理 (H成员)\r\n\r\n• 生产订单管理\r\n• 生产执行控制\r\n• 用户权限管理";
+            this.btnProductionCard.Text = "▶ 生产管理 (H成员)\r\n\r\n• 生产订单管理\r\n• 生产执行控制\r\n• 用户权限管理";
             this.btnProductionCard.UseVisualStyleBackColor = false;
             // 
             // btnMaterialCard
             // 
-            this.btnMaterialCard.BackColor = System.Drawing.Color.White;
-            this.btnMaterialCard.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(222)))), ((int)(((byte)(226)))), ((int)(((byte)(230)))));
+            this.btnMaterialCard.BackColor = System.Drawing.Color.Transparent;
+            this.btnMaterialCard.FlatAppearance.BorderSize = 0;
             this.btnMaterialCard.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnMaterialCard.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Bold);
             this.btnMaterialCard.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(25)))), ((int)(((byte)(135)))), ((int)(((byte)(84)))));
@@ -294,13 +295,13 @@ namespace MES.UI.Forms
             this.btnMaterialCard.Name = "btnMaterialCard";
             this.btnMaterialCard.Size = new System.Drawing.Size(280, 160);
             this.btnMaterialCard.TabIndex = 0;
-            this.btnMaterialCard.Text = "📦 物料管理 (L成员)\r\n\r\n• 物料信息管理\r\n• BOM物料清单\r\n• 工艺路线配置";
+            this.btnMaterialCard.Text = "▶ 物料管理 (L成员)\r\n\r\n• 物料信息管理\r\n• BOM物料清单\r\n• 工艺路线配置";
             this.btnMaterialCard.UseVisualStyleBackColor = false;
             // 
             // panelWelcome
             // 
-            this.panelWelcome.BackColor = System.Drawing.Color.White;
-            this.panelWelcome.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panelWelcome.BackColor = System.Drawing.Color.Transparent;
+            this.panelWelcome.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.panelWelcome.Controls.Add(this.labelSystemVersion);
             this.panelWelcome.Controls.Add(this.labelSystemTitle);
             this.panelWelcome.Dock = System.Windows.Forms.DockStyle.Top;
@@ -314,7 +315,7 @@ namespace MES.UI.Forms
             // 
             this.labelSystemVersion.AutoSize = true;
             this.labelSystemVersion.Font = new System.Drawing.Font("微软雅黑", 12F);
-            this.labelSystemVersion.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(108)))), ((int)(((byte)(117)))), ((int)(((byte)(125)))));
+            this.labelSystemVersion.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(150)))), ((int)(((byte)(130)))), ((int)(((byte)(90)))));
             this.labelSystemVersion.Location = new System.Drawing.Point(35, 75);
             this.labelSystemVersion.Name = "labelSystemVersion";
             this.labelSystemVersion.Size = new System.Drawing.Size(315, 31);
@@ -325,7 +326,7 @@ namespace MES.UI.Forms
             // 
             this.labelSystemTitle.AutoSize = true;
             this.labelSystemTitle.Font = new System.Drawing.Font("微软雅黑", 24F, System.Drawing.FontStyle.Bold);
-            this.labelSystemTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(123)))), ((int)(((byte)(255)))));
+            this.labelSystemTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(170)))), ((int)(((byte)(110)))));
             this.labelSystemTitle.Location = new System.Drawing.Point(30, 20);
             this.labelSystemTitle.Name = "labelSystemTitle";
             this.labelSystemTitle.Size = new System.Drawing.Size(420, 64);
@@ -336,7 +337,7 @@ namespace MES.UI.Forms
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(249)))), ((int)(((byte)(250)))));
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(20)))), ((int)(((byte)(30)))));
             this.ClientSize = new System.Drawing.Size(1200, 750);
             this.Controls.Add(this.panelMain);
             this.Controls.Add(this.splitter1);

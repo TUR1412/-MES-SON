@@ -2,13 +2,14 @@ using System;
 using System.Windows.Forms;
 using MES.Models.Production;
 using MES.Common.Logging;
+using MES.UI.Framework.Themes;
 
 namespace MES.UI.Forms.Production.Edit
 {
     /// <summary>
     /// 生产订单编辑窗体
     /// </summary>
-    public partial class ProductionOrderEditForm : Form
+    public partial class ProductionOrderEditForm : ThemedForm
     {
         /// <summary>
         /// 订单数据属性，用于在窗体间传递数据
@@ -52,6 +53,7 @@ namespace MES.UI.Forms.Production.Edit
             }
 
             this.Load += (sender, e) => LoadDataToControls();
+            this.Shown += (sender, e) => UIThemeManager.ApplyTheme(this);
         }
 
         /// <summary>

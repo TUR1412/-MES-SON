@@ -11,6 +11,7 @@ using MES.BLL.Workshop;
 using MES.Models.Workshop;
 using MES.Common.Logging;
 using MES.Common.Exceptions;
+using MES.UI.Framework.Themes;
 
 namespace MES.UI.Forms.Workshop
 {
@@ -18,7 +19,7 @@ namespace MES.UI.Forms.Workshop
     /// 在制品管理窗体
     /// 提供在制品状态跟踪和管理功能 - S成员负责
     /// </summary>
-    public partial class WIPManagementForm : Form
+    public partial class WIPManagementForm : ThemedForm
     {
         private readonly IWorkshopBLL _workshopBLL;
         private readonly IBatchBLL _batchBLL;
@@ -40,6 +41,7 @@ namespace MES.UI.Forms.Workshop
 
             InitializeForm();
             LoadData();
+            this.Shown += (sender, e) => UIThemeManager.ApplyTheme(this);
         }
 
         /// <summary>

@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using MES.Common.Logging;
 using MES.Models.Material;
 using MES.BLL.Material;
+using MES.UI.Framework.Themes;
 
 namespace MES.UI.Forms.Material
 {
@@ -16,17 +17,19 @@ namespace MES.UI.Forms.Material
     /// BOM物料清单管理窗体 - 现代化界面设计
     /// 严格遵循C# 5.0语法和设计器模式约束
     /// </summary>
-    public partial class BOMManagementForm : Form
+    public partial class BOMManagementForm : ThemedForm
     {
         private List<BOMInfo> bomList;
         private List<BOMInfo> filteredBomList;
         private BOMInfo currentBom;
         private readonly IBOMBLL _bomBLL;
+        private Timer _searchDebounceTimer;
 
         public BOMManagementForm()
         {
             InitializeComponent();
             _bomBLL = new BOMBLL();
+            this.Shown += (sender, e) => UIThemeManager.ApplyTheme(this);
             InitializeForm();
         }
 
@@ -44,6 +47,7 @@ namespace MES.UI.Forms.Material
 
                 // 设置DataGridView
                 SetupDataGridView();
+                InitializeSearchDebounceTimer();
 
                 // 加载BOM数据
                 LoadBOMData();
@@ -145,21 +149,8 @@ namespace MES.UI.Forms.Material
                 ReadOnly = true
             });
 
-            // 设置样式
+            // 视觉：表格配色/密度由主题系统统一处理，避免这里写死“白底蓝选中”造成割裂感
             dataGridViewBOM.EnableHeadersVisualStyles = false;
-            dataGridViewBOM.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(52, 58, 64);
-            dataGridViewBOM.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
-            dataGridViewBOM.ColumnHeadersDefaultCellStyle.Font = new Font("微软雅黑", 9F, FontStyle.Bold);
-            dataGridViewBOM.ColumnHeadersHeight = 40;
-
-            dataGridViewBOM.DefaultCellStyle.Font = new Font("微软雅黑", 9F);
-            dataGridViewBOM.DefaultCellStyle.BackColor = Color.White;
-            dataGridViewBOM.DefaultCellStyle.ForeColor = Color.FromArgb(33, 37, 41);
-            dataGridViewBOM.DefaultCellStyle.SelectionBackColor = Color.FromArgb(0, 123, 255);
-            dataGridViewBOM.DefaultCellStyle.SelectionForeColor = Color.White;
-
-            dataGridViewBOM.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(248, 249, 250);
-            dataGridViewBOM.GridColor = Color.FromArgb(222, 226, 230);
         }
 
         /// <summary>
@@ -195,14 +186,16 @@ namespace MES.UI.Forms.Material
         {
             try
             {
+                int selectedId = currentBom != null ? currentBom.Id : 0;
+
                 dataGridViewBOM.DataSource = null;
                 dataGridViewBOM.DataSource = filteredBomList;
 
-                // 如果有数据，选中第一行
+                // 如果有数据，尽量保持原选择（找不到则选中第一条）
                 if (filteredBomList.Count > 0)
                 {
-                    dataGridViewBOM.Rows[0].Selected = true;
-                    ShowBOMDetails(filteredBomList[0]);
+                    var itemToSelect = filteredBomList.FirstOrDefault(b => b.Id == selectedId) ?? filteredBomList[0];
+                    SelectBomById(itemToSelect.Id);
                 }
                 else
                 {
@@ -215,6 +208,25 @@ namespace MES.UI.Forms.Material
             }
         }
 
+        private void SelectBomById(int id)
+        {
+            if (id <= 0) return;
+
+            foreach (DataGridViewRow row in dataGridViewBOM.Rows)
+            {
+                var bom = row.DataBoundItem as BOMInfo;
+                if (bom != null && bom.Id == id)
+                {
+                    row.Selected = true;
+                    if (row.Cells.Count > 0)
+                    {
+                        dataGridViewBOM.CurrentCell = row.Cells[0];
+                    }
+                    return;
+                }
+            }
+        }
+
         /// <summary>
         /// 搜索框文本变化事件
         /// </summary>
@@ -222,26 +234,38 @@ namespace MES.UI.Forms.Material
         {
             try
             {
-                string searchTerm = textBoxSearch.Text.Trim();
-
-                if (string.IsNullOrWhiteSpace(searchTerm))
+                if (_searchDebounceTimer == null)
                 {
-                    // 显示所有BOM记录
-                    filteredBomList = new List<BOMInfo>(bomList);
-                }
-                else
-                {
-                    // 根据BOM编码、产品名称、物料名称进行搜索
-                    filteredBomList = bomList.Where(b =>
-                        (b.BOMCode ?? string.Empty).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                        (b.ProductName ?? string.Empty).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                        (b.MaterialName ?? string.Empty).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                        (b.ProductCode ?? string.Empty).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                        (b.MaterialCode ?? string.Empty).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                        (b.BOMType ?? string.Empty).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0
-                    ).ToList();
+                    ApplySearchFilter();
+                    RefreshDataGridView();
+                    return;
                 }
 
+                _searchDebounceTimer.Stop();
+                _searchDebounceTimer.Start();
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("搜索失败", ex);
+                MessageBox.Show("搜索失败：" + ex.Message, "错误",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void InitializeSearchDebounceTimer()
+        {
+            _searchDebounceTimer = new Timer();
+            _searchDebounceTimer.Interval = 300;
+            _searchDebounceTimer.Tick += SearchDebounceTimer_Tick;
+        }
+
+        private void SearchDebounceTimer_Tick(object sender, EventArgs e)
+        {
+            _searchDebounceTimer.Stop();
+
+            try
+            {
+                ApplySearchFilter();
                 RefreshDataGridView();
             }
             catch (Exception ex)
@@ -250,6 +274,39 @@ namespace MES.UI.Forms.Material
                 MessageBox.Show("搜索失败：" + ex.Message, "错误",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void ApplySearchFilter()
+        {
+            string searchTerm = textBoxSearch.Text.Trim();
+
+            if (string.IsNullOrWhiteSpace(searchTerm))
+            {
+                filteredBomList = new List<BOMInfo>(bomList);
+                return;
+            }
+
+            // 根据BOM编码、产品名称、物料名称进行搜索
+            filteredBomList = bomList.Where(b =>
+                (b.BOMCode ?? string.Empty).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                (b.ProductName ?? string.Empty).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                (b.MaterialName ?? string.Empty).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                (b.ProductCode ?? string.Empty).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                (b.MaterialCode ?? string.Empty).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                (b.BOMType ?? string.Empty).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0
+            ).ToList();
+        }
+
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            if (_searchDebounceTimer != null)
+            {
+                _searchDebounceTimer.Stop();
+                _searchDebounceTimer.Dispose();
+                _searchDebounceTimer = null;
+            }
+
+            base.OnFormClosed(e);
         }
 
         /// <summary>

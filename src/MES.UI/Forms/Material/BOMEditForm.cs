@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using MES.Models.Material;
 using MES.Common.Logging;
+using MES.UI.Framework.Themes;
 
 namespace MES.UI.Forms.Material
 {
@@ -10,7 +11,7 @@ namespace MES.UI.Forms.Material
     /// BOM编辑窗体 - 现代化UI设计
     /// 功能：新增和编辑BOM物料清单信息
     /// </summary>
-    public partial class BOMEditForm : Form
+    public partial class BOMEditForm : ThemedForm
     {
         #region 私有字段
 
@@ -80,9 +81,8 @@ namespace MES.UI.Forms.Material
                 this.ShowInTaskbar = false;
                 this.Size = new Size(600, 700);
 
-                // 设置现代化样式
-                this.BackColor = Color.FromArgb(240, 244, 248);
-                this.Font = new Font("Microsoft YaHei UI", 9F, FontStyle.Regular);
+                // 主题由 UIThemeManager 统一接管（LoL 暗金风 / 其它主题），避免设计器或旧逻辑把样式刷回浅色
+                this.Shown += (sender, e) => UIThemeManager.ApplyTheme(this);
 
                 LogManager.Info(string.Format("BOM编辑窗体初始化完成，模式：{0}", _isEditMode ? "编辑" : "新增"));
             }
@@ -135,7 +135,7 @@ namespace MES.UI.Forms.Material
                 if (_isEditMode)
                 {
                     txtBOMCode.ReadOnly = true;
-                    txtBOMCode.BackColor = Color.FromArgb(248, 249, 250);
+                    // 主题统一：只读输入框由主题系统负责弱化（避免手写浅底造成割裂）
                 }
             }
             catch (Exception ex)

@@ -7,6 +7,7 @@ using MES.BLL.WorkOrder;
 using MES.Models.WorkOrder;
 using MES.Common.Logging;
 using MES.Common.Exceptions;
+using MES.UI.Framework.Themes;
 
 namespace MES.UI.Forms.WorkOrder
 {
@@ -14,13 +15,14 @@ namespace MES.UI.Forms.WorkOrder
     /// 取消工单窗体 - 现代化UI设计
     /// 功能：取消已创建的生产工单，包含取消原因记录
     /// </summary>
-    public partial class CancelWorkOrder : Form
+    public partial class CancelWorkOrder : ThemedForm
     {
         #region 私有字段
 
         private WorkOrderBLL workOrderBLL;
         private DataTable workOrderDataTable;
         private string selectedWorkOrderNo;
+        private string _preselectWorkOrderNo;
 
         #endregion
 
@@ -35,9 +37,20 @@ namespace MES.UI.Forms.WorkOrder
             InitializeBusinessLogic();
             InitializeUI();
             LoadWorkOrderData();
+            // 主题应用放到 Shown：避免初始化过程/数据绑定过程把样式刷回系统默认
+            this.Shown += (sender, e) => UIThemeManager.ApplyTheme(this);
         }
 
         #endregion
+
+        /// <summary>
+        /// 预选工单（用于从“工单管理中心”直接对某条工单发起取消操作）
+        /// </summary>
+        public void PreselectWorkOrder(string workOrderNo)
+        {
+            _preselectWorkOrderNo = workOrderNo;
+            TrySelectWorkOrderRow(workOrderNo);
+        }
 
         #region 初始化方法
 
@@ -73,10 +86,6 @@ namespace MES.UI.Forms.WorkOrder
                 this.MinimizeBox = false;
                 this.ShowInTaskbar = false;
 
-                // 设置现代化样式
-                this.BackColor = Color.FromArgb(240, 244, 248);
-                this.Font = new Font("Microsoft YaHei UI", 9F, FontStyle.Regular);
-
                 // 初始化控件状态
                 btnCancel.Enabled = false;
                 txtCancelReason.MaxLength = 500;
@@ -101,7 +110,7 @@ namespace MES.UI.Forms.WorkOrder
             try
             {
                 // 基本样式设置
-                dgvWorkOrders.BackgroundColor = Color.White;
+                dgvWorkOrders.BackgroundColor = LeagueColors.DarkSurface;
                 dgvWorkOrders.BorderStyle = BorderStyle.None;
                 dgvWorkOrders.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
                 dgvWorkOrders.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
@@ -112,22 +121,18 @@ namespace MES.UI.Forms.WorkOrder
                 dgvWorkOrders.AllowUserToDeleteRows = false;
                 dgvWorkOrders.AllowUserToResizeRows = false;
                 dgvWorkOrders.ReadOnly = true;
+                dgvWorkOrders.EnableHeadersVisualStyles = false;
 
-                // 现代化颜色方案
-                dgvWorkOrders.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(52, 152, 219);
-                dgvWorkOrders.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
-                dgvWorkOrders.ColumnHeadersDefaultCellStyle.Font = new Font("Microsoft YaHei UI", 9F, FontStyle.Bold);
-                dgvWorkOrders.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                // 颜色方案交给主题系统统一处理（LoL 暗金风）
+                dgvWorkOrders.ColumnHeadersDefaultCellStyle.BackColor = LeagueColors.DarkPanel;
+                dgvWorkOrders.ColumnHeadersDefaultCellStyle.ForeColor = LeagueColors.RiotGold;
+                dgvWorkOrders.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+                dgvWorkOrders.DefaultCellStyle.BackColor = LeagueColors.DarkSurface;
+                dgvWorkOrders.DefaultCellStyle.ForeColor = LeagueColors.TextPrimary;
+                dgvWorkOrders.DefaultCellStyle.SelectionBackColor = Color.FromArgb(55, 49, 33);
+                dgvWorkOrders.DefaultCellStyle.SelectionForeColor = LeagueColors.TextHighlight;
                 dgvWorkOrders.ColumnHeadersHeight = 35;
-
-                dgvWorkOrders.DefaultCellStyle.BackColor = Color.White;
-                dgvWorkOrders.DefaultCellStyle.ForeColor = Color.FromArgb(64, 64, 64);
-                dgvWorkOrders.DefaultCellStyle.SelectionBackColor = Color.FromArgb(230, 247, 255);
-                dgvWorkOrders.DefaultCellStyle.SelectionForeColor = Color.FromArgb(64, 64, 64);
-                dgvWorkOrders.DefaultCellStyle.Font = new Font("Microsoft YaHei UI", 9F);
                 dgvWorkOrders.RowTemplate.Height = 30;
-
-                dgvWorkOrders.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(248, 249, 250);
 
                 LogManager.Info("数据网格样式设置完成");
             }
@@ -158,6 +163,7 @@ namespace MES.UI.Forms.WorkOrder
                     dgvWorkOrders.DataSource = workOrderDataTable;
                     SetupDataGridColumns();
                     lblWorkOrderCount.Text = string.Format("共 {0} 条可取消工单", workOrderDataTable.Rows.Count);
+                    TrySelectWorkOrderRow(_preselectWorkOrderNo);
                 }
                 else
                 {
@@ -177,6 +183,35 @@ namespace MES.UI.Forms.WorkOrder
             finally
             {
                 this.Cursor = Cursors.Default;
+            }
+        }
+
+        private void TrySelectWorkOrderRow(string workOrderNo)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(workOrderNo)) return;
+                if (dgvWorkOrders == null) return;
+                if (dgvWorkOrders.Rows == null || dgvWorkOrders.Rows.Count == 0) return;
+
+                dgvWorkOrders.ClearSelection();
+
+                foreach (DataGridViewRow row in dgvWorkOrders.Rows)
+                {
+                    if (row == null || row.IsNewRow) continue;
+                    var cellValue = row.Cells["WorkOrderNo"].Value != null ? row.Cells["WorkOrderNo"].Value.ToString() : null;
+                    if (string.Equals(cellValue, workOrderNo, StringComparison.OrdinalIgnoreCase))
+                    {
+                        row.Selected = true;
+                        dgvWorkOrders.CurrentCell = row.Cells["WorkOrderNo"];
+                        dgvWorkOrders.FirstDisplayedScrollingRowIndex = row.Index;
+                        break;
+                    }
+                }
+            }
+            catch
+            {
+                // ignore
             }
         }
 
@@ -356,17 +391,8 @@ namespace MES.UI.Forms.WorkOrder
 
                     // 清空取消原因
                     txtCancelReason.Clear();
-
-                    // 重新加载数据
-                    LoadWorkOrderData();
-
-                    // 如果没有更多可取消的工单，关闭窗体
-                    if (workOrderDataTable == null || workOrderDataTable.Rows.Count == 0)
-                    {
-                        MessageBox.Show("已无可取消的工单，窗体将关闭。", "提示",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        this.Close();
-                    }
+                    this.DialogResult = DialogResult.OK;
+                    this.Close();
                 }
                 else
                 {

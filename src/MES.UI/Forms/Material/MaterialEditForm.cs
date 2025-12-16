@@ -3,13 +3,14 @@
 using MES.BLL.Material.DTO;
 using System;
 using System.Windows.Forms;
+using MES.UI.Framework.Themes;
 
 namespace MES.UI.Forms.Material
 {
     /// <summary>
     /// 物料信息编辑与新增窗体。
     /// </summary>
-    public partial class MaterialEditForm : Form
+    public partial class MaterialEditForm : ThemedForm
     {
         /// <summary>
         /// 公开属性，用于在窗体间传递物料数据。
@@ -49,6 +50,7 @@ namespace MES.UI.Forms.Material
 
             // 在窗体加载时，将数据显示到界面控件上
             this.Load += (sender, e) => LoadDataToControls();
+            this.Shown += (sender, e) => UIThemeManager.ApplyTheme(this);
         }
 
         /// <summary>

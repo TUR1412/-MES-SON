@@ -25,7 +25,9 @@ namespace MES.Tests
 
                 // 1. 测试连接字符串获取
                 Console.WriteLine("1. 测试连接字符串获取...");
-                string connectionString = DatabaseHelper.GetConnectionString();
+                string connectionString = ConfigurationManager.ConnectionStrings["MESConnectionString"] != null
+                    ? ConfigurationManager.ConnectionStrings["MESConnectionString"].ConnectionString
+                    : string.Empty;
                 Console.WriteLine($"   连接字符串: {MaskConnectionString(connectionString)}");
                 Console.WriteLine("   ✅ 连接字符串获取成功");
                 Console.WriteLine();
@@ -86,7 +88,9 @@ namespace MES.Tests
 
             // 简单掩码密码部分
             return connectionString.Replace("Pwd=123456", "Pwd=******")
-                                  .Replace("Password=123456", "Password=******");
+                                  .Replace("Password=123456", "Password=******")
+                                  .Replace("Pwd=Qwe.123", "Pwd=******")
+                                  .Replace("Password=Qwe.123", "Password=******");
         }
 
         /// <summary>

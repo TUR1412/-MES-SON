@@ -138,6 +138,9 @@
     <Compile Include="Forms\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\MainFormLolV2.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\Material\MaterialEditForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -299,6 +302,10 @@
     <ProjectReference Include="..\MES.DAL\MES.DAL.csproj">
       <Project>{C3D4E5F6-A7B8-9012-CDEF-345678901234}</Project>
       <Name>MES.DAL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MES.UI.Framework\MES.UI.Framework.csproj">
+      <Project>{000000F6-0000-0000-0000-000000000000}</Project>
+      <Name>MES.UI.Framework</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

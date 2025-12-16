@@ -1,6 +1,8 @@
 using System;
 using System.Drawing;
+using System.Reflection;
 using System.Windows.Forms;
+using MES.UI.Framework.Controls;
 using MES.Common.Logging;
 
 namespace MES.UI.Framework.Themes
@@ -22,7 +24,9 @@ namespace MES.UI.Framework.Themes
             /// <summary>深色主题</summary>
             Dark,
             /// <summary>蓝色主题</summary>
-            Blue
+            Blue,
+            /// <summary>LOL主题（暗色+金色）</summary>
+            Lol
         }
 
         /// <summary>
@@ -67,6 +71,7 @@ namespace MES.UI.Framework.Themes
                 {
                     _currentTheme = value;
                     LoadThemeColors();
+                    ApplyThemeToOpenForms();
                     if (OnThemeChanged != null) OnThemeChanged.Invoke();
                     LogManager.Info(string.Format("主题已切换为: {0}", value));
                 }
@@ -111,6 +116,9 @@ namespace MES.UI.Framework.Themes
                     break;
                 case ThemeType.Blue:
                     _currentColors = GetBlueTheme();
+                    break;
+                case ThemeType.Lol:
+                    _currentColors = GetLeagueTheme();
                     break;
                 default:
                     _currentColors = GetDefaultTheme();
@@ -184,6 +192,41 @@ namespace MES.UI.Framework.Themes
             };
         }
 
+        /// <summary>
+        /// 获取“英雄联盟（LOL）”风格主题配色（暗色+金色）
+        /// </summary>
+        public static ThemeColors GetLeagueTheme()
+        {
+            return new ThemeColors
+            {
+                Primary = LeagueColors.PrimaryGold,
+                Secondary = LeagueColors.AccentBlue,
+
+                Background = LeagueColors.DarkBackground,
+                Surface = LeagueColors.DarkSurface,
+
+                Text = LeagueColors.TextPrimary,
+                TextSecondary = LeagueColors.TextSecondary,
+
+                Border = LeagueColors.DarkBorder,
+                Hover = LeagueColors.PrimaryGoldLight,
+                Selected = LeagueColors.AccentBlueLight,
+
+                Success = LeagueColors.SuccessGreen,
+                Warning = LeagueColors.WarningOrange,
+                Error = LeagueColors.ErrorRed
+            };
+        }
+
+        /// <summary>
+        /// 获取 LOL 风格主题配色（暗色+金色）
+        /// </summary>
+        private static ThemeColors GetLolTheme()
+        {
+            // 兼容：历史配置可能仍使用 DefaultTheme=Lol
+            return GetLeagueTheme();
+        }
+
         #endregion
 
         #region 控件样式应用
@@ -198,6 +241,13 @@ namespace MES.UI.Framework.Themes
 
             try
             {
+                // LOL 主题（V2）：统一使用“LoL 客户端暗金风”应用器
+                if (CurrentTheme == ThemeType.Lol)
+                {
+                    LolV2ThemeApplier.Apply(form);
+                    return;
+                }
+
                 form.BackColor = Colors.Background;
                 form.ForeColor = Colors.Text;
                 
@@ -207,6 +257,24 @@ namespace MES.UI.Framework.Themes
             catch (Exception ex)
             {
                 LogManager.Error(string.Format("应用主题到窗体失败: {0}", form.Name), ex);
+            }
+        }
+
+        /// <summary>
+        /// 应用主题到当前所有已打开的窗体
+        /// </summary>
+        public static void ApplyThemeToOpenForms()
+        {
+            try
+            {
+                foreach (Form form in Application.OpenForms)
+                {
+                    ApplyTheme(form);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("应用主题到打开窗体失败", ex);
             }
         }
 
@@ -236,39 +304,269 @@ namespace MES.UI.Framework.Themes
         {
             if (control == null) return;
 
-            // 根据控件类型应用不同样式
-            switch (control)
+            // 优先处理少数“需要跳过”的自绘控件
+            if (control is ModernButton)
             {
-                case Panel panel:
-                    panel.BackColor = Colors.Surface;
-                    break;
-                case Button button:
-                    button.BackColor = Colors.Primary;
-                    button.ForeColor = Color.White;
-                    button.FlatStyle = FlatStyle.Flat;
-                    button.FlatAppearance.BorderColor = Colors.Primary;
-                    break;
-                case TextBox textBox:
-                    textBox.BackColor = Colors.Surface;
-                    textBox.ForeColor = Colors.Text;
-                    textBox.BorderStyle = BorderStyle.FixedSingle;
-                    break;
-                case Label label:
+                // ModernButton 自己订阅了主题变更事件并管理颜色
+                return;
+            }
+
+            // 容器类
+            var panel = control as Panel;
+            if (panel != null)
+            {
+                panel.BackColor = Colors.Surface;
+                return;
+            }
+
+            var tableLayoutPanel = control as TableLayoutPanel;
+            if (tableLayoutPanel != null)
+            {
+                tableLayoutPanel.BackColor = Colors.Surface;
+                return;
+            }
+
+            var groupBox = control as GroupBox;
+            if (groupBox != null)
+            {
+                groupBox.BackColor = Colors.Surface;
+                if (IsTooDarkForCurrentTheme(groupBox.ForeColor))
+                {
+                    groupBox.ForeColor = Colors.Text;
+                }
+                return;
+            }
+
+            var splitContainer = control as SplitContainer;
+            if (splitContainer != null)
+            {
+                splitContainer.BackColor = Colors.Border;
+                splitContainer.Panel1.BackColor = Colors.Surface;
+                splitContainer.Panel2.BackColor = Colors.Surface;
+                return;
+            }
+
+            // 输入控件
+            var textBox = control as TextBox;
+            if (textBox != null)
+            {
+                textBox.BackColor = Colors.Surface;
+                textBox.ForeColor = Colors.Text;
+                textBox.BorderStyle = BorderStyle.FixedSingle;
+                return;
+            }
+
+            var comboBox = control as ComboBox;
+            if (comboBox != null)
+            {
+                comboBox.BackColor = Colors.Surface;
+                comboBox.ForeColor = Colors.Text;
+                return;
+            }
+
+            var numericUpDown = control as NumericUpDown;
+            if (numericUpDown != null)
+            {
+                numericUpDown.BackColor = Colors.Surface;
+                numericUpDown.ForeColor = Colors.Text;
+                return;
+            }
+
+            var dateTimePicker = control as DateTimePicker;
+            if (dateTimePicker != null)
+            {
+                dateTimePicker.CalendarMonthBackground = Colors.Surface;
+                dateTimePicker.CalendarForeColor = Colors.Text;
+                dateTimePicker.CalendarTitleBackColor = Colors.Primary;
+                dateTimePicker.CalendarTitleForeColor = Color.White;
+                return;
+            }
+
+            // 文本类
+            var label = control as Label;
+            if (label != null)
+            {
+                if (IsTooDarkForCurrentTheme(label.ForeColor))
+                {
                     label.ForeColor = Colors.Text;
-                    break;
-                case TreeView treeView:
-                    treeView.BackColor = Colors.Surface;
+                }
+                return;
+            }
+
+            // 按钮（普通 Button：避免粗暴覆盖为 Primary，防止破坏“卡片按钮”等定制样式）
+            var button = control as Button;
+            if (button != null)
+            {
+                ApplyThemeToButton(button);
+                return;
+            }
+
+            // 列表/树/表格
+            var treeView = control as TreeView;
+            if (treeView != null)
+            {
+                treeView.BackColor = Colors.Surface;
+                if (IsTooDarkForCurrentTheme(treeView.ForeColor))
+                {
                     treeView.ForeColor = Colors.Text;
-                    treeView.BorderStyle = BorderStyle.FixedSingle;
-                    break;
-                case DataGridView dataGridView:
-                    dataGridView.BackgroundColor = Colors.Surface;
-                    dataGridView.GridColor = Colors.Border;
-                    dataGridView.DefaultCellStyle.BackColor = Colors.Surface;
-                    dataGridView.DefaultCellStyle.ForeColor = Colors.Text;
-                    dataGridView.DefaultCellStyle.SelectionBackColor = Colors.Selected;
-                    dataGridView.DefaultCellStyle.SelectionForeColor = Color.White;
-                    break;
+                }
+                treeView.BorderStyle = BorderStyle.FixedSingle;
+                EnableDoubleBuffering(treeView);
+                return;
+            }
+
+            var dataGridView = control as DataGridView;
+            if (dataGridView != null)
+            {
+                ApplyThemeToDataGridView(dataGridView);
+                return;
+            }
+
+            // 菜单/工具栏
+            var toolStrip = control as ToolStrip;
+            if (toolStrip != null)
+            {
+                toolStrip.BackColor = Colors.Surface;
+                toolStrip.ForeColor = Colors.Text;
+                ApplyThemeToToolStripItems(toolStrip.Items);
+                return;
+            }
+        }
+
+        private static void ApplyThemeToButton(Button button)
+        {
+            if (button == null) return;
+
+            // 自绘按钮不处理
+            if (button is ModernButton) return;
+
+            // “卡片式按钮/自定义按钮” 的常见特征：Flat + UseVisualStyleBackColor=false
+            if (button.FlatStyle == FlatStyle.Flat && !button.UseVisualStyleBackColor)
+            {
+                button.BackColor = Colors.Surface;
+                button.FlatAppearance.BorderColor = Colors.Border;
+
+                if (IsTooDarkForCurrentTheme(button.ForeColor))
+                {
+                    button.ForeColor = Colors.Text;
+                }
+                return;
+            }
+
+            // 其他按钮：尽量不改背景，只保证文字在深色主题下可读
+            if (IsTooDarkForCurrentTheme(button.ForeColor))
+            {
+                button.ForeColor = Colors.Text;
+            }
+        }
+
+        private static void ApplyThemeToDataGridView(DataGridView dataGridView)
+        {
+            if (dataGridView == null) return;
+
+            dataGridView.EnableHeadersVisualStyles = false;
+
+            dataGridView.BackgroundColor = Colors.Surface;
+            dataGridView.GridColor = Colors.Border;
+
+            dataGridView.DefaultCellStyle.BackColor = Colors.Surface;
+            dataGridView.DefaultCellStyle.ForeColor = Colors.Text;
+            dataGridView.DefaultCellStyle.SelectionBackColor = Colors.Selected;
+            dataGridView.DefaultCellStyle.SelectionForeColor = Color.White;
+
+            dataGridView.ColumnHeadersDefaultCellStyle.BackColor = Colors.Primary;
+            dataGridView.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            dataGridView.ColumnHeadersDefaultCellStyle.Font = GetTitleFont(10f);
+            dataGridView.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+            // 交替行颜色：暗色主题略变亮，亮色主题略变暗
+            float altFactor = Colors.Surface.GetBrightness() < 0.5f ? 1.06f : 0.97f;
+            dataGridView.AlternatingRowsDefaultCellStyle.BackColor = AdjustColorBrightness(Colors.Surface, altFactor);
+
+            if (dataGridView.RowHeadersVisible)
+            {
+                dataGridView.RowHeadersDefaultCellStyle.BackColor = Colors.Background;
+                dataGridView.RowHeadersDefaultCellStyle.ForeColor = Colors.Text;
+            }
+
+            EnableDoubleBuffering(dataGridView);
+        }
+
+        private static void ApplyThemeToToolStripItems(ToolStripItemCollection items)
+        {
+            if (items == null) return;
+
+            foreach (ToolStripItem item in items)
+            {
+                if (item == null) continue;
+
+                // 分隔符不处理
+                if (item is ToolStripSeparator) continue;
+
+                item.BackColor = Colors.Surface;
+                if (IsTooDarkForCurrentTheme(item.ForeColor))
+                {
+                    item.ForeColor = Colors.Text;
+                }
+
+                var dropDownItem = item as ToolStripDropDownItem;
+                if (dropDownItem != null)
+                {
+                    ApplyThemeToToolStripItems(dropDownItem.DropDownItems);
+                }
+            }
+        }
+
+        private static bool IsAccentColor(Color color)
+        {
+            return color == Colors.Primary ||
+                   color == Colors.Secondary ||
+                   color == Colors.Selected ||
+                   color == Colors.Success ||
+                   color == Colors.Warning ||
+                   color == Colors.Error;
+        }
+
+        private static bool IsTooDarkForCurrentTheme(Color color)
+        {
+            // 仅在深色系主题下做“纠偏”，避免破坏浅色主题的视觉设计
+            if (_currentTheme != ThemeType.Dark && _currentTheme != ThemeType.Lol) return false;
+            // 仅修正“接近灰阶的暗色文本”（例如黑色/深灰），避免误伤业务模块的彩色强调
+            if (!IsNearGray(color)) return false;
+            return color.GetBrightness() < 0.65f;
+        }
+
+        private static bool IsNearGray(Color color)
+        {
+            int max = Math.Max(color.R, Math.Max(color.G, color.B));
+            int min = Math.Min(color.R, Math.Min(color.G, color.B));
+            return (max - min) < 12;
+        }
+
+        private static Color AdjustColorBrightness(Color color, float factor)
+        {
+            int r = Math.Min(255, Math.Max(0, (int)(color.R * factor)));
+            int g = Math.Min(255, Math.Max(0, (int)(color.G * factor)));
+            int b = Math.Min(255, Math.Max(0, (int)(color.B * factor)));
+
+            return Color.FromArgb(color.A, r, g, b);
+        }
+
+        private static void EnableDoubleBuffering(Control control)
+        {
+            if (control == null) return;
+
+            try
+            {
+                var prop = typeof(Control).GetProperty("DoubleBuffered", BindingFlags.Instance | BindingFlags.NonPublic);
+                if (prop != null)
+                {
+                    prop.SetValue(control, true, null);
+                }
+            }
+            catch
+            {
+                // ignore
             }
         }
 

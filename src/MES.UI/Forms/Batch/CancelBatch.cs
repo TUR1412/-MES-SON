@@ -8,6 +8,7 @@ using MES.BLL.WorkOrder;
 using MES.Models.Workshop;
 using MES.Common.Logging;
 using MES.Common.Exceptions;
+using MES.UI.Framework.Themes;
 
 namespace MES.UI.Forms.Batch
 {
@@ -15,7 +16,7 @@ namespace MES.UI.Forms.Batch
     /// 取消批次窗体 - 现代化UI设计
     /// 功能：取消已创建的生产批次，包含取消原因记录
     /// </summary>
-    public partial class CancelBatch : Form
+    public partial class CancelBatch : ThemedForm
     {
         #region 私有字段
 
@@ -23,6 +24,7 @@ namespace MES.UI.Forms.Batch
         private WorkOrderBLL workOrderBLL;
         private DataTable batchDataTable;
         private string selectedBatchNo;
+        private string _preselectBatchNo;
 
         #endregion
 
@@ -37,9 +39,20 @@ namespace MES.UI.Forms.Batch
             InitializeBusinessLogic();
             InitializeUI();
             LoadBatchData();
+            // 主题应用放到 Shown：避免初始化过程/数据绑定过程把样式刷回系统默认
+            this.Shown += (sender, e) => UIThemeManager.ApplyTheme(this);
         }
 
         #endregion
+
+        /// <summary>
+        /// 预选批次（用于从“批次管理”直接对某条批次发起取消操作）
+        /// </summary>
+        public void PreselectBatch(string batchNo)
+        {
+            _preselectBatchNo = batchNo;
+            TrySelectBatchRow(batchNo);
+        }
 
         #region 初始化方法
 
@@ -76,10 +89,6 @@ namespace MES.UI.Forms.Batch
                 this.MinimizeBox = false;
                 this.ShowInTaskbar = false;
 
-                // 设置现代化样式
-                this.BackColor = Color.FromArgb(240, 244, 248);
-                this.Font = new Font("Microsoft YaHei UI", 9F, FontStyle.Regular);
-
                 // 初始化控件状态
                 btnCancel.Enabled = false;
                 txtCancelReason.MaxLength = 500;
@@ -104,7 +113,7 @@ namespace MES.UI.Forms.Batch
             try
             {
                 // 基本样式设置
-                dgvBatches.BackgroundColor = Color.White;
+                dgvBatches.BackgroundColor = LeagueColors.DarkSurface;
                 dgvBatches.BorderStyle = BorderStyle.None;
                 dgvBatches.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
                 dgvBatches.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
@@ -115,22 +124,19 @@ namespace MES.UI.Forms.Batch
                 dgvBatches.AllowUserToDeleteRows = false;
                 dgvBatches.AllowUserToResizeRows = false;
                 dgvBatches.ReadOnly = true;
+                dgvBatches.EnableHeadersVisualStyles = false;
 
-                // 现代化颜色方案
-                dgvBatches.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(231, 76, 60);
-                dgvBatches.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
-                dgvBatches.ColumnHeadersDefaultCellStyle.Font = new Font("Microsoft YaHei UI", 9F, FontStyle.Bold);
-                dgvBatches.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                // 基础暗金风（细节交给主题系统统一处理）
+                dgvBatches.ColumnHeadersDefaultCellStyle.BackColor = LeagueColors.DarkPanel;
+                dgvBatches.ColumnHeadersDefaultCellStyle.ForeColor = LeagueColors.RiotGold;
+                dgvBatches.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
                 dgvBatches.ColumnHeadersHeight = 35;
 
-                dgvBatches.DefaultCellStyle.BackColor = Color.White;
-                dgvBatches.DefaultCellStyle.ForeColor = Color.FromArgb(64, 64, 64);
-                dgvBatches.DefaultCellStyle.SelectionBackColor = Color.FromArgb(255, 230, 230);
-                dgvBatches.DefaultCellStyle.SelectionForeColor = Color.FromArgb(64, 64, 64);
-                dgvBatches.DefaultCellStyle.Font = new Font("Microsoft YaHei UI", 9F);
+                dgvBatches.DefaultCellStyle.BackColor = LeagueColors.DarkSurface;
+                dgvBatches.DefaultCellStyle.ForeColor = LeagueColors.TextPrimary;
+                dgvBatches.DefaultCellStyle.SelectionBackColor = Color.FromArgb(55, 49, 33);
+                dgvBatches.DefaultCellStyle.SelectionForeColor = LeagueColors.TextHighlight;
                 dgvBatches.RowTemplate.Height = 30;
-
-                dgvBatches.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(248, 249, 250);
 
                 LogManager.Info("数据网格样式设置完成");
             }
@@ -161,6 +167,7 @@ namespace MES.UI.Forms.Batch
                     dgvBatches.DataSource = batchDataTable;
                     SetupDataGridColumns();
                     lblBatchCount.Text = string.Format("共 {0} 条可取消批次", batchDataTable.Rows.Count);
+                    TrySelectBatchRow(_preselectBatchNo);
                 }
                 else
                 {
@@ -180,6 +187,35 @@ namespace MES.UI.Forms.Batch
             finally
             {
                 this.Cursor = Cursors.Default;
+            }
+        }
+
+        private void TrySelectBatchRow(string batchNo)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(batchNo)) return;
+                if (dgvBatches == null) return;
+                if (dgvBatches.Rows == null || dgvBatches.Rows.Count == 0) return;
+
+                dgvBatches.ClearSelection();
+
+                foreach (DataGridViewRow row in dgvBatches.Rows)
+                {
+                    if (row == null || row.IsNewRow) continue;
+                    var cellValue = row.Cells["BatchNo"].Value != null ? row.Cells["BatchNo"].Value.ToString() : null;
+                    if (string.Equals(cellValue, batchNo, StringComparison.OrdinalIgnoreCase))
+                    {
+                        row.Selected = true;
+                        dgvBatches.CurrentCell = row.Cells["BatchNo"];
+                        dgvBatches.FirstDisplayedScrollingRowIndex = row.Index;
+                        break;
+                    }
+                }
+            }
+            catch
+            {
+                // ignore
             }
         }
 
@@ -359,17 +395,8 @@ namespace MES.UI.Forms.Batch
 
                     // 清空取消原因
                     txtCancelReason.Clear();
-
-                    // 重新加载数据
-                    LoadBatchData();
-
-                    // 如果没有更多可取消的批次，关闭窗体
-                    if (batchDataTable == null || batchDataTable.Rows.Count == 0)
-                    {
-                        MessageBox.Show("已无可取消的批次，窗体将关闭。", "提示",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        this.Close();
-                    }
+                    this.DialogResult = DialogResult.OK;
+                    this.Close();
                 }
                 else
                 {

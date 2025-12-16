@@ -97,6 +97,12 @@ _pkginfo.txt
 *.sln.docstates
 *.csproj.user
 
+# 本地运行时 PID 记录（仅用于开发调试，禁止提交）
+.mes_ui.pid
+
+# 本地截图/临时输出（调试产物，禁止提交）
+temp/
+
 # Mono 自动生成的文件
 mono_crash.*
 

@@ -10,6 +10,7 @@ using MES.BLL.Material;
 using MES.BLL.WorkOrder;
 using MES.UI.Forms.Common;
 using MES.Common.Logging;
+using MES.UI.Framework.Themes;
 
 namespace MES.UI.Forms.WorkOrder
 {
@@ -17,7 +18,7 @@ namespace MES.UI.Forms.WorkOrder
     /// 创建工单窗体 - 现代化UI设计
     /// 功能：创建新的生产工单，包含完整的BOM物料清单管理
     /// </summary>
-    public partial class CreateWorkOrder : Form
+    public partial class CreateWorkOrder : ThemedForm
     {
         #region 私有字段
 
@@ -41,6 +42,7 @@ namespace MES.UI.Forms.WorkOrder
             InitializeBusinessLogic();
             InitializeUI();
             LoadInitialData();
+            this.Shown += (sender, e) => UIThemeManager.ApplyTheme(this);
         }
 
         #endregion

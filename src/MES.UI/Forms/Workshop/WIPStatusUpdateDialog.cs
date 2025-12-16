@@ -2,13 +2,14 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using MES.Models.Workshop;
+using MES.UI.Framework.Themes;
 
 namespace MES.UI.Forms.Workshop
 {
     /// <summary>
     /// 在制品状态更新对话框
     /// </summary>
-    public partial class WIPStatusUpdateDialog : Form
+    public partial class WIPStatusUpdateDialog : ThemedForm
     {
         private WIPInfo _wipInfo;
         private ComboBox cmbNewStatus;
@@ -45,6 +46,7 @@ namespace MES.UI.Forms.Workshop
             _wipInfo = wipInfo;
             InitializeComponent();
             LoadData();
+            UIThemeManager.ApplyTheme(this);
         }
 
         /// <summary>

@@ -11,6 +11,7 @@ using MES.BLL.Workshop;
 using MES.Models.Workshop;
 using MES.Common.Logging;
 using MES.Common.Exceptions;
+using MES.UI.Framework.Themes;
 
 namespace MES.UI.Forms.Workshop
 {
@@ -18,7 +19,7 @@ namespace MES.UI.Forms.Workshop
     /// 设备状态管理窗体
     /// 提供生产设备状态监控和管理功能 - S成员负责
     /// </summary>
-    public partial class EquipmentStatusForm : Form
+    public partial class EquipmentStatusForm : ThemedForm
     {
         private readonly IWorkshopBLL _workshopBLL;
         private readonly IEquipmentBLL _equipmentBLL;
@@ -37,6 +38,7 @@ namespace MES.UI.Forms.Workshop
             _workshops = new List<WorkshopInfo>();
 
             InitializeForm();
+            this.Shown += (sender, e) => UIThemeManager.ApplyTheme(this);
         }
 
         /// <summary>
@@ -204,26 +206,30 @@ namespace MES.UI.Forms.Workshop
                 switch (equipment.Status)
                 {
                     case 0: // 停止
-                        dgvEquipment.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.FromArgb(248, 215, 218);
-                        dgvEquipment.Rows[e.RowIndex].DefaultCellStyle.ForeColor = Color.FromArgb(114, 28, 36);
+                        dgvEquipment.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.FromArgb(40, 18, 18);
+                        dgvEquipment.Rows[e.RowIndex].DefaultCellStyle.ForeColor = LeagueColors.ErrorRed;
                         break;
                     case 1: // 运行
-                        dgvEquipment.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.FromArgb(212, 237, 218);
-                        dgvEquipment.Rows[e.RowIndex].DefaultCellStyle.ForeColor = Color.FromArgb(21, 87, 36);
+                        dgvEquipment.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.FromArgb(16, 32, 24);
+                        dgvEquipment.Rows[e.RowIndex].DefaultCellStyle.ForeColor = LeagueColors.SuccessGreen;
                         break;
                     case 2: // 故障
-                        dgvEquipment.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.FromArgb(253, 236, 200);
-                        dgvEquipment.Rows[e.RowIndex].DefaultCellStyle.ForeColor = Color.FromArgb(133, 77, 14);
+                        dgvEquipment.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.FromArgb(38, 28, 12);
+                        dgvEquipment.Rows[e.RowIndex].DefaultCellStyle.ForeColor = LeagueColors.WarningOrange;
                         break;
                     case 3: // 维护
-                        dgvEquipment.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.FromArgb(207, 226, 255);
-                        dgvEquipment.Rows[e.RowIndex].DefaultCellStyle.ForeColor = Color.FromArgb(8, 60, 130);
+                        dgvEquipment.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.FromArgb(12, 24, 38);
+                        dgvEquipment.Rows[e.RowIndex].DefaultCellStyle.ForeColor = LeagueColors.AccentBlueLight;
                         break;
                     default:
-                        dgvEquipment.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.White;
-                        dgvEquipment.Rows[e.RowIndex].DefaultCellStyle.ForeColor = Color.Black;
+                        dgvEquipment.Rows[e.RowIndex].DefaultCellStyle.BackColor = LeagueColors.DarkSurface;
+                        dgvEquipment.Rows[e.RowIndex].DefaultCellStyle.ForeColor = LeagueColors.TextPrimary;
                         break;
                 }
+
+                // 选中态：保持 LoL 暗金选中态一致（避免被状态色覆盖后“选中不可见”）
+                dgvEquipment.Rows[e.RowIndex].DefaultCellStyle.SelectionBackColor = Color.FromArgb(55, 49, 33);
+                dgvEquipment.Rows[e.RowIndex].DefaultCellStyle.SelectionForeColor = LeagueColors.TextHighlight;
             }
         }
 

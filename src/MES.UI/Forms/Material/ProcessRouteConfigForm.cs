@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using MES.Models.Material;
 using MES.BLL.Material;
 using MES.Common.Logging;
+using MES.UI.Framework.Themes;
 
 namespace MES.UI.Forms.Material
 {
@@ -16,7 +17,7 @@ namespace MES.UI.Forms.Material
     /// 工艺路线配置窗体
     /// 用于管理产品的工艺路线和工艺步骤
     /// </summary>
-    public partial class ProcessRouteConfigForm : Form
+    public partial class ProcessRouteConfigForm : ThemedForm
     {
         #region 私有字段
 
@@ -40,6 +41,31 @@ namespace MES.UI.Forms.Material
             _currentSteps = new List<ProcessStep>();
 
             InitializeForm();
+            // 主题应用放到 Shown：避免初始化/数据绑定过程把样式刷回浅色
+            this.Shown += (sender, e) => UIThemeManager.ApplyTheme(this);
+
+            // 仅在“独立打开”时最大化；嵌入 LoL 主壳（TopLevel=false）时禁止最大化，避免布局/滚动异常
+            this.Load += (sender, e) =>
+            {
+                try
+                {
+                    if (this.TopLevel)
+                    {
+                        this.WindowState = FormWindowState.Maximized;
+                    }
+                    else
+                    {
+                        if (this.WindowState == FormWindowState.Maximized)
+                        {
+                            this.WindowState = FormWindowState.Normal;
+                        }
+                    }
+                }
+                catch
+                {
+                    // ignore
+                }
+            };
         }
 
         #endregion
@@ -52,7 +78,6 @@ namespace MES.UI.Forms.Material
         private void InitializeForm()
         {
             // 设置窗体属性
-            this.WindowState = FormWindowState.Maximized;
             this.MinimumSize = new Size(1200, 640);
             
             // 初始化控件
@@ -74,7 +99,8 @@ namespace MES.UI.Forms.Material
         {
             // 设置分割容器
             splitContainer.SplitterWidth = 5;
-            splitContainer.BackColor = Color.FromArgb(233, 236, 239);
+            // LoL 暗金风：分隔条用深色边框，避免“浅灰分割条”割裂
+            splitContainer.BackColor = LeagueColors.DarkBorder;
             
             // 设置面板边距
             panelLeft.Padding = new Padding(10);

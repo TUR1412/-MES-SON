@@ -4,13 +4,14 @@ using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using MES.Common.Configuration;
 using MES.Common.Logging;
+using MES.UI.Framework.Themes;
 
 namespace MES.UI.Forms.SystemManagement
 {
     /// <summary>
     /// 系统配置窗体 - 设计器版本
     /// </summary>
-    public partial class SystemConfigForm : Form
+    public partial class SystemConfigForm : ThemedForm
     {
         public SystemConfigForm()
         {
@@ -18,6 +19,7 @@ namespace MES.UI.Forms.SystemManagement
             InitializeCustomControls();
             LoadCurrentSettings();
             ApplyModernStyling();
+            this.Shown += (sender, e) => UIThemeManager.ApplyTheme(this);
         }
 
         private void InitializeCustomControls()
@@ -56,9 +58,23 @@ namespace MES.UI.Forms.SystemManagement
 
         private void ApplyModernStyling()
         {
-            // 应用现代化样式
+            // LoL 暗金风 Tab：避免“白底灰边”割裂感
             configTabControl.DrawMode = TabDrawMode.OwnerDrawFixed;
             configTabControl.DrawItem += ConfigTabControl_DrawItem;
+
+            try
+            {
+                configTabControl.Appearance = TabAppearance.Normal;
+                configTabControl.SizeMode = TabSizeMode.Fixed;
+                if (configTabControl.ItemSize.Height < 32)
+                {
+                    configTabControl.ItemSize = new Size(Math.Max(80, configTabControl.ItemSize.Width), 34);
+                }
+            }
+            catch
+            {
+                // ignore
+            }
         }
 
         private void ConfigTabControl_DrawItem(object sender, DrawItemEventArgs e)
@@ -67,17 +83,34 @@ namespace MES.UI.Forms.SystemManagement
             var tabPage = tabControl.TabPages[e.Index];
             var tabRect = tabControl.GetTabRect(e.Index);
 
-            // 绘制选项卡背景
-            var backColor = e.State == DrawItemState.Selected ? Color.White : Color.FromArgb(233, 236, 239);
+            bool selected = (e.State & DrawItemState.Selected) == DrawItemState.Selected;
+
+            // 背景：选中更亮一档；未选中更深
+            var backColor = selected ? LeagueColors.DarkSurface : LeagueColors.DarkPanel;
             using (var brush = new SolidBrush(backColor))
             {
                 e.Graphics.FillRectangle(brush, tabRect);
             }
 
-            // 绘制选项卡文本
-            var textColor = e.State == DrawItemState.Selected ? Color.FromArgb(52, 58, 64) : Color.FromArgb(108, 117, 125);
+            // 边框：切出层级（避免 Tab 看起来像“贴纸”）
+            using (var pen = new Pen(selected ? Color.FromArgb(160, LeagueColors.RiotBorderGold) : Color.FromArgb(90, LeagueColors.DarkBorder), 1))
+            {
+                e.Graphics.DrawRectangle(pen, new Rectangle(tabRect.X, tabRect.Y, tabRect.Width - 1, tabRect.Height - 1));
+            }
+
+            // 选中态下方高亮条（LoL 客户端感）
+            if (selected)
+            {
+                using (var pen = new Pen(Color.FromArgb(220, LeagueColors.RiotGoldHover), 2))
+                {
+                    e.Graphics.DrawLine(pen, tabRect.Left + 10, tabRect.Bottom - 2, tabRect.Right - 10, tabRect.Bottom - 2);
+                }
+            }
+
+            // 文本
+            var textColor = selected ? LeagueColors.TextHighlight : LeagueColors.TextSecondary;
             TextRenderer.DrawText(e.Graphics, tabPage.Text, tabControl.Font, tabRect, textColor,
-                TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
+                TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter | TextFormatFlags.NoPrefix);
         }
 
         private void LoadCurrentSettings()

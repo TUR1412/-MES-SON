@@ -41,6 +41,10 @@ namespace MES.UI.Framework.Controls
                     RowHeadersVisible = true;
                     RowHeadersWidth = 50;
                 }
+                else
+                {
+                    RowHeadersVisible = false;
+                }
                 Invalidate();
             }
         }
@@ -365,13 +369,14 @@ namespace MES.UI.Framework.Controls
         {
             try
             {
-                using (var writer = new System.IO.StreamWriter(filePath, false, System.Text.Encoding.UTF8))
+                // 使用 UTF-8 BOM 以提升 Excel/国产表格软件的中文兼容性
+                using (var writer = new System.IO.StreamWriter(filePath, false, new System.Text.UTF8Encoding(true)))
                 {
                     // 写入列标题
                     string[] headers = new string[Columns.Count];
                     for (int i = 0; i < Columns.Count; i++)
                     {
-                        headers[i] = Columns[i].HeaderText;
+                        headers[i] = EscapeCsvField(Columns[i].HeaderText);
                     }
                     writer.WriteLine(string.Join(",", headers));
                     
@@ -383,7 +388,7 @@ namespace MES.UI.Framework.Controls
                             string[] values = new string[Columns.Count];
                             for (int i = 0; i < Columns.Count; i++)
                             {
-                                values[i] = row.Cells[i].Value != null ? row.Cells[i].Value.ToString() : "";
+                                values[i] = EscapeCsvField(row.Cells[i].Value != null ? row.Cells[i].Value.ToString() : "");
                             }
                             writer.WriteLine(string.Join(",", values));
                         }
@@ -400,6 +405,22 @@ namespace MES.UI.Framework.Controls
         }
 
         /// <summary>
+        /// CSV 字段转义：包含逗号/引号/换行时加引号，并将引号翻倍
+        /// </summary>
+        private static string EscapeCsvField(string value)
+        {
+            if (value == null) return string.Empty;
+
+            bool mustQuote = value.Contains(",") || value.Contains("\"") || value.Contains("\r") || value.Contains("\n");
+            if (!mustQuote)
+            {
+                return value;
+            }
+
+            return "\"" + value.Replace("\"", "\"\"") + "\"";
+        }
+
+        /// <summary>
         /// 刷新数据并保持选中状态
         /// </summary>
         public void RefreshData()
@@ -409,7 +430,8 @@ namespace MES.UI.Framework.Controls
                 int selectedIndex = CurrentRow != null ? CurrentRow.Index : -1;
                 
                 // 刷新数据源
-                if (DataSource is BindingSource bindingSource)
+                var bindingSource = DataSource as BindingSource;
+                if (bindingSource != null)
                 {
                     bindingSource.ResetBindings(false);
                 }

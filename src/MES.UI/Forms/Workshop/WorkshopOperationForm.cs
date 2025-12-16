@@ -11,6 +11,7 @@ using MES.BLL.Workshop;
 using MES.Models.Workshop;
 using MES.Common.Logging;
 using MES.Common.Exceptions;
+using MES.UI.Framework.Themes;
 
 namespace MES.UI.Forms.Workshop
 {
@@ -18,7 +19,7 @@ namespace MES.UI.Forms.Workshop
     /// 车间作业管理窗体
     /// 提供车间生产作业的调度、监控和管理功能 - S成员负责
     /// </summary>
-    public partial class WorkshopOperationForm : Form
+    public partial class WorkshopOperationForm : ThemedForm
     {
         private readonly IWorkshopBLL _workshopBLL;
         private readonly IBatchBLL _batchBLL;
@@ -40,6 +41,7 @@ namespace MES.UI.Forms.Workshop
 
             InitializeForm();
             LoadData();
+            this.Shown += (sender, e) => UIThemeManager.ApplyTheme(this);
         }
 
         /// <summary>

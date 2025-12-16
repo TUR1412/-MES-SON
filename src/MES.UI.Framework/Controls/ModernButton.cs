@@ -261,42 +261,42 @@ namespace MES.UI.Framework.Controls
             {
                 case ButtonStyle.Primary:
                     BackColor = colors.Primary;
-                    ForeColor = Color.White;
+                    ForeColor = GetContrastingTextColor(colors.Primary);
                     _hoverColor = UIThemeManager.Colors.Primary;
                     _pressedColor = UIThemeManager.Colors.Primary;
                     break;
 
                 case ButtonStyle.Secondary:
                     BackColor = colors.Secondary;
-                    ForeColor = Color.White;
+                    ForeColor = GetContrastingTextColor(colors.Secondary);
                     _hoverColor = colors.Secondary;
                     _pressedColor = colors.Secondary;
                     break;
 
                 case ButtonStyle.Success:
                     BackColor = colors.Success;
-                    ForeColor = Color.White;
+                    ForeColor = GetContrastingTextColor(colors.Success);
                     _hoverColor = colors.Success;
                     _pressedColor = colors.Success;
                     break;
 
                 case ButtonStyle.Warning:
                     BackColor = colors.Warning;
-                    ForeColor = Color.Black;
+                    ForeColor = GetContrastingTextColor(colors.Warning);
                     _hoverColor = colors.Warning;
                     _pressedColor = colors.Warning;
                     break;
 
                 case ButtonStyle.Danger:
                     BackColor = colors.Error;
-                    ForeColor = Color.White;
+                    ForeColor = GetContrastingTextColor(colors.Error);
                     _hoverColor = colors.Error;
                     _pressedColor = colors.Error;
                     break;
 
                 case ButtonStyle.Info:
                     BackColor = colors.Primary;
-                    ForeColor = Color.White;
+                    ForeColor = GetContrastingTextColor(colors.Primary);
                     _hoverColor = colors.Primary;
                     _pressedColor = colors.Primary;
                     break;
@@ -347,7 +347,12 @@ namespace MES.UI.Framework.Controls
             {
                 if (_isHovered || _isPressed)
                 {
-                    return Color.White;
+                    var bg = GetCurrentBackgroundColor();
+                    if (bg == Color.Transparent)
+                    {
+                        bg = UIThemeManager.Colors.Primary;
+                    }
+                    return GetContrastingTextColor(bg);
                 }
                 return ForeColor;
             }
@@ -414,6 +419,14 @@ namespace MES.UI.Framework.Controls
             int b = Math.Min(255, Math.Max(0, (int)(color.B * factor)));
 
             return Color.FromArgb(color.A, r, g, b);
+        }
+
+        private Color GetContrastingTextColor(Color backgroundColor)
+        {
+            // 采用近似亮度判断，确保在浅色/深色主题下都保持可读性
+            // 参考：0.299R + 0.587G + 0.114B
+            double luminance = (0.299 * backgroundColor.R + 0.587 * backgroundColor.G + 0.114 * backgroundColor.B) / 255.0;
+            return luminance >= 0.62 ? Color.Black : Color.White;
         }
 
         #endregion

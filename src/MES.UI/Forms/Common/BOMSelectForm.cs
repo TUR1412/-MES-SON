@@ -4,13 +4,14 @@ using System.Windows.Forms;
 using MES.Models.Material;
 using MES.BLL.Material;
 using MES.Common.Logging;
+using MES.UI.Framework.Themes;
 
 namespace MES.UI.Forms.Common
 {
     /// <summary>
     /// BOM选择窗体
     /// </summary>
-    public partial class BOMSelectForm : Form
+    public partial class BOMSelectForm : ThemedForm
     {
         /// <summary>
         /// 选中的BOM
@@ -28,6 +29,7 @@ namespace MES.UI.Forms.Common
             InitializeComponent();
             _bomBLL = new BOMBLL();
             this.Load += BOMSelectForm_Load;
+            this.Shown += (sender, e) => UIThemeManager.ApplyTheme(this);
         }
 
         /// <summary>

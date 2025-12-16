@@ -11,6 +11,7 @@ using MES.BLL.Workshop;
 using MES.Models.Workshop;
 using MES.Common.Logging;
 using MES.Common.Exceptions;
+using MES.UI.Framework.Themes;
 
 namespace MES.UI.Forms
 {
@@ -18,7 +19,7 @@ namespace MES.UI.Forms
     /// 车间管理窗体
     /// 提供车间信息的增删改查功能
     /// </summary>
-    public partial class WorkshopManagementForm : Form
+    public partial class WorkshopManagementForm : ThemedForm
     {
         private readonly IWorkshopBLL _workshopBLL;
         private List<WorkshopInfo> _currentWorkshops;
@@ -34,6 +35,7 @@ namespace MES.UI.Forms
             
             InitializeForm();
             LoadWorkshops();
+            this.Shown += (sender, e) => UIThemeManager.ApplyTheme(this);
         }
 
         /// <summary>

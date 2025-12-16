@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using MES.Models.Material;
 using MES.BLL.Material;
+using MES.UI.Framework.Themes;
 
 namespace MES.UI.Forms.Material
 {
@@ -15,7 +16,7 @@ namespace MES.UI.Forms.Material
     /// 工艺路线编辑窗体
     /// 用于新增和编辑工艺路线信息
     /// </summary>
-    public partial class ProcessRouteEditForm : Form
+    public partial class ProcessRouteEditForm : ThemedForm
     {
         #region 私有字段
 
@@ -57,6 +58,7 @@ namespace MES.UI.Forms.Material
         {
             InitializeComponent();
             _processRouteBLL = new ProcessRouteBLL();
+            this.Shown += (sender, e) => UIThemeManager.ApplyTheme(this);
             InitializeForm();
         }
 
@@ -79,7 +81,8 @@ namespace MES.UI.Forms.Material
         private void InitializeForm()
         {
             // 设置窗体属性
-            this.BackColor = Color.White;
+            this.BackColor = LeagueColors.DarkBackground;
+            this.ForeColor = LeagueColors.TextPrimary;
             
             // 初始化控件
             InitializeControls();
@@ -208,7 +211,7 @@ namespace MES.UI.Forms.Material
                     
                     // 编辑模式下编码不可修改
                     txtRouteCode.ReadOnly = true;
-                    txtRouteCode.BackColor = Color.FromArgb(248, 249, 250);
+                    // 主题统一：只读输入框由主题系统负责弱化（避免手写白底造成割裂）
                 }
                 else
                 {
@@ -234,7 +237,7 @@ namespace MES.UI.Forms.Material
             cmbProduct.SelectedIndex = -1;
             
             txtRouteCode.ReadOnly = false;
-            txtRouteCode.BackColor = Color.White;
+            // 主题统一：输入框底色由主题系统负责
         }
 
         #endregion

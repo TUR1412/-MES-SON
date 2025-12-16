@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using MES.Common.Logging;
 using MES.Models.Production;
 using MES.BLL.Production;
+using MES.UI.Framework.Themes;
 
 namespace MES.UI.Forms.Production
 {
@@ -16,18 +17,20 @@ namespace MES.UI.Forms.Production
     /// 生产执行控制窗体 - 现代化界面设计
     /// 严格遵循C# 5.0语法和设计器模式约束
     /// </summary>
-    public partial class ProductionExecutionControlForm : Form
+    public partial class ProductionExecutionControlForm : ThemedForm
     {
         private List<ProductionOrderInfo> executionList;
         private List<ProductionOrderInfo> filteredExecutionList;
         private ProductionOrderInfo currentExecution;
         private Timer refreshTimer;
+        private Timer _searchDebounceTimer;
         private readonly IProductionOrderBLL _productionOrderBLL;
 
         public ProductionExecutionControlForm()
         {
             InitializeComponent();
             _productionOrderBLL = new ProductionOrderBLL();
+            this.Shown += (sender, e) => UIThemeManager.ApplyTheme(this);
             InitializeForm();
         }
 
@@ -45,6 +48,7 @@ namespace MES.UI.Forms.Production
 
                 // 设置DataGridView
                 SetupDataGridView();
+                InitializeSearchDebounceTimer();
 
                 // 加载真实数据
                 LoadProductionExecutionData();
@@ -140,21 +144,8 @@ namespace MES.UI.Forms.Production
                 ReadOnly = true
             });
 
-            // 设置样式
+            // 视觉：表格配色/密度由主题系统统一处理，避免这里写死“白底蓝选中”造成割裂感
             dataGridViewExecution.EnableHeadersVisualStyles = false;
-            dataGridViewExecution.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(52, 58, 64);
-            dataGridViewExecution.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
-            dataGridViewExecution.ColumnHeadersDefaultCellStyle.Font = new Font("微软雅黑", 9F, FontStyle.Bold);
-            dataGridViewExecution.ColumnHeadersHeight = 40;
-
-            dataGridViewExecution.DefaultCellStyle.Font = new Font("微软雅黑", 9F);
-            dataGridViewExecution.DefaultCellStyle.BackColor = Color.White;
-            dataGridViewExecution.DefaultCellStyle.ForeColor = Color.FromArgb(33, 37, 41);
-            dataGridViewExecution.DefaultCellStyle.SelectionBackColor = Color.FromArgb(0, 123, 255);
-            dataGridViewExecution.DefaultCellStyle.SelectionForeColor = Color.White;
-
-            dataGridViewExecution.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(248, 249, 250);
-            dataGridViewExecution.GridColor = Color.FromArgb(222, 226, 230);
         }
 
         /// <summary>
@@ -243,14 +234,16 @@ namespace MES.UI.Forms.Production
         {
             try
             {
+                int selectedId = currentExecution != null ? currentExecution.Id : 0;
+
                 dataGridViewExecution.DataSource = null;
                 dataGridViewExecution.DataSource = filteredExecutionList;
 
-                // 如果有数据，选中第一行
+                // 如果有数据，尽量保持原选择（找不到则选中第一条）
                 if (filteredExecutionList.Count > 0)
                 {
-                    dataGridViewExecution.Rows[0].Selected = true;
-                    ShowExecutionDetails(filteredExecutionList[0]);
+                    var itemToSelect = filteredExecutionList.FirstOrDefault(x => x.Id == selectedId) ?? filteredExecutionList[0];
+                    SelectExecutionById(itemToSelect.Id);
                 }
                 else
                 {
@@ -268,6 +261,37 @@ namespace MES.UI.Forms.Production
         /// </summary>
         private void textBoxSearch_TextChanged(object sender, EventArgs e)
         {
+            try
+            {
+                if (_searchDebounceTimer == null)
+                {
+                    ApplySearchFilter();
+                    RefreshDataGridView();
+                    return;
+                }
+
+                _searchDebounceTimer.Stop();
+                _searchDebounceTimer.Start();
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("搜索失败", ex);
+                MessageBox.Show("搜索失败：" + ex.Message, "错误",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void InitializeSearchDebounceTimer()
+        {
+            _searchDebounceTimer = new Timer();
+            _searchDebounceTimer.Interval = 300;
+            _searchDebounceTimer.Tick += SearchDebounceTimer_Tick;
+        }
+
+        private void SearchDebounceTimer_Tick(object sender, EventArgs e)
+        {
+            _searchDebounceTimer.Stop();
+
             try
             {
                 ApplySearchFilter();
@@ -701,6 +725,13 @@ namespace MES.UI.Forms.Production
                 {
                     refreshTimer.Stop();
                     refreshTimer.Dispose();
+                }
+
+                if (_searchDebounceTimer != null)
+                {
+                    _searchDebounceTimer.Stop();
+                    _searchDebounceTimer.Dispose();
+                    _searchDebounceTimer = null;
                 }
             }
             catch (Exception ex)

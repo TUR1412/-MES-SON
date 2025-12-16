@@ -19,6 +19,8 @@ namespace MES.DAL.Core
     {
         #region 连接字符串管理
 
+        private const string AllowPublicKeyRetrievalKey = "AllowPublicKeyRetrieval";
+
         /// <summary>
         /// 获取数据库连接字符串
         /// </summary>
@@ -34,9 +36,13 @@ namespace MES.DAL.Core
                 if (string.IsNullOrEmpty(connectionString))
                 {
                     // 默认连接字符串（MySQL）
-                    connectionString = "Server=localhost;Database=mes_db;Uid=root;Pwd=Qwe.123;CharSet=utf8mb4;SslMode=none;";
+                    connectionString = "Server=localhost;Database=mes_db;Uid=root;Pwd=Qwe.123;CharSet=utf8mb4;SslMode=none;AllowPublicKeyRetrieval=true;";
                     LogManager.Warning("未找到配置的数据库连接字符串，使用默认MySQL连接字符串");
                 }
+
+                // 兼容 MySQL 8 默认认证（caching_sha2_password）+ 非 SSL 连接
+                // 典型报错：Retrieval of the RSA public key is not enabled for insecure connections
+                connectionString = EnsureAllowPublicKeyRetrieval(connectionString);
 
                 return connectionString;
             }
@@ -45,6 +51,33 @@ namespace MES.DAL.Core
                 LogManager.Error("获取数据库连接字符串失败", ex);
                 throw new MESException("数据库连接配置错误", ex);
             }
+        }
+
+        private static string EnsureAllowPublicKeyRetrieval(string connectionString)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                return connectionString;
+            }
+
+            if (connectionString.IndexOf(AllowPublicKeyRetrievalKey, StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return connectionString;
+            }
+
+            // 仅在显式禁用 SSL 时追加（避免无意改变其他安全策略）
+            if (connectionString.IndexOf("SslMode=none", StringComparison.OrdinalIgnoreCase) < 0 &&
+                connectionString.IndexOf("Ssl Mode=none", StringComparison.OrdinalIgnoreCase) < 0)
+            {
+                return connectionString;
+            }
+
+            if (!connectionString.TrimEnd().EndsWith(";"))
+            {
+                connectionString += ";";
+            }
+            connectionString += "AllowPublicKeyRetrieval=true;";
+            return connectionString;
         }
 
         #endregion

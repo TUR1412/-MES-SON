@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using MES.BLL.Workshop;
 using MES.BLL.WorkOrder;
 using MES.Common.Logging;
+using MES.UI.Framework.Themes;
 
 namespace MES.UI.Forms.Batch
 {
@@ -16,7 +17,7 @@ namespace MES.UI.Forms.Batch
     /// 创建生产批次窗体 - 现代化UI设计
     /// 功能：基于工单创建生产批次，支持批次信息配置
     /// </summary>
-    public partial class CreateBatch : Form
+    public partial class CreateBatch : ThemedForm
     {
         #region 私有字段
 
@@ -38,6 +39,7 @@ namespace MES.UI.Forms.Batch
             InitializeBusinessLogic();
             InitializeUI();
             LoadWorkOrderData();
+            this.Shown += (sender, e) => UIThemeManager.ApplyTheme(this);
             LogManager.Info("创建批次窗体初始化完成");
         }
 

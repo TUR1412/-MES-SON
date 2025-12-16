@@ -16,13 +16,13 @@ namespace MES.UI.Framework.Controls
         #region 私有字段
 
         private TableLayoutPanel _mainLayout;
-        private Panel _buttonPanel;
+        private FlowLayoutPanel _buttonPanel;
         private ModernButton _searchButton;
         private ModernButton _resetButton;
         private ModernButton _expandButton;
         private bool _isExpanded = true;
-        private int _collapsedHeight = 60;
-        private int _expandedHeight = 120;
+        private int _collapsedHeight = 95;
+        private int _expandedHeight = 130;
         private List<QueryField> _queryFields;
 
         #endregion
@@ -186,10 +186,11 @@ namespace MES.UI.Framework.Controls
             };
             
             // 设置列宽比例
-            _mainLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
-            _mainLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
-            _mainLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
-            _mainLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
+            // 采用 “标签窄 + 输入宽” 的比例，提升可读性
+            _mainLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 18F));
+            _mainLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 32F));
+            _mainLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 18F));
+            _mainLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 32F));
             
             // 设置行高
             _mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 35F));
@@ -210,11 +211,13 @@ namespace MES.UI.Framework.Controls
         /// </summary>
         private void CreateButtonPanel()
         {
-            _buttonPanel = new Panel
+            _buttonPanel = new FlowLayoutPanel
             {
                 Height = 35,
-                Dock = DockStyle.None,
-                Anchor = AnchorStyles.Right | AnchorStyles.Top
+                Dock = DockStyle.Fill,
+                FlowDirection = FlowDirection.RightToLeft,
+                WrapContents = false,
+                Padding = new Padding(0, 2, 0, 0)
             };
             
             // 查询按钮
@@ -223,7 +226,7 @@ namespace MES.UI.Framework.Controls
                 Text = "查询",
                 Size = new Size(80, 30),
                 Style = ModernButton.ButtonStyle.Primary,
-                Location = new Point(0, 2)
+                Margin = new Padding(0, 0, 10, 0)
             };
             _searchButton.Click += SearchButton_Click;
             
@@ -233,7 +236,7 @@ namespace MES.UI.Framework.Controls
                 Text = "重置",
                 Size = new Size(80, 30),
                 Style = ModernButton.ButtonStyle.Secondary,
-                Location = new Point(90, 2)
+                Margin = new Padding(0, 0, 10, 0)
             };
             _resetButton.Click += ResetButton_Click;
             
@@ -243,12 +246,14 @@ namespace MES.UI.Framework.Controls
                 Text = "折叠",
                 Size = new Size(60, 30),
                 Style = ModernButton.ButtonStyle.Outline,
-                Location = new Point(180, 2)
+                Margin = new Padding(0, 0, 0, 0)
             };
             _expandButton.Click += ExpandButton_Click;
             
-            _buttonPanel.Controls.AddRange(new Control[] { _searchButton, _resetButton, _expandButton });
-            _buttonPanel.Size = new Size(250, 35);
+            // 右对齐：RightToLeft 下从右往左依次排列
+            _buttonPanel.Controls.Add(_expandButton);
+            _buttonPanel.Controls.Add(_resetButton);
+            _buttonPanel.Controls.Add(_searchButton);
             
             // 将按钮面板添加到主布局的最后一行
             _mainLayout.Controls.Add(_buttonPanel, 0, 2);
@@ -538,11 +543,14 @@ namespace MES.UI.Framework.Controls
         private void ApplyTheme()
         {
             BackColor = UIThemeManager.Colors.Surface;
-            // 应用主题到父窗体（如果存在）
-            var parentForm = FindForm();
-            if (parentForm != null)
+
+            if (_mainLayout != null)
             {
-                UIThemeManager.ApplyTheme(parentForm);
+                _mainLayout.BackColor = UIThemeManager.Colors.Surface;
+            }
+            if (_buttonPanel != null)
+            {
+                _buttonPanel.BackColor = UIThemeManager.Colors.Surface;
             }
         }
 
@@ -551,18 +559,40 @@ namespace MES.UI.Framework.Controls
         /// </summary>
         private void UpdateExpandState()
         {
+            if (_mainLayout == null || _expandButton == null) return;
+
+            // 计算最小高度，避免折叠后按钮行被裁切
+            int paddingHeight = _mainLayout.Padding.Top + _mainLayout.Padding.Bottom;
+            int baseRow0 = 35;
+            int baseRow1 = 35;
+            int baseRow2 = 40;
+            int minCollapsedHeight = paddingHeight + baseRow0 + baseRow2;
+            int minExpandedHeight = paddingHeight + baseRow0 + baseRow1 + baseRow2;
+
             if (_isExpanded)
             {
-                Height = _expandedHeight;
+                Height = Math.Max(_expandedHeight, minExpandedHeight);
                 _expandButton.Text = "折叠";
+
+                if (_mainLayout.RowStyles.Count > 1)
+                {
+                    _mainLayout.RowStyles[1].Height = baseRow1;
+                    _mainLayout.RowStyles[1].SizeType = SizeType.Absolute;
+                }
             }
             else
             {
-                Height = _collapsedHeight;
+                Height = Math.Max(_collapsedHeight, minCollapsedHeight);
                 _expandButton.Text = "展开";
+
+                if (_mainLayout.RowStyles.Count > 1)
+                {
+                    _mainLayout.RowStyles[1].Height = 0;
+                    _mainLayout.RowStyles[1].SizeType = SizeType.Absolute;
+                }
             }
-            
-            // 隐藏或显示第二行的控件
+
+            // 隐藏或显示第二行的控件（row=1）
             foreach (Control control in _mainLayout.Controls)
             {
                 if (_mainLayout.GetRow(control) == 1)

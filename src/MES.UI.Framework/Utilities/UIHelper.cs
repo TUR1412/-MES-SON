@@ -1,5 +1,6 @@
 using System;
 using System.Drawing;
+using System.Reflection;
 using System.Windows.Forms;
 using MES.Common.Logging;
 using MES.UI.Framework.Themes;
@@ -221,6 +222,8 @@ namespace MES.UI.Framework.Utilities
 
             try
             {
+                var colors = UIThemeManager.Colors;
+
                 // 基本设置
                 dataGridView.AllowUserToAddRows = false;
                 dataGridView.AllowUserToDeleteRows = false;
@@ -235,24 +238,54 @@ namespace MES.UI.Framework.Utilities
                 dataGridView.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single;
                 dataGridView.RowHeadersVisible = false;
                 dataGridView.EnableHeadersVisualStyles = false;
-                
-                // 应用主题颜色（如果父控件是窗体）
-                if (dataGridView.Parent is Form parentForm)
-                {
-                    UIThemeManager.ApplyTheme(parentForm);
-                }
-                
+
                 // 列标题样式
-                dataGridView.ColumnHeadersDefaultCellStyle.BackColor = UIThemeManager.Colors.Primary;
+                dataGridView.ColumnHeadersDefaultCellStyle.BackColor = colors.Primary;
                 dataGridView.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
                 dataGridView.ColumnHeadersDefaultCellStyle.Font = UIThemeManager.GetTitleFont(10f);
                 dataGridView.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+                // 表格与单元格样式（尽量不依赖父窗体统一刷主题）
+                dataGridView.BackgroundColor = colors.Surface;
+                dataGridView.GridColor = colors.Border;
+                dataGridView.DefaultCellStyle.BackColor = colors.Surface;
+                dataGridView.DefaultCellStyle.ForeColor = colors.Text;
+                dataGridView.DefaultCellStyle.SelectionBackColor = colors.Selected;
+                dataGridView.DefaultCellStyle.SelectionForeColor = Color.White;
+                dataGridView.DefaultCellStyle.Font = UIThemeManager.GetFont(9f);
+
+                float altFactor = colors.Surface.GetBrightness() < 0.5f ? 1.06f : 0.97f;
+                dataGridView.AlternatingRowsDefaultCellStyle.BackColor = AdjustBrightness(colors.Surface, altFactor);
+
+                // 减少滚动/刷新时的闪烁
+                EnableDoubleBuffering(dataGridView);
                 
                 LogManager.Debug("已配置标准数据网格样式");
             }
             catch (Exception ex)
             {
                 LogManager.Error("配置数据网格样式失败", ex);
+            }
+        }
+
+        /// <summary>
+        /// 尝试开启控件双缓冲（减少闪烁），失败则静默忽略
+        /// </summary>
+        private static void EnableDoubleBuffering(Control control)
+        {
+            if (control == null) return;
+
+            try
+            {
+                var prop = typeof(Control).GetProperty("DoubleBuffered", BindingFlags.Instance | BindingFlags.NonPublic);
+                if (prop != null)
+                {
+                    prop.SetValue(control, true, null);
+                }
+            }
+            catch
+            {
+                // ignore
             }
         }
 

@@ -6,15 +6,17 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using MES.DAL.Core;
+using MES.Common.Configuration;
 using MES.Common.Logging;
 using MySql.Data.MySqlClient;
+using MES.UI.Framework.Themes;
 
 namespace MES.UI.Forms.SystemManagement
 {
     /// <summary>
     /// 数据库诊断工具窗体
     /// </summary>
-    public partial class DatabaseDiagnosticForm : Form
+    public partial class DatabaseDiagnosticForm : ThemedForm
     {
         #region 私有字段
 
@@ -32,6 +34,7 @@ namespace MES.UI.Forms.SystemManagement
         public DatabaseDiagnosticForm()
         {
             InitializeComponent();
+            this.Shown += (sender, e) => UIThemeManager.ApplyTheme(this);
             InitializeForm();
         }
 
@@ -46,8 +49,8 @@ namespace MES.UI.Forms.SystemManagement
         {
             try
             {
-                // 获取数据库连接字符串
-                _connectionString = "Server=localhost;Database=mes_db;Uid=root;Pwd=Qwe.123;CharSet=utf8mb4;SslMode=none;";
+                // 获取数据库连接字符串（以 App.config 为准，避免硬编码导致“能跑但不通”的幽灵问题）
+                _connectionString = GetEffectiveConnectionString();
                 
                 // 设置窗体图标
                 this.Icon = SystemIcons.Information;
@@ -68,6 +71,30 @@ namespace MES.UI.Forms.SystemManagement
             }
         }
 
+        private static string GetEffectiveConnectionString()
+        {
+            // 优先使用统一配置入口（Environment=Development/Test/Production）
+            var connectionString = ConfigManager.GetCurrentConnectionString();
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                // 兼容：缺少配置时的回落（仅用于诊断窗体）
+                connectionString = "Server=localhost;Database=mes_db;Uid=root;Pwd=Qwe.123;CharSet=utf8mb4;SslMode=none;AllowPublicKeyRetrieval=true;";
+            }
+
+            // 兼容 MySQL 8/9 的默认认证（caching_sha2_password）在非 SSL 连接下的 RSA Key 获取限制
+            if (connectionString.IndexOf("AllowPublicKeyRetrieval", StringComparison.OrdinalIgnoreCase) < 0 &&
+                connectionString.IndexOf("SslMode=none", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                if (!connectionString.TrimEnd().EndsWith(";"))
+                {
+                    connectionString += ";";
+                }
+                connectionString += "AllowPublicKeyRetrieval=true;";
+            }
+
+            return connectionString;
+        }
+
         /// <summary>
         /// 初始化数据网格
         /// </summary>
@@ -77,13 +104,9 @@ namespace MES.UI.Forms.SystemManagement
             {
                 // 设置数据网格样式
                 dgvDiagnosticInfo.EnableHeadersVisualStyles = false;
-                dgvDiagnosticInfo.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(240, 240, 240);
-                dgvDiagnosticInfo.ColumnHeadersDefaultCellStyle.ForeColor = Color.Black;
-                dgvDiagnosticInfo.ColumnHeadersDefaultCellStyle.Font = new Font("微软雅黑", 9F, FontStyle.Bold);
-                
-                // 设置行样式
+
+                // 视觉：DataGridView 的配色/密度由主题系统统一管理（避免“浅底黑字”割裂）
                 dgvDiagnosticInfo.DefaultCellStyle.Font = new Font("微软雅黑", 9F);
-                dgvDiagnosticInfo.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(248, 249, 250);
                 
                 // 设置列宽比例
                 colProperty.FillWeight = 30;

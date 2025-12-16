@@ -5,13 +5,14 @@ using System.Windows.Forms;
 using MES.BLL.Material.DTO;
 using MES.BLL.Material;
 using MES.Common.Logging;
+using MES.UI.Framework.Themes;
 
 namespace MES.UI.Forms.Common
 {
     /// <summary>
     /// 物料选择窗体
     /// </summary>
-    public partial class MaterialSelectForm : Form
+    public partial class MaterialSelectForm : ThemedForm
     {
         /// <summary>
         /// 选中的物料
@@ -30,6 +31,7 @@ namespace MES.UI.Forms.Common
             InitializeComponent();
             _materialBLL = new MaterialBLL();
             LoadMaterialData();
+            this.Shown += (sender, e) => UIThemeManager.ApplyTheme(this);
         }
 
         /// <summary>
