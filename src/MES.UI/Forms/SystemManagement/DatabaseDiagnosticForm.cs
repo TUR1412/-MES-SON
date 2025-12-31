@@ -5,7 +5,6 @@ using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
-using MES.DAL.Core;
 using MES.Common.Configuration;
 using MES.Common.Logging;
 using MySql.Data.MySqlClient;
@@ -51,7 +50,12 @@ namespace MES.UI.Forms.SystemManagement
             {
                 // 获取数据库连接字符串（以 App.config 为准，避免硬编码导致“能跑但不通”的幽灵问题）
                 _connectionString = GetEffectiveConnectionString();
-                
+                if (string.IsNullOrWhiteSpace(_connectionString))
+                {
+                    toolStripStatusLabel.Text = "未配置数据库连接字符串：请设置 MES_CONNECTION_STRING 或配置 App.config";
+                    return;
+                }
+
                 // 设置窗体图标
                 this.Icon = SystemIcons.Information;
                 
@@ -77,8 +81,7 @@ namespace MES.UI.Forms.SystemManagement
             var connectionString = ConfigManager.GetCurrentConnectionString();
             if (string.IsNullOrWhiteSpace(connectionString))
             {
-                // 兼容：缺少配置时的回落（仅用于诊断窗体）
-                connectionString = "Server=localhost;Database=mes_db;Uid=root;Pwd=Qwe.123;CharSet=utf8mb4;SslMode=none;AllowPublicKeyRetrieval=true;";
+                return string.Empty;
             }
 
             // 兼容 MySQL 8/9 的默认认证（caching_sha2_password）在非 SSL 连接下的 RSA Key 获取限制
@@ -106,7 +109,7 @@ namespace MES.UI.Forms.SystemManagement
                 dgvDiagnosticInfo.EnableHeadersVisualStyles = false;
 
                 // 视觉：DataGridView 的配色/密度由主题系统统一管理（避免“浅底黑字”割裂）
-                dgvDiagnosticInfo.DefaultCellStyle.Font = new Font("微软雅黑", 9F);
+                dgvDiagnosticInfo.DefaultCellStyle.Font = DesignTokens.Typography.CreateBaseFont();
                 
                 // 设置列宽比例
                 colProperty.FillWeight = 30;
@@ -130,6 +133,11 @@ namespace MES.UI.Forms.SystemManagement
         {
             try
             {
+                if (string.IsNullOrWhiteSpace(_connectionString))
+                {
+                    return;
+                }
+
                 // 执行初始诊断
                 PerformDiagnosis();
                 
@@ -737,3 +745,4 @@ namespace MES.UI.Forms.SystemManagement
         #endregion
     }
 }
+

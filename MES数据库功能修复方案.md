@@ -79,7 +79,7 @@ CustomerName = row["customer_name"]      // ✅ 正确
 ```xml
 <!-- 当前配置（已验证正确）-->
 <add name="MESConnectionString" 
-     connectionString="Server=localhost;Database=mes_db;Uid=root;Pwd=Qwe.123;CharSet=utf8mb4;SslMode=none;" 
+     connectionString="Server=localhost;Database=mes_db;Uid=root;CharSet=utf8mb4;SslMode=none;" 
      providerName="MySql.Data.MySqlClient" />
 ```
 

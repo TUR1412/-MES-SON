@@ -105,6 +105,18 @@ namespace MES.UI
             try
             {
                 connectionString = GetEffectiveConnectionString();
+                if (string.IsNullOrWhiteSpace(connectionString))
+                {
+                    MessageBox.Show(
+                        "未配置数据库连接字符串。\n\n" +
+                        "请通过以下方式之一配置：\n" +
+                        "1) 设置环境变量：MES_CONNECTION_STRING（推荐，避免在仓库中保存真实密码）\n" +
+                        "2) 修改 src/MES.UI/App.config 的 connectionStrings（仅用于本机开发/测试）",
+                        "数据库配置缺失",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                    return;
+                }
 
                 using (var connection = new MySqlConnection(connectionString))
                 {
@@ -166,7 +178,7 @@ namespace MES.UI
                     MessageBox.Show(
                         "数据库连接失败：MySQL 需要允许在非 SSL 连接下获取 RSA 公钥。\n\n" +
                         "请在连接串中加入：AllowPublicKeyRetrieval=true；或启用 SSL。\n" +
-                        "当前项目默认已在 src/MES.UI/App.config 中加入该参数，如你本地改过连接串请同步更新。",
+                        "提示：程序会在检测到 SslMode=none 时自动补充该参数；也可直接在环境变量连接串中加入。",
                         "数据库连接配置提示",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Warning);
@@ -176,7 +188,7 @@ namespace MES.UI
                 // 3) 其他异常：给出可行动提示
                 MessageBox.Show(
                     string.Format(
-                        "数据库连接失败：{0}\n\n建议：\n1) 确认 MySQL 服务已启动（例如 MySQL95）\n2) 检查 src/MES.UI/App.config 中的 MESConnectionString（账号/密码/端口/库名）\n3) 打开【系统管理 -> 数据库诊断】进一步排查",
+                        "数据库连接失败：{0}\n\n建议：\n1) 确认 MySQL 服务已启动（例如 MySQL95）\n2) 检查连接字符串配置：环境变量 MES_CONNECTION_STRING（推荐）或 src/MES.UI/App.config 的 MESConnectionString\n3) 打开【系统管理 -> 数据库诊断】进一步排查",
                         ex.Message),
                     "数据库连接失败",
                     MessageBoxButtons.OK,
@@ -194,8 +206,7 @@ namespace MES.UI
             var connectionString = ConfigManager.GetCurrentConnectionString();
             if (string.IsNullOrWhiteSpace(connectionString))
             {
-                // 兼容：缺少配置时回落默认
-                connectionString = "Server=localhost;Database=mes_db;Uid=root;Pwd=Qwe.123;CharSet=utf8mb4;SslMode=none;AllowPublicKeyRetrieval=true;";
+                return string.Empty;
             }
 
             // 兼容 MySQL 8/9 caching_sha2_password 的 RSA Key 获取限制
@@ -458,3 +469,6 @@ namespace MES.UI
         }
     }
 }
+
+
+

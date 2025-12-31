@@ -15,6 +15,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Secret guard (no pwd/password in docs/config)
+        shell: pwsh
+        run: |
+          $files = Get-ChildItem -Recurse -File -Include *.config,*.md,*.txt,*.yml,*.yaml,*.json |
+            Where-Object { $_.FullName -notmatch '\\(packages|bin|obj|\\.github)\\' } |
+            Select-Object -ExpandProperty FullName
+
+          $matches = Select-String -Path $files -Pattern 'pwd=|password=' -CaseSensitive:$false -ErrorAction SilentlyContinue
+          if ($matches) {
+            Write-Host 'Sensitive patterns found in:'
+            $matches | Select-Object -ExpandProperty Path -Unique | Sort-Object | ForEach-Object { Write-Host ('  - ' + $_) }
+            throw 'Secret guard failed: found pwd=/password= patterns in tracked files.'
+          }
+          Write-Host 'Secret guard passed.'
+
       - name: Setup NuGet
         uses: NuGet/setup-nuget@v2
 

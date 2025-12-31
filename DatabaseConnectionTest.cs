@@ -14,7 +14,7 @@ namespace DatabaseConnectionTest
             try
             {
                 // 测试连接字符串
-                string connectionString = "Server=localhost;Database=mes_db;Uid=root;Pwd=Qwe.123;CharSet=utf8mb4;SslMode=none;";
+                string connectionString = "Server=localhost;Database=mes_db;Uid=root;CharSet=utf8mb4;SslMode=none;";
                 Console.WriteLine("连接字符串: " + connectionString);
                 
                 using (var connection = new MySqlConnection(connectionString))
@@ -162,3 +162,4 @@ namespace DatabaseConnectionTest
         }
     }
 }
+

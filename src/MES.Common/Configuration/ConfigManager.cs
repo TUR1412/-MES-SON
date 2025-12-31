@@ -59,6 +59,17 @@ namespace MES.Common.Configuration
         {
             try
             {
+                if (string.IsNullOrEmpty(name))
+                {
+                    return string.Empty;
+                }
+
+                var envValue = GetConnectionStringFromEnvironment(name);
+                if (!string.IsNullOrEmpty(envValue))
+                {
+                    return envValue;
+                }
+
                 var connectionString = ConfigurationManager.ConnectionStrings[name];
                 return connectionString != null ? connectionString.ConnectionString : string.Empty;
             }
@@ -66,6 +77,45 @@ namespace MES.Common.Configuration
             {
                 return string.Empty;
             }
+        }
+
+        private static string GetConnectionStringFromEnvironment(string name)
+        {
+            // 约定：
+            // 1) 支持按名称覆盖（例如环境变量 MESConnectionString）
+            // 2) 支持统一键名（MES_CONNECTION_STRING / MES_TEST_CONNECTION_STRING / MES_PROD_CONNECTION_STRING）
+            // 3) 支持通用键名（MES__CONNECTIONSTRINGS__{name}）
+            //
+            // 目的：避免在仓库/配置文件中保存真实密码，部署时由环境变量注入完整连接字符串。
+            string[] candidates;
+
+            if (string.Equals(name, "MESConnectionString", StringComparison.OrdinalIgnoreCase))
+            {
+                candidates = new[] { "MES_CONNECTION_STRING", "MES__CONNECTIONSTRINGS__MESConnectionString", "MESConnectionString" };
+            }
+            else if (string.Equals(name, "MESTestConnectionString", StringComparison.OrdinalIgnoreCase))
+            {
+                candidates = new[] { "MES_TEST_CONNECTION_STRING", "MES__CONNECTIONSTRINGS__MESTestConnectionString", "MESTestConnectionString" };
+            }
+            else if (string.Equals(name, "MESProductionConnectionString", StringComparison.OrdinalIgnoreCase))
+            {
+                candidates = new[] { "MES_PROD_CONNECTION_STRING", "MES__CONNECTIONSTRINGS__MESProductionConnectionString", "MESProductionConnectionString" };
+            }
+            else
+            {
+                candidates = new[] { "MES__CONNECTIONSTRINGS__" + name, name };
+            }
+
+            for (var i = 0; i < candidates.Length; i++)
+            {
+                var value = Environment.GetEnvironmentVariable(candidates[i]);
+                if (!string.IsNullOrEmpty(value))
+                {
+                    return value;
+                }
+            }
+
+            return string.Empty;
         }
 
         /// <summary>

@@ -363,7 +363,7 @@ LogManager.Warning("查询物料列表");                      // 不必要的�
 ```csharp
 // 标准数据库连接字符串
 private const string CONNECTION_STRING =
-    "Server=localhost;Database=mes_db;Uid=root;Pwd=Qwe.123;CharSet=utf8mb4;SslMode=none;";
+    "Server=localhost;Database=mes_db;Uid=root;CharSet=utf8mb4;SslMode=none;";
 ```
 
 ### 核心数据表设计

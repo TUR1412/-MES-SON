@@ -136,7 +136,7 @@ quick_test.bat
 ```xml
 <connectionStrings>
   <add name="MESConnection" 
-       connectionString="Server=localhost;Database=mes_db;Uid=root;Pwd=Qwe.123;charset=utf8mb4;" 
+       connectionString="Server=localhost;Database=mes_db;Uid=root;charset=utf8mb4;" 
        providerName="MySql.Data.MySqlClient" />
 </connectionStrings>
 ```

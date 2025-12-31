@@ -1,8 +1,9 @@
 using System;
-using System.Configuration;
 using MySql.Data.MySqlClient;
 using MES.DAL.Core;
+using MES.Common.Configuration;
 using MES.Common.Logging;
+using System.Text.RegularExpressions;
 
 namespace MES.Tests
 {
@@ -25,9 +26,7 @@ namespace MES.Tests
 
                 // 1. 测试连接字符串获取
                 Console.WriteLine("1. 测试连接字符串获取...");
-                string connectionString = ConfigurationManager.ConnectionStrings["MESConnectionString"] != null
-                    ? ConfigurationManager.ConnectionStrings["MESConnectionString"].ConnectionString
-                    : string.Empty;
+                string connectionString = ConfigManager.GetConnectionString("MESConnectionString");
                 Console.WriteLine($"   连接字符串: {MaskConnectionString(connectionString)}");
                 Console.WriteLine("   ✅ 连接字符串获取成功");
                 Console.WriteLine();
@@ -86,11 +85,20 @@ namespace MES.Tests
             if (string.IsNullOrEmpty(connectionString))
                 return "未配置";
 
-            // 简单掩码密码部分
-            return connectionString.Replace("Pwd=123456", "Pwd=******")
-                                  .Replace("Password=123456", "Password=******")
-                                  .Replace("Pwd=Qwe.123", "Pwd=******")
-                                  .Replace("Password=Qwe.123", "Password=******");
+            try
+            {
+                var builder = new MySqlConnectionStringBuilder(connectionString);
+                if (!string.IsNullOrEmpty(builder.Password))
+                {
+                    builder.Password = "******";
+                }
+                return builder.ConnectionString;
+            }
+            catch
+            {
+                // 回退：尽量掩码可能出现的 pwd/password 片段，避免输出到控制台/日志中
+                return Regex.Replace(connectionString, "(?i)\\b(pwd|password)\\s*=\\s*[^;]*", "$1=******");
+            }
         }
 
         /// <summary>
@@ -129,3 +137,4 @@ namespace MES.Tests
         }
     }
 }
+

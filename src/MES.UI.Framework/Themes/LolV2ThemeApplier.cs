@@ -127,7 +127,7 @@ namespace MES.UI.Framework.Themes
         {
             form.BackColor = LeagueColors.DarkBackground;
             form.ForeColor = LeagueColors.TextPrimary;
-            form.Font = new Font("微软雅黑", 9F, FontStyle.Regular);
+            form.Font = DesignTokens.Typography.CreateBaseFont();
 
             EnableDoubleBuffering(form);
 

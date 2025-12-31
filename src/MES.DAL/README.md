@@ -45,7 +45,7 @@ MES.DAL/
 ```xml
 <connectionStrings>
   <add name="MESDatabase" 
-       connectionString="Server=localhost;Database=mes_db;Uid=root;Pwd=123456;Charset=utf8mb4;" />
+       connectionString="Server=localhost;Database=mes_db;Uid=root;Charset=utf8mb4;" />
 </connectionStrings>
 ```
 
@@ -250,3 +250,4 @@ DAL层会自动记录操作日志，包括成功和失败的操作。
 如有问题，请联系：
 - 架构负责人：天帝（组长）
 - 或查看项目文档：docs/DEVELOPMENT_GUIDE.md
+

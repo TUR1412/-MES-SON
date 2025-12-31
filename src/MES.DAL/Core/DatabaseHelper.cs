@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using MySql.Data.MySqlClient;
-using System.Configuration;
+using MES.Common.Configuration;
 using MES.Common.Logging;
 using MES.Common.Exceptions;
 
@@ -29,15 +29,12 @@ namespace MES.DAL.Core
         {
             try
             {
-                // 从配置文件获取连接字符串
-                string connectionString = ConfigurationManager.ConnectionStrings["MESConnectionString"] != null ?
-                    ConfigurationManager.ConnectionStrings["MESConnectionString"].ConnectionString : null;
-
+                // 优先从环境变量读取完整连接字符串，避免在仓库/配置文件中保存真实密码。
+                // 回退到 App.config 的 connectionStrings（按 ConfigManager 的读取策略）。
+                string connectionString = ConfigManager.GetCurrentConnectionString();
                 if (string.IsNullOrEmpty(connectionString))
                 {
-                    // 默认连接字符串（MySQL）
-                    connectionString = "Server=localhost;Database=mes_db;Uid=root;Pwd=Qwe.123;CharSet=utf8mb4;SslMode=none;AllowPublicKeyRetrieval=true;";
-                    LogManager.Warning("未找到配置的数据库连接字符串，使用默认MySQL连接字符串");
+                    throw new MESException("未配置数据库连接字符串。请在配置文件中设置 MESConnectionString，或设置环境变量 MES_CONNECTION_STRING。");
                 }
 
                 // 兼容 MySQL 8 默认认证（caching_sha2_password）+ 非 SSL 连接
@@ -287,3 +284,4 @@ namespace MES.DAL.Core
         #endregion
     }
 }
+

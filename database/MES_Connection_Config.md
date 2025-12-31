@@ -17,7 +17,7 @@
 <configuration>
   <connectionStrings>
     <add name="MESDatabase" 
-         connectionString="Server=localhost;Database=mes_db;Uid=root;Pwd=Qwe.123;Charset=utf8mb4;SslMode=none;" 
+         connectionString="Server=localhost;Database=mes_db;Uid=root;Charset=utf8mb4;SslMode=none;" 
          providerName="MySql.Data.MySqlClient" />
   </connectionStrings>
 </configuration>
@@ -111,3 +111,4 @@ SELECT COUNT(*) AS total_orders FROM production_order_info;
 ---
 **创建时间**: 2025-06-09  
 **最后更新**: 2025-06-09
+

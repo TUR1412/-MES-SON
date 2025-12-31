@@ -958,7 +958,7 @@ namespace MES.UI.Forms
                 bool ok = false;
                 try
                 {
-                    ok = MES.DAL.Core.DatabaseHelper.TestConnection();
+                    ok = new MES.BLL.SystemManagement.DatabaseDiagnosticBLL().TestConnection();
                 }
                 catch
                 {
