@@ -14,6 +14,7 @@ namespace MES.UI.Framework.Controls
     {
         private bool _isHovered;
         private bool _isPressed;
+        private ControlAnimationState _animState;
 
         public LolActionButton()
         {
@@ -44,17 +45,37 @@ namespace MES.UI.Framework.Controls
             Width = 120;
 
             TabStop = true;
+
+            try
+            {
+                _animState = LeagueAnimationManager.Instance.GetControlState(this);
+            }
+            catch
+            {
+                _animState = null;
+            }
         }
 
         protected override void OnPaint(PaintEventArgs pevent)
         {
             try
             {
-                bool hovered = Enabled && _isHovered;
-                bool pressed = Enabled && _isPressed;
+                var state = _animState;
+                if (state == null)
+                {
+                    try { state = LeagueAnimationManager.Instance.GetControlState(this); } catch { state = null; }
+                }
 
-                // 更像 LoL：使用真实 RiotButton 渲染
-                RealLeagueRenderer.DrawRealLeagueButton(pevent.Graphics, ClientRectangle, hovered, pressed, Text, Font);
+                float hover = (Enabled && _isHovered) ? 1f : 0f;
+                float press = (Enabled && _isPressed) ? 1f : 0f;
+                if (state != null)
+                {
+                    hover = state.HoverProgress;
+                    press = state.PressProgress;
+                }
+
+                // 更像 LoL：使用真实 RiotButton 渲染（平滑 hover/click）
+                RealLeagueRenderer.DrawRealLeagueButton(pevent.Graphics, ClientRectangle, hover, press, Text, Font);
             }
             catch
             {
@@ -70,6 +91,14 @@ namespace MES.UI.Framework.Controls
         protected override void OnMouseEnter(EventArgs e)
         {
             _isHovered = true;
+            try
+            {
+                if (_animState != null) _animState.SetHover(true);
+            }
+            catch
+            {
+                // ignore
+            }
             Invalidate();
             base.OnMouseEnter(e);
         }
@@ -78,6 +107,18 @@ namespace MES.UI.Framework.Controls
         {
             _isHovered = false;
             _isPressed = false;
+            try
+            {
+                if (_animState != null)
+                {
+                    _animState.SetHover(false);
+                    _animState.SetPressed(false);
+                }
+            }
+            catch
+            {
+                // ignore
+            }
             Invalidate();
             base.OnMouseLeave(e);
         }
@@ -87,6 +128,14 @@ namespace MES.UI.Framework.Controls
             if (mevent.Button == MouseButtons.Left)
             {
                 _isPressed = true;
+                try
+                {
+                    if (_animState != null) _animState.SetPressed(true);
+                }
+                catch
+                {
+                    // ignore
+                }
                 Invalidate();
             }
             base.OnMouseDown(mevent);
@@ -97,6 +146,14 @@ namespace MES.UI.Framework.Controls
             if (_isPressed)
             {
                 _isPressed = false;
+                try
+                {
+                    if (_animState != null) _animState.SetPressed(false);
+                }
+                catch
+                {
+                    // ignore
+                }
                 Invalidate();
             }
             base.OnMouseUp(mevent);

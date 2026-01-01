@@ -1,6 +1,15 @@
-# MES-SON（WinForms / .NET Framework 4.8）🚀
+# MES-SON（WinForms / .NET Framework 4.8）
 
-> 一个以“可维护分层 + 可观测诊断 + 设计系统化 UI”为目标的桌面端 MES 方案示例工程。
+```text
+ __  __ _____ ____        ____   ___  _   _
+|  \/  | ____/ ___|      / ___| / _ \| \ | |
+| |\/| |  _| \___ \ _____\___ \| | | |  \| |
+| |  | | |___ ___) |_____|__) | |_| | |\  |
+|_|  |_|_____|____/     |____/ \___/|_| \_|
+                M E S  -  S O N
+```
+
+> 一个以「分层可维护 + 可观测诊断 + 设计系统化 UI」为目标的桌面端 MES 示例工程。
 
 ---
 
@@ -13,12 +22,27 @@
 
 ---
 
-## ✨ 亮点（为什么值得看）
+## ✨ 功能特性（项目为什么值得看）
 
-- **分层清晰**：UI（`MES.UI`）→ BLL（`MES.BLL`）→ DAL（`MES.DAL`）→ MySQL  
-- **安全默认值**：仓库不保存真实数据库密码，优先使用环境变量注入连接字符串
-- **UI/UX 设计系统化**：`MES.UI.Framework` 提供主题系统、控件基座与 Design Tokens
-- **诊断优先**：提供数据库诊断窗体，帮助快速定位连接/权限/配置问题
+- 🧱 **分层清晰**：UI（`MES.UI`）→ BLL（`MES.BLL`）→ DAL（`MES.DAL`）→ MySQL  
+- 🔍 **诊断优先**：提供数据库诊断链路，帮助快速定位连接/权限/配置问题  
+- 🛡️ **安全默认值**：仓库不保存真实数据库密码，优先使用环境变量注入连接字符串  
+- 🎨 **设计系统化 UI**：`MES.UI.Framework` 提供主题系统、控件基座与 Design Tokens  
+- 🫧 **玻璃质感（Glassmorphism）**：大厅卡片/导航按钮支持半透明材质，让背景纹理“透出来”  
+- ✨ **微交互（Hover/Click/Loading）**：导航/卡片/动作按钮 hover/click 平滑过渡；自绘进度条支持 `Indeterminate` Loading 动画  
+
+---
+
+## 🧭 快速导航
+
+- [目录结构](#-目录结构快速定位)
+- [快速开始](#-快速开始本地构建)
+- [数据库连接配置](#-数据库连接配置重要)
+- [架构图](#-架构图mermaid)
+- [UI/UX 设计系统](#-uiux-设计系统world-class-进化中)
+- [测试与验证](#-测试与验证)
+- [安全策略](#-安全策略)
+- [贡献](#-贡献)
 
 ---
 
@@ -74,7 +98,7 @@ msbuild MES.sln /t:Build /p:Configuration=Release /p:Platform="Any CPU" /p:Gener
 - `MES_TEST_CONNECTION_STRING`：测试环境连接字符串（可选）
 - `MES_PROD_CONNECTION_STRING`：生产环境连接字符串（可选）
 
-连接字符串建议包含的字段（仅列出字段名，不提供可复制的密码示例）：
+连接字符串建议包含字段（仅列字段名，不提供可复制的密码示例）：
 
 - `Server` / `Port`
 - `Database`
@@ -111,13 +135,18 @@ flowchart TD
 
 ## 🎨 UI/UX 设计系统（World-Class 进化中）
 
-`MES.UI.Framework` 是 UI 统一入口：
+`MES.UI.Framework` 是 UI 统一入口，目标是让业务窗体“只关心业务布局”，视觉一致性由 Framework 统一兜底。
+
+核心入口：
 
 - `UIThemeManager`：主题管理（含 LoL 暗金风主题）
-- `ThemedForm`：基础窗体基座（自动套用主题）
-- `DesignTokens`：字号 / 圆角 / 阴影 / 动效时长等基础 Token
-
-目标是让业务窗体“只关心业务布局”，视觉一致性由 Framework 统一兜底。
+- `LolClientVisuals`：大厅/导航/卡片视觉绘制（背景材质、噪点、纹理层）
+- `LeagueAnimationManager`：微交互动画状态管理（hover/click 平滑过渡）
+- 控件库：
+  - `LolNavButton`：侧边栏导航（hover/press 平滑过渡）
+  - `LolCardButton`：大厅入口卡片（Glass + 阴影 + hover 抬升）
+  - `LolActionButton`：状态区快捷动作按钮（RiotButton 风格 + 平滑 hover/click）
+  - `LolProgressBar`：自绘进度条（`Indeterminate` loading 动画）
 
 ---
 
@@ -136,12 +165,13 @@ flowchart TD
 
 ---
 
-## 🎬 演示（GIF）
+## 🎬 演示（GIF / 截图）
 
 为了保持仓库轻量，这里先预留占位。建议录制并放入 `docs/assets/`：
 
 - 建议 GIF 1：主界面导航与主题切换
-- 建议 GIF 2：数据库诊断与错误提示链路
+- 建议 GIF 2：大厅卡片 hover / click 微交互
+- 建议 GIF 3：数据库诊断与错误提示链路
 
 ---
 

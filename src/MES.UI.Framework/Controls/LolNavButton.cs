@@ -17,6 +17,7 @@ namespace MES.UI.Framework.Controls
         private bool _isSelected;
         private string _subtitle;
         private string _iconGlyph;
+        private ControlAnimationState _animState;
 
         private Font _titleFont;
         private Font _subtitleFont;
@@ -90,15 +91,46 @@ namespace MES.UI.Framework.Controls
 
             // 让 Tab 导航可用（键盘 Enter/Space 触发）
             TabStop = true;
+
+            try
+            {
+                // 注册到动画系统：实现“丝滑”的 hover/click 过渡
+                _animState = LeagueAnimationManager.Instance.GetControlState(this);
+            }
+            catch
+            {
+                _animState = null;
+            }
         }
 
         protected override void OnPaint(PaintEventArgs pevent)
         {
+            var state = _animState;
+            if (state == null)
+            {
+                try { state = LeagueAnimationManager.Instance.GetControlState(this); } catch { state = null; }
+            }
+
+            float hover = (_isHovered && Enabled) ? 1f : 0f;
+            float press = (_isPressed && Enabled) ? 1f : 0f;
+
+            if (state != null)
+            {
+                hover = state.HoverProgress;
+                press = state.PressProgress;
+            }
+
+            // 键盘焦点也给到轻微“可交互”反馈，避免 Tab 导航时看不出落点
+            if (Focused && hover < 0.25f)
+            {
+                hover = 0.25f;
+            }
+
             LolClientVisuals.DrawNavButton(
                 pevent.Graphics,
                 ClientRectangle,
-                _isHovered,
-                _isPressed,
+                hover,
+                press,
                 _isSelected,
                 Text,
                 _subtitle,
@@ -115,6 +147,14 @@ namespace MES.UI.Framework.Controls
         protected override void OnMouseEnter(EventArgs e)
         {
             _isHovered = true;
+            try
+            {
+                if (_animState != null) _animState.SetHover(true);
+            }
+            catch
+            {
+                // ignore
+            }
             Invalidate();
             base.OnMouseEnter(e);
         }
@@ -123,6 +163,18 @@ namespace MES.UI.Framework.Controls
         {
             _isHovered = false;
             _isPressed = false;
+            try
+            {
+                if (_animState != null)
+                {
+                    _animState.SetHover(false);
+                    _animState.SetPressed(false);
+                }
+            }
+            catch
+            {
+                // ignore
+            }
             Invalidate();
             base.OnMouseLeave(e);
         }
@@ -132,6 +184,14 @@ namespace MES.UI.Framework.Controls
             if (mevent.Button == MouseButtons.Left)
             {
                 _isPressed = true;
+                try
+                {
+                    if (_animState != null) _animState.SetPressed(true);
+                }
+                catch
+                {
+                    // ignore
+                }
                 Invalidate();
             }
             base.OnMouseDown(mevent);
@@ -142,6 +202,14 @@ namespace MES.UI.Framework.Controls
             if (_isPressed)
             {
                 _isPressed = false;
+                try
+                {
+                    if (_animState != null) _animState.SetPressed(false);
+                }
+                catch
+                {
+                    // ignore
+                }
                 Invalidate();
             }
             base.OnMouseUp(mevent);
@@ -157,6 +225,25 @@ namespace MES.UI.Framework.Controls
         {
             Invalidate();
             base.OnLostFocus(e);
+        }
+
+        protected override void OnEnabledChanged(EventArgs e)
+        {
+            try
+            {
+                if (!Enabled && _animState != null)
+                {
+                    _animState.SetHover(false);
+                    _animState.SetPressed(false);
+                }
+            }
+            catch
+            {
+                // ignore
+            }
+
+            Invalidate();
+            base.OnEnabledChanged(e);
         }
 
         protected override void Dispose(bool disposing)

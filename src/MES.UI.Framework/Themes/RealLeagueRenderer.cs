@@ -139,6 +139,108 @@ namespace MES.UI.Framework.Themes
             }
         }
 
+        /// <summary>
+        /// 绘制真实LOL风格按钮（支持 hover/press 平滑过渡）
+        /// </summary>
+        public static void DrawRealLeagueButton(Graphics g, Rectangle bounds, float hoverProgress, float pressProgress, string text, Font font)
+        {
+            if (g == null) return;
+
+            float h = EaseOutCubic(Clamp01(hoverProgress));
+            float p = EaseOutCubic(Clamp01(pressProgress));
+
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+
+            // Normal -> Hover -> Pressed
+            var backgroundColor1 = LerpColor(ButtonNormalBackground, ButtonHoverBackgroundStart, h);
+            backgroundColor1 = LerpColor(backgroundColor1, ButtonPressedBackgroundStart, p);
+
+            var backgroundColor2 = LerpColor(ButtonNormalBackground, ButtonHoverBackgroundEnd, h);
+            backgroundColor2 = LerpColor(backgroundColor2, ButtonPressedBackgroundEnd, p);
+
+            var borderColor1 = LerpColor(ButtonNormalBorderStart, ButtonHoverBorderStart, h);
+            borderColor1 = LerpColor(borderColor1, ButtonPressedBorderStart, p);
+
+            var borderColor2 = LerpColor(ButtonNormalBorderEnd, ButtonHoverBorderEnd, h);
+            borderColor2 = LerpColor(borderColor2, ButtonPressedBorderEnd, p);
+
+            var textColor = LerpColor(ButtonNormalText, ButtonHoverText, h);
+            textColor = LerpColor(textColor, ButtonPressedText, p);
+
+            // 背景（正常态为单色，hover/press 为渐变）
+            if (h > 0.001f || p > 0.001f)
+            {
+                using (var backgroundBrush = new LinearGradientBrush(bounds, backgroundColor1, backgroundColor2, LinearGradientMode.Vertical))
+                {
+                    g.FillRectangle(backgroundBrush, bounds);
+                }
+            }
+            else
+            {
+                using (var backgroundBrush = new SolidBrush(backgroundColor1))
+                {
+                    g.FillRectangle(backgroundBrush, bounds);
+                }
+            }
+
+            // 边框渐变
+            using (var borderBrush = new LinearGradientBrush(bounds, borderColor1, borderColor2, LinearGradientMode.Vertical))
+            using (var borderPen = new Pen(borderBrush, 1))
+            {
+                Rectangle borderRect = new Rectangle(bounds.X, bounds.Y, bounds.Width - 1, bounds.Height - 1);
+                g.DrawRectangle(borderPen, borderRect);
+            }
+
+            // 内边框阴影 - LOL特有的 InnerBorderStyle 效果
+            using (var innerPen = new Pen(ButtonInnerBorder, 1))
+            {
+                Rectangle innerRect = new Rectangle(bounds.X + 1, bounds.Y + 1, bounds.Width - 3, bounds.Height - 3);
+                g.DrawRectangle(innerPen, innerRect);
+            }
+
+            // 文字（居中对齐）
+            if (!string.IsNullOrEmpty(text))
+            {
+                using (var textBrush = new SolidBrush(textColor))
+                {
+                    var stringFormat = new StringFormat
+                    {
+                        Alignment = StringAlignment.Center,
+                        LineAlignment = StringAlignment.Center
+                    };
+                    g.DrawString(text, font, textBrush, bounds, stringFormat);
+                }
+            }
+        }
+
+        private static float Clamp01(float v)
+        {
+            if (v < 0f) return 0f;
+            if (v > 1f) return 1f;
+            return v;
+        }
+
+        private static float EaseOutCubic(float t)
+        {
+            t = Clamp01(t);
+            float p = 1f - t;
+            return 1f - p * p * p;
+        }
+
+        private static Color LerpColor(Color a, Color b, float t)
+        {
+            t = Clamp01(t);
+            int rr = a.R + (int)Math.Round((b.R - a.R) * t);
+            int gg = a.G + (int)Math.Round((b.G - a.G) * t);
+            int bb = a.B + (int)Math.Round((b.B - a.B) * t);
+
+            if (rr < 0) rr = 0; if (rr > 255) rr = 255;
+            if (gg < 0) gg = 0; if (gg > 255) gg = 255;
+            if (bb < 0) bb = 0; if (bb > 255) bb = 255;
+
+            return Color.FromArgb(255, rr, gg, bb);
+        }
+
         #endregion
 
         #region 真实LOL文本框渲染（基于RiotTextBox.xaml精确实现）

@@ -32,6 +32,7 @@
 ### 4.1 依赖还原（packages.config）
 
 - `nuget restore MES.sln`
+- 或直接运行：`./build.ps1 -BuildSolution`（脚本会在缺少 NuGet CLI 时自动下载 `nuget.exe` 并完成还原）
 
 ### 4.2 编译（MSBuild）
 
@@ -60,6 +61,7 @@
 
 - 统一 Token：`MES.UI.Framework/Themes/DesignTokens.cs`
 - 高 DPI：`MES.UI/app.manifest`（PerMonitorV2）
+- 微交互：`MES.UI.Framework/Themes/LeagueAnimationManager.cs`（hover/press 平滑过渡）
 - 新窗体/控件原则：
   - 字体、间距、颜色优先从 `DesignTokens` 取值
   - 允许逐步替换历史硬编码，但禁止新增新的硬编码风格债务

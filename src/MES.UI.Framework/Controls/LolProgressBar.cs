@@ -17,6 +17,12 @@ namespace MES.UI.Framework.Controls
         private int _maximum = 100;
         private int _value = 0;
 
+        private float _displayProgress = 0f;
+        private float _targetProgress = 0f;
+        private bool _indeterminate = false;
+        private int _indeterminateOffset = 0;
+        private Timer _animationTimer;
+
         public LolProgressBar()
         {
             SetStyle(
@@ -33,6 +39,34 @@ namespace MES.UI.Framework.Controls
         }
 
         [Category("行为")]
+        [Description("是否为不确定进度（Loading 动画）")]
+        [DefaultValue(false)]
+        public bool Indeterminate
+        {
+            get { return _indeterminate; }
+            set
+            {
+                if (_indeterminate != value)
+                {
+                    _indeterminate = value;
+                    if (_indeterminate)
+                    {
+                        _indeterminateOffset = 0;
+                        EnsureAnimationRunning();
+                    }
+                    else
+                    {
+                        // 退出不确定模式后，回到平滑显示当前 Value
+                        _targetProgress = Progress;
+                        EnsureAnimationRunning();
+                    }
+
+                    Invalidate();
+                }
+            }
+        }
+
+        [Category("行为")]
         [Description("进度条最小值")]
         [DefaultValue(0)]
         public int Minimum
@@ -43,6 +77,8 @@ namespace MES.UI.Framework.Controls
                 _minimum = value;
                 if (_maximum < _minimum) _maximum = _minimum;
                 if (_value < _minimum) _value = _minimum;
+                _targetProgress = Progress;
+                EnsureAnimationRunning();
                 Invalidate();
             }
         }
@@ -57,6 +93,8 @@ namespace MES.UI.Framework.Controls
             {
                 _maximum = Math.Max(value, _minimum);
                 if (_value > _maximum) _value = _maximum;
+                _targetProgress = Progress;
+                EnsureAnimationRunning();
                 Invalidate();
             }
         }
@@ -70,6 +108,8 @@ namespace MES.UI.Framework.Controls
             set
             {
                 _value = Math.Min(Math.Max(value, _minimum), _maximum);
+                _targetProgress = Progress;
+                EnsureAnimationRunning();
                 Invalidate();
             }
         }
@@ -125,40 +165,29 @@ namespace MES.UI.Framework.Controls
                     g.FillPath(trackBrush, path);
                 }
 
-                // Fill
-                var progress = Progress;
-                if (progress > 0f)
+                var oldClip = g.Clip;
+                try
                 {
-                    var fillWidth = (int)Math.Round(rect.Width * progress, MidpointRounding.AwayFromZero);
-                    if (fillWidth < 1) fillWidth = 1;
-                    if (fillWidth > rect.Width) fillWidth = rect.Width;
+                    g.SetClip(path, CombineMode.Intersect);
 
-                    var fillRect = new Rectangle(rect.Left, rect.Top, fillWidth, rect.Height);
-
-                    var oldClip = g.Clip;
-                    try
+                    if (_indeterminate)
                     {
-                        g.SetClip(path, CombineMode.Intersect);
-
-                        using (var fillBrush = new LinearGradientBrush(
-                            fillRect,
-                            Color.FromArgb(255, LeagueColors.RiotGold),
-                            Color.FromArgb(255, LeagueColors.RiotGoldHover),
-                            LinearGradientMode.Horizontal))
-                        {
-                            g.FillRectangle(fillBrush, fillRect);
-                        }
-
-                        // 顶部微高光线（更像客户端材质）
-                        using (var hi = new Pen(Color.FromArgb(60, LeagueColors.TextHighlight), 1))
-                        {
-                            g.DrawLine(hi, rect.Left + chamfer, rect.Top + 1, rect.Right - chamfer, rect.Top + 1);
-                        }
+                        DrawIndeterminateFill(g, rect);
                     }
-                    finally
+                    else
                     {
-                        try { g.Clip = oldClip; } catch { }
+                        DrawDeterminateFill(g, rect, _displayProgress);
                     }
+
+                    // 顶部微高光线（更像客户端材质）
+                    using (var hi = new Pen(Color.FromArgb(60, LeagueColors.TextHighlight), 1))
+                    {
+                        g.DrawLine(hi, rect.Left + chamfer, rect.Top + 1, rect.Right - chamfer, rect.Top + 1);
+                    }
+                }
+                finally
+                {
+                    try { g.Clip = oldClip; } catch { }
                 }
 
                 // Border
@@ -176,6 +205,164 @@ namespace MES.UI.Framework.Controls
             {
                 // ignore
             }
+        }
+
+        private void DrawDeterminateFill(Graphics g, Rectangle rect, float progress)
+        {
+            if (g == null) return;
+
+            var p = progress;
+            if (p < 0f) p = 0f;
+            if (p > 1f) p = 1f;
+
+            if (p <= 0.001f)
+            {
+                return;
+            }
+
+            var fillWidth = (int)Math.Round(rect.Width * p, MidpointRounding.AwayFromZero);
+            if (fillWidth < 1) fillWidth = 1;
+            if (fillWidth > rect.Width) fillWidth = rect.Width;
+
+            var fillRect = new Rectangle(rect.Left, rect.Top, fillWidth, rect.Height);
+            using (var fillBrush = new LinearGradientBrush(
+                fillRect,
+                Color.FromArgb(255, LeagueColors.RiotGold),
+                Color.FromArgb(255, LeagueColors.RiotGoldHover),
+                LinearGradientMode.Horizontal))
+            {
+                g.FillRectangle(fillBrush, fillRect);
+            }
+        }
+
+        private void DrawIndeterminateFill(Graphics g, Rectangle rect)
+        {
+            if (g == null) return;
+            if (rect.Width <= 0 || rect.Height <= 0) return;
+
+            // 典型 indeterminate：一个高亮条在轨道中来回滑动
+            int segmentWidth = Math.Max(20, rect.Width / 3);
+            int travel = rect.Width + segmentWidth;
+            int x = rect.Left - segmentWidth + (_indeterminateOffset % travel);
+
+            var segRect = new Rectangle(x, rect.Top, segmentWidth, rect.Height);
+
+            // 轻微“尾迹”渐变，让动画更丝滑
+            using (var brush = new LinearGradientBrush(
+                segRect,
+                Color.FromArgb(0, LeagueColors.RiotGoldHover),
+                Color.FromArgb(220, LeagueColors.RiotGoldHover),
+                LinearGradientMode.Horizontal))
+            {
+                g.FillRectangle(brush, segRect);
+            }
+
+            var coreRect = segRect;
+            coreRect.Inflate(-(segmentWidth / 6), 0);
+            using (var core = new LinearGradientBrush(
+                coreRect,
+                Color.FromArgb(255, LeagueColors.RiotGold),
+                Color.FromArgb(255, LeagueColors.RiotGoldHover),
+                LinearGradientMode.Horizontal))
+            {
+                g.FillRectangle(core, coreRect);
+            }
+        }
+
+        private void EnsureAnimationRunning()
+        {
+            if (_animationTimer == null)
+            {
+                _animationTimer = new Timer();
+                _animationTimer.Interval = 16; // ~60 FPS
+                _animationTimer.Tick += (s, e) =>
+                {
+                    try
+                    {
+                        bool needsInvalidate = false;
+
+                        if (_indeterminate)
+                        {
+                            _indeterminateOffset += 14;
+                            needsInvalidate = true;
+                        }
+                        else
+                        {
+                            var next = Approach(_displayProgress, _targetProgress, 0.22f);
+                            if (Math.Abs(next - _displayProgress) > 0.0005f)
+                            {
+                                _displayProgress = next;
+                                needsInvalidate = true;
+                            }
+                            else
+                            {
+                                _displayProgress = _targetProgress;
+                            }
+                        }
+
+                        if (needsInvalidate)
+                        {
+                            Invalidate();
+                        }
+                        else
+                        {
+                            // 无动画需求则自动停表，避免后台空转占用
+                            if (_animationTimer != null) _animationTimer.Stop();
+                        }
+                    }
+                    catch
+                    {
+                        // ignore
+                    }
+                };
+            }
+
+            try
+            {
+                if (!_animationTimer.Enabled)
+                {
+                    _animationTimer.Start();
+                }
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
+        private static float Approach(float current, float target, float speed)
+        {
+            if (speed <= 0f) return current;
+            if (speed >= 1f) return target;
+
+            var delta = target - current;
+            if (Math.Abs(delta) < 0.001f)
+            {
+                return target;
+            }
+
+            return current + delta * speed;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                try
+                {
+                    if (_animationTimer != null)
+                    {
+                        _animationTimer.Stop();
+                        _animationTimer.Dispose();
+                        _animationTimer = null;
+                    }
+                }
+                catch
+                {
+                    // ignore
+                }
+            }
+            base.Dispose(disposing);
         }
 
         private static GraphicsPath CreateChamferedRectPath(Rectangle rect, int chamfer)
