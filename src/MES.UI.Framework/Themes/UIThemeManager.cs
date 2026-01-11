@@ -377,6 +377,23 @@ namespace MES.UI.Framework.Themes
                 return;
             }
 
+            var tabControl = control as TabControl;
+            if (tabControl != null)
+            {
+                tabControl.BackColor = Colors.Background;
+                tabControl.ForeColor = Colors.Text;
+                return;
+            }
+
+            var tabPage = control as TabPage;
+            if (tabPage != null)
+            {
+                tabPage.BackColor = Colors.Background;
+                tabPage.ForeColor = Colors.Text;
+                try { tabPage.UseVisualStyleBackColor = false; } catch { }    
+                return;
+            }
+
             // 输入控件
             var textBox = control as TextBox;
             if (textBox != null)

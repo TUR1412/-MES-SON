@@ -70,7 +70,7 @@
 - 高 DPI：`MES.UI/app.manifest`（PerMonitorV2）
 - 键盘优先：`Ctrl+K` 命令面板支持模糊搜索/快速跳转/运行态主题切换
 - 错误边界：全局异常边界 + CrashReports（默认写入日志目录下的 `CrashReports/`）
-- 故障排查中心：内置日志尾部查看与 CrashReports 查看/复制入口，推荐从命令面板打开
+- 故障排查中心：内置日志尾部查看与 CrashReports 查看/复制/导出诊断包入口，推荐从命令面板打开（导出目录：日志目录下 `SupportBundles/`）
 - 新窗体/控件原则：
   - 字体、间距、颜色优先从 `DesignTokens` 取值
   - 允许逐步替换历史硬编码，但禁止新增新的硬编码风格债务

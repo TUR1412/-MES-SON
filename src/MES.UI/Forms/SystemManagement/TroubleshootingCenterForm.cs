@@ -41,6 +41,7 @@ namespace MES.UI.Forms.SystemManagement
         private readonly ModernButton _logOpenFolder = new ModernButton();
         private readonly ModernButton _logOpenExternal = new ModernButton();
         private readonly ModernButton _logCopyAll = new ModernButton();
+        private readonly ModernButton _logExportBundle = new ModernButton();
         private readonly Label _logMeta = new Label();
         private int _logLoadVersion = 0;
 
@@ -52,6 +53,7 @@ namespace MES.UI.Forms.SystemManagement
         private readonly ModernButton _crashOpenFolder = new ModernButton();
         private readonly ModernButton _crashOpenExternal = new ModernButton();
         private readonly ModernButton _crashCopyAll = new ModernButton();
+        private readonly ModernButton _crashExportBundle = new ModernButton();
         private readonly Label _crashMeta = new Label();
         private int _crashLoadVersion = 0;
 
@@ -167,13 +169,14 @@ namespace MES.UI.Forms.SystemManagement
         {
             var bar = new TableLayoutPanel();
             bar.Dock = DockStyle.Fill;
-            bar.ColumnCount = 10;
+            bar.ColumnCount = 11;
             bar.RowCount = 1;
 
             bar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 90));  // refresh
             bar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 110)); // open folder
             bar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 110)); // open external
             bar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 90));  // copy all
+            bar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120)); // export
             bar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 70));  // label
             bar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 90));  // numeric
             bar.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
@@ -201,18 +204,23 @@ namespace MES.UI.Forms.SystemManagement
             _logCopyAll.Dock = DockStyle.Fill;
             bar.Controls.Add(_logCopyAll, 3, 0);
 
+            _logExportBundle.Text = "导出诊断包";
+            _logExportBundle.Style = ModernButton.ButtonStyle.Outline;
+            _logExportBundle.Dock = DockStyle.Fill;
+            bar.Controls.Add(_logExportBundle, 4, 0);
+
             var tailLabel = new Label();
             tailLabel.Dock = DockStyle.Fill;
             tailLabel.TextAlign = ContentAlignment.MiddleRight;
             tailLabel.Text = "尾部行数";
-            bar.Controls.Add(tailLabel, 4, 0);
+            bar.Controls.Add(tailLabel, 5, 0);
 
             _logTailLines.Dock = DockStyle.Fill;
             _logTailLines.Minimum = 200;
             _logTailLines.Maximum = 20000;
             _logTailLines.Increment = 200;
             _logTailLines.Value = 2000;
-            bar.Controls.Add(_logTailLines, 5, 0);
+            bar.Controls.Add(_logTailLines, 6, 0);
 
             return bar;
         }
@@ -278,13 +286,14 @@ namespace MES.UI.Forms.SystemManagement
         {
             var bar = new TableLayoutPanel();
             bar.Dock = DockStyle.Fill;
-            bar.ColumnCount = 10;
+            bar.ColumnCount = 11;
             bar.RowCount = 1;
 
             bar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 90));  // refresh
             bar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 110)); // open folder
             bar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 110)); // open external
             bar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 90));  // copy all
+            bar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120)); // export
             bar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 70));  // label
             bar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 90));  // numeric
             bar.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
@@ -312,18 +321,23 @@ namespace MES.UI.Forms.SystemManagement
             _crashCopyAll.Dock = DockStyle.Fill;
             bar.Controls.Add(_crashCopyAll, 3, 0);
 
+            _crashExportBundle.Text = "导出诊断包";
+            _crashExportBundle.Style = ModernButton.ButtonStyle.Outline;
+            _crashExportBundle.Dock = DockStyle.Fill;
+            bar.Controls.Add(_crashExportBundle, 4, 0);
+
             var tailLabel = new Label();
             tailLabel.Dock = DockStyle.Fill;
             tailLabel.TextAlign = ContentAlignment.MiddleRight;
             tailLabel.Text = "尾部行数";
-            bar.Controls.Add(tailLabel, 4, 0);
+            bar.Controls.Add(tailLabel, 5, 0);
 
             _crashTailLines.Dock = DockStyle.Fill;
             _crashTailLines.Minimum = 200;
             _crashTailLines.Maximum = 20000;
             _crashTailLines.Increment = 200;
             _crashTailLines.Value = 4000;
-            bar.Controls.Add(_crashTailLines, 5, 0);
+            bar.Controls.Add(_crashTailLines, 6, 0);
 
             return bar;
         }
@@ -334,6 +348,7 @@ namespace MES.UI.Forms.SystemManagement
             _logOpenFolder.Click += (s, e) => OpenFolderSafe(LogManager.LogDirectory);
             _logOpenExternal.Click += (s, e) => OpenSelectedFileExternal(_logFiles);
             _logCopyAll.Click += (s, e) => CopyTextSafe(_logText.Text, "日志内容已复制。");
+            _logExportBundle.Click += (s, e) => ExportSupportBundle();
             _logTailLines.ValueChanged += (s, e) => LoadSelectedLog();
             _logFiles.SelectedIndexChanged += (s, e) => LoadSelectedLog();
 
@@ -341,6 +356,7 @@ namespace MES.UI.Forms.SystemManagement
             _crashOpenFolder.Click += (s, e) => OpenFolderSafe(GetCrashReportsDirectory());
             _crashOpenExternal.Click += (s, e) => OpenSelectedFileExternal(_crashFiles);
             _crashCopyAll.Click += (s, e) => CopyTextSafe(_crashText.Text, "崩溃报告已复制。");
+            _crashExportBundle.Click += (s, e) => ExportSupportBundle();
             _crashTailLines.ValueChanged += (s, e) => LoadSelectedCrashReport();
             _crashFiles.SelectedIndexChanged += (s, e) => LoadSelectedCrashReport();
         }
@@ -774,6 +790,173 @@ namespace MES.UI.Forms.SystemManagement
             {
                 LogManager.Error("复制到剪贴板失败", ex);
                 MessageBox.Show(string.Format("复制失败：{0}", ex.Message), "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void ExportSupportBundle()
+        {
+            try
+            {
+                var logDir = LogManager.LogDirectory;
+                if (string.IsNullOrWhiteSpace(logDir))
+                {
+                    MessageBox.Show("未找到日志目录，无法导出诊断包。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                if (!Directory.Exists(logDir))
+                {
+                    Directory.CreateDirectory(logDir);
+                }
+
+                var bundlesRoot = Path.Combine(logDir, "SupportBundles");
+                if (!Directory.Exists(bundlesRoot))
+                {
+                    Directory.CreateDirectory(bundlesRoot);
+                }
+
+                var now = DateTime.Now;
+                var bundleName = string.Format("MES_Support_{0:yyyyMMdd_HHmmss}", now);
+                var bundleDir = Path.Combine(bundlesRoot, bundleName);
+                Directory.CreateDirectory(bundleDir);
+
+                var selectedLog = GetSelectedFilePath(_logFiles);
+                var selectedCrash = GetSelectedFilePath(_crashFiles);
+
+                if (string.IsNullOrWhiteSpace(selectedLog))
+                {
+                    var today = LogManager.GetTodayLogFilePath();
+                    if (!string.IsNullOrWhiteSpace(today) && File.Exists(today))
+                    {
+                        selectedLog = today;
+                    }
+                }
+
+                if (string.IsNullOrWhiteSpace(selectedCrash) && _crashFiles.Items.Count > 0)
+                {
+                    try
+                    {
+                        var first = _crashFiles.Items[0] as FileEntry;
+                        if (first != null && !string.IsNullOrWhiteSpace(first.FullPath) && File.Exists(first.FullPath))
+                        {
+                            selectedCrash = first.FullPath;
+                        }
+                    }
+                    catch
+                    {
+                        // ignore
+                    }
+                }
+
+                string copiedLog = CopyFileIfExists(selectedLog, bundleDir);
+                string copiedCrash = CopyFileIfExists(selectedCrash, bundleDir);
+
+                var logTailLines = SafeGetTailLines(_logTailLines, 2000);
+                var crashTailLines = SafeGetTailLines(_crashTailLines, 4000);
+
+                WriteTailIfExists(selectedLog, bundleDir, "log_tail.txt", logTailLines);
+                WriteTailIfExists(selectedCrash, bundleDir, "crash_tail.txt", crashTailLines);
+
+                WriteBundleSummary(bundleDir, copiedLog, copiedCrash, logTailLines, crashTailLines);
+
+                try { Process.Start("explorer.exe", bundleDir); } catch { }
+
+                MessageBox.Show(string.Format("诊断包已导出：{0}", bundleDir), "完成", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("导出诊断包失败", ex);
+                MessageBox.Show(string.Format("导出诊断包失败：{0}", ex.Message), "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private static string CopyFileIfExists(string sourcePath, string bundleDir)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(sourcePath)) return string.Empty;
+                if (!File.Exists(sourcePath)) return string.Empty;
+                if (string.IsNullOrWhiteSpace(bundleDir)) return string.Empty;
+
+                var name = Path.GetFileName(sourcePath);
+                if (string.IsNullOrWhiteSpace(name)) return string.Empty;
+
+                var dest = Path.Combine(bundleDir, name);
+                File.Copy(sourcePath, dest, true);
+                return dest;
+            }
+            catch
+            {
+                return string.Empty;
+            }
+        }
+
+        private static void WriteTailIfExists(string sourcePath, string bundleDir, string fileName, int tailLines)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(sourcePath)) return;
+                if (!File.Exists(sourcePath)) return;
+                if (string.IsNullOrWhiteSpace(bundleDir)) return;
+                if (string.IsNullOrWhiteSpace(fileName)) return;
+
+                var text = TextFileTailReader.ReadTailText(sourcePath, tailLines);
+                if (string.IsNullOrWhiteSpace(text))
+                {
+                    text = "(空)";
+                }
+
+                var path = Path.Combine(bundleDir, fileName);
+                File.WriteAllText(path, text, System.Text.Encoding.UTF8);
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
+        private void WriteBundleSummary(string bundleDir, string copiedLog, string copiedCrash, int logTailLines, int crashTailLines)
+        {
+            try
+            {
+                var path = Path.Combine(bundleDir, "bundle_summary.txt");
+                var sb = new System.Text.StringBuilder();
+
+                sb.AppendLine("MES Support Bundle");
+                sb.AppendLine(string.Format("GeneratedAt: {0:yyyy-MM-dd HH:mm:ss}", DateTime.Now));
+                sb.AppendLine();
+
+                sb.AppendLine("Environment");
+                sb.AppendLine(string.Format("MachineName: {0}", Environment.MachineName));
+                sb.AppendLine(string.Format("OS: {0}", Environment.OSVersion));
+                sb.AppendLine(string.Format("Is64BitProcess: {0}", Environment.Is64BitProcess));
+                sb.AppendLine(string.Format("CLR: {0}", Environment.Version));
+                sb.AppendLine(string.Format("Theme: {0}", UIThemeManager.CurrentTheme));
+                sb.AppendLine();
+
+                sb.AppendLine("Paths");
+                sb.AppendLine(string.Format("LogDirectory: {0}", LogManager.LogDirectory));
+                sb.AppendLine(string.Format("CrashReportsDirectory: {0}", GetCrashReportsDirectory()));
+                sb.AppendLine(string.Format("BundleDirectory: {0}", bundleDir));
+                sb.AppendLine();
+
+                sb.AppendLine("Files");
+                sb.AppendLine(string.Format("CopiedLog: {0}", string.IsNullOrWhiteSpace(copiedLog) ? "(none)" : copiedLog));
+                sb.AppendLine(string.Format("CopiedCrashReport: {0}", string.IsNullOrWhiteSpace(copiedCrash) ? "(none)" : copiedCrash));
+                sb.AppendLine(string.Format("LogTailLines: {0}", logTailLines));
+                sb.AppendLine(string.Format("CrashTailLines: {0}", crashTailLines));
+                sb.AppendLine();
+
+                sb.AppendLine("Env Vars (presence only, values not exported)");
+                sb.AppendLine(string.Format("MES_CONNECTION_STRING: {0}", string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("MES_CONNECTION_STRING")) ? "not set" : "set"));
+                sb.AppendLine(string.Format("MES_TEST_CONNECTION_STRING: {0}", string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("MES_TEST_CONNECTION_STRING")) ? "not set" : "set"));
+                sb.AppendLine(string.Format("MES_PROD_CONNECTION_STRING: {0}", string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("MES_PROD_CONNECTION_STRING")) ? "not set" : "set"));
+
+                File.WriteAllText(path, sb.ToString(), System.Text.Encoding.UTF8);
+            }
+            catch
+            {
+                // ignore
             }
         }
 

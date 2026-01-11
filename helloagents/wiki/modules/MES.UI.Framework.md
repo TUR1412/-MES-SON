@@ -28,4 +28,5 @@
 
 - 新增 UI 视觉规则应优先沉淀为 Token（字体/颜色/圆角/间距）
 - 日志/报告类展示建议使用 `DesignTokens.Typography.CreateCodeFont()` 以获得更好的可读性
+- 主题应用覆盖容器控件：包含 TabControl/TabPage 等常见容器（避免部分界面“漏主题”）
 - 允许渐进式替换历史硬编码，但禁止新增新的硬编码风格债务
