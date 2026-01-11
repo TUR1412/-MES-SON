@@ -170,6 +170,7 @@ $RECYCLE.BIN/
 *.temp
 *.log
 *.cache
+*.backup
 
 # 编译器生成的文件
 *.dll

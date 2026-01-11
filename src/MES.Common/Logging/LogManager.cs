@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Configuration;
+using System.Globalization;
 using MES.Common.Configuration;
 
 namespace MES.Common.Logging
@@ -13,6 +14,8 @@ namespace MES.Common.Logging
         private static readonly object _lockObject = new object();
         private static string _logPath;
         private static LogLevel _logLevel;
+        private static long _logMaxFileBytes = 0;
+        private static int _logMaxFiles = 0;
         private static bool _isInitialized = false;
 
         /// <summary>
@@ -67,8 +70,11 @@ namespace MES.Common.Logging
                 try
                 {
                     // 获取日志配置
-                    _logPath = ConfigManager.GetAppSetting("LogPath", "Logs");
+                    _logPath = ConfigManager.GetAppSetting("LogPath", "Logs");  
                     var logLevelStr = ConfigManager.GetAppSetting("LogLevel", "Info");
+                    var maxFileSizeStr = ConfigManager.GetAppSetting("LogMaxFileSize", string.Empty);
+                    _logMaxFileBytes = ParseSizeToBytes(maxFileSizeStr, 0);
+                    _logMaxFiles = ConfigManager.GetAppSetting<int>("LogMaxFiles", 0);
                     
                     if (!Enum.TryParse(logLevelStr, true, out _logLevel))
                     {
@@ -88,6 +94,7 @@ namespace MES.Common.Logging
 
                     _isInitialized = true;
                     Info("日志管理器初始化完成");
+                    if (_logMaxFiles > 0) CleanupOldLogsByCount(_logMaxFiles);
                 }
                 catch (Exception ex)
                 {
@@ -160,6 +167,7 @@ namespace MES.Common.Logging
 
                     var logEntry = FormatLogEntry(level, message, exception);
 
+                    TryRotateActiveLogFileIfNeeded(logFilePath);
                     File.AppendAllText(logFilePath, logEntry + Environment.NewLine);
 
                     // 如果是错误或致命错误，同时输出到控制台
@@ -199,6 +207,150 @@ namespace MES.Common.Logging
             return logEntry;
         }
 
+        private static long ParseSizeToBytes(string rawValue, long defaultBytes)
+        {
+            if (string.IsNullOrWhiteSpace(rawValue)) return defaultBytes;
+
+            try
+            {
+                var s = rawValue.Trim();
+                if (s.Length == 0) return defaultBytes;
+
+                s = s.Replace(" ", string.Empty);
+                var upper = s.ToUpperInvariant();
+
+                long multiplier = 1;
+                string numericPart = upper;
+
+                if (upper.EndsWith("KB", StringComparison.Ordinal))
+                {
+                    multiplier = 1024L;
+                    numericPart = upper.Substring(0, upper.Length - 2);
+                }
+                else if (upper.EndsWith("K", StringComparison.Ordinal))
+                {
+                    multiplier = 1024L;
+                    numericPart = upper.Substring(0, upper.Length - 1);
+                }
+                else if (upper.EndsWith("MB", StringComparison.Ordinal))
+                {
+                    multiplier = 1024L * 1024L;
+                    numericPart = upper.Substring(0, upper.Length - 2);
+                }
+                else if (upper.EndsWith("M", StringComparison.Ordinal))
+                {
+                    multiplier = 1024L * 1024L;
+                    numericPart = upper.Substring(0, upper.Length - 1);
+                }
+                else if (upper.EndsWith("GB", StringComparison.Ordinal))
+                {
+                    multiplier = 1024L * 1024L * 1024L;
+                    numericPart = upper.Substring(0, upper.Length - 2);
+                }
+                else if (upper.EndsWith("G", StringComparison.Ordinal))
+                {
+                    multiplier = 1024L * 1024L * 1024L;
+                    numericPart = upper.Substring(0, upper.Length - 1);
+                }
+                else if (upper.EndsWith("B", StringComparison.Ordinal))
+                {
+                    multiplier = 1;
+                    numericPart = upper.Substring(0, upper.Length - 1);
+                }
+
+                double number;
+                if (!double.TryParse(numericPart, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out number))
+                {
+                    return defaultBytes;
+                }
+
+                if (number <= 0) return 0;
+
+                double bytes = number * multiplier;
+                if (bytes > long.MaxValue) return long.MaxValue;
+                return (long)bytes;
+            }
+            catch
+            {
+                return defaultBytes;
+            }
+        }
+
+        private static void TryRotateActiveLogFileIfNeeded(string activeLogFilePath)
+        {
+            try
+            {
+                if (_logMaxFileBytes <= 0) return;
+                if (string.IsNullOrWhiteSpace(activeLogFilePath)) return;
+                if (!File.Exists(activeLogFilePath)) return;
+
+                var fi = new FileInfo(activeLogFilePath);
+                if (!fi.Exists) return;
+                if (fi.Length < _logMaxFileBytes) return;
+
+                var directory = fi.DirectoryName;
+                if (string.IsNullOrWhiteSpace(directory)) return;
+
+                var baseName = Path.GetFileNameWithoutExtension(activeLogFilePath);
+                var ext = Path.GetExtension(activeLogFilePath);
+                if (string.IsNullOrWhiteSpace(baseName)) return;
+                if (string.IsNullOrWhiteSpace(ext)) ext = ".log";
+
+                for (int i = 1; i <= 999; i++)
+                {
+                    var rotated = Path.Combine(directory, string.Format("{0}_{1:000}{2}", baseName, i, ext));
+                    if (File.Exists(rotated)) continue;
+
+                    try { File.Move(activeLogFilePath, rotated); }
+                    catch { }
+                    break;
+                }
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
+        private static void CleanupOldLogsByCount(int maxFiles)
+        {
+            try
+            {
+                if (maxFiles <= 0) return;
+                if (string.IsNullOrWhiteSpace(_logPath)) return;
+                if (!Directory.Exists(_logPath)) return;
+
+                var info = new DirectoryInfo(_logPath);
+                var files = info.GetFiles("MES_*.log");
+                Array.Sort(files, (a, b) => b.LastWriteTimeUtc.CompareTo(a.LastWriteTimeUtc));
+
+                if (files.Length <= maxFiles) return;
+
+                int deleted = 0;
+                for (int i = maxFiles; i < files.Length; i++)
+                {
+                    try
+                    {
+                        files[i].Delete();
+                        deleted++;
+                    }
+                    catch
+                    {
+                        // ignore
+                    }
+                }
+
+                if (deleted > 0)
+                {
+                    Info(string.Format("已按数量清理过期日志文件: {0} 个（保留最新 {1} 个）", deleted, maxFiles));
+                }
+            }
+            catch (Exception ex)
+            {
+                Error("按数量清理日志文件失败", ex);
+            }
+        }
+
         /// <summary>
         /// 清理过期日志文件
         /// </summary>
@@ -206,19 +358,39 @@ namespace MES.Common.Logging
         {
             try
             {
+                if (!_isInitialized)
+                {
+                    Initialize();
+                }
+
+                if (keepDays <= 0) return;
+                if (string.IsNullOrWhiteSpace(_logPath)) return;
                 if (!Directory.Exists(_logPath)) return;
 
-                var cutoffDate = DateTime.Now.AddDays(-keepDays);
+                var cutoffUtc = DateTime.UtcNow.AddDays(-keepDays);
                 var logFiles = Directory.GetFiles(_logPath, "MES_*.log");
+                int deleted = 0;
 
                 foreach (var logFile in logFiles)
                 {
-                    var fileInfo = new FileInfo(logFile);
-                    if (fileInfo.CreationTime < cutoffDate)
+                    try
                     {
-                        File.Delete(logFile);
-                        Info(string.Format("已删除过期日志文件: {0}", Path.GetFileName(logFile)));
+                        var fileInfo = new FileInfo(logFile);
+                        if (fileInfo.LastWriteTimeUtc < cutoffUtc)
+                        {
+                            File.Delete(logFile);
+                            deleted++;
+                        }
                     }
+                    catch
+                    {
+                        // ignore
+                    }
+                }
+
+                if (deleted > 0)
+                {
+                    Info(string.Format("已清理过期日志文件: {0} 个（保留 {1} 天）", deleted, keepDays));
                 }
             }
             catch (Exception ex)

@@ -122,6 +122,14 @@ Server=127.0.0.1;Port=3306;Database=mes;User Id=root;Password=******;SslMode=Non
 
 ---
 
+### 🧾 日志与保留策略
+
+- 日志文件：`Logs/MES_yyyyMMdd.log`（默认）
+- 轮转（可选）：当 `LogMaxFileSize` 设置且文件超过阈值时，会将当日日志归档为 `MES_yyyyMMdd_001.log`、`MES_yyyyMMdd_002.log`... 并继续写入 `MES_yyyyMMdd.log`
+- 保留（可选）：当 `LogMaxFiles` 设置为 `N` 时，应用启动会自动清理旧日志，仅保留最近 `N` 个 `MES_*.log` 文件
+
+---
+
 ### ⌨️ 快捷键
 
 - 命令面板（Command Palette）
@@ -263,6 +271,14 @@ Notes:
 - A global exception boundary is enabled (UI thread, AppDomain, and unobserved task exceptions)
 - Crash reports are written under `CrashReports/` inside the log directory
 - Use the command palette to open the log folder / today's log for troubleshooting
+
+---
+
+### 🧾 Logging & Retention
+
+- Log files: `Logs/MES_yyyyMMdd.log` (default)
+- Rotation (optional): when `LogMaxFileSize` is set and the active file exceeds it, the current-day log is archived as `MES_yyyyMMdd_001.log`, `MES_yyyyMMdd_002.log`, ... and writing continues to `MES_yyyyMMdd.log`
+- Retention (optional): when `LogMaxFiles` is set to `N`, the app cleans up old logs on startup and keeps the newest `N` `MES_*.log` files
 
 ---
 
