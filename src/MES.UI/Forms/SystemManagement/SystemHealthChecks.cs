@@ -33,6 +33,17 @@ namespace MES.UI.Forms.SystemManagement
         public bool IncludeRecentCrashIndicator { get; set; }
     }
 
+    public interface IHealthCheckProbe
+    {
+        void Collect(List<HealthCheckResult> list, HealthCheckOptions options, HealthCheckContext context);
+    }
+
+    public sealed class HealthCheckContext
+    {
+        public string ThemeName { get; set; }
+        public string LogDirectory { get; set; }
+    }
+
     public static class SystemHealthChecks
     {
         public static List<HealthCheckResult> Collect(HealthCheckOptions options)
@@ -67,6 +78,34 @@ namespace MES.UI.Forms.SystemManagement
             return list;
         }
 
+        /// <summary>
+        /// OCP extension point: run default probes (built-in checks) + optional additional probes.
+        /// Prefer this API for new features to avoid branching health check logic across multiple call sites.
+        /// </summary>
+        public static List<HealthCheckResult> CollectWithProbes(HealthCheckOptions options, IEnumerable<IHealthCheckProbe> additionalProbes)
+        {
+            if (options == null) options = new HealthCheckOptions();
+            if (options.DatabaseConnectionTimeoutSeconds <= 0) options.DatabaseConnectionTimeoutSeconds = 3;
+
+            var list = new List<HealthCheckResult>();
+            var context = new HealthCheckContext();
+
+            foreach (var probe in GetDefaultProbes(options))
+            {
+                SafeRunProbe(probe, list, options, context);
+            }
+
+            if (additionalProbes != null)
+            {
+                foreach (var probe in additionalProbes)
+                {
+                    SafeRunProbe(probe, list, options, context);
+                }
+            }
+
+            return list;
+        }
+
         public static string RenderText(IEnumerable<HealthCheckResult> results)
         {
             var sb = new StringBuilder();
@@ -88,6 +127,130 @@ namespace MES.UI.Forms.SystemManagement
             }
 
             return sb.ToString();
+        }
+
+        private static void SafeRunProbe(IHealthCheckProbe probe, List<HealthCheckResult> list, HealthCheckOptions options, HealthCheckContext context)
+        {
+            try
+            {
+                if (probe == null) return;
+                if (list == null) return;
+                probe.Collect(list, options, context);
+            }
+            catch
+            {
+                // ignore (probe errors should never crash the app)
+            }
+        }
+
+        private static IEnumerable<IHealthCheckProbe> GetDefaultProbes(HealthCheckOptions options)
+        {
+            // NOTE: order matters (some probes depend on context values produced by earlier probes).
+            yield return new AppVersionProbe();
+            yield return new ThemeProbe();
+            yield return new LogDirectoryProbe();
+            yield return new CrashReportsDirectoryProbe();
+            yield return new SupportBundlesDirectoryProbe();
+            yield return new DiskSpaceProbe();
+
+            if (options != null && options.IncludeRecentCrashIndicator)
+            {
+                yield return new RecentCrashProbe();
+            }
+
+            if (options != null && options.IncludeDatabaseConnectivity)
+            {
+                yield return new DatabaseConnectivityProbe();
+            }
+            else
+            {
+                yield return new DatabasePresenceProbe();
+            }
+        }
+
+        private sealed class AppVersionProbe : IHealthCheckProbe
+        {
+            public void Collect(List<HealthCheckResult> list, HealthCheckOptions options, HealthCheckContext context)
+            {
+                SafeAddInfo(list, "应用版本", string.Format("{0} ({1})", ConfigManager.SystemTitle, ConfigManager.SystemVersion));
+            }
+        }
+
+        private sealed class ThemeProbe : IHealthCheckProbe
+        {
+            public void Collect(List<HealthCheckResult> list, HealthCheckOptions options, HealthCheckContext context)
+            {
+                var theme = SafeGetThemeName();
+                try { if (context != null) context.ThemeName = theme; } catch { }
+                SafeAddInfo(list, "主题", theme);
+            }
+        }
+
+        private sealed class LogDirectoryProbe : IHealthCheckProbe
+        {
+            public void Collect(List<HealthCheckResult> list, HealthCheckOptions options, HealthCheckContext context)
+            {
+                var logDir = SafeGetLogDirectory(list);
+                try { if (context != null) context.LogDirectory = logDir; } catch { }
+            }
+        }
+
+        private sealed class CrashReportsDirectoryProbe : IHealthCheckProbe
+        {
+            public void Collect(List<HealthCheckResult> list, HealthCheckOptions options, HealthCheckContext context)
+            {
+                string logDir = string.Empty;
+                try { if (context != null) logDir = context.LogDirectory; } catch { logDir = string.Empty; }
+                SafeCheckDirectory(list, "CrashReports 目录", string.IsNullOrWhiteSpace(logDir) ? string.Empty : Path.Combine(logDir, "CrashReports"));
+            }
+        }
+
+        private sealed class SupportBundlesDirectoryProbe : IHealthCheckProbe
+        {
+            public void Collect(List<HealthCheckResult> list, HealthCheckOptions options, HealthCheckContext context)
+            {
+                string logDir = string.Empty;
+                try { if (context != null) logDir = context.LogDirectory; } catch { logDir = string.Empty; }
+                SafeCheckDirectory(list, "SupportBundles 目录", string.IsNullOrWhiteSpace(logDir) ? string.Empty : Path.Combine(logDir, "SupportBundles"));
+            }
+        }
+
+        private sealed class DiskSpaceProbe : IHealthCheckProbe
+        {
+            public void Collect(List<HealthCheckResult> list, HealthCheckOptions options, HealthCheckContext context)
+            {
+                string logDir = string.Empty;
+                try { if (context != null) logDir = context.LogDirectory; } catch { logDir = string.Empty; }
+                SafeCheckDisk(list, logDir);
+            }
+        }
+
+        private sealed class RecentCrashProbe : IHealthCheckProbe
+        {
+            public void Collect(List<HealthCheckResult> list, HealthCheckOptions options, HealthCheckContext context)
+            {
+                string logDir = string.Empty;
+                try { if (context != null) logDir = context.LogDirectory; } catch { logDir = string.Empty; }
+                SafeCheckRecentCrash(list, logDir);
+            }
+        }
+
+        private sealed class DatabasePresenceProbe : IHealthCheckProbe
+        {
+            public void Collect(List<HealthCheckResult> list, HealthCheckOptions options, HealthCheckContext context)
+            {
+                SafeCheckDatabasePresence(list);
+            }
+        }
+
+        private sealed class DatabaseConnectivityProbe : IHealthCheckProbe
+        {
+            public void Collect(List<HealthCheckResult> list, HealthCheckOptions options, HealthCheckContext context)
+            {
+                int timeout = 3;
+                try { if (options != null) timeout = options.DatabaseConnectionTimeoutSeconds; } catch { timeout = 3; }
+                SafeCheckDatabase(list, timeout);
+            }
         }
 
         private static void SafeAddInfo(List<HealthCheckResult> list, string item, string detail)

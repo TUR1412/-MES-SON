@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="CommandPaletteSearchTests.cs" />
     <Compile Include="ConnectionStringHelperTests.cs" />
+    <Compile Include="SystemHealthChecksTests.cs" />
     <Compile Include="TextFileTailReaderTests.cs" />
     <Compile Include="Properties\\AssemblyInfo.cs" />
   </ItemGroup>
@@ -54,13 +55,17 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\\..\\src\\MES.Common\\MES.Common.csproj">
+    <ProjectReference Include="..\\..\\src\\MES.Common\\MES.Common.csproj">     
       <Project>{0000E5F6-0000-0000-0000-000000000000}</Project>
       <Name>MES.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\\..\\src\\MES.UI.Framework\\MES.UI.Framework.csproj">
       <Project>{000000F6-0000-0000-0000-000000000000}</Project>
       <Name>MES.UI.Framework</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\\..\\src\\MES.UI\\MES.UI.csproj">
+      <Project>{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}</Project>
+      <Name>MES.UI</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\\Microsoft.CSharp.targets" />

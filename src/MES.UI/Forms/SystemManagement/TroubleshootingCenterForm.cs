@@ -2286,7 +2286,7 @@ namespace MES.UI.Forms.SystemManagement
                     IncludeRecentCrashIndicator = true
                 };
 
-                var results = SystemHealthChecks.Collect(options);
+                var results = SystemHealthChecks.CollectWithProbes(options, null);
                 var text = SystemHealthChecks.RenderText(results);
                 text = MaskSensitiveText(text);
 

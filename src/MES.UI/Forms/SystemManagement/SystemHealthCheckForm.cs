@@ -187,7 +187,7 @@ namespace MES.UI.Forms.SystemManagement
                     IncludeRecentCrashIndicator = true
                 };
 
-                var results = await Task.Run(() => SystemHealthChecks.Collect(options));
+                var results = await Task.Run(() => SystemHealthChecks.CollectWithProbes(options, null));
                 if (IsDisposed) return;
 
                 _lastResults = results ?? new List<HealthCheckResult>();

@@ -15,9 +15,12 @@
 - CrashReports 增强：崩溃报告附带脱敏后的今日日志尾部上下文，提升定位与复盘效率
 - Support Bundle 增强：导出时对日志/崩溃报告复制与尾部片段默认脱敏，降低信息泄露风险
 - Support Bundle 增强：导出时额外生成 `health_check.txt`（系统健康检查摘要；默认脱敏）
-- 系统健康检查抽取：新增 `SystemHealthChecks` 供健康检查窗体与 Support Bundle 复用（OCP）
+- 系统健康检查 OCP：新增 `CollectWithProbes` + `IHealthCheckProbe` 扩展点，健康检查窗体与 Support Bundle 共用同一采集链路（保持原有 `Collect(options)` 兼容）
 - 日志目录回退：当日志目录不可创建/不可写时，自动回退到 LocalAppData，避免安装目录权限问题
 - 系统健康检查：命令面板一键自检日志目录/CrashReports/磁盘空间/数据库连通性（默认脱敏）
+
+### 工程化
+- 单元测试：新增 `SystemHealthChecksTests` 覆盖 RenderText / CollectWithProbes / Probe 扩展点
 
 ### 性能与清理
 - 日志基础设施：支持 `LogMaxFileSize` 轮转与 `LogMaxFiles` 启动清理，避免单日日志无限增长
