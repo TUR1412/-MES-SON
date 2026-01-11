@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.IO.Compression;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MES.Common.IO;
@@ -31,7 +32,7 @@ namespace MES.UI.Forms.SystemManagement
             }
         }
 
-        private readonly TabControl _tabs = new TabControl();
+        private readonly ThemedTabControl _tabs = new ThemedTabControl();
 
         // Logs tab
         private readonly ThemedListBox _logFiles = new ThemedListBox();
@@ -859,9 +860,14 @@ namespace MES.UI.Forms.SystemManagement
 
                 WriteBundleSummary(bundleDir, copiedLog, copiedCrash, logTailLines, crashTailLines);
 
+                string zipPath = TryCreateZipBundle(bundleDir);
+
                 try { Process.Start("explorer.exe", bundleDir); } catch { }
 
-                MessageBox.Show(string.Format("诊断包已导出：{0}", bundleDir), "完成", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                var message = string.IsNullOrWhiteSpace(zipPath)
+                    ? string.Format("诊断包已导出：{0}", bundleDir)
+                    : string.Format("诊断包已导出：{0}{1}Zip：{2}", bundleDir, Environment.NewLine, zipPath);
+                MessageBox.Show(message, "完成", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
@@ -957,6 +963,29 @@ namespace MES.UI.Forms.SystemManagement
             catch
             {
                 // ignore
+            }
+        }
+
+        private static string TryCreateZipBundle(string bundleDir)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(bundleDir)) return string.Empty;
+                if (!Directory.Exists(bundleDir)) return string.Empty;
+
+                var zipPath = bundleDir.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar) + ".zip";
+                if (File.Exists(zipPath))
+                {
+                    try { File.Delete(zipPath); } catch { }
+                }
+
+                ZipFile.CreateFromDirectory(bundleDir, zipPath, CompressionLevel.Fastest, true);
+                return zipPath;
+            }
+            catch (Exception ex)
+            {
+                try { LogManager.Error("创建诊断包压缩文件失败", ex); } catch { }
+                return string.Empty;
             }
         }
 

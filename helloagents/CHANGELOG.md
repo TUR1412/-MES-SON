@@ -16,6 +16,7 @@
 - 引入崩溃对话框（Error Boundary Dialog）：与主题系统一致，支持复制详情/打开日志目录/打开崩溃报告
 - 新增故障排查中心：内置日志尾部查看 + CrashReports 查看/复制，并挂载到命令面板（Ctrl+K）入口
 - 故障排查中心增强：支持一键导出诊断包（SupportBundles），并补齐 TabControl/TabPage 主题一致性
+- 故障排查中心增强：导出诊断包同时生成 Zip 文件；新增 ThemedTabControl（OwnerDraw）提升 Tab 页签在深色主题下的一致性
 
 ### 性能与清理
 - 运营洞察快照引入轻量缓存与聚合查询，降低刷新成本

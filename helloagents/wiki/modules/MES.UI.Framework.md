@@ -17,6 +17,7 @@
   - `src/MES.UI.Framework/Controls/ThemedTextBox.cs`（占位提示 + 主题自适应）
   - `src/MES.UI.Framework/Controls/ThemedListBox.cs`（双缓冲 + 主题自适应）
   - `src/MES.UI.Framework/Controls/ThemedRichTextBox.cs`（主题自适应，适用于日志/报告）
+  - `src/MES.UI.Framework/Controls/ThemedTabControl.cs`（OwnerDraw + 主题自适应，适用于深色 Tab）
 - 错误边界（Error Boundary）：
   - `src/MES.UI.Framework/Utilities/CrashReporting/GlobalExceptionBoundary.cs`
   - `src/MES.UI.Framework/Utilities/CrashReporting/CrashReportDialog.cs`
