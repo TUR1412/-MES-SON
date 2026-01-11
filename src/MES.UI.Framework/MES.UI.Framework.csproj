@@ -97,6 +97,11 @@
     <Compile Include="Themes\DesignTokens.cs" />
     <Compile Include="Resources\IconManager.cs" />
     <Compile Include="Utilities\UIHelper.cs" />
+    <Compile Include="Utilities\CrashReporting\CrashReport.cs" />
+    <Compile Include="Utilities\CrashReporting\CrashReportDialog.cs" />
+    <Compile Include="Utilities\CrashReporting\CrashReportWriter.cs" />
+    <Compile Include="Utilities\CrashReporting\GlobalExceptionBoundary.cs" />
+    <Compile Include="Utilities\Search\CommandPaletteSearch.cs" />
     <Compile Include="Controls\ModernButton.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -121,6 +126,12 @@
     </Compile>
     <Compile Include="Controls\QueryPanel.cs">
       <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ThemedListBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\ThemedTextBox.cs">
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

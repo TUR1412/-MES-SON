@@ -13,6 +13,15 @@
   - `src/MES.UI.Framework/Themes/UIThemeManager.cs`
   - `src/MES.UI.Framework/Themes/LolV2ThemeApplier.cs`
   - `src/MES.UI.Framework/Themes/NovaVisuals.cs`
+- 原子控件（Atoms）：
+  - `src/MES.UI.Framework/Controls/ThemedTextBox.cs`（占位提示 + 主题自适应）
+  - `src/MES.UI.Framework/Controls/ThemedListBox.cs`（双缓冲 + 主题自适应）
+- 错误边界（Error Boundary）：
+  - `src/MES.UI.Framework/Utilities/CrashReporting/GlobalExceptionBoundary.cs`
+  - `src/MES.UI.Framework/Utilities/CrashReporting/CrashReportDialog.cs`
+  - `src/MES.UI.Framework/Utilities/CrashReporting/CrashReportWriter.cs`
+- 搜索打分（纯逻辑，可测）：
+  - `src/MES.UI.Framework/Utilities/Search/CommandPaletteSearch.cs`
 
 ## 开发约定
 

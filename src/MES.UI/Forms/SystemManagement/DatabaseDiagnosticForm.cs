@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MES.Common.Configuration;
+using MES.Common.Diagnostics;
 using MES.Common.Logging;
 using MySql.Data.MySqlClient;
 using MES.UI.Framework.Themes;
@@ -419,70 +420,76 @@ namespace MES.UI.Forms.SystemManagement
 
         private DiagnosisSnapshot CollectDiagnosisSnapshot(CancellationToken token)
         {
-            var snapshot = new DiagnosisSnapshot
+            using (var perf = PerfScope.Start("DatabaseDiagnostic.CollectSnapshot"))
             {
-                Rows = new List<DiagnosisRow>()
-            };
-
-            try
-            {
-                token.ThrowIfCancellationRequested();
-
-                using (var connection = new MySqlConnection(_connectionString))
+                var snapshot = new DiagnosisSnapshot
                 {
-                    connection.Open();
+                    Rows = new List<DiagnosisRow>()
+                };
 
-                    snapshot.IsConnected = connection.State == ConnectionState.Open;
-                    if (!snapshot.IsConnected)
+                try
+                {
+                    token.ThrowIfCancellationRequested();
+
+                    using (var connection = new MySqlConnection(_connectionString))
                     {
-                        snapshot.ErrorMessage = "数据库连接未打开";
-                        snapshot.Rows.Add(new DiagnosisRow("数据库连接", "断开", "✗ 异常"));
-                        return snapshot;
+                        connection.Open();
+
+                        snapshot.IsConnected = connection.State == ConnectionState.Open;
+                        if (!snapshot.IsConnected)
+                        {
+                            snapshot.ErrorMessage = "数据库连接未打开";
+                            snapshot.Rows.Add(new DiagnosisRow("数据库连接", "断开", "✗ 异常"));
+                            return snapshot;
+                        }
+
+                        snapshot.ServerVersion = connection.ServerVersion;
+                        snapshot.DatabaseName = connection.Database;
+
+                        token.ThrowIfCancellationRequested();
+                        snapshot.ConnectionCount = GetConnectionCount(connection);
+
+                        token.ThrowIfCancellationRequested();
+                        snapshot.DatabaseSizeMb = GetDatabaseSize(connection);
+
+                        token.ThrowIfCancellationRequested();
+                        snapshot.TableCount = GetTableCount(connection);
+
+                        var maxConn = GetMaxConnections(connection);
+                        var cacheStatus = GetQueryCacheStatus(connection);
+
+                        snapshot.Rows.Add(new DiagnosisRow("数据库连接", "正常", "✓ 正常"));
+                        snapshot.Rows.Add(new DiagnosisRow("MySQL版本", string.Format("MySQL {0}", snapshot.ServerVersion), "✓ 正常"));
+
+                        snapshot.Rows.Add(ToRow("字符集", GetCharacterSet(connection), "✓ 正常", "⚠ 获取失败"));
+                        snapshot.Rows.Add(ToRow("时区", GetTimeZone(connection), "✓ 正常", "⚠ 获取失败"));
+                        snapshot.Rows.Add(new DiagnosisRow("最大连接数", maxConn > 0 ? maxConn.ToString() : "未知", maxConn > 0 ? "✓ 正常" : "⚠ 未知"));
+
+                        snapshot.Rows.Add(BuildConnectionUtilizationRow(snapshot.ConnectionCount, maxConn));
+                        snapshot.Rows.Add(BuildQueryCacheRow(cacheStatus));
+                        snapshot.Rows.Add(ToRow("InnoDB状态", GetInnoDBStatus(connection), "✓ 正常", "⚠ 获取失败"));
+
+                        snapshot.Rows.Add(new DiagnosisRow("上次检查时间", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "ℹ 信息"));
                     }
-
-                    snapshot.ServerVersion = connection.ServerVersion;
-                    snapshot.DatabaseName = connection.Database;
-
-                    token.ThrowIfCancellationRequested();
-                    snapshot.ConnectionCount = GetConnectionCount(connection);
-
-                    token.ThrowIfCancellationRequested();
-                    snapshot.DatabaseSizeMb = GetDatabaseSize(connection);
-
-                    token.ThrowIfCancellationRequested();
-                    snapshot.TableCount = GetTableCount(connection);
-
-                    var maxConn = GetMaxConnections(connection);
-                    var cacheStatus = GetQueryCacheStatus(connection);
-
-                    snapshot.Rows.Add(new DiagnosisRow("数据库连接", "正常", "✓ 正常"));
-                    snapshot.Rows.Add(new DiagnosisRow("MySQL版本", string.Format("MySQL {0}", snapshot.ServerVersion), "✓ 正常"));
-
-                    snapshot.Rows.Add(ToRow("字符集", GetCharacterSet(connection), "✓ 正常", "⚠ 获取失败"));
-                    snapshot.Rows.Add(ToRow("时区", GetTimeZone(connection), "✓ 正常", "⚠ 获取失败"));
-                    snapshot.Rows.Add(new DiagnosisRow("最大连接数", maxConn > 0 ? maxConn.ToString() : "未知", maxConn > 0 ? "✓ 正常" : "⚠ 未知"));
-
-                    snapshot.Rows.Add(BuildConnectionUtilizationRow(snapshot.ConnectionCount, maxConn));
-                    snapshot.Rows.Add(BuildQueryCacheRow(cacheStatus));
-                    snapshot.Rows.Add(ToRow("InnoDB状态", GetInnoDBStatus(connection), "✓ 正常", "⚠ 获取失败"));
-
-                    snapshot.Rows.Add(new DiagnosisRow("上次检查时间", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "ℹ 信息"));
                 }
-            }
-            catch (OperationCanceledException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                snapshot.IsConnected = false;
-                snapshot.ErrorMessage = ex.Message;
-                snapshot.Rows.Add(new DiagnosisRow("数据库连接", "连接失败", "✗ 异常"));
-                snapshot.Rows.Add(new DiagnosisRow("错误信息", ex.Message, "⚠ 注意"));
-                LogManager.Error("采集数据库诊断信息失败", ex);
-            }
+                catch (OperationCanceledException ex)
+                {
+                    perf.Fail(ex);
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    perf.Fail(ex);
 
-            return snapshot;
+                    snapshot.IsConnected = false;
+                    snapshot.ErrorMessage = ex.Message;
+                    snapshot.Rows.Add(new DiagnosisRow("数据库连接", "连接失败", "✗ 异常"));
+                    snapshot.Rows.Add(new DiagnosisRow("错误信息", ex.Message, "⚠ 注意"));
+                    LogManager.Error("采集数据库诊断信息失败", ex);
+                }
+
+                return snapshot;
+            }
         }
 
         private void ApplyDiagnosisSnapshot(DiagnosisSnapshot snapshot)

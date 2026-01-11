@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using MES.UI.Framework.Controls;
 using MES.UI.Framework.Themes;
+using MES.UI.Framework.Utilities.Search;
 
 namespace MES.UI.Forms.Common
 {
@@ -38,8 +40,8 @@ namespace MES.UI.Forms.Common
             }
         }
 
-        private readonly TextBox _query = new TextBox();
-        private readonly ListBox _list = new ListBox();
+        private readonly ThemedTextBox _query = new ThemedTextBox();
+        private readonly ThemedListBox _list = new ThemedListBox();
         private readonly Label _hint = new Label();
 
         private List<CommandPaletteItem> _allItems = new List<CommandPaletteItem>();
@@ -107,6 +109,7 @@ namespace MES.UI.Forms.Common
 
             _query.Dock = DockStyle.Fill;
             _query.BorderStyle = BorderStyle.FixedSingle;
+            _query.PlaceholderText = "搜索命令… / Search…";
             layout.Controls.Add(_query, 0, 0);
 
             _list.Dock = DockStyle.Fill;
@@ -277,25 +280,7 @@ namespace MES.UI.Forms.Common
         private static int Score(CommandPaletteItem item, string query)
         {
             if (item == null) return 0;
-            if (string.IsNullOrWhiteSpace(query)) return 0;
-
-            var title = item.Title ?? string.Empty;
-            var subtitle = item.Subtitle ?? string.Empty;
-            var keywords = item.Keywords ?? string.Empty;
-
-            var q = query.Trim();
-            var tokens = q.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            if (tokens.Length == 0) return 0;
-
-            int total = 0;
-            foreach (var token in tokens)
-            {
-                var tokenScore = ScoreToken(title, subtitle, keywords, item.SearchText, token);
-                if (tokenScore <= 0) return 0;
-                total += tokenScore;
-            }
-
-            return total;
+            return CommandPaletteSearch.Score(item.Title, item.Subtitle, item.Keywords, query);
         }
 
         private static int ScoreToken(string title, string subtitle, string keywords, string searchText, string token)

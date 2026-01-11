@@ -16,6 +16,44 @@ namespace MES.Common.Logging
         private static bool _isInitialized = false;
 
         /// <summary>
+        /// 当前日志目录（会触发延迟初始化）
+        /// </summary>
+        public static string LogDirectory
+        {
+            get
+            {
+                if (!_isInitialized)
+                {
+                    Initialize();
+                }
+
+                return _logPath;
+            }
+        }
+
+        /// <summary>
+        /// 获取指定日期的日志文件路径（会触发延迟初始化）
+        /// </summary>
+        public static string GetLogFilePath(DateTime date)
+        {
+            if (!_isInitialized)
+            {
+                Initialize();
+            }
+
+            var logFileName = string.Format("MES_{0:yyyyMMdd}.log", date);
+            return Path.Combine(_logPath, logFileName);
+        }
+
+        /// <summary>
+        /// 获取当天日志文件路径（会触发延迟初始化）
+        /// </summary>
+        public static string GetTodayLogFilePath()
+        {
+            return GetLogFilePath(DateTime.Now);
+        }
+
+        /// <summary>
         /// 初始化日志管理器
         /// </summary>
         public static void Initialize()

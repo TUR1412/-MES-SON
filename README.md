@@ -17,7 +17,10 @@ English: A **.NET Framework 4.8 + WinForms** MES sample focused on **clean layer
 - **未来感主题（Nova / LoL）**：统一 Design Tokens，卡片化入口与高对比可读性
 - **快捷命令面板（Ctrl+K）**：支持模糊匹配/多词搜索，快速跳转模块/工具，支持运行态主题切换
 - **数据库诊断（不阻塞 UI）**：后台采集、单连接聚合查询、展示连接占用率；诊断输出默认脱敏连接串
+- **错误边界（Error Boundary）**：全局异常边界 + 自动生成崩溃报告（CrashReports），提升线上可排障性
+- **日志可观测**：命令面板支持“一键打开日志目录/今日日志”，便于排障与回溯
 - **工程化脚本**：`scripts/restore.ps1` 自动下载 `nuget.exe` 并还原 `packages.config` 依赖，`build.ps1` 一键构建
+- **单元测试**：新增 `tests/MES.UnitTests`，可用 `./test.ps1` 一键构建并运行单测
 
 ---
 
@@ -71,6 +74,12 @@ msbuild MES.sln /t:Build /p:Configuration=Release /p:Platform="Any CPU" /p:Gener
 - 默认主题：`Nova`
 - 按 `Ctrl+K` 打开命令面板（模糊搜索/快速跳转/主题切换）
 
+#### 运行单元测试
+
+```powershell
+./test.ps1 -Configuration Debug
+```
+
 ---
 
 ### 🔑 数据库连接配置（安全优先）
@@ -91,6 +100,14 @@ Server=127.0.0.1;Port=3306;Database=mes;User Id=root;Password=******;SslMode=Non
 
 - 当环境变量未设置时，才回退读取 `src/MES.UI/App.config`（仅本机/开发机使用，不提交含真实密码的配置）。
 - MySQL 8+ 默认认证可能触发 “Public Key Retrieval is not allowed”，项目已在连接串层做兼容增强（自动补齐 `AllowPublicKeyRetrieval=True`）。
+
+---
+
+### 🧯 错误边界与崩溃报告
+
+- 全局异常边界已启用：捕获 UI 线程异常、应用域异常、未观察到的任务异常
+- 发生未处理异常时会写入崩溃报告到日志目录下的 `CrashReports/`
+- 可通过命令面板打开日志目录/报告，便于快速定位与复盘
 
 ---
 
@@ -129,7 +146,10 @@ Server=127.0.0.1;Port=3306;Database=mes;User Id=root;Password=******;SslMode=Non
 - **Modern Themes (Nova / LoL)**: design tokens + card-based layout with high readability
 - **Command Palette (`Ctrl+K`)**: fuzzy/multi-token search, fast navigation, runtime theme toggle
 - **Database Diagnostics (non-blocking)**: background collection, single-connection aggregation, connection utilization insight; redacted diagnostics by default
+- **Error Boundary**: global exception boundary + automatic crash reports (CrashReports) for faster troubleshooting
+- **Log Observability**: open log folder / today's log directly from the command palette
 - **Engineering Scripts**: `scripts/restore.ps1` downloads `nuget.exe` and restores `packages.config`, `build.ps1` builds the solution
+- **Unit Tests**: `tests/MES.UnitTests` with a one-command runner: `./test.ps1`
 
 ---
 
@@ -183,6 +203,12 @@ msbuild MES.sln /t:Build /p:Configuration=Release /p:Platform="Any CPU" /p:Gener
 - Default theme: `Nova`
 - Press `Ctrl+K` to open the Command Palette (fuzzy search / navigation / theme toggle)
 
+#### Run Unit Tests
+
+```powershell
+./test.ps1 -Configuration Debug
+```
+
 ---
 
 ### 🔑 Database Configuration (security first)
@@ -203,6 +229,14 @@ Notes:
 
 - If env vars are not set, the app falls back to `src/MES.UI/App.config` (local/dev only; never commit real secrets).
 - MySQL 8+ auth may trigger “Public Key Retrieval is not allowed”; the project includes a compatibility guard that auto-adds `AllowPublicKeyRetrieval=True`.
+
+---
+
+### 🧯 Error Boundary & Crash Reports
+
+- A global exception boundary is enabled (UI thread, AppDomain, and unobserved task exceptions)
+- Crash reports are written under `CrashReports/` inside the log directory
+- Use the command palette to open the log folder / today's log for troubleshooting
 
 ---
 

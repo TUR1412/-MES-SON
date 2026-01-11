@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Threading.Tasks;
@@ -1444,8 +1445,22 @@ namespace MES.UI.Forms
                     {
                         Title = "系统配置",
                         Subtitle = "主题切换 / 基础配置",
-                        Keywords = "system config settings theme",
+                        Keywords = "system config settings theme",        
                         Action = () => OpenSingletonForm<SystemConfigForm>()
+                    },
+                    new CommandPaletteForm.CommandPaletteItem
+                    {
+                        Title = "打开日志目录",
+                        Subtitle = "Logs / Troubleshooting",
+                        Keywords = "log logs troubleshoot folder",
+                        Action = () => OpenLogsDirectory()
+                    },
+                    new CommandPaletteForm.CommandPaletteItem
+                    {
+                        Title = "打开今日日志",
+                        Subtitle = "MES_yyyyMMdd.log",
+                        Keywords = "log today file",
+                        Action = () => OpenTodayLogFile()
                     },
                     new CommandPaletteForm.CommandPaletteItem
                     {
@@ -1474,6 +1489,55 @@ namespace MES.UI.Forms
             catch (Exception ex)
             {
                 LogManager.Error("打开命令面板失败", ex);
+            }
+        }
+
+        private static void OpenLogsDirectory()
+        {
+            try
+            {
+                var dir = LogManager.LogDirectory;
+                if (string.IsNullOrWhiteSpace(dir))
+                {
+                    MessageBox.Show("未找到日志目录。", "日志", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                Process.Start("explorer.exe", dir);
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("打开日志目录失败", ex);
+                MessageBox.Show(string.Format("打开日志目录失败：{0}", ex.Message), "错误",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private static void OpenTodayLogFile()
+        {
+            try
+            {
+                var path = LogManager.GetTodayLogFilePath();
+                if (string.IsNullOrWhiteSpace(path))
+                {
+                    MessageBox.Show("未找到日志文件路径。", "日志", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                if (!File.Exists(path))
+                {
+                    MessageBox.Show(string.Format("今日日志尚未生成：{0}", path), "日志",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                Process.Start(path);
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("打开今日日志失败", ex);
+                MessageBox.Show(string.Format("打开今日日志失败：{0}", ex.Message), "错误",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

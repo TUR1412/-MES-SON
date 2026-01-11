@@ -42,6 +42,11 @@
 
 > 说明：该仓库为传统 .NET Framework 解决方案，`dotnet build` 不是主要支持路径。
 
+### 4.3 单元测试（自测）
+
+- 推荐：`./test.ps1 -Configuration Debug`
+- 说明：脚本会先构建解决方案，再运行 `tests/MES.UnitTests`（vstest.console）
+
 ## 5) 配置与安全（强制约束）
 
 ### 5.1 连接字符串（优先环境变量）
@@ -63,6 +68,7 @@
 - 默认主题：`Nova`（可在 App.config 中切换）
 - 高 DPI：`MES.UI/app.manifest`（PerMonitorV2）
 - 键盘优先：`Ctrl+K` 命令面板支持模糊搜索/快速跳转/运行态主题切换
+- 错误边界：全局异常边界 + CrashReports（默认写入日志目录下的 `CrashReports/`）
 - 新窗体/控件原则：
   - 字体、间距、颜色优先从 `DesignTokens` 取值
   - 允许逐步替换历史硬编码，但禁止新增新的硬编码风格债务

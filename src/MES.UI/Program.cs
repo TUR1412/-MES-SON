@@ -6,6 +6,7 @@ using MES.Common.Logging;
 using MES.Common.Configuration;
 using MES.UI.Forms;
 using MES.UI.Framework.Themes;
+using MES.UI.Framework.Utilities.CrashReporting;
 using MySql.Data.MySqlClient;
 
 namespace MES.UI
@@ -31,10 +32,8 @@ namespace MES.UI
                 LogManager.Initialize();
                 LogManager.Info("MES系统启动");
 
-                // 设置全局异常处理
-                Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
-                Application.ThreadException += Application_ThreadException;
-                AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+                // 设置全局异常边界（错误边界 + 崩溃报告）
+                GlobalExceptionBoundary.Register();
 
                 // 初始化主题（以 App.config 为准：DefaultTheme = Default/Blue/Dark/Lol/Nova）
                 // 说明：此前为了“主题记忆”曾读取用户级配置，但这会导致 LOL 主题看起来“没生效”。
@@ -71,30 +70,6 @@ namespace MES.UI
                 LogManager.Error("系统启动失败", ex);
                 MessageBox.Show(string.Format("系统启动失败：{0}", ex.Message), "错误",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        /// <summary>
-        /// 处理UI线程异常
-        /// </summary>
-        private static void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
-        {
-            LogManager.Error("UI线程异常", e.Exception);
-            MessageBox.Show(string.Format("系统发生错误：{0}", e.Exception.Message), "错误",
-                MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
-
-        /// <summary>
-        /// 处理非UI线程异常
-        /// </summary>
-        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
-        {
-            var ex = e.ExceptionObject as Exception;
-            if (ex != null)
-            {
-                LogManager.Error("应用程序域异常", ex);
-                MessageBox.Show(string.Format("系统发生严重错误：{0}", ex.Message), "严重错误",
-                MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
