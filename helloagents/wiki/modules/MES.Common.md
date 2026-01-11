@@ -25,6 +25,7 @@
   - 轮转归档：`MES_yyyyMMdd_001.log`、`MES_yyyyMMdd_002.log`...（超过阈值后自动生成）
 - 关键配置（`src/MES.UI/App.config` → `appSettings`）：
   - `LogPath`：日志目录（默认 `Logs`）
+  - 目录回退：当日志目录不可创建/不可写时，会自动回退到 `%LocalAppData%\\MES-SON\\Logs`
   - `LogLevel`：日志级别（Debug/Info/Warning/Error/Fatal）
   - `LogMaxFileSize`：单文件轮转阈值（例如 `10MB`；为空/0 表示不轮转）
   - `LogMaxFiles`：保留的日志文件数（例如 `30`；0 表示不自动清理）

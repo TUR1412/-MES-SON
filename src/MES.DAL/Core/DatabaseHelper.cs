@@ -19,8 +19,6 @@ namespace MES.DAL.Core
     {
         #region 连接字符串管理
 
-        private const string AllowPublicKeyRetrievalKey = "AllowPublicKeyRetrieval";
-
         /// <summary>
         /// 获取数据库连接字符串
         /// </summary>
@@ -52,29 +50,7 @@ namespace MES.DAL.Core
 
         private static string EnsureAllowPublicKeyRetrieval(string connectionString)
         {
-            if (string.IsNullOrWhiteSpace(connectionString))
-            {
-                return connectionString;
-            }
-
-            if (connectionString.IndexOf(AllowPublicKeyRetrievalKey, StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-                return connectionString;
-            }
-
-            // 仅在显式禁用 SSL 时追加（避免无意改变其他安全策略）
-            if (connectionString.IndexOf("SslMode=none", StringComparison.OrdinalIgnoreCase) < 0 &&
-                connectionString.IndexOf("Ssl Mode=none", StringComparison.OrdinalIgnoreCase) < 0)
-            {
-                return connectionString;
-            }
-
-            if (!connectionString.TrimEnd().EndsWith(";"))
-            {
-                connectionString += ";";
-            }
-            connectionString += "AllowPublicKeyRetrieval=true;";
-            return connectionString;
+            return ConnectionStringHelper.EnsureAllowPublicKeyRetrieval(connectionString);
         }
 
         #endregion

@@ -19,6 +19,7 @@ English: A **.NET Framework 4.8 + WinForms** MES sample focused on **clean layer
 - **未来感主题（Nova / LoL）**：统一 Design Tokens，卡片化入口与高对比可读性
 - **快捷命令面板（Ctrl+K）**：支持模糊匹配/多词搜索，快速跳转模块/工具，支持运行态主题切换
 - **数据库诊断（不阻塞 UI）**：后台采集、单连接聚合查询、展示连接占用率；诊断输出默认脱敏连接串
+- **系统健康检查**：命令面板一键自检日志目录可写性/CrashReports/磁盘空间/数据库连通性（默认脱敏）
 - **错误边界（Error Boundary）**：全局异常边界 + 自动生成崩溃报告（CrashReports；附带脱敏日志尾部上下文），提升线上可排障性
 - **日志可观测**：命令面板支持打开日志目录/今日日志/复制今日日志尾部/崩溃报告目录/最新崩溃报告/最新诊断包（zip），便于排障与回溯
 - **故障排查中心**：内置日志（尾部读取）与崩溃报告查看/复制，支持文件列表筛选、跟随尾部自动刷新（仅在文件变更时读取）、关键字高亮、文本内搜索（Next/Prev/Aa 区分大小写）与一键定位最新错误，并支持一键导出诊断包（Support Bundle，含 Zip；默认脱敏），减少对外部工具依赖
@@ -126,6 +127,7 @@ Server=127.0.0.1;Port=3306;Database=mes;User Id=root;Password = ******;SslMode=N
 ### 🧾 日志与保留策略
 
 - 日志文件：`Logs/MES_yyyyMMdd.log`（默认）
+- 目录回退：当日志目录不可创建/不可写时，会自动回退到 `%LocalAppData%\\MES-SON\\Logs`（避免安装目录权限问题）
 - 轮转（可选）：当 `LogMaxFileSize` 设置且文件超过阈值时，会将当日日志归档为 `MES_yyyyMMdd_001.log`、`MES_yyyyMMdd_002.log`... 并继续写入 `MES_yyyyMMdd.log`
 - 保留（可选）：当 `LogMaxFiles` 设置为 `N` 时，应用启动会自动清理旧日志，仅保留最近 `N` 个 `MES_*.log` 文件
 
@@ -172,6 +174,7 @@ Server=127.0.0.1;Port=3306;Database=mes;User Id=root;Password = ******;SslMode=N
 - **Modern Themes (Nova / LoL)**: design tokens + card-based layout with high readability
 - **Command Palette (`Ctrl+K`)**: fuzzy/multi-token search, fast navigation, runtime theme toggle
 - **Database Diagnostics (non-blocking)**: background collection, single-connection aggregation, connection utilization insight; redacted diagnostics by default
+- **System Health Check**: one-command preflight for log/crash folders, disk space, and DB connectivity (masked by default)
 - **Error Boundary**: global exception boundary + automatic crash reports (CrashReports, with masked recent log tail) for faster troubleshooting
 - **Log Observability**: open log folder / today's log / copy today's log tail / CrashReports folder / latest CrashReport / latest Support Bundle (zip, redacted by default) directly from the command palette
 - **Troubleshooting Center**: built-in log tail viewer + crash report viewer/copy, with file list filtering, follow-tail auto refresh (reads only on file changes), keyword highlighting, in-text search (Next/Prev/case toggle), jump-to-latest error, and one-click support bundle export (zip included) to reduce reliance on external tools
@@ -279,6 +282,7 @@ Notes:
 ### 🧾 Logging & Retention
 
 - Log files: `Logs/MES_yyyyMMdd.log` (default)
+- Fallback directory: when the configured/default directory is not writable, the app falls back to `%LocalAppData%\\MES-SON\\Logs` to avoid permission issues
 - Rotation (optional): when `LogMaxFileSize` is set and the active file exceeds it, the current-day log is archived as `MES_yyyyMMdd_001.log`, `MES_yyyyMMdd_002.log`, ... and writing continues to `MES_yyyyMMdd.log`
 - Retention (optional): when `LogMaxFiles` is set to `N`, the app cleans up old logs on startup and keeps the newest `N` `MES_*.log` files
 

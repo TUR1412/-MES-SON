@@ -81,20 +81,42 @@ namespace MES.Common.Logging
                         _logLevel = LogLevel.Info;
                     }
 
-                    // 确保日志目录存在
-                    if (!Path.IsPathRooted(_logPath))
-                    {
-                        _logPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _logPath);
-                    }
+                    // 确保日志目录存在且可写：
+                    // 1) 优先使用配置/默认值（相对路径默认落在 BaseDirectory）
+                    // 2) 若安装目录不可写（例如 Program Files），自动回退到 LocalAppData
+                    var initNote = string.Empty;
+                    var preferred = ResolvePreferredLogDirectory(_logPath);
+                    var fallback = ResolveFallbackLogDirectory();
 
-                    if (!Directory.Exists(_logPath))
+                    string error;
+                    if (TryEnsureDirectoryWritable(preferred, out error))
                     {
-                        Directory.CreateDirectory(_logPath);
+                        _logPath = preferred;
+                    }
+                    else
+                    {
+                        string fallbackError;
+                        if (TryEnsureDirectoryWritable(fallback, out fallbackError))
+                        {
+                            _logPath = fallback;
+                            initNote = string.Format("日志目录不可写，已回退到: {0}", _logPath);
+                            try { Console.WriteLine(initNote); } catch { }
+                        }
+                        else
+                        {
+                            var message = string.Format("日志目录初始化失败。preferred={0}; fallback={1}; error={2}",
+                                preferred,
+                                fallback,
+                                string.IsNullOrWhiteSpace(error) ? fallbackError : error);
+                            try { Console.WriteLine(message); } catch { }
+                            throw new Exception(message);
+                        }
                     }
 
                     _isInitialized = true;
                     Info("日志管理器初始化完成");
-                    if (_logMaxFiles > 0) CleanupOldLogsByCount(_logMaxFiles);
+                    if (!string.IsNullOrWhiteSpace(initNote)) Info(initNote);
+                    if (_logMaxFiles > 0) CleanupOldLogsByCount(_logMaxFiles);  
                 }
                 catch (Exception ex)
                 {
@@ -396,6 +418,88 @@ namespace MES.Common.Logging
             catch (Exception ex)
             {
                 Error("清理过期日志文件失败", ex);
+            }
+        }
+
+        private static string ResolvePreferredLogDirectory(string configured)
+        {
+            var raw = string.IsNullOrWhiteSpace(configured) ? "Logs" : configured.Trim();
+
+            try
+            {
+                if (Path.IsPathRooted(raw))
+                {
+                    return raw;
+                }
+            }
+            catch
+            {
+                // ignore
+            }
+
+            try
+            {
+                return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, raw);
+            }
+            catch
+            {
+                return raw;
+            }
+        }
+
+        private static string ResolveFallbackLogDirectory()
+        {
+            try
+            {
+                var local = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                if (!string.IsNullOrWhiteSpace(local))
+                {
+                    return Path.Combine(local, "MES-SON", "Logs");
+                }
+            }
+            catch
+            {
+                // ignore
+            }
+
+            try
+            {
+                return Path.Combine(Path.GetTempPath(), "MES-SON", "Logs");
+            }
+            catch
+            {
+                return "Logs";
+            }
+        }
+
+        private static bool TryEnsureDirectoryWritable(string directory, out string error)
+        {
+            error = string.Empty;
+
+            try
+            {
+                if (string.IsNullOrWhiteSpace(directory))
+                {
+                    error = "empty directory";
+                    return false;
+                }
+
+                if (!Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
+
+                // 写入能力探测：避免“目录存在但不可写”导致运行期不断抛错
+                var probe = Path.Combine(directory, ".mes_write_probe_" + Guid.NewGuid().ToString("N") + ".tmp");
+                File.WriteAllText(probe, "ok");
+                try { File.Delete(probe); } catch { }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                try { error = ex.Message; } catch { error = string.Empty; }
+                return false;
             }
         }
     }

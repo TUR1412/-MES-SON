@@ -9,6 +9,7 @@
 
 - 连接与通用数据库操作：
   - `src/MES.DAL/Core/DatabaseHelper.cs`
+  - 连接串策略：优先环境变量；兼容 MySQL 8/9 非 SSL RSA 公钥（AllowPublicKeyRetrieval）；对外显示默认脱敏（ConnectionStringHelper）
 - 洞察聚合查询：
   - `src/MES.DAL/Production/ProductionOrderDAL.cs`（GetActiveOrders）
   - `src/MES.DAL/Workshop/WIPDAL.cs`（GetActiveWIPs）

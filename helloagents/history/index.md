@@ -3,6 +3,7 @@
 本目录用于归档已执行完成的方案包（plan package）。
 
 ## 2026-01
+- `202601120547_health_check_logpath/`：日志目录回退（LocalAppData）+ 系统健康检查（命令面板入口）
 - `202601120411_crash_report_context/`：CrashReports 附带脱敏日志尾部上下文 + Support Bundle 导出默认脱敏
 - `202601120344_log_hygiene/`：日志轮转/保留策略对齐（LogMaxFileSize/LogMaxFiles）与仓库备份文件清理（*.backup）
 - `202601120310_follow_tail_opt/`：跟随尾部刷新优化（仅文件变更刷新）与故障排查中心快捷键补齐

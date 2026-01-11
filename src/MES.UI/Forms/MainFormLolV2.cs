@@ -1444,6 +1444,13 @@ namespace MES.UI.Forms
                     },
                     new CommandPaletteForm.CommandPaletteItem
                     {
+                        Title = "系统健康检查",
+                        Subtitle = "日志 / CrashReports / 磁盘 / 数据库",
+                        Keywords = "health check system diagnostic",
+                        Action = () => OpenSingletonForm<SystemHealthCheckForm>()
+                    },
+                    new CommandPaletteForm.CommandPaletteItem
+                    {
                         Title = "系统配置",
                         Subtitle = "主题切换 / 基础配置",
                         Keywords = "system config settings theme",        
