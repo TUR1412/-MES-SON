@@ -1481,8 +1481,15 @@ namespace MES.UI.Forms
                     {
                         Title = "复制今日日志尾部",
                         Subtitle = "Copy log tail to clipboard",
-                        Keywords = "copy log tail clipboard today",
-                        Action = () => CopyTodayLogTailToClipboard()
+                        Keywords = "copy log tail clipboard today",      
+                        Action = () => CopyTodayLogTailToClipboard()     
+                    },
+                    new CommandPaletteForm.CommandPaletteItem
+                    {
+                        Title = "复制健康检查摘要",
+                        Subtitle = "Quick summary (no DB) → Clipboard",
+                        Keywords = "health check summary copy clipboard", 
+                        Action = () => CopyHealthCheckSummaryToClipboard()
                     },
                     new CommandPaletteForm.CommandPaletteItem
                     {
@@ -1616,6 +1623,36 @@ namespace MES.UI.Forms
             {
                 LogManager.Error("复制今日日志尾部失败", ex);
                 MessageBox.Show(string.Format("复制今日日志尾部失败：{0}", ex.Message), "错误",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private static void CopyHealthCheckSummaryToClipboard()
+        {
+            try
+            {
+                var options = new HealthCheckOptions();
+                options.IncludeDatabaseConnectivity = false;
+                options.IncludeRecentCrashIndicator = true;
+                options.DatabaseConnectionTimeoutSeconds = 2;
+
+                var results = SystemHealthChecks.CollectWithProbes(options, null);
+                var text = SystemHealthChecks.RenderText(results);
+                if (string.IsNullOrWhiteSpace(text))
+                {
+                    MessageBox.Show("健康检查摘要为空。", "健康检查",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                Clipboard.SetText(text);
+                MessageBox.Show("已复制健康检查摘要到剪贴板。", "健康检查",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("复制健康检查摘要失败", ex);
+                MessageBox.Show(string.Format("复制健康检查摘要失败：{0}", ex.Message), "错误",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }

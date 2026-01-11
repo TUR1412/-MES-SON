@@ -3,6 +3,7 @@
 本目录用于归档已执行完成的方案包（plan package）。
 
 ## 2026-01
+- `202601120659_health_check_copy_palette/`：命令面板新增“复制健康检查摘要”快捷入口（快速/不测数据库）
 - `202601120645_health_checks_ocp/`：SystemHealthChecks OCP 化（Probe 扩展点）+ 单测补齐
 - `202601120611_support_bundle_healthcheck/`：Support Bundle 集成系统健康检查（health_check.txt）+ 健康检查逻辑复用
 - `202601120547_health_check_logpath/`：日志目录回退（LocalAppData）+ 系统健康检查（命令面板入口）
