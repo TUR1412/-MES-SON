@@ -15,6 +15,8 @@
   - `src/MES.Common/Logging/LogManager.cs`（LogDirectory / GetTodayLogFilePath）
 - 性能埋点（可渐进接入）：
   - `src/MES.Common/Diagnostics/PerfScope.cs`
+- 文本尾部读取（日志尾读）：
+  - `src/MES.Common/IO/TextFileTailReader.cs`
 
 ## 开发约定
 

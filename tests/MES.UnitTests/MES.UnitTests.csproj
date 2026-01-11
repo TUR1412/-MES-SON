@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="CommandPaletteSearchTests.cs" />
     <Compile Include="ConnectionStringHelperTests.cs" />
+    <Compile Include="TextFileTailReaderTests.cs" />
     <Compile Include="Properties\\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

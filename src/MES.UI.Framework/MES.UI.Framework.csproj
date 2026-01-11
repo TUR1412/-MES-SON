@@ -133,6 +133,9 @@
     <Compile Include="Controls\ThemedTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Controls\ThemedRichTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

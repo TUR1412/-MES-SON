@@ -16,6 +16,7 @@
 - 原子控件（Atoms）：
   - `src/MES.UI.Framework/Controls/ThemedTextBox.cs`（占位提示 + 主题自适应）
   - `src/MES.UI.Framework/Controls/ThemedListBox.cs`（双缓冲 + 主题自适应）
+  - `src/MES.UI.Framework/Controls/ThemedRichTextBox.cs`（主题自适应，适用于日志/报告）
 - 错误边界（Error Boundary）：
   - `src/MES.UI.Framework/Utilities/CrashReporting/GlobalExceptionBoundary.cs`
   - `src/MES.UI.Framework/Utilities/CrashReporting/CrashReportDialog.cs`
@@ -26,4 +27,5 @@
 ## 开发约定
 
 - 新增 UI 视觉规则应优先沉淀为 Token（字体/颜色/圆角/间距）
+- 日志/报告类展示建议使用 `DesignTokens.Typography.CreateCodeFont()` 以获得更好的可读性
 - 允许渐进式替换历史硬编码，但禁止新增新的硬编码风格债务

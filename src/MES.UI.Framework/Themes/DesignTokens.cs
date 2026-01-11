@@ -29,6 +29,17 @@ namespace MES.UI.Framework.Themes
 
             private static FontFamily _cachedFamily;
 
+            private static readonly string[] PreferredMonoFontNames = new[]
+            {
+                "Cascadia Mono",
+                "JetBrains Mono",
+                "Consolas",
+                "Source Code Pro",
+                "Segoe UI Mono"
+            };
+
+            private static FontFamily _cachedMonoFamily;
+
             public static Font CreateBaseFont()
             {
                 return CreateFont(BaseSize, FontStyle.Regular);
@@ -48,6 +59,17 @@ namespace MES.UI.Framework.Themes
             {
                 // 以系统默认 UI 字体为基准，避免硬编码字体在不同语言/系统下缺失。
                 var family = ResolvePreferredFamily();
+                return new Font(family, size, style);
+            }
+
+            public static Font CreateCodeFont(float size)
+            {
+                return CreateMonoFont(size, FontStyle.Regular);
+            }
+
+            public static Font CreateMonoFont(float size, FontStyle style)
+            {
+                var family = ResolvePreferredMonoFamily();
                 return new Font(family, size, style);
             }
 
@@ -74,8 +96,35 @@ namespace MES.UI.Framework.Themes
                     // ignore
                 }
 
-                _cachedFamily = SystemFonts.MessageBoxFont.FontFamily;
+                _cachedFamily = SystemFonts.MessageBoxFont.FontFamily;     
                 return _cachedFamily;
+            }
+
+            private static FontFamily ResolvePreferredMonoFamily()
+            {
+                if (_cachedMonoFamily != null)
+                {
+                    return _cachedMonoFamily;
+                }
+
+                try
+                {
+                    foreach (var name in PreferredMonoFontNames)
+                    {
+                        if (FontFamily.Families.Any(f => string.Equals(f.Name, name, StringComparison.OrdinalIgnoreCase)))
+                        {
+                            _cachedMonoFamily = new FontFamily(name);
+                            return _cachedMonoFamily;
+                        }
+                    }
+                }
+                catch
+                {
+                    // ignore
+                }
+
+                _cachedMonoFamily = SystemFonts.MessageBoxFont.FontFamily;
+                return _cachedMonoFamily;
             }
         }
 

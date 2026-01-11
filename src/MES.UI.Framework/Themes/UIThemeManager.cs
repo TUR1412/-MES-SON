@@ -387,6 +387,15 @@ namespace MES.UI.Framework.Themes
                 return;
             }
 
+            var richTextBox = control as RichTextBox;
+            if (richTextBox != null)
+            {
+                richTextBox.BackColor = Colors.Surface;
+                richTextBox.ForeColor = Colors.Text;
+                richTextBox.BorderStyle = BorderStyle.FixedSingle;
+                return;
+            }
+
             var comboBox = control as ComboBox;
             if (comboBox != null)
             {

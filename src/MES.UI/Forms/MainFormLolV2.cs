@@ -1450,9 +1450,16 @@ namespace MES.UI.Forms
                     },
                     new CommandPaletteForm.CommandPaletteItem
                     {
+                        Title = "故障排查中心",
+                        Subtitle = "日志 / 崩溃报告 / 一键复制",
+                        Keywords = "troubleshoot troubleshooting log crash report",
+                        Action = () => OpenSingletonForm<TroubleshootingCenterForm>()
+                    },
+                    new CommandPaletteForm.CommandPaletteItem
+                    {
                         Title = "打开日志目录",
                         Subtitle = "Logs / Troubleshooting",
-                        Keywords = "log logs troubleshoot folder",
+                        Keywords = "log logs troubleshoot folder",        
                         Action = () => OpenLogsDirectory()
                     },
                     new CommandPaletteForm.CommandPaletteItem
