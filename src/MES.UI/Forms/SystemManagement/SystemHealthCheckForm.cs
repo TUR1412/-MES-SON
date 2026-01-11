@@ -3,11 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MES.BLL.SystemManagement;
-using MES.Common.Configuration;
 using MES.Common.Logging;
 using MES.UI.Framework.Controls;
 using MES.UI.Framework.Themes;
@@ -23,22 +20,6 @@ namespace MES.UI.Forms.SystemManagement
     /// </summary>
     public class SystemHealthCheckForm : ThemedForm
     {
-        private class CheckResult
-        {
-            public string Item { get; set; }
-            public string Status { get; set; }
-            public string Detail { get; set; }
-            public RowKind Kind { get; set; }
-        }
-
-        private enum RowKind
-        {
-            Info,
-            Ok,
-            Warning,
-            Error
-        }
-
         private readonly Label _title = new Label();
         private readonly Label _meta = new Label();
         private readonly DataGridView _grid = new DataGridView();
@@ -46,7 +27,7 @@ namespace MES.UI.Forms.SystemManagement
         private readonly ModernButton _copy = new ModernButton();
         private readonly ModernButton _openLogs = new ModernButton();
 
-        private List<CheckResult> _lastResults = new List<CheckResult>();
+        private List<HealthCheckResult> _lastResults = new List<HealthCheckResult>();
         private bool _isRunning;
 
         public SystemHealthCheckForm()
@@ -197,12 +178,19 @@ namespace MES.UI.Forms.SystemManagement
 
             try
             {
-                SetUiRunning(true, "正在检查… / Running checks…");
+                SetUiRunning(true, "正在检查… / Running checks…");       
 
-                var results = await Task.Run(() => CollectChecks());
+                var options = new HealthCheckOptions
+                {
+                    IncludeDatabaseConnectivity = true,
+                    DatabaseConnectionTimeoutSeconds = 3,
+                    IncludeRecentCrashIndicator = true
+                };
+
+                var results = await Task.Run(() => SystemHealthChecks.Collect(options));
                 if (IsDisposed) return;
 
-                _lastResults = results ?? new List<CheckResult>();
+                _lastResults = results ?? new List<HealthCheckResult>();
                 RenderResults(_lastResults);
 
                 SetUiRunning(false, string.Format(
@@ -236,7 +224,7 @@ namespace MES.UI.Forms.SystemManagement
             }
         }
 
-        private void RenderResults(List<CheckResult> results)
+        private void RenderResults(List<HealthCheckResult> results)
         {
             try
             {
@@ -256,15 +244,15 @@ namespace MES.UI.Forms.SystemManagement
 
                     if (colors != null)
                     {
-                        switch (r.Kind)
+                        switch (r.Severity)
                         {
-                            case RowKind.Ok:
+                            case HealthCheckSeverity.Ok:
                                 row.DefaultCellStyle.ForeColor = colors.Success;
                                 break;
-                            case RowKind.Warning:
+                            case HealthCheckSeverity.Warning:
                                 row.DefaultCellStyle.ForeColor = colors.Warning;
                                 break;
-                            case RowKind.Error:
+                            case HealthCheckSeverity.Error:
                                 row.DefaultCellStyle.ForeColor = colors.Error;
                                 break;
                             default:
@@ -280,296 +268,6 @@ namespace MES.UI.Forms.SystemManagement
             }
         }
 
-        private static List<CheckResult> CollectChecks()
-        {
-            var list = new List<CheckResult>();
-
-            try
-            {
-                list.Add(new CheckResult
-                {
-                    Item = "应用版本",
-                    Status = "ℹ",
-                    Detail = string.Format("{0} ({1})", ConfigManager.SystemTitle, ConfigManager.SystemVersion),
-                    Kind = RowKind.Info
-                });
-            }
-            catch
-            {
-                // ignore
-            }
-
-            try
-            {
-                list.Add(new CheckResult
-                {
-                    Item = "主题",
-                    Status = "ℹ",
-                    Detail = UIThemeManager.CurrentTheme.ToString(),
-                    Kind = RowKind.Info
-                });
-            }
-            catch
-            {
-                // ignore
-            }
-
-            // 日志目录可用性
-            string logDir = string.Empty;
-            try
-            {
-                logDir = LogManager.LogDirectory;
-                string error;
-                if (TryEnsureDirectoryWritable(logDir, out error))
-                {
-                    list.Add(new CheckResult
-                    {
-                        Item = "日志目录可写",
-                        Status = "✓",
-                        Detail = logDir,
-                        Kind = RowKind.Ok
-                    });
-                }
-                else
-                {
-                    list.Add(new CheckResult
-                    {
-                        Item = "日志目录可写",
-                        Status = "✗",
-                        Detail = string.IsNullOrWhiteSpace(error) ? logDir : (logDir + " (" + error + ")"),
-                        Kind = RowKind.Error
-                    });
-                }
-            }
-            catch (Exception ex)
-            {
-                list.Add(new CheckResult
-                {
-                    Item = "日志目录可写",
-                    Status = "✗",
-                    Detail = ex.Message,
-                    Kind = RowKind.Error
-                });
-            }
-
-            // CrashReports / SupportBundles 目录
-            try
-            {
-                var crashDir = string.IsNullOrWhiteSpace(logDir) ? string.Empty : Path.Combine(logDir, "CrashReports");
-                string error;
-                if (TryEnsureDirectoryWritable(crashDir, out error))
-                {
-                    list.Add(new CheckResult
-                    {
-                        Item = "CrashReports 目录",
-                        Status = "✓",
-                        Detail = crashDir,
-                        Kind = RowKind.Ok
-                    });
-                }
-                else
-                {
-                    list.Add(new CheckResult
-                    {
-                        Item = "CrashReports 目录",
-                        Status = "⚠",
-                        Detail = string.IsNullOrWhiteSpace(error) ? crashDir : (crashDir + " (" + error + ")"),
-                        Kind = RowKind.Warning
-                    });
-                }
-            }
-            catch (Exception ex)
-            {
-                list.Add(new CheckResult
-                {
-                    Item = "CrashReports 目录",
-                    Status = "⚠",
-                    Detail = ex.Message,
-                    Kind = RowKind.Warning
-                });
-            }
-
-            try
-            {
-                var bundleDir = string.IsNullOrWhiteSpace(logDir) ? string.Empty : Path.Combine(logDir, "SupportBundles");
-                string error;
-                if (TryEnsureDirectoryWritable(bundleDir, out error))
-                {
-                    list.Add(new CheckResult
-                    {
-                        Item = "SupportBundles 目录",
-                        Status = "✓",
-                        Detail = bundleDir,
-                        Kind = RowKind.Ok
-                    });
-                }
-                else
-                {
-                    list.Add(new CheckResult
-                    {
-                        Item = "SupportBundles 目录",
-                        Status = "⚠",
-                        Detail = string.IsNullOrWhiteSpace(error) ? bundleDir : (bundleDir + " (" + error + ")"),
-                        Kind = RowKind.Warning
-                    });
-                }
-            }
-            catch (Exception ex)
-            {
-                list.Add(new CheckResult
-                {
-                    Item = "SupportBundles 目录",
-                    Status = "⚠",
-                    Detail = ex.Message,
-                    Kind = RowKind.Warning
-                });
-            }
-
-            // 磁盘空间（以日志目录为准）
-            try
-            {
-                if (!string.IsNullOrWhiteSpace(logDir))
-                {
-                    var root = Path.GetPathRoot(logDir);
-                    if (!string.IsNullOrWhiteSpace(root))
-                    {
-                        var drive = new DriveInfo(root);
-                        var freeGb = drive.AvailableFreeSpace / 1024d / 1024d / 1024d;
-                        list.Add(new CheckResult
-                        {
-                            Item = "磁盘剩余空间",
-                            Status = freeGb >= 2 ? "✓" : "⚠",
-                            Detail = string.Format("{0:0.00} GB（{1}）", freeGb, root),
-                            Kind = freeGb >= 2 ? RowKind.Ok : RowKind.Warning
-                        });
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                list.Add(new CheckResult
-                {
-                    Item = "磁盘剩余空间",
-                    Status = "⚠",
-                    Detail = ex.Message,
-                    Kind = RowKind.Warning
-                });
-            }
-
-            // 最近崩溃报告
-            try
-            {
-                var crashDir = string.IsNullOrWhiteSpace(logDir) ? string.Empty : Path.Combine(logDir, "CrashReports");
-                if (!string.IsNullOrWhiteSpace(crashDir) && Directory.Exists(crashDir))
-                {
-                    var info = new DirectoryInfo(crashDir);
-                    var files = info.GetFiles("MES_Crash_*.txt");
-                    if (files != null && files.Length > 0)
-                    {
-                        Array.Sort(files, (a, b) => b.LastWriteTimeUtc.CompareTo(a.LastWriteTimeUtc));
-                        list.Add(new CheckResult
-                        {
-                            Item = "最近崩溃报告",
-                            Status = "⚠",
-                            Detail = string.Format("{0} ({1:yyyy-MM-dd HH:mm:ss})", files[0].Name, files[0].LastWriteTime),
-                            Kind = RowKind.Warning
-                        });
-                    }
-                    else
-                    {
-                        list.Add(new CheckResult
-                        {
-                            Item = "最近崩溃报告",
-                            Status = "✓",
-                            Detail = "未检测到崩溃报告（CrashReports 为空）",
-                            Kind = RowKind.Ok
-                        });
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                list.Add(new CheckResult
-                {
-                    Item = "最近崩溃报告",
-                    Status = "⚠",
-                    Detail = ex.Message,
-                    Kind = RowKind.Warning
-                });
-            }
-
-            // 数据库连接（默认脱敏）
-            try
-            {
-                var connectionString = ConfigManager.GetCurrentConnectionString();
-                if (string.IsNullOrWhiteSpace(connectionString))
-                {
-                    list.Add(new CheckResult
-                    {
-                        Item = "数据库连接",
-                        Status = "⚠",
-                        Detail = "未配置连接字符串（推荐使用环境变量 MES_CONNECTION_STRING）",
-                        Kind = RowKind.Warning
-                    });
-                }
-                else
-                {
-                    var bll = new DatabaseDiagnosticBLL();
-                    var details = bll.TestConnectionWithDetails(connectionString);
-                    var ok = details != null && details.IndexOf("连接成功", StringComparison.OrdinalIgnoreCase) >= 0;
-                    list.Add(new CheckResult
-                    {
-                        Item = "数据库连接",
-                        Status = ok ? "✓" : "✗",
-                        Detail = string.IsNullOrWhiteSpace(details) ? "(empty)" : details.Replace("\r\n", " ").Replace("\n", " ").Trim(),
-                        Kind = ok ? RowKind.Ok : RowKind.Error
-                    });
-                }
-            }
-            catch (Exception ex)
-            {
-                list.Add(new CheckResult
-                {
-                    Item = "数据库连接",
-                    Status = "✗",
-                    Detail = ex.Message,
-                    Kind = RowKind.Error
-                });
-            }
-
-            return list;
-        }
-
-        private static bool TryEnsureDirectoryWritable(string directory, out string error)
-        {
-            error = string.Empty;
-
-            try
-            {
-                if (string.IsNullOrWhiteSpace(directory))
-                {
-                    error = "empty directory";
-                    return false;
-                }
-
-                if (!Directory.Exists(directory))
-                {
-                    Directory.CreateDirectory(directory);
-                }
-
-                var probe = Path.Combine(directory, ".mes_health_probe_" + Guid.NewGuid().ToString("N") + ".tmp");
-                File.WriteAllText(probe, "ok");
-                try { File.Delete(probe); } catch { }
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                try { error = ex.Message; } catch { error = string.Empty; }
-                return false;
-            }
-        }
-
         private void CopySummaryToClipboard()
         {
             try
@@ -580,22 +278,8 @@ namespace MES.UI.Forms.SystemManagement
                     return;
                 }
 
-                var sb = new StringBuilder();
-                sb.AppendLine("MES System Health Check");
-                sb.AppendLine(string.Format("GeneratedAt: {0:yyyy-MM-dd HH:mm:ss}", DateTime.Now));
-                sb.AppendLine(string.Format("Theme: {0}", UIThemeManager.CurrentTheme));
-                sb.AppendLine();
-
-                foreach (var r in _lastResults)
-                {
-                    if (r == null) continue;
-                    sb.AppendLine(string.Format("- {0} [{1}] {2}",
-                        r.Item ?? string.Empty,
-                        r.Status ?? string.Empty,
-                        r.Detail ?? string.Empty));
-                }
-
-                Clipboard.SetText(sb.ToString());
+                var text = SystemHealthChecks.RenderText(_lastResults);
+                Clipboard.SetText(text);
                 _meta.Text = "已复制到剪贴板。";
             }
             catch (Exception ex)

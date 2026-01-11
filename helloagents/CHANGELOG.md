@@ -14,6 +14,8 @@
 ### 可观测与排障
 - CrashReports 增强：崩溃报告附带脱敏后的今日日志尾部上下文，提升定位与复盘效率
 - Support Bundle 增强：导出时对日志/崩溃报告复制与尾部片段默认脱敏，降低信息泄露风险
+- Support Bundle 增强：导出时额外生成 `health_check.txt`（系统健康检查摘要；默认脱敏）
+- 系统健康检查抽取：新增 `SystemHealthChecks` 供健康检查窗体与 Support Bundle 复用（OCP）
 - 日志目录回退：当日志目录不可创建/不可写时，自动回退到 LocalAppData，避免安装目录权限问题
 - 系统健康检查：命令面板一键自检日志目录/CrashReports/磁盘空间/数据库连通性（默认脱敏）
 

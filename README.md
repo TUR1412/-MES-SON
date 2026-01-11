@@ -131,6 +131,11 @@ Server=127.0.0.1;Port=3306;Database=mes;User Id=root;Password = ******;SslMode=N
 - 轮转（可选）：当 `LogMaxFileSize` 设置且文件超过阈值时，会将当日日志归档为 `MES_yyyyMMdd_001.log`、`MES_yyyyMMdd_002.log`... 并继续写入 `MES_yyyyMMdd.log`
 - 保留（可选）：当 `LogMaxFiles` 设置为 `N` 时，应用启动会自动清理旧日志，仅保留最近 `N` 个 `MES_*.log` 文件
 
+### 🧰 诊断包（Support Bundle）
+
+- 在“故障排查中心”导出诊断包会生成一个目录，并同时创建 `.zip`
+- 诊断包默认脱敏（日志/崩溃报告/尾部片段），并额外包含 `health_check.txt`（系统健康检查摘要）
+
 ---
 
 ### ⌨️ 快捷键
@@ -285,6 +290,11 @@ Notes:
 - Fallback directory: when the configured/default directory is not writable, the app falls back to `%LocalAppData%\\MES-SON\\Logs` to avoid permission issues
 - Rotation (optional): when `LogMaxFileSize` is set and the active file exceeds it, the current-day log is archived as `MES_yyyyMMdd_001.log`, `MES_yyyyMMdd_002.log`, ... and writing continues to `MES_yyyyMMdd.log`
 - Retention (optional): when `LogMaxFiles` is set to `N`, the app cleans up old logs on startup and keeps the newest `N` `MES_*.log` files
+
+### 🧰 Support Bundle
+
+- Exporting a support bundle from the Troubleshooting Center creates a folder and a `.zip`
+- Bundles are redacted by default (log/crash files & tail snippets) and also include `health_check.txt` (system health check summary)
 
 ---
 

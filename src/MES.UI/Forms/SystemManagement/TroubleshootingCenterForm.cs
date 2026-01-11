@@ -2158,7 +2158,8 @@ namespace MES.UI.Forms.SystemManagement
                 WriteTailIfExists(selectedLog, bundleDir, "log_tail.txt", logTailLines, true);
                 WriteTailIfExists(selectedCrash, bundleDir, "crash_tail.txt", crashTailLines, true);
 
-                WriteBundleSummary(bundleDir, copiedLog, copiedCrash, logTailLines, crashTailLines);
+                string healthCheckPath = TryWriteHealthCheck(bundleDir);
+                WriteBundleSummary(bundleDir, copiedLog, copiedCrash, logTailLines, crashTailLines, healthCheckPath);
 
                 string zipPath = TryCreateZipBundle(bundleDir);
 
@@ -2272,7 +2273,35 @@ namespace MES.UI.Forms.SystemManagement
             }
         }
 
-        private void WriteBundleSummary(string bundleDir, string copiedLog, string copiedCrash, int logTailLines, int crashTailLines)
+        private static string TryWriteHealthCheck(string bundleDir)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(bundleDir)) return string.Empty;
+                if (!Directory.Exists(bundleDir)) return string.Empty;
+
+                var options = new HealthCheckOptions
+                {
+                    IncludeDatabaseConnectivity = false,
+                    IncludeRecentCrashIndicator = true
+                };
+
+                var results = SystemHealthChecks.Collect(options);
+                var text = SystemHealthChecks.RenderText(results);
+                text = MaskSensitiveText(text);
+
+                var path = Path.Combine(bundleDir, "health_check.txt");
+                File.WriteAllText(path, text, System.Text.Encoding.UTF8);
+                return File.Exists(path) ? path : string.Empty;
+            }
+            catch (Exception ex)
+            {
+                try { LogManager.Error("写入健康检查摘要失败", ex); } catch { }
+                return string.Empty;
+            }
+        }
+
+        private void WriteBundleSummary(string bundleDir, string copiedLog, string copiedCrash, int logTailLines, int crashTailLines, string healthCheckPath)
         {
             try
             {
@@ -2300,6 +2329,7 @@ namespace MES.UI.Forms.SystemManagement
                 sb.AppendLine("Files");
                 sb.AppendLine(string.Format("CopiedLog: {0}", string.IsNullOrWhiteSpace(copiedLog) ? "(none)" : copiedLog));
                 sb.AppendLine(string.Format("CopiedCrashReport: {0}", string.IsNullOrWhiteSpace(copiedCrash) ? "(none)" : copiedCrash));
+                sb.AppendLine(string.Format("HealthCheck: {0}", string.IsNullOrWhiteSpace(healthCheckPath) ? "(none)" : healthCheckPath));
                 sb.AppendLine(string.Format("LogTailLines: {0}", logTailLines));
                 sb.AppendLine(string.Format("CrashTailLines: {0}", crashTailLines));
                 sb.AppendLine();
