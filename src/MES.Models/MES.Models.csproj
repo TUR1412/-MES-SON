@@ -109,6 +109,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Base\BaseModel.cs" />
+    <Compile Include="Analytics\OperationalInsightSnapshot.cs" />
     <Compile Include="Factory\FactoryInfo.cs" />
     <Compile Include="Flow\FlowInfo.cs" />
     <Compile Include="Material\MaterialInfo.cs" />

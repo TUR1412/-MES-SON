@@ -16,7 +16,7 @@ namespace MES.UI.Framework.Controls
         private bool _isPressed;
         private string _description;
         private string _iconGlyph;
-        private Color _accentColor = LeagueColors.RiotGold;
+        private Color _accentColor = UIThemeManager.Colors.Primary;
 
         private Font _titleFont;
         private Font _bodyFont;
@@ -73,15 +73,15 @@ namespace MES.UI.Framework.Controls
             FlatAppearance.BorderSize = 0;
             UseVisualStyleBackColor = false;
             BackColor = Color.Transparent;
-            ForeColor = LeagueColors.TextPrimary;
+            ForeColor = UIThemeManager.Colors.Text;
             Cursor = Cursors.Hand;
 
             // 更适合作为“入口卡片”
             Height = 170;
             Width = 280;
 
-            _titleFont = new Font("微软雅黑", 12F, FontStyle.Bold);
-            _bodyFont = new Font("微软雅黑", 9F, FontStyle.Regular);
+            _titleFont = DesignTokens.Typography.CreateFont(12F, FontStyle.Bold);
+            _bodyFont = DesignTokens.Typography.CreateFont(9F, FontStyle.Regular);
 
             TabStop = true;
             TextAlign = ContentAlignment.TopLeft; // 实际绘制由 OnPaint 控制，但保持语义一致
@@ -91,26 +91,43 @@ namespace MES.UI.Framework.Controls
         {
             try
             {
-                LolClientVisuals.DrawCardButton(
-                    pevent.Graphics,
-                    ClientRectangle,
-                    _isHovered,
-                    _isPressed,
-                    Text,
-                    _description,
-                    _iconGlyph,
-                    _accentColor,
-                    _titleFont,
-                    _bodyFont);
+                if (UIThemeManager.CurrentTheme == UIThemeManager.ThemeType.Nova)
+                {
+                    NovaVisuals.DrawCardButton(
+                        pevent.Graphics,
+                        ClientRectangle,
+                        _isHovered,
+                        _isPressed,
+                        Text,
+                        _description,
+                        _iconGlyph,
+                        _accentColor,
+                        _titleFont,
+                        _bodyFont);
+                }
+                else
+                {
+                    LolClientVisuals.DrawCardButton(
+                        pevent.Graphics,
+                        ClientRectangle,
+                        _isHovered,
+                        _isPressed,
+                        Text,
+                        _description,
+                        _iconGlyph,
+                        _accentColor,
+                        _titleFont,
+                        _bodyFont);
+                }
             }
             catch
             {
                 // 兜底：至少画出一个可点击的暗底卡片，避免“整块空白”
-                using (var bg = new SolidBrush(LeagueColors.DarkSurface))
+                using (var bg = new SolidBrush(UIThemeManager.Colors.Surface))
                 {
                     pevent.Graphics.FillRectangle(bg, ClientRectangle);
                 }
-                using (var pen = new Pen(Color.FromArgb(90, LeagueColors.RiotBorderGold), 1))
+                using (var pen = new Pen(Color.FromArgb(90, UIThemeManager.Colors.Border), 1))
                 {
                     var r = ClientRectangle;
                     r.Width -= 1;

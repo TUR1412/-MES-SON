@@ -9,6 +9,11 @@
 
 - 连接与通用数据库操作：
   - `src/MES.DAL/Core/DatabaseHelper.cs`
+- 洞察聚合查询：
+  - `src/MES.DAL/Production/ProductionOrderDAL.cs`（GetActiveOrders）
+  - `src/MES.DAL/Workshop/WIPDAL.cs`（GetActiveWIPs）
+  - `src/MES.DAL/Material/MaterialDAL.cs`（GetLowStockMaterials）
+  - `src/MES.DAL/Quality/QualityInspectionDAL.cs`（GetDefectReasonStatistics）
 
 ## 安全约定（强制）
 

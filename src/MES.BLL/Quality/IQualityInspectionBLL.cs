@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using MES.Models.Quality;
+using MES.Models.Analytics;
 
 namespace MES.BLL.Quality
 {
@@ -170,6 +171,15 @@ namespace MES.BLL.Quality
         /// <param name="endDate">结束日期</param>
         /// <returns>不合格原因统计</returns>
         Dictionary<string, int> GetUnqualifiedReasonStatistics(DateTime startDate, DateTime endDate);
+
+        /// <summary>
+        /// 获取质量缺陷摘要
+        /// </summary>
+        /// <param name="startDate">开始日期</param>
+        /// <param name="endDate">结束日期</param>
+        /// <param name="top">返回缺陷列表数量</param>
+        /// <returns>质量缺陷摘要</returns>
+        QualityDefectSummary GetQualityDefectSummary(DateTime startDate, DateTime endDate, int top = 5);
 
         /// <summary>
         /// 验证检验数据

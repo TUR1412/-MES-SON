@@ -224,6 +224,9 @@
     <Compile Include="Forms\Common\MaterialSelectForm.Designer.cs">
       <DependentUpon>MaterialSelectForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\Insight\OperationsInsightForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Models\MaterialInfo.cs" />
     <Compile Include="Forms\WorkOrder\CancelWorkOrder.cs">
       <SubType>Form</SubType>

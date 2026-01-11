@@ -12,6 +12,8 @@
 - 主窗体：
   - `src/MES.UI/Forms/MainForm.cs`
   - `src/MES.UI/Forms/MainFormLolV2.cs`
+- 运营洞察：
+  - `src/MES.UI/Forms/Insight/OperationsInsightForm.cs`
 - 数据库诊断：
   - `src/MES.UI/Forms/SystemManagement/DatabaseDiagnosticForm.cs`
 
@@ -24,3 +26,4 @@
 
 - 高 DPI：`src/MES.UI/app.manifest`（PerMonitorV2）
 - 字体/间距/配色优先从 `DesignTokens` 获取
+- 默认主题：`Nova`（可通过配置切换）

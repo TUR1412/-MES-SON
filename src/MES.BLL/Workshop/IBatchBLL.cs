@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using MES.Models.Workshop;
+using MES.Models.Analytics;
 
 namespace MES.BLL.Workshop
 {
@@ -148,5 +149,13 @@ namespace MES.BLL.Workshop
         /// <param name="batchId">批次ID</param>
         /// <returns>统计信息字典</returns>
         Dictionary<string, object> GetBatchStatistics(int batchId);
+
+        /// <summary>
+        /// 获取批次良率摘要
+        /// </summary>
+        /// <param name="lowYieldThreshold">低良率阈值</param>
+        /// <param name="top">返回低良率列表数量</param>
+        /// <returns>批次良率摘要</returns>
+        BatchYieldSummary GetBatchYieldSummary(decimal lowYieldThreshold = 0.9m, int top = 5);
     }
 }

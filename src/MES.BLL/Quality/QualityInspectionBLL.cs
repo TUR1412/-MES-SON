@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using MES.DAL.Quality;
 using MES.Models.Quality;
+using MES.Models.Analytics;
 using MES.Common.Logging;
 using MES.Common.Exceptions;
 
@@ -488,17 +489,44 @@ namespace MES.BLL.Quality
         {
             try
             {
-                // 简化实现：返回模拟数据
-                var statistics = new Dictionary<string, int>();
-                statistics.Add("尺寸不符", 3);
-                statistics.Add("外观缺陷", 2);
-                statistics.Add("功能异常", 1);
-                return statistics;
+                return _qualityInspectionDAL.GetDefectReasonStatistics(startDate, endDate, 10);
             }
             catch (Exception ex)
             {
                 LogManager.Error(string.Format("获取不合格原因统计失败，时间范围: {0:yyyy-MM-dd} 到 {1:yyyy-MM-dd}", startDate, endDate), ex);
                 throw new MESException("获取统计数据失败", ex);
+            }
+        }
+
+        public QualityDefectSummary GetQualityDefectSummary(DateTime startDate, DateTime endDate, int top = 5)
+        {
+            try
+            {
+                var stats = GetQualityStatistics(startDate, endDate);
+                var defectStats = _qualityInspectionDAL.GetDefectReasonStatistics(startDate, endDate, top);
+
+                int totalCount = stats.ContainsKey("TotalCount") ? Convert.ToInt32(stats["TotalCount"]) : 0;
+                decimal qualifiedRate = stats.ContainsKey("QualifiedRate") ? Convert.ToDecimal(stats["QualifiedRate"]) : 0;
+
+                var defectItems = defectStats.Select(item => new QualityDefectItem
+                {
+                    DefectReason = item.Key,
+                    Count = item.Value,
+                    Rate = totalCount > 0 ? Math.Round((decimal)item.Value / totalCount * 100, 2) : 0
+                }).ToList();
+
+                return new QualityDefectSummary
+                {
+                    TotalInspections = totalCount,
+                    QualifiedRate = qualifiedRate,
+                    TopDefectReason = defectItems.Count > 0 ? defectItems[0].DefectReason : null,
+                    TopDefects = defectItems
+                };
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("获取质量缺陷摘要失败", ex);
+                throw new MESException("获取质量缺陷摘要失败", ex);
             }
         }
 

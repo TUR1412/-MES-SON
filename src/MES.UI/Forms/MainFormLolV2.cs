@@ -12,6 +12,7 @@ using MES.UI.Forms.Production;
 using MES.UI.Forms.SystemManagement;
 using MES.UI.Forms.WorkOrder;
 using MES.UI.Forms.Workshop;
+using MES.UI.Forms.Insight;
 using MES.UI.Framework.Controls;
 using MES.UI.Framework.Themes;
 
@@ -41,6 +42,7 @@ namespace MES.UI.Forms
 
         private FlowLayoutPanel _navList;
         private LolNavButton _navMaterial;
+        private LolNavButton _navInsight;
         private LolNavButton _navProduction;
         private LolNavButton _navWorkOrder;
         private LolNavButton _navBatch;
@@ -183,13 +185,13 @@ namespace MES.UI.Forms
 
         private void InitializeWindow()
         {
-            Text = string.Format("{0} v{1} - LoL 主题（V2）", ConfigManager.SystemTitle, ConfigManager.SystemVersion);
+            Text = string.Format("{0} v{1} - Nova Command Center", ConfigManager.SystemTitle, ConfigManager.SystemVersion);
             WindowState = FormWindowState.Maximized;
             MinimumSize = new Size(1200, 760);
             StartPosition = FormStartPosition.CenterScreen;
-            BackColor = LeagueColors.DarkBackground;
-            ForeColor = LeagueColors.TextPrimary;
-            Font = new Font("微软雅黑", 9F, FontStyle.Regular);
+            BackColor = UIThemeManager.Colors.Background;
+            ForeColor = UIThemeManager.Colors.Text;
+            Font = UIThemeManager.GetFont(9f);
 
             // 双缓冲减少闪烁
             DoubleBuffered = true;
@@ -474,9 +476,9 @@ namespace MES.UI.Forms
             var title = new Label
             {
                 AutoSize = true,
-                Text = "MES · League UI",
-                ForeColor = LeagueColors.TextHighlight,
-                Font = new Font("微软雅黑", 16F, FontStyle.Bold),
+                Text = "MES · Nova Core",
+                ForeColor = UIThemeManager.Colors.Text,
+                Font = UIThemeManager.GetTitleFont(16f),
                 Location = new Point(0, 0),
                 BackColor = Color.Transparent
             };
@@ -485,9 +487,9 @@ namespace MES.UI.Forms
             var subtitle = new Label
             {
                 AutoSize = true,
-                Text = "大厅入口 · 暗金风 · 交互优先",
-                ForeColor = LeagueColors.TextSecondary,
-                Font = new Font("微软雅黑", 9F, FontStyle.Regular),
+                Text = "指挥中心 · 洞察驱动 · 快速触达",
+                ForeColor = UIThemeManager.Colors.TextSecondary,
+                Font = UIThemeManager.GetFont(9f),
                 Location = new Point(2, 40),
                 BackColor = Color.Transparent
             };
@@ -497,8 +499,8 @@ namespace MES.UI.Forms
             {
                 AutoSize = true,
                 Text = "提示：左侧导航 / 右侧卡片均可进入模块",
-                ForeColor = Color.FromArgb(180, LeagueColors.TextSecondary),
-                Font = new Font("微软雅黑", 8.5F, FontStyle.Regular),
+                ForeColor = Color.FromArgb(180, UIThemeManager.Colors.TextSecondary),
+                Font = UIThemeManager.GetFont(8.5f),
                 Location = new Point(2, 68),
                 BackColor = Color.Transparent
             };
@@ -520,7 +522,7 @@ namespace MES.UI.Forms
             {
                 try
                 {
-                    using (var pen = new Pen(Color.FromArgb(80, LeagueColors.RiotBorderGold), 1))
+                    using (var pen = new Pen(Color.FromArgb(80, UIThemeManager.Colors.Border), 1))
                     {
                         e.Graphics.DrawLine(pen, 0, _topBar.Height - 1, _topBar.Width, _topBar.Height - 1);
                     }
@@ -575,8 +577,8 @@ namespace MES.UI.Forms
             {
                 AutoSize = false,
                 Text = "大厅",
-                ForeColor = LeagueColors.TextHighlight,
-                Font = new Font("微软雅黑", 12F, FontStyle.Bold),
+                ForeColor = UIThemeManager.Colors.Text,
+                Font = UIThemeManager.GetTitleFont(12f),
                 Location = new Point(0, 0),
                 Height = 32,
                 BackColor = Color.Transparent,
@@ -608,6 +610,7 @@ namespace MES.UI.Forms
             _sidebar.Controls.Add(_navList);
 
             _navMaterial = CreateNav("物料管理", "物料 / BOM / 工艺路线", "\uE8A7", (s, e) => ShowModule<MaterialManagementForm>("物料管理", _navMaterial), true);
+            _navInsight = CreateNav("运营洞察", "风险预警 / 指标视图", "\uE9D2", (s, e) => ShowModule("运营洞察", new OperationsInsightForm(), _navInsight), false);
             _navProduction = CreateNav("生产管理", "订单 / 执行控制", "\uE7C1", (s, e) => ShowModule<ProductionOrderManagementForm>("生产管理", _navProduction), false);
             _navWorkOrder = CreateNav("工单管理", "工单增删改查", "\uE8EF", (s, e) => ShowModule<WorkOrderManagementForm>("工单管理", _navWorkOrder), false);
             _navBatch = CreateNav("批次管理", "创建 / 取消 / 查询", "\uE7B8", (s, e) => ShowModule<BatchManagementForm>("批次管理", _navBatch), false);
@@ -615,6 +618,7 @@ namespace MES.UI.Forms
             _navSystem = CreateNav("系统管理", "系统配置 / 数据库诊断", "\uE713", (s, e) => ShowModule<SystemConfigForm>("系统管理", _navSystem), false);
 
             _navList.Controls.Add(_navMaterial);
+            _navList.Controls.Add(_navInsight);
             _navList.Controls.Add(_navProduction);
             _navList.Controls.Add(_navWorkOrder);
             _navList.Controls.Add(_navBatch);
@@ -645,7 +649,7 @@ namespace MES.UI.Forms
         private void SelectNav(LolNavButton selected)
         {
             // 轻量“选中态”管理：只处理本页的 6 个按钮
-            var buttons = new[] { _navMaterial, _navProduction, _navWorkOrder, _navBatch, _navWorkshop, _navSystem };
+            var buttons = new[] { _navMaterial, _navInsight, _navProduction, _navWorkOrder, _navBatch, _navWorkshop, _navSystem };
             foreach (var b in buttons)
             {
                 if (b != null) b.IsSelected = (selected != null) && (b == selected);
@@ -673,9 +677,9 @@ namespace MES.UI.Forms
             var title = new Label
             {
                 AutoSize = false,
-                Text = "欢迎回来 · LoL 风格大厅",
-                ForeColor = LeagueColors.TextHighlight,
-                Font = new Font("微软雅黑", 20F, FontStyle.Bold),
+                Text = "欢迎回来 · Nova 指挥中心",
+                ForeColor = UIThemeManager.Colors.Text,
+                Font = UIThemeManager.GetTitleFont(20f),
                 Location = new Point(0, 0),
                 Height = 42,
                 BackColor = Color.Transparent,
@@ -687,9 +691,9 @@ namespace MES.UI.Forms
             var subtitle = new Label
             {
                 AutoSize = false,
-                Text = "选择一个模块进入 · 暗金风 · 悬停/按下交互反馈",
-                ForeColor = LeagueColors.TextSecondary,
-                Font = new Font("微软雅黑", 10F, FontStyle.Regular),
+                Text = "实时洞察 / 风险预警 / 一键直达关键模块",
+                ForeColor = UIThemeManager.Colors.TextSecondary,
+                Font = UIThemeManager.GetFont(10f),
                 Location = new Point(2, 46),
                 Height = 20,
                 BackColor = Color.Transparent,
@@ -702,8 +706,8 @@ namespace MES.UI.Forms
             {
                 AutoSize = false,
                 Text = "首次运行若提示缺库：按弹窗一键初始化，或执行 database/init_mes_db.ps1。",
-                ForeColor = Color.FromArgb(180, LeagueColors.TextSecondary),
-                Font = new Font("微软雅黑", 9F, FontStyle.Regular),
+                ForeColor = Color.FromArgb(180, UIThemeManager.Colors.TextSecondary),
+                Font = UIThemeManager.GetFont(9f),
                 Location = new Point(2, 76),
                 Height = 20,
                 BackColor = Color.Transparent,
@@ -743,14 +747,17 @@ namespace MES.UI.Forms
             EnableDoubleBuffering(_cardsPanel);
             _cardsHost.Controls.Add(_cardsPanel);
 
-            // 入口卡片（更像 LoL：有明确“进入”指向、图标水印、暗金描边）
-            var cardMaterial = CreateCard("物料管理", "物料维护\nBOM 管理\n工艺路线", "\uE8A7", LeagueColors.RiotGold, (s, e) => ShowModule<MaterialManagementForm>("物料管理", _navMaterial));
-            var cardProduction = CreateCard("生产管理", "生产订单\n执行控制\n进度追踪", "\uE7C1", LeagueColors.AccentBlueLight, (s, e) => ShowModule<ProductionOrderManagementForm>("生产管理", _navProduction));
-            var cardWorkOrder = CreateCard("工单管理", "工单创建\n提交 / 取消\n状态跟踪", "\uE8EF", Color.FromArgb(255, 140, 80), (s, e) => ShowModule<WorkOrderManagementForm>("工单管理", _navWorkOrder));
-            var cardBatch = CreateCard("批次管理", "创建批次\n取消批次\n批次查询", "\uE7B8", LeagueColors.SpecialCyan, (s, e) => ShowModule<BatchManagementForm>("批次管理", _navBatch));
-            var cardWorkshop = CreateCard("车间管理", "车间维护\nWIP 管理\n设备状态", "\uE80F", LeagueColors.ErrorRed, (s, e) => ShowModule<WorkshopManagementForm>("车间管理", _navWorkshop));
-            var cardSystem = CreateCard("系统管理", "系统配置\n数据库诊断\n环境检查", "\uE713", LeagueColors.RiotGoldHover, (s, e) => ShowModule<SystemConfigForm>("系统管理", _navSystem));
+            // 入口卡片（现代化风格：强调层级与可读性）
+            var colors = UIThemeManager.Colors;
+            var cardInsight = CreateCard("运营洞察", "风险预警\n指标快照\n趋势洞察", "\uE9D2", colors.Primary, (s, e) => ShowModule("运营洞察", new OperationsInsightForm(), _navInsight));
+            var cardMaterial = CreateCard("物料管理", "物料维护\nBOM 管理\n工艺路线", "\uE8A7", colors.Secondary, (s, e) => ShowModule<MaterialManagementForm>("物料管理", _navMaterial));
+            var cardProduction = CreateCard("生产管理", "生产订单\n执行控制\n进度追踪", "\uE7C1", colors.Success, (s, e) => ShowModule<ProductionOrderManagementForm>("生产管理", _navProduction));
+            var cardWorkOrder = CreateCard("工单管理", "工单创建\n提交 / 取消\n状态跟踪", "\uE8EF", colors.Warning, (s, e) => ShowModule<WorkOrderManagementForm>("工单管理", _navWorkOrder));
+            var cardBatch = CreateCard("批次管理", "创建批次\n取消批次\n批次查询", "\uE7B8", colors.Primary, (s, e) => ShowModule<BatchManagementForm>("批次管理", _navBatch));
+            var cardWorkshop = CreateCard("车间管理", "车间维护\nWIP 管理\n设备状态", "\uE80F", colors.Error, (s, e) => ShowModule<WorkshopManagementForm>("车间管理", _navWorkshop));
+            var cardSystem = CreateCard("系统管理", "系统配置\n数据库诊断\n环境检查", "\uE713", colors.TextSecondary, (s, e) => ShowModule<SystemConfigForm>("系统管理", _navSystem));
 
+            ConfigureCard(cardInsight, _defaultCardSize);
             ConfigureCard(cardMaterial, _defaultCardSize);
             ConfigureCard(cardProduction, _defaultCardSize);
             ConfigureCard(cardWorkOrder, _defaultCardSize);
@@ -758,6 +765,7 @@ namespace MES.UI.Forms
             ConfigureCard(cardWorkshop, _defaultCardSize);
             ConfigureCard(cardSystem, _defaultCardSize);
 
+            _cardsPanel.Controls.Add(cardInsight);
             _cardsPanel.Controls.Add(cardMaterial);
             _cardsPanel.Controls.Add(cardProduction);
             _cardsPanel.Controls.Add(cardWorkOrder);
@@ -895,8 +903,8 @@ namespace MES.UI.Forms
             {
                 AutoSize = true,
                 Text = "数据库：未检测",
-                ForeColor = LeagueColors.TextSecondary,
-                Font = new Font("微软雅黑", 9F, FontStyle.Regular),
+                ForeColor = UIThemeManager.Colors.TextSecondary,
+                Font = UIThemeManager.GetFont(9f),
                 Location = new Point(0, 0),
                 BackColor = Color.Transparent
             };
@@ -906,8 +914,8 @@ namespace MES.UI.Forms
             {
                 AutoSize = true,
                 Text = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
-                ForeColor = Color.FromArgb(190, LeagueColors.TextSecondary),
-                Font = new Font("微软雅黑", 9F, FontStyle.Regular),
+                ForeColor = Color.FromArgb(190, UIThemeManager.Colors.TextSecondary),
+                Font = UIThemeManager.GetFont(9f),
                 Location = new Point(0, 28),
                 BackColor = Color.Transparent
             };
@@ -971,7 +979,7 @@ namespace MES.UI.Forms
                     {
                         if (_dbStatusLabel == null) return;
                         _dbStatusLabel.Text = ok ? "数据库：已连接" : "数据库：连接失败";
-                        _dbStatusLabel.ForeColor = ok ? LeagueColors.SuccessGreen : LeagueColors.WarningOrange;
+                        _dbStatusLabel.ForeColor = ok ? UIThemeManager.Colors.Success : UIThemeManager.Colors.Warning;
                     }));
                 }
                 catch
@@ -1096,8 +1104,8 @@ namespace MES.UI.Forms
             var frame = new Panel
             {
                 Dock = DockStyle.Fill,
-                BackColor = LeagueColors.DarkSurface,
-                ForeColor = LeagueColors.TextPrimary,
+                BackColor = UIThemeManager.Colors.Surface,
+                ForeColor = UIThemeManager.Colors.Text,
                 Padding = new Padding(14),
                 Margin = new Padding(0)
             };
@@ -1111,14 +1119,14 @@ namespace MES.UI.Forms
                     rect.Width -= 1;
                     rect.Height -= 1;
 
-                    using (var pen = new Pen(Color.FromArgb(110, LeagueColors.RiotBorderGold), 1))
+                    using (var pen = new Pen(Color.FromArgb(110, UIThemeManager.Colors.Border), 1))
                     {
                         e.Graphics.DrawRectangle(pen, rect);
                     }
 
                     // 内描边（更克制）
                     rect.Inflate(-2, -2);
-                    using (var pen2 = new Pen(Color.FromArgb(40, LeagueColors.RiotGoldHover), 1))
+                    using (var pen2 = new Pen(Color.FromArgb(40, UIThemeManager.Colors.Primary), 1))
                     {
                         e.Graphics.DrawRectangle(pen2, rect);
                     }
@@ -1337,3 +1345,4 @@ namespace MES.UI.Forms
         }
     }
 }
+

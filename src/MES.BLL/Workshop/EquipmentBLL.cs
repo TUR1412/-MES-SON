@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MES.Models.Workshop;
+using MES.Models.Analytics;
 using MES.DAL.Workshop;
 using MES.Common.Logging;
 using MES.Common.Exceptions;
@@ -337,6 +338,72 @@ namespace MES.BLL.Workshop
             {
                 LogManager.Error("获取需要维护的设备信息失败", ex);
                 throw new MESException("获取设备信息时发生异常", ex);
+            }
+        }
+
+        /// <summary>
+        /// 获取设备健康摘要
+        /// </summary>
+        /// <param name="referenceTime">参考时间</param>
+        /// <param name="dueSoonDays">即将到期天数</param>
+        /// <param name="top">返回风险设备数量</param>
+        /// <returns>设备健康摘要</returns>
+        public EquipmentHealthSummary GetEquipmentHealthSummary(DateTime? referenceTime = null, int dueSoonDays = 7, int top = 5)
+        {
+            try
+            {
+                var now = referenceTime ?? DateTime.Now;
+                var equipments = _equipmentDAL.GetAllEquipments() ?? new List<EquipmentStatusInfo>();
+
+                int overdue = 0;
+                int dueSoon = 0;
+                double totalScore = 0;
+                var items = new List<EquipmentHealthItem>();
+
+                foreach (var eq in equipments)
+                {
+                    var nextMaintenance = eq.NextMaintenance;
+                    if (nextMaintenance <= now)
+                    {
+                        overdue++;
+                    }
+                    else if (nextMaintenance <= now.AddDays(Math.Max(1, dueSoonDays)))
+                    {
+                        dueSoon++;
+                    }
+
+                    var score = CalculateHealthScore(eq, now);
+                    totalScore += score;
+
+                    items.Add(new EquipmentHealthItem
+                    {
+                        EquipmentCode = eq.EquipmentCode,
+                        EquipmentName = eq.EquipmentName,
+                        WorkshopName = eq.WorkshopName,
+                        NextMaintenanceDate = eq.NextMaintenance,
+                        Status = eq.Status,
+                        HealthScore = Math.Round(score, 1)
+                    });
+                }
+
+                var topRisks = items
+                    .OrderBy(item => item.HealthScore)
+                    .Take(Math.Max(1, top))
+                    .ToList();
+
+                return new EquipmentHealthSummary
+                {
+                    TotalCount = equipments.Count,
+                    OverdueMaintenanceCount = overdue,
+                    DueSoonCount = dueSoon,
+                    AverageHealthScore = equipments.Count > 0 ? Math.Round(totalScore / equipments.Count, 1) : 0,
+                    TopRisks = topRisks
+                };
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("获取设备健康摘要失败", ex);
+                throw new MESException("获取设备健康摘要失败", ex);
             }
         }
 
@@ -846,6 +913,54 @@ namespace MES.BLL.Workshop
             {
                 throw new ArgumentException("设备类型ID必须大于0", "equipment.EquipmentTypeId");
             }
+        }
+
+        private static double CalculateHealthScore(EquipmentStatusInfo equipment, DateTime now)
+        {
+            if (equipment == null)
+            {
+                return 0;
+            }
+
+            double score = 100;
+
+            if (equipment.Status == 2)
+            {
+                score -= 45;
+            }
+            else if (equipment.Status == 3)
+            {
+                score -= 25;
+            }
+            else if (equipment.Status == 0)
+            {
+                score -= 10;
+            }
+
+            if (equipment.NextMaintenance <= now)
+            {
+                score -= 25;
+            }
+            else if (equipment.NextMaintenance <= now.AddDays(7))
+            {
+                score -= 12;
+            }
+
+            if (equipment.Efficiency > 0)
+            {
+                if (equipment.Efficiency < 60)
+                {
+                    score -= 20;
+                }
+                else if (equipment.Efficiency < 75)
+                {
+                    score -= 10;
+                }
+            }
+
+            if (score < 0) score = 0;
+            if (score > 100) score = 100;
+            return score;
         }
 
         #endregion

@@ -10,7 +10,9 @@
 - 设计 Token：
   - `src/MES.UI.Framework/Themes/DesignTokens.cs`
 - 主题应用器：
+  - `src/MES.UI.Framework/Themes/UIThemeManager.cs`
   - `src/MES.UI.Framework/Themes/LolV2ThemeApplier.cs`
+  - `src/MES.UI.Framework/Themes/NovaVisuals.cs`
 
 ## 开发约定
 

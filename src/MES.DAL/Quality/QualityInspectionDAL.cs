@@ -482,5 +482,61 @@ namespace MES.DAL.Quality
                 throw;
             }
         }
+
+        /// <summary>
+        /// 获取不合格原因统计（按数量降序）
+        /// </summary>
+        /// <param name="startDate">开始日期</param>
+        /// <param name="endDate">结束日期</param>
+        /// <param name="top">返回数量</param>
+        /// <returns>原因与数量的映射</returns>
+        public Dictionary<string, int> GetDefectReasonStatistics(DateTime startDate, DateTime endDate, int top)
+        {
+            try
+            {
+                if (top <= 0) top = 5;
+
+                string sql = string.Format(@"SELECT
+                               IFNULL(unqualified_reason, '未填写') as defect_reason,
+                               COUNT(1) as defect_count
+                               FROM {0}
+                               WHERE inspection_time BETWEEN @StartDate AND @EndDate
+                               AND inspection_result = 2
+                               AND is_deleted = 0
+                               GROUP BY defect_reason
+                               ORDER BY defect_count DESC
+                               LIMIT @Top", TableName);
+
+                using (var connection = DatabaseHelper.CreateConnection())
+                {
+                    connection.Open();
+                    using (var cmd = new MySqlCommand(sql, connection))
+                    {
+                        cmd.Parameters.AddWithValue("@StartDate", startDate);
+                        cmd.Parameters.AddWithValue("@EndDate", endDate);
+                        cmd.Parameters.AddWithValue("@Top", top);
+
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            var result = new Dictionary<string, int>();
+                            while (reader.Read())
+                            {
+                                var reason = reader["defect_reason"] != DBNull.Value
+                                    ? reader["defect_reason"].ToString()
+                                    : "未填写";
+                                var count = Convert.ToInt32(reader["defect_count"]);
+                                result[reason] = count;
+                            }
+                            return result;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error(string.Format("获取缺陷原因统计失败：{0}", ex.Message), ex);
+                throw;
+            }
+        }
     }
 }

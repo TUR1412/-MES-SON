@@ -36,23 +36,23 @@ namespace MES.UI
                 Application.ThreadException += Application_ThreadException;
                 AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
-                // 初始化主题（以 App.config 为准：DefaultTheme = Default/Blue/Dark/Lol）
+                // 初始化主题（以 App.config 为准：DefaultTheme = Default/Blue/Dark/Lol/Nova）
                 // 说明：此前为了“主题记忆”曾读取用户级配置，但这会导致 LOL 主题看起来“没生效”。
                 // 目前按你的诉求：以 2025-06 终版 LOL 风格为主，避免被用户级配置覆盖。
                 try
                 {
-                    var themeSetting = ConfigManager.GetAppSetting("DefaultTheme", "Lol");
+                    var themeSetting = ConfigManager.GetAppSetting("DefaultTheme", "Nova");
                     UIThemeManager.ThemeType theme;
                     if (!Enum.TryParse(themeSetting, true, out theme))
                     {
-                        theme = UIThemeManager.ThemeType.Lol;
+                        theme = UIThemeManager.ThemeType.Nova;
                     }
                     UIThemeManager.CurrentTheme = theme;
                 }
                 catch (Exception ex)
                 {
                     LogManager.Error("读取主题配置失败，已回落默认主题", ex);
-                    UIThemeManager.CurrentTheme = UIThemeManager.ThemeType.Lol;
+                    UIThemeManager.CurrentTheme = UIThemeManager.ThemeType.Nova;
                 }
 
                 // 启动前数据库预检：避免用户一进业务窗体就被“Unknown database”等异常轰炸

@@ -253,6 +253,31 @@ namespace MES.DAL.Material
         }
 
         /// <summary>
+        /// 获取低库存物料（低于安全库存或最小库存）
+        /// </summary>
+        /// <returns>物料列表</returns>
+        public List<MaterialInfo> GetLowStockMaterials()
+        {
+            try
+            {
+                string sql = @"SELECT * FROM material_info
+                               WHERE is_deleted = 0
+                               AND stock_quantity IS NOT NULL
+                               AND ((safety_stock IS NOT NULL AND stock_quantity < safety_stock)
+                                    OR (min_stock IS NOT NULL AND stock_quantity < min_stock))
+                               ORDER BY stock_quantity ASC";
+
+                var dataTable = DatabaseHelper.ExecuteQuery(sql);
+                return ConvertDataTableToList(dataTable);
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("获取低库存物料失败", ex);
+                throw new MESException("获取低库存物料失败", ex);
+            }
+        }
+
+        /// <summary>
         /// 检查物料编码是否已存在（包括逻辑删除的记录）
         /// </summary>
         /// <param name="materialCode">物料编码</param>

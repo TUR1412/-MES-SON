@@ -43,6 +43,31 @@ namespace MES.DAL.Workshop
         }
 
         /// <summary>
+        /// 获取在制品（未完成）
+        /// </summary>
+        /// <returns>在制品信息列表</returns>
+        public List<WIPInfo> GetActiveWIPs()
+        {
+            try
+            {
+                string sql = @"
+                    SELECT w.*, ws.workshop_name
+                    FROM wip_info w
+                    LEFT JOIN workshop_info ws ON w.workshop_id = ws.id
+                    WHERE w.is_deleted = 0 AND w.status <> 4
+                    ORDER BY w.create_time DESC";
+
+                var dataTable = DatabaseHelper.ExecuteQuery(sql);
+                return ConvertDataTableToWIPList(dataTable);
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("获取未完成在制品信息失败", ex);
+                throw new MESException("数据库操作失败", ex);
+            }
+        }
+
+        /// <summary>
         /// 根据ID获取在制品信息
         /// </summary>
         /// <param name="id">在制品ID</param>

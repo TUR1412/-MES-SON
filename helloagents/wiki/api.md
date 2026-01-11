@@ -8,6 +8,8 @@ MES-SON 当前为桌面端 WinForms 应用，**没有对外 HTTP API** 作为主
 
 - 接口：`src/MES.BLL/SystemManagement/IDatabaseDiagnosticBLL.cs`
 - 实现：`src/MES.BLL/SystemManagement/DatabaseDiagnosticBLL.cs`
+- 接口：`src/MES.BLL/Analytics/IInsightBLL.cs`
+- 实现：`src/MES.BLL/Analytics/InsightBLL.cs`
 
 ### 为什么这样做
 

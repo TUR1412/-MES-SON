@@ -26,7 +26,9 @@ namespace MES.UI.Framework.Themes
             /// <summary>蓝色主题</summary>
             Blue,
             /// <summary>LOL主题（暗色+金色）</summary>
-            Lol
+            Lol,
+            /// <summary>Nova主题（未来感）</summary>
+            Nova
         }
 
         /// <summary>
@@ -119,6 +121,9 @@ namespace MES.UI.Framework.Themes
                     break;
                 case ThemeType.Lol:
                     _currentColors = GetLeagueTheme();
+                    break;
+                case ThemeType.Nova:
+                    _currentColors = GetNovaTheme();
                     break;
                 default:
                     _currentColors = GetDefaultTheme();
@@ -215,6 +220,32 @@ namespace MES.UI.Framework.Themes
                 Success = LeagueColors.SuccessGreen,
                 Warning = LeagueColors.WarningOrange,
                 Error = LeagueColors.ErrorRed
+            };
+        }
+
+        /// <summary>
+        /// 获取 Nova 主题配色（未来感）
+        /// </summary>
+        private static ThemeColors GetNovaTheme()
+        {
+            return new ThemeColors
+            {
+                Primary = Color.FromArgb(110, 243, 255),
+                Secondary = Color.FromArgb(159, 123, 255),
+
+                Background = Color.FromArgb(11, 15, 26),
+                Surface = Color.FromArgb(18, 24, 38),
+
+                Text = Color.FromArgb(230, 240, 255),
+                TextSecondary = Color.FromArgb(167, 180, 208),
+
+                Border = Color.FromArgb(42, 53, 80),
+                Hover = Color.FromArgb(27, 38, 64),
+                Selected = Color.FromArgb(32, 58, 90),
+
+                Success = Color.FromArgb(44, 235, 143),
+                Warning = Color.FromArgb(255, 181, 71),
+                Error = Color.FromArgb(255, 107, 107)
             };
         }
 
@@ -530,7 +561,7 @@ namespace MES.UI.Framework.Themes
         private static bool IsTooDarkForCurrentTheme(Color color)
         {
             // 仅在深色系主题下做“纠偏”，避免破坏浅色主题的视觉设计
-            if (_currentTheme != ThemeType.Dark && _currentTheme != ThemeType.Lol) return false;
+            if (_currentTheme != ThemeType.Dark && _currentTheme != ThemeType.Lol && _currentTheme != ThemeType.Nova) return false;
             // 仅修正“接近灰阶的暗色文本”（例如黑色/深灰），避免误伤业务模块的彩色强调
             if (!IsNearGray(color)) return false;
             return color.GetBrightness() < 0.65f;
@@ -582,7 +613,7 @@ namespace MES.UI.Framework.Themes
         /// <returns>字体对象</returns>
         public static Font GetFont(float size = 9f, FontStyle style = FontStyle.Regular)
         {
-            return new Font("微软雅黑", size, style);
+            return DesignTokens.Typography.CreateFont(size, style);
         }
 
         /// <summary>
@@ -592,7 +623,7 @@ namespace MES.UI.Framework.Themes
         /// <returns>字体对象</returns>
         public static Font GetTitleFont(float size = 12f)
         {
-            return new Font("微软雅黑", size, FontStyle.Bold);
+            return DesignTokens.Typography.CreateFont(size, FontStyle.Bold);
         }
 
         #endregion

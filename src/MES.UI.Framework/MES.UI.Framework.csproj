@@ -92,6 +92,7 @@
     <Compile Include="Themes\RealLeagueThemeApplier.cs" />
     <Compile Include="Themes\LolClientVisuals.cs" />
     <Compile Include="Themes\LolV2ThemeApplier.cs" />
+    <Compile Include="Themes\NovaVisuals.cs" />
     <Compile Include="Themes\ThemedForm.cs" />
     <Compile Include="Themes\DesignTokens.cs" />
     <Compile Include="Resources\IconManager.cs" />

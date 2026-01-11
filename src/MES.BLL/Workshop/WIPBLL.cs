@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MES.Models.Workshop;
+using MES.Models.Analytics;
 using MES.DAL.Workshop;
 using MES.Common.Logging;
 using MES.Common.Exceptions;
@@ -665,6 +666,71 @@ namespace MES.BLL.Workshop
             {
                 LogManager.Error("获取状态分布统计失败", ex);
                 throw new MESException("获取状态分布统计时发生异常", ex);
+            }
+        }
+
+        /// <summary>
+        /// 获取在制品老化摘要
+        /// </summary>
+        /// <param name="referenceTime">参考时间</param>
+        /// <param name="agingThresholdHours">老化阈值（小时）</param>
+        /// <param name="top">返回老化列表数量</param>
+        /// <returns>老化摘要</returns>
+        public WIPAgingSummary GetWIPAgingSummary(DateTime? referenceTime = null, double agingThresholdHours = 48, int top = 5)
+        {
+            try
+            {
+                var now = referenceTime ?? DateTime.Now;
+                var wips = _wipDAL.GetActiveWIPs() ?? new List<WIPInfo>();
+
+                double totalAging = 0;
+                int agingCount = 0;
+                var items = new List<WIPAgingItem>();
+
+                foreach (var wip in wips)
+                {
+                    var aging = (now - wip.StartTime).TotalHours;
+                    totalAging += aging;
+                    if (aging >= agingThresholdHours)
+                    {
+                        agingCount++;
+                    }
+
+                    items.Add(new WIPAgingItem
+                    {
+                        WipId = wip.WIPId,
+                        ProductName = wip.ProductName,
+                        WorkshopName = wip.WorkshopName,
+                        AgingHours = Math.Round(aging, 1),
+                        Priority = wip.Priority
+                    });
+                }
+
+                var bottleneckWorkshop = items
+                    .Where(item => !string.IsNullOrEmpty(item.WorkshopName))
+                    .GroupBy(item => item.WorkshopName)
+                    .OrderByDescending(group => group.Count())
+                    .Select(group => group.Key)
+                    .FirstOrDefault();
+
+                var topItems = items
+                    .OrderByDescending(item => item.AgingHours)
+                    .Take(Math.Max(1, top))
+                    .ToList();
+
+                return new WIPAgingSummary
+                {
+                    TotalCount = wips.Count,
+                    AgingCount = agingCount,
+                    AverageAgingHours = wips.Count > 0 ? Math.Round(totalAging / wips.Count, 1) : 0,
+                    BottleneckWorkshop = bottleneckWorkshop,
+                    TopAgingItems = topItems
+                };
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("获取在制品老化摘要失败", ex);
+                throw new MESException("获取在制品老化摘要失败", ex);
             }
         }
 

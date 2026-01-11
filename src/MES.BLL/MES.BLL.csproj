@@ -118,6 +118,8 @@
     <Compile Include="Material\ProcessRouteBLL.cs" />
     <Compile Include="Material\ProcessRouteService.cs" />
     <Compile Include="Material\ProductBLL.cs" />
+    <Compile Include="Analytics\IInsightBLL.cs" />
+    <Compile Include="Analytics\InsightBLL.cs" />
     <Compile Include="Production\IProductionOrderBLL.cs" />
     <Compile Include="Production\ProductionOrderBLL.cs" />
     <Compile Include="WorkOrder\WorkOrderBLL.cs" />

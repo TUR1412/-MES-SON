@@ -1,28 +1,22 @@
-# MES-SON（WinForms / .NET Framework 4.8）🚀
+# MES-SON · Nova Command Center
 
-> 一个以“可维护分层 + 可观测诊断 + 设计系统化 UI”为目标的桌面端 MES 方案示例工程。
+> 一个基于 **.NET Framework 4.8 + WinForms** 的桌面端 MES 示例工程，主打“分层清晰 + 运营洞察 + 未来感 UI”。
 
----
-
-## 📌 状态与徽章
-
-![Build](https://github.com/TUR1412/-MES-SON/actions/workflows/build.yml/badge.svg)
-![.NET Framework](https://img.shields.io/badge/.NET%20Framework-4.8-512BD4)
-![WinForms](https://img.shields.io/badge/UI-WinForms-0B7285)
-![Database](https://img.shields.io/badge/DB-MySQL-4479A1)
+A WinForms MES sample focused on **clean layering + operational insight + futuristic UI**.
 
 ---
 
-## ✨ 亮点（为什么值得看）
+## ✨ 关键特性 | Highlights
 
-- **分层清晰**：UI（`MES.UI`）→ BLL（`MES.BLL`）→ DAL（`MES.DAL`）→ MySQL  
-- **安全默认值**：仓库不保存真实数据库密码，优先使用环境变量注入连接字符串
-- **UI/UX 设计系统化**：`MES.UI.Framework` 提供主题系统、控件基座与 Design Tokens
-- **诊断优先**：提供数据库诊断窗体，帮助快速定位连接/权限/配置问题
+- **运营洞察 / Operational Insight**：生产风险预警、在制品老化、设备健康、库存告警、质量缺陷、批次良率一屏聚合
+- **分层架构 / Clean Layers**：UI → BLL → DAL → MySQL，避免 UI 直连数据库
+- **未来感主题 / Nova Theme**：统一设计 Token、卡片化入口、轻量动效
+- **安全默认值 / Secure Defaults**：连接串优先从环境变量读取，避免明文密码
+- **可观测诊断 / Diagnostics**：内置数据库诊断与环境检查
 
 ---
 
-## 🧱 目录结构（快速定位）
+## 🧱 目录结构 | Structure
 
 ```text
 src/
@@ -32,133 +26,85 @@ src/
   MES.DAL             # 数据访问层（SQL/参数化/连接管理）
   MES.Models          # 领域模型/DTO
   MES.Common          # 配置/日志/通用能力
-tests/                # 测试与验证工具（会被纳入 Solution 构建）
-docs/                 # 项目文档
-database/             # 数据库脚本与说明
-helloagents/          # SSOT（架构/模块/变更与方案包）
+
+tests/                # 测试与验证工具
+ docs/                # 项目文档
+ database/            # 数据库脚本
+ helloagents/         # SSOT（架构/模块/方案包）
 ```
 
 ---
 
-## 🚀 快速开始（本地构建）
+## 🚀 快速开始 | Quick Start
 
-### 1) 环境要求
-
+### 环境要求 | Requirements
 - Windows 10/11
-- Visual Studio 2022（建议）或 Build Tools（需包含 MSBuild）
-- .NET Framework 4.8（开发包）
-- MySQL（本地/远程均可）
+- Visual Studio 2022（建议）或 Build Tools
+- .NET Framework 4.8 开发包
+- MySQL 8.x
 
-### 2) 还原与构建（推荐方式）
-
+### 构建 | Build
 ```powershell
 nuget restore MES.sln
 msbuild MES.sln /t:Build /p:Configuration=Release /p:Platform="Any CPU" /p:GenerateResourceMSBuildArchitecture=x64
 ```
 
-也可以使用仓库自带脚本：
-
+或使用脚本：
 ```powershell
 ./build.ps1
 ```
 
----
-
-## 🔑 数据库连接配置（重要）
-
-### ✅ 推荐：使用环境变量注入连接字符串
-
-此项目优先读取环境变量（避免在仓库/配置文件中保存真实密码）：
-
-- `MES_CONNECTION_STRING`：默认环境连接字符串
-- `MES_TEST_CONNECTION_STRING`：测试环境连接字符串（可选）
-- `MES_PROD_CONNECTION_STRING`：生产环境连接字符串（可选）
-
-连接字符串建议包含的字段（仅列出字段名，不提供可复制的密码示例）：
-
-- `Server` / `Port`
-- `Database`
-- `User Id`
-- `Password`（或同义字段）
-- `CharSet=utf8mb4`
-- `SslMode=none`（按需）
-- `AllowPublicKeyRetrieval=true`（当 MySQL 使用默认认证且非 SSL 时常见需要）
-
-### 🧩 备用：本机开发使用 App.config
-
-- `src/MES.UI/App.config` 与 `tests/App.config` 提供“无密码占位符”连接字符串  
-- 如需在本机直接写入密码，请务必 **只在本机修改，不要提交到仓库**（CI 会拦截明显泄露模式）
+### 运行 | Run
+- 运行 `src/MES.UI` 生成的可执行文件
+- 默认主题：`Nova`
 
 ---
 
-## 🏗️ 架构图（Mermaid）
+## 🔑 数据库连接 | Database
 
-```mermaid
-flowchart TD
-  UI[MES.UI<br/>WinForms] --> BLL[MES.BLL<br/>业务逻辑]
-  BLL --> DAL[MES.DAL<br/>数据访问]
-  DAL --> DB[(MySQL)]
-  UI --> UIFW[MES.UI.Framework<br/>设计系统/控件/主题]
-  UI --> Models[MES.Models]
-  BLL --> Models
-  DAL --> Models
-  UI --> Common[MES.Common]
-  BLL --> Common
-  DAL --> Common
-```
+推荐使用环境变量（避免仓库写入真实密码）：
+- `MES_CONNECTION_STRING`
+- `MES_TEST_CONNECTION_STRING`（可选）
+- `MES_PROD_CONNECTION_STRING`（可选）
+
+如果需要本机配置，可修改 `src/MES.UI/App.config`（仅本机使用，不提交）。
 
 ---
 
-## 🎨 UI/UX 设计系统（World-Class 进化中）
+## 🛰️ 运营洞察 | Operational Insight
 
-`MES.UI.Framework` 是 UI 统一入口：
-
-- `UIThemeManager`：主题管理（含 LoL 暗金风主题）
-- `ThemedForm`：基础窗体基座（自动套用主题）
-- `DesignTokens`：字号 / 圆角 / 阴影 / 动效时长等基础 Token
-
-目标是让业务窗体“只关心业务布局”，视觉一致性由 Framework 统一兜底。
-
----
-
-## 🧪 测试与验证
-
-- `tests/MES.Tests.csproj` 已纳入 `MES.sln`（保证随 Solution 一起可编译）
-- CI 当前以 **可构建** 为主（不会强制执行数据库相关测试）
+洞察模块提供以下指标：
+- 生产订单风险分级与延期提醒
+- 在制品老化与瓶颈提示
+- 设备维护到期与健康评分
+- 物料安全库存与最低库存告警
+- 质量缺陷热点与良率趋势
+- 批次良率偏差识别
 
 ---
 
-## 🛡️ 安全策略
+## 🎨 UI 设计语言 | UI Design
 
-- 仓库不保存真实数据库密码/令牌
-- CI 增加了基础 “Secret guard”：
-  - 发现“连接字符串中包含 pwd/password 键值对”出现在文档或配置中会直接失败
-
----
-
-## 🎬 演示（GIF）
-
-为了保持仓库轻量，这里先预留占位。建议录制并放入 `docs/assets/`：
-
-- 建议 GIF 1：主界面导航与主题切换
-- 建议 GIF 2：数据库诊断与错误提示链路
+- 统一 Design Tokens（字号/圆角/动效）
+- 卡片化信息密度与分组
+- 轻量渐变与高对比文本提升可读性
 
 ---
 
-## 📚 深度文档（SSOT）
+## 📚 文档与 SSOT | Documentation
 
-项目的架构/模块/方案包/变更历史统一收敛到：
-
-- `helloagents/wiki/`
-- `helloagents/history/`
+- `docs/`：项目说明文档
+- `helloagents/`：架构/模块/变更与方案包（SSOT）
 
 ---
 
-## 🤝 贡献
+## ✅ 建议体验路径 | Suggested Flow
 
-欢迎 PR：
+1. 启动主界面 → 进入 **运营洞察**
+2. 查看风险摘要 → 快速跳转模块
+3. 使用系统管理进行数据库诊断
 
-- 修复/重构：`refactor: ...`
-- 性能：`perf: ...`
-- UI/UX：`feat(ui): ...`
-- 安全：`fix(security): ...`
+---
+
+如需定制化扩展或批量脚本能力，可基于 BLL/DAL 层快速演进。
+

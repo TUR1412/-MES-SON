@@ -37,7 +37,16 @@
 
 - `src/MES.DAL/Core/DatabaseHelper.cs`
 
-## 4) 资料位置
+## 4) 洞察派生指标（无新增表）
+
+- 生产订单风险：`production_order_info`
+- 在制品老化：`wip_info`
+- 设备健康与维护：`equipment`
+- 物料库存告警：`material_info`
+- 质量缺陷统计：`quality_inspection`
+- 批次良率：`batch_info`
+
+## 5) 资料位置
 
 - 数据库连接说明：`database/MES_Connection_Config.md`
 - 部署/运维：`docs/部署运维.md`

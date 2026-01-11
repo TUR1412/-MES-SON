@@ -77,7 +77,7 @@ namespace MES.UI.Framework.Controls
             FlatAppearance.BorderSize = 0;
             UseVisualStyleBackColor = false;
             BackColor = Color.Transparent;
-            ForeColor = LeagueColors.TextPrimary;
+            ForeColor = UIThemeManager.Colors.Text;
             Cursor = Cursors.Hand;
 
             // 默认尺寸更适合左侧栏
@@ -85,8 +85,8 @@ namespace MES.UI.Framework.Controls
             Width = 260;
 
             // 字体：主标题略粗，副标题更小
-            _titleFont = new Font("微软雅黑", 9.5F, FontStyle.Bold);
-            _subtitleFont = new Font("微软雅黑", 8.0F, FontStyle.Regular);
+            _titleFont = DesignTokens.Typography.CreateFont(9.5F, FontStyle.Bold);
+            _subtitleFont = DesignTokens.Typography.CreateFont(8.0F, FontStyle.Regular);
 
             // 让 Tab 导航可用（键盘 Enter/Space 触发）
             TabStop = true;
@@ -94,17 +94,34 @@ namespace MES.UI.Framework.Controls
 
         protected override void OnPaint(PaintEventArgs pevent)
         {
-            LolClientVisuals.DrawNavButton(
-                pevent.Graphics,
-                ClientRectangle,
-                _isHovered,
-                _isPressed,
-                _isSelected,
-                Text,
-                _subtitle,
-                _iconGlyph,
-                _titleFont,
-                _subtitleFont);
+            if (UIThemeManager.CurrentTheme == UIThemeManager.ThemeType.Nova)
+            {
+                NovaVisuals.DrawNavButton(
+                    pevent.Graphics,
+                    ClientRectangle,
+                    _isHovered,
+                    _isPressed,
+                    _isSelected,
+                    Text,
+                    _subtitle,
+                    _iconGlyph,
+                    _titleFont,
+                    _subtitleFont);
+            }
+            else
+            {
+                LolClientVisuals.DrawNavButton(
+                    pevent.Graphics,
+                    ClientRectangle,
+                    _isHovered,
+                    _isPressed,
+                    _isSelected,
+                    Text,
+                    _subtitle,
+                    _iconGlyph,
+                    _titleFont,
+                    _subtitleFont);
+            }
         }
 
         protected override void OnPaintBackground(PaintEventArgs pevent)

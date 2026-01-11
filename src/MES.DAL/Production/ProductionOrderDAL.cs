@@ -75,6 +75,23 @@ namespace MES.DAL.Production
         #region 生产订单特有操作
 
         /// <summary>
+        /// 获取未完成的生产订单（用于风险预警）
+        /// </summary>
+        /// <returns>生产订单列表</returns>
+        public List<ProductionOrderInfo> GetActiveOrders()
+        {
+            try
+            {
+                return GetByCondition("status NOT IN ('已完成','已取消')");
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("获取未完成生产订单失败", ex);
+                throw new MESException("获取未完成生产订单失败", ex);
+            }
+        }
+
+        /// <summary>
         /// 根据订单编号获取生产订单
         /// </summary>
         /// <param name="orderNo">订单编号</param>

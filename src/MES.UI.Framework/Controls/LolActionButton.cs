@@ -36,8 +36,8 @@ namespace MES.UI.Framework.Controls
             FlatAppearance.BorderSize = 0;
             UseVisualStyleBackColor = false;
             BackColor = Color.Transparent;
-            ForeColor = LeagueColors.TextPrimary;
-            Font = new Font("微软雅黑", 9F, FontStyle.Bold);
+            ForeColor = UIThemeManager.Colors.Text;
+            Font = DesignTokens.Typography.CreateFont(9F, FontStyle.Bold);
             Cursor = Cursors.Hand;
 
             Height = 34;
@@ -53,8 +53,15 @@ namespace MES.UI.Framework.Controls
                 bool hovered = Enabled && _isHovered;
                 bool pressed = Enabled && _isPressed;
 
-                // 更像 LoL：使用真实 RiotButton 渲染
-                RealLeagueRenderer.DrawRealLeagueButton(pevent.Graphics, ClientRectangle, hovered, pressed, Text, Font);
+                if (UIThemeManager.CurrentTheme == UIThemeManager.ThemeType.Nova)
+                {
+                    NovaVisuals.DrawActionButton(pevent.Graphics, ClientRectangle, hovered, pressed, Text, Font);
+                }
+                else
+                {
+                    // 更像 LoL：使用真实 RiotButton 渲染
+                    RealLeagueRenderer.DrawRealLeagueButton(pevent.Graphics, ClientRectangle, hovered, pressed, Text, Font);
+                }
             }
             catch
             {

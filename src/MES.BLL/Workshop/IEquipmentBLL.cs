@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using MES.Models.Workshop;
+using MES.Models.Analytics;
 
 namespace MES.BLL.Workshop
 {
@@ -94,6 +95,15 @@ namespace MES.BLL.Workshop
         /// </summary>
         /// <returns>设备信息列表</returns>
         List<EquipmentStatusInfo> GetEquipmentsNeedMaintenance();
+
+        /// <summary>
+        /// 获取设备健康摘要
+        /// </summary>
+        /// <param name="referenceTime">参考时间</param>
+        /// <param name="dueSoonDays">即将到期天数</param>
+        /// <param name="top">返回风险设备数量</param>
+        /// <returns>设备健康摘要</returns>
+        EquipmentHealthSummary GetEquipmentHealthSummary(DateTime? referenceTime = null, int dueSoonDays = 7, int top = 5);
 
         #endregion
 

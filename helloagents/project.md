@@ -6,7 +6,7 @@
 
 - **项目名称**：MES-SON
 - **形态**：Windows 桌面端（WinForms）制造执行系统（MES）/产线管理类应用
-- **核心诉求**：稳定、可维护、可扩展；并提供一致的现代化 UI 体验（高 DPI + 设计系统）
+- **核心诉求**：稳定、可维护、可扩展；并提供一致的现代化 UI 体验（高 DPI + 设计系统 + 运营洞察）
 
 ## 2) 技术栈（真实状态）
 
@@ -59,6 +59,7 @@
 ## 6) UI 规范（Design System 基线）
 
 - 统一 Token：`MES.UI.Framework/Themes/DesignTokens.cs`
+- 默认主题：`Nova`（可在 App.config 中切换）
 - 高 DPI：`MES.UI/app.manifest`（PerMonitorV2）
 - 新窗体/控件原则：
   - 字体、间距、颜色优先从 `DesignTokens` 取值

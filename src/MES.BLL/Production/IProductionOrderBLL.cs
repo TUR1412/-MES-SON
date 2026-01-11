@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using MES.Models.Production;
+using MES.Models.Analytics;
 
 namespace MES.BLL.Production
 {
@@ -118,5 +119,13 @@ namespace MES.BLL.Production
         /// <param name="productionOrder">生产订单信息</param>
         /// <returns>验证结果消息，验证通过返回空字符串</returns>
         string ValidateProductionOrder(ProductionOrderInfo productionOrder);
+
+        /// <summary>
+        /// 获取生产订单风险摘要
+        /// </summary>
+        /// <param name="referenceTime">参考时间，默认当前时间</param>
+        /// <param name="top">返回高风险列表数量</param>
+        /// <returns>风险摘要</returns>
+        ProductionOrderRiskSummary GetProductionOrderRiskSummary(DateTime? referenceTime = null, int top = 5);
     }
 }

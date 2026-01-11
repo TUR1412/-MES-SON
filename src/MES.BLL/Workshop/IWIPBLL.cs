@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using MES.Models.Workshop;
+using MES.Models.Analytics;
 
 namespace MES.BLL.Workshop
 {
@@ -174,6 +175,15 @@ namespace MES.BLL.Workshop
         /// </summary>
         /// <returns>状态分布统计</returns>
         List<StatusDistribution> GetStatusDistribution();
+
+        /// <summary>
+        /// 获取在制品老化摘要
+        /// </summary>
+        /// <param name="referenceTime">参考时间</param>
+        /// <param name="agingThresholdHours">老化阈值（小时）</param>
+        /// <param name="top">返回老化列表数量</param>
+        /// <returns>老化摘要</returns>
+        WIPAgingSummary GetWIPAgingSummary(DateTime? referenceTime = null, double agingThresholdHours = 48, int top = 5);
 
         #endregion
 

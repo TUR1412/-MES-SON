@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using MES.DAL.Production;
 using MES.Models.Production;
+using MES.Models.Analytics;
 using MES.Common.Logging;
 using MES.Common.Exceptions;
+using System.Linq;
 
 namespace MES.BLL.Production
 {
@@ -574,6 +576,132 @@ namespace MES.BLL.Production
             }
 
             return string.Empty;
+        }
+
+        /// <summary>
+        /// 获取生产订单风险摘要
+        /// </summary>
+        /// <param name="referenceTime">参考时间</param>
+        /// <param name="top">返回高风险订单数量</param>
+        /// <returns>风险摘要</returns>
+        public ProductionOrderRiskSummary GetProductionOrderRiskSummary(DateTime? referenceTime = null, int top = 5)
+        {
+            try
+            {
+                var now = referenceTime ?? DateTime.Now;
+                var orders = _productionOrderDAL.GetActiveOrders() ?? new List<ProductionOrderInfo>();
+
+                var riskItems = new List<ProductionOrderRiskItem>();
+                int overdueCount = 0;
+                int highRiskCount = 0;
+                int mediumRiskCount = 0;
+                int onTrackCount = 0;
+                double totalProgress = 0;
+
+                foreach (var order in orders)
+                {
+                    double progress = 0;
+                    if (order.PlannedQuantity > 0)
+                    {
+                        progress = (double)(order.ActualQuantity / order.PlannedQuantity);
+                    }
+                    totalProgress += progress;
+
+                    var remainingHours = (order.PlannedEndTime - now).TotalHours;
+                    var level = ResolveRiskLevel(order, now, remainingHours, progress);
+
+                    if (order.PlannedEndTime < now)
+                    {
+                        overdueCount++;
+                    }
+
+                    switch (level)
+                    {
+                        case RiskLevel.High:
+                            highRiskCount++;
+                            break;
+                        case RiskLevel.Medium:
+                            mediumRiskCount++;
+                            break;
+                        default:
+                            onTrackCount++;
+                            break;
+                    }
+
+                    riskItems.Add(new ProductionOrderRiskItem
+                    {
+                        Id = order.Id,
+                        OrderNumber = order.OrderNumber,
+                        ProductName = order.ProductName,
+                        WorkshopName = order.WorkshopName,
+                        PlannedEndTime = order.PlannedEndTime,
+                        ProgressRate = Math.Round(progress * 100, 1),
+                        RiskLevel = level,
+                        RemainingHours = Math.Round(remainingHours, 1)
+                    });
+                }
+
+                var totalActive = orders.Count;
+                var avgProgress = totalActive > 0 ? totalProgress / totalActive : 0;
+
+                var topRisks = riskItems
+                    .OrderByDescending(r => r.RiskLevel)
+                    .ThenBy(r => r.RemainingHours)
+                    .Take(Math.Max(1, top))
+                    .ToList();
+
+                return new ProductionOrderRiskSummary
+                {
+                    TotalActive = totalActive,
+                    OverdueCount = overdueCount,
+                    HighRiskCount = highRiskCount,
+                    MediumRiskCount = mediumRiskCount,
+                    OnTrackCount = onTrackCount,
+                    AverageProgress = Math.Round(avgProgress * 100, 1),
+                    TopRisks = topRisks
+                };
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("获取生产订单风险摘要失败", ex);
+                throw new MESException("获取生产订单风险摘要失败", ex);
+            }
+        }
+
+        private static RiskLevel ResolveRiskLevel(ProductionOrderInfo order, DateTime now, double remainingHours, double progress)
+        {
+            if (order == null)
+            {
+                return RiskLevel.Low;
+            }
+
+            if (order.PlannedEndTime <= now)
+            {
+                return RiskLevel.High;
+            }
+
+            var level = RiskLevel.Low;
+
+            if (remainingHours <= 24)
+            {
+                level = RiskLevel.High;
+            }
+            else if (remainingHours <= 72)
+            {
+                level = RiskLevel.Medium;
+            }
+
+            if (!string.IsNullOrEmpty(order.Priority) && order.Priority.Contains("紧急"))
+            {
+                level = RiskLevel.High;
+            }
+
+            if (progress < 0.5 && remainingHours <= 48)
+            {
+                level = RiskLevel.High;
+            }
+
+            return level;
         }
     }
 }

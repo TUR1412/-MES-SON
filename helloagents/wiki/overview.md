@@ -1,6 +1,7 @@
 # MES-SON 概览（SSOT）
 
 MES-SON 是一个基于 **.NET Framework 4.8 + WinForms** 的桌面端 MES/产线管理类系统。项目采用经典分层（UI/BLL/DAL）与 UI Framework（设计系统）并行演进：既保持传统 WinForms 的稳定交付能力，也为“现代化一致体验（高 DPI + 统一 Token）”打下结构性基础。
+本次升级引入运营洞察与 Nova 主题，聚合多模块指标并提供风险预警入口。
 
 ## 快速开始（开发者）
 
@@ -31,6 +32,7 @@ MES-SON 是一个基于 **.NET Framework 4.8 + WinForms** 的桌面端 MES/产�
 - 生产：`src/MES.UI/Forms/Production/`
 - 工单：`src/MES.UI/Forms/WorkOrder/`
 - 车间：`src/MES.UI/Forms/Workshop/`
+- 运营洞察：`src/MES.UI/Forms/Insight/`
 - 系统管理：`src/MES.UI/Forms/SystemManagement/`（含数据库诊断）
 
 ## 知识库导航

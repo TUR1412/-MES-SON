@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using MES.DAL.Workshop;
 using MES.Models.Workshop;
+using MES.Models.Analytics;
 using MES.Common.Logging;
 using MES.Common.Exceptions;
 
@@ -942,6 +943,60 @@ namespace MES.BLL.Workshop
             {
                 LogManager.Error(string.Format("获取批次统计信息异常：{0}", ex.Message), ex);
                 throw new MESException("获取批次统计信息时发生异常", ex);
+            }
+        }
+
+        /// <summary>
+        /// 获取批次良率摘要
+        /// </summary>
+        /// <param name="lowYieldThreshold">低良率阈值</param>
+        /// <param name="top">返回低良率列表数量</param>
+        /// <returns>批次良率摘要</returns>
+        public BatchYieldSummary GetBatchYieldSummary(decimal lowYieldThreshold = 0.9m, int top = 5)
+        {
+            try
+            {
+                var batches = _batchDAL.GetAll() ?? new List<BatchInfo>();
+                var yieldItems = new List<BatchYieldItem>();
+
+                foreach (var batch in batches)
+                {
+                    var planned = batch.PlannedQuantity;
+                    var actual = batch.ActualQuantity;
+                    var yieldRate = planned > 0 ? Math.Round(actual / planned, 4) : 0;
+
+                    yieldItems.Add(new BatchYieldItem
+                    {
+                        BatchNumber = batch.BatchNumber,
+                        ProductName = batch.ProductName,
+                        PlannedQuantity = planned,
+                        ActualQuantity = actual,
+                        YieldRate = yieldRate
+                    });
+                }
+
+                var lowYieldItems = yieldItems
+                    .Where(item => item.YieldRate < lowYieldThreshold)
+                    .OrderBy(item => item.YieldRate)
+                    .Take(Math.Max(1, top))
+                    .ToList();
+
+                var averageYield = yieldItems.Count > 0
+                    ? Math.Round(yieldItems.Average(item => item.YieldRate), 4)
+                    : 0;
+
+                return new BatchYieldSummary
+                {
+                    TotalBatches = yieldItems.Count,
+                    LowYieldCount = yieldItems.Count(item => item.YieldRate < lowYieldThreshold),
+                    AverageYieldRate = averageYield,
+                    LowYieldBatches = lowYieldItems
+                };
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("获取批次良率摘要失败", ex);
+                throw new MESException("获取批次良率摘要失败", ex);
             }
         }
 

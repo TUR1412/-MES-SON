@@ -3,6 +3,7 @@ using MES.Common.Exceptions;
 using MES.Common.Logging;
 using MES.DAL.Material;
 using MES.Models.Material;
+using MES.Models.Analytics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -161,6 +162,57 @@ namespace MES.BLL.Material
         }
 
         #endregion
+
+        /// <summary>
+        /// 获取物料库存告警摘要
+        /// </summary>
+        /// <param name="top">返回告警列表数量</param>
+        /// <returns>库存告警摘要</returns>
+        public MaterialStockAlertSummary GetMaterialStockAlertSummary(int top = 5)
+        {
+            try
+            {
+                var materials = _materialDAL.GetAll() ?? new List<MaterialInfo>();
+                var lowStockMaterials = _materialDAL.GetLowStockMaterials() ?? new List<MaterialInfo>();
+
+                var belowSafety = lowStockMaterials
+                    .Where(m => m.SafetyStock.HasValue && m.StockQuantity.HasValue && m.StockQuantity.Value < m.SafetyStock.Value)
+                    .ToList();
+                var belowMin = lowStockMaterials
+                    .Where(m => m.MinStock.HasValue && m.StockQuantity.HasValue && m.StockQuantity.Value < m.MinStock.Value)
+                    .ToList();
+
+                var alertItems = lowStockMaterials
+                    .Select(m => new MaterialStockAlertItem
+                    {
+                        MaterialCode = m.MaterialCode,
+                        MaterialName = m.MaterialName,
+                        StockQuantity = m.StockQuantity ?? 0,
+                        SafetyStock = m.SafetyStock,
+                        MinStock = m.MinStock,
+                        RiskLevel = (m.MinStock.HasValue && m.StockQuantity.HasValue && m.StockQuantity.Value < m.MinStock.Value)
+                            ? RiskLevel.High
+                            : RiskLevel.Medium
+                    })
+                    .OrderByDescending(item => item.RiskLevel)
+                    .ThenBy(item => item.StockQuantity)
+                    .Take(Math.Max(1, top))
+                    .ToList();
+
+                return new MaterialStockAlertSummary
+                {
+                    TotalMaterials = materials.Count,
+                    BelowSafetyCount = belowSafety.Count,
+                    BelowMinCount = belowMin.Count,
+                    TopAlerts = alertItems
+                };
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("获取物料库存告警摘要失败", ex);
+                throw new MESException("获取物料库存告警摘要失败", ex);
+            }
+        }
 
         #region 私有转换方法
 

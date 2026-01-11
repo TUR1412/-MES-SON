@@ -28,7 +28,7 @@ namespace MES.UI.Framework.Controls
 
             DoubleBuffered = true;
             BackColor = Color.Transparent;
-            ForeColor = LeagueColors.TextHighlight;
+            ForeColor = UIThemeManager.Colors.Text;
             Size = new Size(240, 12);
         }
 
@@ -115,6 +115,12 @@ namespace MES.UI.Framework.Controls
             catch
             {
                 // ignore
+            }
+
+            if (UIThemeManager.CurrentTheme == UIThemeManager.ThemeType.Nova)
+            {
+                NovaVisuals.DrawProgressBar(g, rect, Progress);
+                return;
             }
 
             using (var path = CreateChamferedRectPath(rect, chamfer))

@@ -7,6 +7,7 @@
 ```mermaid
 flowchart LR
   UI[MES.UI\nWinForms] --> UIFW[MES.UI.Framework\nDesign System / Theme]
+  UI --> Insight[MES.BLL.Analytics\nOperational Insight]
   UI --> BLL[MES.BLL\nBusiness Logic]
   UI --> Common[MES.Common\nConfig/Exception/Utils]
   UI --> Models[MES.Models\nDTO/Entity]
@@ -14,6 +15,7 @@ flowchart LR
   BLL --> DAL[MES.DAL\nData Access]
   BLL --> Common
   BLL --> Models
+  Insight --> BLL
 
   DAL --> Common
   DAL --> Models
@@ -42,7 +44,8 @@ flowchart LR
 ## 3) UI 体系（设计系统 + 高 DPI）
 
 - 统一 Token：`MES.UI.Framework/Themes/DesignTokens.cs`
-- 主题应用器：`MES.UI.Framework/Themes/LolV2ThemeApplier.cs`
+- 主题应用器：`MES.UI.Framework/Themes/UIThemeManager.cs`（含 Nova 主题）
+- 视觉绘制：`MES.UI.Framework/Themes/NovaVisuals.cs`
 - 高 DPI：`MES.UI/app.manifest`（PerMonitorV2）
 
 > 原则：允许“渐进式现代化”，但禁止继续新增硬编码的字体/颜色/间距风格债务。
