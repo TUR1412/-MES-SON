@@ -21,7 +21,7 @@ English: A **.NET Framework 4.8 + WinForms** MES sample focused on **clean layer
 - **数据库诊断（不阻塞 UI）**：后台采集、单连接聚合查询、展示连接占用率；诊断输出默认脱敏连接串
 - **错误边界（Error Boundary）**：全局异常边界 + 自动生成崩溃报告（CrashReports），提升线上可排障性
 - **日志可观测**：命令面板支持打开日志目录/今日日志/复制今日日志尾部/崩溃报告目录/最新崩溃报告/最新诊断包（zip），便于排障与回溯
-- **故障排查中心**：内置日志（尾部读取）与崩溃报告查看/复制，支持文件列表筛选、跟随尾部自动刷新、关键字高亮、文本内搜索（Next/Prev/Aa 区分大小写）与一键定位最新错误，并支持一键导出诊断包（Support Bundle，含 Zip），减少对外部工具依赖
+- **故障排查中心**：内置日志（尾部读取）与崩溃报告查看/复制，支持文件列表筛选、跟随尾部自动刷新（仅在文件变更时读取）、关键字高亮、文本内搜索（Next/Prev/Aa 区分大小写）与一键定位最新错误，并支持一键导出诊断包（Support Bundle，含 Zip），减少对外部工具依赖
 - **工程化脚本**：`scripts/restore.ps1` 自动下载 `nuget.exe` 并还原 `packages.config` 依赖，`build.ps1` 一键构建
 - **单元测试**：新增 `tests/MES.UnitTests`，可用 `./test.ps1` 一键构建并运行单测
 - **CI（GitHub Actions）**：自动构建 + 运行单元测试（TRX 归档）+ secret guard（阻止误提交敏感字样）
@@ -124,10 +124,16 @@ Server=127.0.0.1;Port=3306;Database=mes;User Id=root;Password=******;SslMode=Non
 
 ### ⌨️ 快捷键
 
-- `Ctrl+K`：打开命令面板（Command Palette）
-- `Enter`：执行选中命令
-- `Esc`：关闭命令面板
-- `↑/↓`：选择命令
+- 命令面板（Command Palette）
+  - `Ctrl+K`：打开命令面板
+  - `Enter`：执行选中命令
+  - `Esc`：关闭命令面板
+  - `↑/↓`：选择命令
+- 故障排查中心（Troubleshooting Center）
+  - `Ctrl+F`：聚焦当前页搜索框（Logs/CrashReports）
+  - `F3` / `Shift+F3`：下一个 / 上一个匹配
+  - `Ctrl+G`：跳转到最新错误
+  - 搜索框内：`Enter`（Next）、`Shift+Enter`（Prev）、`Esc`（清空搜索文本）
 
 ---
 
@@ -159,7 +165,7 @@ Server=127.0.0.1;Port=3306;Database=mes;User Id=root;Password=******;SslMode=Non
 - **Database Diagnostics (non-blocking)**: background collection, single-connection aggregation, connection utilization insight; redacted diagnostics by default
 - **Error Boundary**: global exception boundary + automatic crash reports (CrashReports) for faster troubleshooting
 - **Log Observability**: open log folder / today's log / copy today's log tail / CrashReports folder / latest CrashReport / latest Support Bundle (zip) directly from the command palette
-- **Troubleshooting Center**: built-in log tail viewer + crash report viewer/copy, with file list filtering, follow-tail auto refresh, keyword highlighting, in-text search (Next/Prev/case toggle), jump-to-latest error, and one-click support bundle export (zip included) to reduce reliance on external tools
+- **Troubleshooting Center**: built-in log tail viewer + crash report viewer/copy, with file list filtering, follow-tail auto refresh (reads only on file changes), keyword highlighting, in-text search (Next/Prev/case toggle), jump-to-latest error, and one-click support bundle export (zip included) to reduce reliance on external tools
 - **Engineering Scripts**: `scripts/restore.ps1` downloads `nuget.exe` and restores `packages.config`, `build.ps1` builds the solution
 - **Unit Tests**: `tests/MES.UnitTests` with a one-command runner: `./test.ps1`
 - **CI (GitHub Actions)**: build + unit tests (TRX artifact) + secret guard (blocks sensitive patterns)
@@ -262,10 +268,16 @@ Notes:
 
 ### ⌨️ Keyboard Shortcuts
 
-- `Ctrl+K`: open Command Palette
-- `Enter`: run selected command
-- `Esc`: close palette
-- `↑/↓`: navigate commands
+- Command Palette
+  - `Ctrl+K`: open Command Palette
+  - `Enter`: run selected command
+  - `Esc`: close palette
+  - `↑/↓`: navigate commands
+- Troubleshooting Center
+  - `Ctrl+F`: focus search box in current tab (Logs/CrashReports)
+  - `F3` / `Shift+F3`: next / previous match
+  - `Ctrl+G`: jump to latest issue
+  - In the search box: `Enter` (Next), `Shift+Enter` (Prev), `Esc` (Clear)
 
 ---
 

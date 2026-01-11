@@ -67,6 +67,10 @@ namespace MES.UI.Forms.SystemManagement
         private bool _logHighlightEnabled = true;
         private bool _logSearchCaseSensitive = false;
         private int _logSearchCountVersion = 0;
+        private string _logLastLoadedPath = string.Empty;
+        private long _logLastLoadedWriteTicks = 0;
+        private long _logLastLoadedLengthBytes = -1;
+        private int _logLastLoadedTailLines = 0;
 
         // CrashReports tab
         private readonly Label _crashListTitle = new Label();
@@ -94,6 +98,10 @@ namespace MES.UI.Forms.SystemManagement
         private bool _crashHighlightEnabled = true;
         private bool _crashSearchCaseSensitive = false;
         private int _crashSearchCountVersion = 0;
+        private string _crashLastLoadedPath = string.Empty;
+        private long _crashLastLoadedWriteTicks = 0;
+        private long _crashLastLoadedLengthBytes = -1;
+        private int _crashLastLoadedTailLines = 0;
 
         public TroubleshootingCenterForm()
         {
@@ -104,6 +112,7 @@ namespace MES.UI.Forms.SystemManagement
             ShowIcon = false;
             Width = 980;
             Height = 680;
+            KeyPreview = true;
 
             BuildLayout();
             WireEvents();
@@ -120,6 +129,66 @@ namespace MES.UI.Forms.SystemManagement
         {
             base.OnShown(e);
             RefreshAll();
+        }
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            try
+            {
+                if (keyData == (Keys.Control | Keys.F))
+                {
+                    FocusSearchForActiveTab();
+                    return true;
+                }
+
+                if (keyData == Keys.F3)
+                {
+                    if (_tabs.SelectedIndex == 0) FindLogNext();
+                    else if (_tabs.SelectedIndex == 1) FindCrashNext();
+                    return true;
+                }
+
+                if (keyData == (Keys.Shift | Keys.F3))
+                {
+                    if (_tabs.SelectedIndex == 0) FindLogPrevious();
+                    else if (_tabs.SelectedIndex == 1) FindCrashPrevious();
+                    return true;
+                }
+
+                if (keyData == (Keys.Control | Keys.G))
+                {
+                    if (_tabs.SelectedIndex == 0) JumpLogLatestIssue();
+                    else if (_tabs.SelectedIndex == 1) JumpCrashLatestIssue();
+                    return true;
+                }
+            }
+            catch
+            {
+                // ignore
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        private void FocusSearchForActiveTab()
+        {
+            try
+            {
+                if (_tabs.SelectedIndex == 0)
+                {
+                    _logSearch.Focus();
+                    _logSearch.SelectAll();
+                }
+                else if (_tabs.SelectedIndex == 1)
+                {
+                    _crashSearch.Focus();
+                    _crashSearch.SelectAll();
+                }
+            }
+            catch
+            {
+                // ignore
+            }
         }
 
         protected override void Dispose(bool disposing)
@@ -579,16 +648,102 @@ namespace MES.UI.Forms.SystemManagement
                 // 仅刷新当前页，避免后台不断读盘占用 IO
                 if (_tabs.SelectedIndex == 0)
                 {
-                    if (_logFollowTailEnabled) LoadSelectedLog();
+                    if (_logFollowTailEnabled) AutoRefreshLogIfChanged();
                 }
                 else if (_tabs.SelectedIndex == 1)
                 {
-                    if (_crashFollowTailEnabled) LoadSelectedCrashReport();
+                    if (_crashFollowTailEnabled) AutoRefreshCrashIfChanged();
                 }
             }
             catch
             {
                 // ignore
+            }
+        }
+
+        private void AutoRefreshLogIfChanged()
+        {
+            try
+            {
+                var entry = _logFiles.SelectedItem as FileEntry;
+                if (entry == null || string.IsNullOrWhiteSpace(entry.FullPath)) return;
+
+                int tailLines = SafeGetTailLines(_logTailLines, 2000);
+
+                long writeTicks;
+                long lengthBytes;
+                if (!TryGetFileSignature(entry.FullPath, out writeTicks, out lengthBytes))
+                {
+                    LoadSelectedLog();
+                    return;
+                }
+
+                bool same =
+                    string.Equals(_logLastLoadedPath, entry.FullPath, StringComparison.OrdinalIgnoreCase) &&
+                    _logLastLoadedWriteTicks == writeTicks &&
+                    _logLastLoadedLengthBytes == lengthBytes &&
+                    _logLastLoadedTailLines == tailLines;
+                if (same) return;
+
+                LoadSelectedLog();
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
+        private void AutoRefreshCrashIfChanged()
+        {
+            try
+            {
+                var entry = _crashFiles.SelectedItem as FileEntry;
+                if (entry == null || string.IsNullOrWhiteSpace(entry.FullPath)) return;
+
+                int tailLines = SafeGetTailLines(_crashTailLines, 4000);
+
+                long writeTicks;
+                long lengthBytes;
+                if (!TryGetFileSignature(entry.FullPath, out writeTicks, out lengthBytes))
+                {
+                    LoadSelectedCrashReport();
+                    return;
+                }
+
+                bool same =
+                    string.Equals(_crashLastLoadedPath, entry.FullPath, StringComparison.OrdinalIgnoreCase) &&
+                    _crashLastLoadedWriteTicks == writeTicks &&
+                    _crashLastLoadedLengthBytes == lengthBytes &&
+                    _crashLastLoadedTailLines == tailLines;
+                if (same) return;
+
+                LoadSelectedCrashReport();
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
+        private static bool TryGetFileSignature(string fullPath, out long lastWriteUtcTicks, out long lengthBytes)
+        {
+            lastWriteUtcTicks = 0;
+            lengthBytes = -1;
+
+            if (string.IsNullOrWhiteSpace(fullPath)) return false;
+
+            try
+            {
+                var fi = new FileInfo(fullPath);
+                if (!fi.Exists) return false;
+
+                lastWriteUtcTicks = fi.LastWriteTimeUtc.Ticks;
+                lengthBytes = fi.Length;
+                return true;
+            }
+            catch
+            {
+                return false;
             }
         }
 
@@ -659,6 +814,7 @@ namespace MES.UI.Forms.SystemManagement
                 _logFollowTailEnabled = !_logFollowTailEnabled;
                 UpdateToggleButtons();
                 UpdateAutoRefreshTimerState();
+                try { _logMeta.Text = UpdateMetaFollowText(_logMeta.Text, _logFollowTailEnabled); } catch { }
                 if (_logFollowTailEnabled) LoadSelectedLog();
             }
             catch
@@ -674,6 +830,7 @@ namespace MES.UI.Forms.SystemManagement
                 _crashFollowTailEnabled = !_crashFollowTailEnabled;
                 UpdateToggleButtons();
                 UpdateAutoRefreshTimerState();
+                try { _crashMeta.Text = UpdateMetaFollowText(_crashMeta.Text, _crashFollowTailEnabled); } catch { }
                 if (_crashFollowTailEnabled) LoadSelectedCrashReport();
             }
             catch
@@ -1506,12 +1663,14 @@ namespace MES.UI.Forms.SystemManagement
             {
                 DateTime lastWriteTime = entry.LastWriteTime;
                 long lengthBytes = entry.LengthBytes;
+                long lastWriteUtcTicks = 0;
                 try
                 {
                     var fi = new FileInfo(entry.FullPath);
                     if (fi.Exists)
                     {
                         lastWriteTime = fi.LastWriteTime;
+                        lastWriteUtcTicks = fi.LastWriteTimeUtc.Ticks;
                         lengthBytes = fi.Length;
                     }
                 }
@@ -1526,15 +1685,17 @@ namespace MES.UI.Forms.SystemManagement
                     text = "(空)";
                 }
 
+                string followText = GetFollowTailMetaSuffix(followTail);
                 string meta = string.Format(
-                    "{0}：{1} · {2:yyyy-MM-dd HH:mm:ss} · {3} KB · 显示尾部 {4} 行",
+                    "{0}：{1} · {2:yyyy-MM-dd HH:mm:ss} · {3} KB · 显示尾部 {4} 行{5}",
                     kind,
                     Path.GetFileName(entry.FullPath),
                     lastWriteTime,
                     Math.Max(1, lengthBytes / 1024),
-                    tailLines);
+                    tailLines,
+                    followText);
 
-                return new object[] { text, meta };
+                return new object[] { text, meta, lastWriteUtcTicks, lengthBytes };
             }).ContinueWith(t =>
             {
                 try
@@ -1559,10 +1720,42 @@ namespace MES.UI.Forms.SystemManagement
                     var result = t.Result as object[];
                     if (result == null || result.Length < 2) return;
 
+                    long lastWriteUtcTicks = 0;
+                    long lengthBytes = -1;
+                    try { if (result.Length >= 3 && result[2] is long) lastWriteUtcTicks = (long)result[2]; } catch { }
+                    try { if (result.Length >= 4 && result[3] is long) lengthBytes = (long)result[3]; } catch { }
+
                     BeginInvoke(new Action(() =>
                     {
-                        viewer.Text = result[0] as string ?? string.Empty;      
+                        bool outdatedOnUi = false;
+                        if (viewer == _logText) outdatedOnUi = version != _logLoadVersion;
+                        else outdatedOnUi = version != _crashLoadVersion;
+                        if (outdatedOnUi) return;
+
+                        viewer.Text = result[0] as string ?? string.Empty;
                         if (metaLabel != null) metaLabel.Text = result[1] as string ?? string.Empty;
+
+                        try
+                        {
+                            if (viewer == _logText)
+                            {
+                                _logLastLoadedPath = entry.FullPath ?? string.Empty;
+                                _logLastLoadedWriteTicks = lastWriteUtcTicks;
+                                _logLastLoadedLengthBytes = lengthBytes;
+                                _logLastLoadedTailLines = tailLines;
+                            }
+                            else if (viewer == _crashText)
+                            {
+                                _crashLastLoadedPath = entry.FullPath ?? string.Empty;
+                                _crashLastLoadedWriteTicks = lastWriteUtcTicks;
+                                _crashLastLoadedLengthBytes = lengthBytes;
+                                _crashLastLoadedTailLines = tailLines;
+                            }
+                        }
+                        catch
+                        {
+                            // ignore
+                        }
 
                         if (highlight)
                         {
@@ -1590,6 +1783,24 @@ namespace MES.UI.Forms.SystemManagement
                     // ignore
                 }
             });
+        }
+
+        private static string GetFollowTailMetaSuffix(bool followTail)
+        {
+            double intervalSeconds = Math.Max(0.1, AutoRefreshIntervalMs / 1000.0);
+            return followTail
+                ? string.Format(" · 跟随: 开({0:0.#}s)", intervalSeconds)
+                : " · 跟随: 关";
+        }
+
+        private static string UpdateMetaFollowText(string meta, bool followTail)
+        {
+            if (string.IsNullOrWhiteSpace(meta)) return meta;
+
+            int idx = meta.LastIndexOf(" · 跟随:", StringComparison.Ordinal);
+            if (idx < 0) return meta;
+
+            return meta.Substring(0, idx) + GetFollowTailMetaSuffix(followTail);
         }
 
         private void ApplyHighlights(ThemedRichTextBox viewer)
