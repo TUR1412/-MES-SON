@@ -6,6 +6,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MES.Common.Configuration;
 using MES.Common.IO;
 using MES.Common.Logging;
 using MES.UI.Framework.Controls;
@@ -2147,14 +2148,15 @@ namespace MES.UI.Forms.SystemManagement
                     }
                 }
 
-                string copiedLog = CopyFileIfExists(selectedLog, bundleDir);
-                string copiedCrash = CopyFileIfExists(selectedCrash, bundleDir);
+                // Support Bundle 默认脱敏：避免导出日志/崩溃报告时误携带真实密码
+                string copiedLog = CopyFileIfExists(selectedLog, bundleDir, true);
+                string copiedCrash = CopyFileIfExists(selectedCrash, bundleDir, true);
 
                 var logTailLines = SafeGetTailLines(_logTailLines, 2000);
                 var crashTailLines = SafeGetTailLines(_crashTailLines, 4000);
 
-                WriteTailIfExists(selectedLog, bundleDir, "log_tail.txt", logTailLines);
-                WriteTailIfExists(selectedCrash, bundleDir, "crash_tail.txt", crashTailLines);
+                WriteTailIfExists(selectedLog, bundleDir, "log_tail.txt", logTailLines, true);
+                WriteTailIfExists(selectedCrash, bundleDir, "crash_tail.txt", crashTailLines, true);
 
                 WriteBundleSummary(bundleDir, copiedLog, copiedCrash, logTailLines, crashTailLines);
 
@@ -2174,11 +2176,11 @@ namespace MES.UI.Forms.SystemManagement
             }
         }
 
-        private static string CopyFileIfExists(string sourcePath, string bundleDir)
+        private static string CopyFileIfExists(string sourcePath, string bundleDir, bool redact)
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(sourcePath)) return string.Empty;
+                if (string.IsNullOrWhiteSpace(sourcePath)) return string.Empty; 
                 if (!File.Exists(sourcePath)) return string.Empty;
                 if (string.IsNullOrWhiteSpace(bundleDir)) return string.Empty;
 
@@ -2186,8 +2188,43 @@ namespace MES.UI.Forms.SystemManagement
                 if (string.IsNullOrWhiteSpace(name)) return string.Empty;
 
                 var dest = Path.Combine(bundleDir, name);
-                File.Copy(sourcePath, dest, true);
-                return dest;
+                if (!redact)
+                {
+                    File.Copy(sourcePath, dest, true);
+                    return dest;
+                }
+
+                // 小文件直接整体脱敏；大文件逐行脱敏，避免一次性占用过多内存
+                try
+                {
+                    var info = new FileInfo(sourcePath);
+                    const long MaxReadAllBytes = 5L * 1024L * 1024L;
+                    if (info.Exists && info.Length > 0 && info.Length <= MaxReadAllBytes)
+                    {
+                        var text = File.ReadAllText(sourcePath, System.Text.Encoding.UTF8);
+                        text = MaskSensitiveText(text);
+                        File.WriteAllText(dest, text, System.Text.Encoding.UTF8);
+                        return File.Exists(dest) ? dest : string.Empty;
+                    }
+
+                    using (var reader = new StreamReader(sourcePath, System.Text.Encoding.UTF8, true))
+                    using (var writer = new StreamWriter(dest, false, System.Text.Encoding.UTF8))
+                    {
+                        string line;
+                        while ((line = reader.ReadLine()) != null)
+                        {
+                            writer.WriteLine(MaskSensitiveText(line));
+                        }
+                    }
+
+                    return File.Exists(dest) ? dest : string.Empty;
+                }
+                catch
+                {
+                    // 脱敏失败时回退原样复制（保持功能可用性）
+                    try { File.Copy(sourcePath, dest, true); } catch { }
+                    return File.Exists(dest) ? dest : string.Empty;
+                }
             }
             catch
             {
@@ -2195,7 +2232,7 @@ namespace MES.UI.Forms.SystemManagement
             }
         }
 
-        private static void WriteTailIfExists(string sourcePath, string bundleDir, string fileName, int tailLines)
+        private static void WriteTailIfExists(string sourcePath, string bundleDir, string fileName, int tailLines, bool redact)
         {
             try
             {
@@ -2205,17 +2242,33 @@ namespace MES.UI.Forms.SystemManagement
                 if (string.IsNullOrWhiteSpace(fileName)) return;
 
                 var text = TextFileTailReader.ReadTailText(sourcePath, tailLines);
+                if (redact)
+                {
+                    text = MaskSensitiveText(text);
+                }
                 if (string.IsNullOrWhiteSpace(text))
                 {
                     text = "(空)";
                 }
 
                 var path = Path.Combine(bundleDir, fileName);
-                File.WriteAllText(path, text, System.Text.Encoding.UTF8);
+                File.WriteAllText(path, text, System.Text.Encoding.UTF8);       
             }
             catch
             {
                 // ignore
+            }
+        }
+
+        private static string MaskSensitiveText(string text)
+        {
+            try
+            {
+                return ConnectionStringHelper.MaskSecretsInText(text);
+            }
+            catch
+            {
+                return string.IsNullOrEmpty(text) ? string.Empty : text;
             }
         }
 

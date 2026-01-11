@@ -10,6 +10,8 @@ namespace MES.UI.Framework.Utilities.CrashReporting
         public string ApplicationName { get; set; }
         public string ApplicationVersion { get; set; }
         public string EnvironmentInfo { get; set; }
+        public string RecentLogPath { get; set; }
+        public string RecentLogTail { get; set; }
         public string ExceptionText { get; set; }
     }
 }

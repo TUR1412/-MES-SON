@@ -10,7 +10,7 @@
 - 连接字符串统一读取：
   - `src/MES.Common/Configuration/ConfigManager.cs`
 - 连接字符串兼容与脱敏：
-  - `src/MES.Common/Configuration/ConnectionStringHelper.cs`
+  - `src/MES.Common/Configuration/ConnectionStringHelper.cs`（MaskSecrets / MaskSecretsInText）
 - 日志基础设施：
   - `src/MES.Common/Logging/LogManager.cs`（LogDirectory / GetTodayLogFilePath）
 - 性能埋点（可渐进接入）：

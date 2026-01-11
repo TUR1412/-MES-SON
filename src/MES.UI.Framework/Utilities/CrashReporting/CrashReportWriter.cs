@@ -3,6 +3,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using MES.Common.Configuration;
+using MES.Common.IO;
 using MES.Common.Logging;
 using MES.UI.Framework.Themes;
 
@@ -45,6 +47,12 @@ namespace MES.UI.Framework.Utilities.CrashReporting
 
         private static CrashReport BuildReport(Exception exception, string source, bool isTerminating)
         {
+            string logPath;
+            string logTail = TryGetRecentLogTail(exception, out logPath);
+
+            string environmentInfo = MaskSensitiveText(GetEnvironmentInfo());
+            string exceptionText = MaskSensitiveText(exception.ToString());
+
             return new CrashReport
             {
                 Timestamp = DateTime.Now,
@@ -52,9 +60,51 @@ namespace MES.UI.Framework.Utilities.CrashReporting
                 IsTerminating = isTerminating,
                 ApplicationName = GetApplicationName(),
                 ApplicationVersion = GetApplicationVersion(),
-                EnvironmentInfo = GetEnvironmentInfo(),
-                ExceptionText = exception.ToString()
+                EnvironmentInfo = environmentInfo,
+                RecentLogPath = logPath,
+                RecentLogTail = logTail,
+                ExceptionText = exceptionText
             };
+        }
+
+        private static string TryGetRecentLogTail(Exception exception, out string logPath)
+        {
+            logPath = string.Empty;
+            if (exception == null) return string.Empty;
+
+            try
+            {
+                logPath = LogManager.GetTodayLogFilePath();
+            }
+            catch
+            {
+                logPath = string.Empty;
+            }
+
+            if (string.IsNullOrWhiteSpace(logPath)) return string.Empty;
+
+            try
+            {
+                // 固定行数 + 固定最大字节数，避免崩溃报告过大
+                var tail = TextFileTailReader.ReadTailText(logPath, 200, 256 * 1024);
+                return MaskSensitiveText(tail);
+            }
+            catch
+            {
+                return string.Empty;
+            }
+        }
+
+        private static string MaskSensitiveText(string text)
+        {
+            try
+            {
+                return ConnectionStringHelper.MaskSecretsInText(text);
+            }
+            catch
+            {
+                return string.IsNullOrEmpty(text) ? string.Empty : text;
+            }
         }
 
         private static string GetCrashReportDirectory()
@@ -154,6 +204,16 @@ namespace MES.UI.Framework.Utilities.CrashReporting
             sb.AppendLine();
             sb.AppendLine("=== Environment ===");
             sb.AppendLine(report.EnvironmentInfo ?? string.Empty);
+            sb.AppendLine();
+            sb.AppendLine("=== Recent Log Tail (masked) ===");
+            if (!string.IsNullOrWhiteSpace(report.RecentLogPath))
+            {
+                sb.AppendLine(string.Format("LogFile: {0}", report.RecentLogPath));
+            }
+
+            sb.AppendLine(string.IsNullOrWhiteSpace(report.RecentLogTail)
+                ? "(empty)"
+                : report.RecentLogTail);
             sb.AppendLine();
             sb.AppendLine("=== Exception ===");
             sb.AppendLine(report.ExceptionText ?? string.Empty);

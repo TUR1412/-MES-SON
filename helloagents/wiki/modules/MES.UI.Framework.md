@@ -20,8 +20,9 @@
   - `src/MES.UI.Framework/Controls/ThemedTabControl.cs`（OwnerDraw + 主题自适应，适用于深色 Tab）
 - 错误边界（Error Boundary）：
   - `src/MES.UI.Framework/Utilities/CrashReporting/GlobalExceptionBoundary.cs`
-  - `src/MES.UI.Framework/Utilities/CrashReporting/CrashReportDialog.cs`
-  - `src/MES.UI.Framework/Utilities/CrashReporting/CrashReportWriter.cs`
+  - `src/MES.UI.Framework/Utilities/CrashReporting/CrashReportDialog.cs`        
+  - `src/MES.UI.Framework/Utilities/CrashReporting/CrashReportWriter.cs`        
+  - CrashReports 现在会附带“脱敏后的今日日志尾部上下文”，提升可观测与排障效率
 - 搜索打分（纯逻辑，可测）：
   - `src/MES.UI.Framework/Utilities/Search/CommandPaletteSearch.cs`
 

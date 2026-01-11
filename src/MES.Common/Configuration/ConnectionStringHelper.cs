@@ -72,6 +72,30 @@ namespace MES.Common.Configuration
                 }
             }
         }
+
+        /// <summary>
+        /// 在任意文本中脱敏敏感字段（例如日志/异常文本中的 Password/Pwd 片段）。
+        /// 与 <see cref="MaskSecrets"/> 不同：该方法不会尝试“解析连接字符串”，仅做文本级替换，避免破坏上下文结构。
+        /// </summary>
+        public static string MaskSecretsInText(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return string.Empty;
+            }
+
+            try
+            {
+                return Regex.Replace(
+                    text,
+                    @"(?i)(password|pwd)\s*=\s*([^;\r\n]*)",
+                    m => m.Groups[1].Value + "=******");
+            }
+            catch
+            {
+                return text;
+            }
+        }
     }
 }
 
