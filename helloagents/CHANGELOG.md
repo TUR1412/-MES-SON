@@ -25,6 +25,11 @@
 - 全局异常边界：捕获 UI/AppDomain/未观察到任务异常，并生成 CrashReports 便于排障
 - 增加 `scripts/restore.ps1`（自动下载 nuget.exe）与 `build.ps1` 自动还原依赖，提升一键构建体验
 
+### 工程化
+- CI（GitHub Actions）在构建后运行单元测试，并上传 TRX 测试结果（artifact: `test-results`）
+- `test.ps1` 支持 `-SkipBuild/-SkipRestore/-ResultsDirectory`，并通过 vswhere 兼容更多 VS 安装形态（Community/BuildTools/Enterprise 等）
+- `.gitignore` 忽略 `TestResults/`，避免本地/CI 产物误入版本控制
+
 ### 文档
 - 重写双语 README，并同步更新知识库架构/模块说明
 - README 结构重制：中英完整覆盖（构建/运行/连接配置/快捷键/架构边界）

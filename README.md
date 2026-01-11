@@ -1,5 +1,7 @@
 # MES-SON · Nova Command Center
 
+[![Build (.NET Framework 4.8)](https://github.com/TUR1412/-MES-SON/actions/workflows/build.yml/badge.svg)](https://github.com/TUR1412/-MES-SON/actions/workflows/build.yml)
+
 中文：一个基于 **.NET Framework 4.8 + WinForms** 的桌面端 MES 示例工程，强调 **分层清晰**、**可观测诊断** 与 **键盘优先** 的现代化 UI（Nova / LoL 主题）。
 English: A **.NET Framework 4.8 + WinForms** MES sample focused on **clean layering**, **diagnostics/observability**, and a **keyboard-first** modern UI (Nova / LoL themes).
 
@@ -21,6 +23,7 @@ English: A **.NET Framework 4.8 + WinForms** MES sample focused on **clean layer
 - **日志可观测**：命令面板支持“一键打开日志目录/今日日志”，便于排障与回溯
 - **工程化脚本**：`scripts/restore.ps1` 自动下载 `nuget.exe` 并还原 `packages.config` 依赖，`build.ps1` 一键构建
 - **单元测试**：新增 `tests/MES.UnitTests`，可用 `./test.ps1` 一键构建并运行单测
+- **CI（GitHub Actions）**：自动构建 + 运行单元测试（TRX 归档）+ secret guard（阻止误提交敏感字样）
 
 ---
 
@@ -78,6 +81,12 @@ msbuild MES.sln /t:Build /p:Configuration=Release /p:Platform="Any CPU" /p:Gener
 
 ```powershell
 ./test.ps1 -Configuration Debug
+```
+
+如需生成 TRX 结果（便于 CI 归档/排障）：
+
+```powershell
+./test.ps1 -Configuration Release -ResultsDirectory TestResults
 ```
 
 ---
@@ -150,6 +159,7 @@ Server=127.0.0.1;Port=3306;Database=mes;User Id=root;Password=******;SslMode=Non
 - **Log Observability**: open log folder / today's log directly from the command palette
 - **Engineering Scripts**: `scripts/restore.ps1` downloads `nuget.exe` and restores `packages.config`, `build.ps1` builds the solution
 - **Unit Tests**: `tests/MES.UnitTests` with a one-command runner: `./test.ps1`
+- **CI (GitHub Actions)**: build + unit tests (TRX artifact) + secret guard (blocks sensitive patterns)
 
 ---
 
@@ -207,6 +217,12 @@ msbuild MES.sln /t:Build /p:Configuration=Release /p:Platform="Any CPU" /p:Gener
 
 ```powershell
 ./test.ps1 -Configuration Debug
+```
+
+To generate TRX results (useful for CI archiving/troubleshooting):
+
+```powershell
+./test.ps1 -Configuration Release -ResultsDirectory TestResults
 ```
 
 ---

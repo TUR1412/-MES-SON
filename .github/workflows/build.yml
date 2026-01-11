@@ -36,9 +36,30 @@ jobs:
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
 
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: packages
+          key: nuget-packages-${{ runner.os }}-${{ hashFiles('**/packages.config') }}
+          restore-keys: |
+            nuget-packages-${{ runner.os }}-
+
       - name: Restore packages
         run: nuget restore MES.sln
 
       - name: Build (Release)
         run: msbuild MES.sln /t:Build /p:Configuration=Release /p:Platform="Any CPU" /p:GenerateResourceMSBuildArchitecture=x64
+
+      - name: Run unit tests
+        shell: pwsh
+        run: |
+          ./test.ps1 -Configuration Release -SkipBuild -SkipRestore -ResultsDirectory TestResults
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: TestResults/*.trx
+          if-no-files-found: warn
 

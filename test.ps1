@@ -1,5 +1,8 @@
 param(
-    [string]$Configuration = "Debug"
+    [string]$Configuration = "Debug",
+    [switch]$SkipBuild,
+    [switch]$SkipRestore,
+    [string]$ResultsDirectory = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -7,9 +10,25 @@ $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $root
 
-Write-Host "Build solution ($Configuration)..." -ForegroundColor Cyan
-& "$root\\build.ps1" -Configuration $Configuration -BuildSolution
-if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+function IsPathRooted([string]$path) {
+    if ([string]::IsNullOrWhiteSpace($path)) { return $false }
+    return [System.IO.Path]::IsPathRooted($path)
+}
+
+if (-not $SkipBuild) {
+    Write-Host "Build solution ($Configuration)..." -ForegroundColor Cyan
+
+    $buildParams = @{
+        Configuration = $Configuration
+        BuildSolution = $true
+    }
+    if ($SkipRestore) { $buildParams.SkipRestore = $true }
+
+    & "$root\\build.ps1" @buildParams
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+} else {
+    Write-Host "Skip build; run tests only." -ForegroundColor Yellow
+}
 
 $testDll = Join-Path $root "tests\\MES.UnitTests\\bin\\$Configuration\\MES.UnitTests.dll"
 if (-not (Test-Path $testDll)) { throw "Test assembly not found: $testDll" }
@@ -27,7 +46,20 @@ foreach ($p in $candidates) {
 }
 
 if (-not $vstest) {
-    throw "vstest.console.exe not found. Please install Visual Studio Test Platform."
+    $vswhere = Join-Path $env:ProgramFiles(x86) "Microsoft Visual Studio\\Installer\\vswhere.exe"
+    if (Test-Path $vswhere) {
+        try {
+            $found = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VSTest -find '**\vstest.console.exe' 2>$null
+            $found = $found | Select-Object -First 1
+            if ($found -and (Test-Path $found)) { $vstest = $found }
+        } catch {
+            $vstest = $null
+        }
+    }
+}
+
+if (-not $vstest) {
+    throw "vstest.console.exe not found. Please install Visual Studio Test Platform (or Build Tools)."
 }
 
 Write-Host "Run unit tests..." -ForegroundColor Cyan
@@ -50,11 +82,20 @@ try {
     $adapterPath = $null
 }
 
-if ($adapterPath) {
-    & $vstest $testDll "/TestAdapterPath:$adapterPath"
-} else {
-    & $vstest $testDll
+$resultsDir = $null
+if (-not [string]::IsNullOrWhiteSpace($ResultsDirectory)) {
+    $resultsDir = if (IsPathRooted $ResultsDirectory) { $ResultsDirectory } else { Join-Path $root $ResultsDirectory }
+    New-Item -ItemType Directory -Force $resultsDir | Out-Null
 }
+
+$vstestArgs = @($testDll)
+if ($adapterPath) { $vstestArgs += "/TestAdapterPath:$adapterPath" }
+if ($resultsDir) {
+    $vstestArgs += "/ResultsDirectory:$resultsDir"
+    $vstestArgs += "/Logger:trx;LogFileName=MES.UnitTests.trx"
+}
+
+& $vstest @vstestArgs
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 Write-Host "All tests passed." -ForegroundColor Green

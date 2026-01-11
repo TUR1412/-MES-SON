@@ -62,6 +62,8 @@ bld/
 packages/
 # 本地工具缓存（例如 scripts/restore.ps1 下载的 nuget.exe）
 .tools/
+# 测试输出（例如 test.ps1 生成的 TRX）
+TestResults/
 # NuGet Symbol 包
 *.snupkg
 # NuGet 包配置文件

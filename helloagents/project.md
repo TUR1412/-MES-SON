@@ -14,7 +14,7 @@
 - **UI**：WinForms（`src/MES.UI`）+ UI Framework（`src/MES.UI.Framework`）
 - **数据**：MySQL（`MySql.Data`）
 - **依赖管理**：`packages.config`（NuGet 还原到 `packages/`，目录被 `.gitignore` 忽略）
-- **CI 构建**：GitHub Actions（`nuget restore` + `msbuild`）
+- **CI 构建**：GitHub Actions（secret guard + `nuget restore` + `msbuild` + 单元测试/TRX artifact）
 
 ## 3) 分层与依赖规则（架构守门）
 
@@ -45,7 +45,8 @@
 ### 4.3 单元测试（自测）
 
 - 推荐：`./test.ps1 -Configuration Debug`
-- 说明：脚本会先构建解决方案，再运行 `tests/MES.UnitTests`（vstest.console）
+- 可选（生成 TRX 结果）：`./test.ps1 -Configuration Release -ResultsDirectory TestResults`
+- 说明：脚本默认先构建解决方案，再运行 `tests/MES.UnitTests`（vstest.console）；CI 中可用 `-SkipBuild/-SkipRestore` 复用已构建产物
 
 ## 5) 配置与安全（强制约束）
 
