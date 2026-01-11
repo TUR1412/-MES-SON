@@ -1616,6 +1616,16 @@ namespace MES.UI.Forms
                     return;
                 }
 
+                try
+                {
+                    // Clipboard 默认脱敏：避免复制连接串/密码等敏感信息
+                    tail = ConnectionStringHelper.MaskSecretsInText(tail);
+                }
+                catch
+                {
+                    // ignore
+                }
+
                 Clipboard.SetText(tail);
                 MessageBox.Show("已复制今日日志尾部内容。", "日志", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
@@ -1638,6 +1648,7 @@ namespace MES.UI.Forms
 
                 var results = SystemHealthChecks.CollectWithProbes(options, null);
                 var text = SystemHealthChecks.RenderText(results);
+                try { text = ConnectionStringHelper.MaskSecretsInText(text); } catch { }
                 if (string.IsNullOrWhiteSpace(text))
                 {
                     MessageBox.Show("健康检查摘要为空。", "健康检查",
