@@ -62,6 +62,7 @@
 - 统一 Token：`MES.UI.Framework/Themes/DesignTokens.cs`
 - 默认主题：`Nova`（可在 App.config 中切换）
 - 高 DPI：`MES.UI/app.manifest`（PerMonitorV2）
+- 键盘优先：`Ctrl+K` 命令面板支持模糊搜索/快速跳转/运行态主题切换
 - 新窗体/控件原则：
   - 字体、间距、颜色优先从 `DesignTokens` 取值
   - 允许逐步替换历史硬编码，但禁止新增新的硬编码风格债务

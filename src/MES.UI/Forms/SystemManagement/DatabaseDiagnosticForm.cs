@@ -4,6 +4,8 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using MES.Common.Configuration;
 using MES.Common.Logging;
@@ -22,6 +24,8 @@ namespace MES.UI.Forms.SystemManagement
         private bool _isConnected = false;
         private string _connectionString = string.Empty;
         private DateTime _lastRefreshTime = DateTime.MinValue;
+        private bool _isDiagnosing = false;
+        private readonly CancellationTokenSource _lifetimeCts = new CancellationTokenSource();
 
         #endregion
 
@@ -33,7 +37,8 @@ namespace MES.UI.Forms.SystemManagement
         public DatabaseDiagnosticForm()
         {
             InitializeComponent();
-            this.Shown += (sender, e) => UIThemeManager.ApplyTheme(this);
+            this.Shown += (sender, e) => UIThemeManager.ApplyTheme(this);       
+            this.FormClosing += DatabaseDiagnosticForm_FormClosing;
             InitializeForm();
         }
 
@@ -121,7 +126,7 @@ namespace MES.UI.Forms.SystemManagement
         /// <summary>
         /// 窗体加载事件
         /// </summary>
-        private void DatabaseDiagnosticForm_Load(object sender, EventArgs e)
+        private async void DatabaseDiagnosticForm_Load(object sender, EventArgs e)
         {
             try
             {
@@ -131,11 +136,11 @@ namespace MES.UI.Forms.SystemManagement
                 }
 
                 // 执行初始诊断
-                PerformDiagnosis();
-                
+                await PerformDiagnosisAsync(DiagnosisTrigger.InitialLoad);
+
                 // 启动自动刷新定时器
                 timerRefresh.Start();
-                
+
                 LogManager.Info("数据库诊断工具窗体加载完成");
             }
             catch (Exception ex)
@@ -153,15 +158,15 @@ namespace MES.UI.Forms.SystemManagement
         /// <summary>
         /// 刷新诊断按钮点击事件
         /// </summary>
-        private void btnRefresh_Click(object sender, EventArgs e)
+        private async void btnRefresh_Click(object sender, EventArgs e)
         {
             try
             {
-                toolStripStatusLabel.Text = "正在刷新诊断信息...";
+                toolStripStatusLabel.Text = "正在刷新诊断信息...";        
                 btnRefresh.Enabled = false;
-                
-                PerformDiagnosis();
-                
+
+                await PerformDiagnosisAsync(DiagnosisTrigger.ManualRefresh);
+
                 toolStripStatusLabel.Text = string.Format("诊断信息已刷新 - {0}", DateTime.Now.ToString("HH:mm:ss"));
                 LogManager.Info("手动刷新数据库诊断信息");
             }
@@ -181,18 +186,18 @@ namespace MES.UI.Forms.SystemManagement
         /// <summary>
         /// 测试连接按钮点击事件
         /// </summary>
-        private void btnTestConnection_Click(object sender, EventArgs e)
+        private async void btnTestConnection_Click(object sender, EventArgs e)  
         {
             try
             {
-                toolStripStatusLabel.Text = "正在测试数据库连接...";
+                toolStripStatusLabel.Text = "正在测试数据库连接...";      
                 btnTestConnection.Enabled = false;
-                
-                bool testResult = TestDatabaseConnection();
-                
+
+                bool testResult = await Task.Run(() => TestDatabaseConnection());
+
                 if (testResult)
                 {
-                    MessageBox.Show("数据库连接测试成功！", "连接测试",
+                    MessageBox.Show("数据库连接测试成功！", "连接测试",   
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                     toolStripStatusLabel.Text = "连接测试成功";
                     LogManager.Info("数据库连接测试成功");
@@ -257,7 +262,8 @@ namespace MES.UI.Forms.SystemManagement
             {
                 // 停止定时器
                 timerRefresh.Stop();
-                
+                TryCancelLifetime();
+
                 // 关闭窗体
                 this.Close();
                 
@@ -276,13 +282,12 @@ namespace MES.UI.Forms.SystemManagement
         /// <summary>
         /// 自动刷新定时器事件
         /// </summary>
-        private void timerRefresh_Tick(object sender, EventArgs e)
+        private async void timerRefresh_Tick(object sender, EventArgs e)        
         {
             try
             {
                 // 每30秒自动刷新一次
-                PerformDiagnosis();
-                _lastRefreshTime = DateTime.Now;
+                await PerformDiagnosisAsync(DiagnosisTrigger.AutoRefresh);
             }
             catch (Exception ex)
             {
@@ -293,6 +298,303 @@ namespace MES.UI.Forms.SystemManagement
         #endregion
 
         #region 核心诊断方法
+
+        private enum DiagnosisTrigger
+        {
+            InitialLoad,
+            ManualRefresh,
+            AutoRefresh
+        }
+
+        private sealed class DiagnosisRow
+        {
+            public string Property { get; set; }
+            public string Value { get; set; }
+            public string Status { get; set; }
+
+            public DiagnosisRow(string property, string value, string status)
+            {
+                Property = property;
+                Value = value;
+                Status = status;
+            }
+        }
+
+        private sealed class DiagnosisSnapshot
+        {
+            public bool IsConnected { get; set; }
+            public string ServerVersion { get; set; }
+            public string DatabaseName { get; set; }
+            public int ConnectionCount { get; set; }
+            public double DatabaseSizeMb { get; set; }
+            public int TableCount { get; set; }
+            public List<DiagnosisRow> Rows { get; set; }
+            public string ErrorMessage { get; set; }
+        }
+
+        private async Task PerformDiagnosisAsync(DiagnosisTrigger trigger)
+        {
+            if (string.IsNullOrWhiteSpace(_connectionString))
+            {
+                return;
+            }
+
+            if (_isDiagnosing)
+            {
+                if (trigger == DiagnosisTrigger.ManualRefresh)
+                {
+                    toolStripStatusLabel.Text = "正在诊断中，请稍候...";
+                }
+                return;
+            }
+
+            bool wasTimerEnabled = false;
+            try { wasTimerEnabled = timerRefresh != null && timerRefresh.Enabled; }
+            catch { wasTimerEnabled = false; }
+
+            _isDiagnosing = true;
+
+            try
+            {
+                if (wasTimerEnabled)
+                {
+                    try { timerRefresh.Stop(); } catch { }
+                }
+
+                SetUiBusy(true);
+                toolStripStatusLabel.Text = GetStartStatusText(trigger);
+
+                var startAt = DateTime.Now;
+                var token = _lifetimeCts.Token;
+
+                var snapshot = await Task.Run(() => CollectDiagnosisSnapshot(token), token);
+
+                if (token.IsCancellationRequested)
+                {
+                    return;
+                }
+
+                if (IsDisposed || !IsHandleCreated)
+                {
+                    return;
+                }
+
+                ApplyDiagnosisSnapshot(snapshot);
+
+                _lastRefreshTime = DateTime.Now;
+                var elapsedMs = (int)(DateTime.Now - startAt).TotalMilliseconds;
+                toolStripStatusLabel.Text = string.Format("诊断完成 · {0}（{1}ms）", _lastRefreshTime.ToString("HH:mm:ss"), elapsedMs);
+            }
+            catch (OperationCanceledException)
+            {
+                // ignore
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("执行数据库诊断失败", ex);
+                try
+                {
+                    toolStripStatusLabel.Text = "诊断失败";
+                    _isConnected = false;
+                    UpdateConnectionStatus();
+                    dgvDiagnosticInfo.Rows.Clear();
+                    AddDiagnosticRow("诊断失败", ex.Message, "✗ 异常");
+                }
+                catch
+                {
+                    // ignore
+                }
+            }
+            finally
+            {
+                _isDiagnosing = false;
+                SetUiBusy(false);
+
+                if (wasTimerEnabled && !_lifetimeCts.IsCancellationRequested)
+                {
+                    try { timerRefresh.Start(); } catch { }
+                }
+            }
+        }
+
+        private DiagnosisSnapshot CollectDiagnosisSnapshot(CancellationToken token)
+        {
+            var snapshot = new DiagnosisSnapshot
+            {
+                Rows = new List<DiagnosisRow>()
+            };
+
+            try
+            {
+                token.ThrowIfCancellationRequested();
+
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    connection.Open();
+
+                    snapshot.IsConnected = connection.State == ConnectionState.Open;
+                    if (!snapshot.IsConnected)
+                    {
+                        snapshot.ErrorMessage = "数据库连接未打开";
+                        snapshot.Rows.Add(new DiagnosisRow("数据库连接", "断开", "✗ 异常"));
+                        return snapshot;
+                    }
+
+                    snapshot.ServerVersion = connection.ServerVersion;
+                    snapshot.DatabaseName = connection.Database;
+
+                    token.ThrowIfCancellationRequested();
+                    snapshot.ConnectionCount = GetConnectionCount(connection);
+
+                    token.ThrowIfCancellationRequested();
+                    snapshot.DatabaseSizeMb = GetDatabaseSize(connection);
+
+                    token.ThrowIfCancellationRequested();
+                    snapshot.TableCount = GetTableCount(connection);
+
+                    var maxConn = GetMaxConnections(connection);
+                    var cacheStatus = GetQueryCacheStatus(connection);
+
+                    snapshot.Rows.Add(new DiagnosisRow("数据库连接", "正常", "✓ 正常"));
+                    snapshot.Rows.Add(new DiagnosisRow("MySQL版本", string.Format("MySQL {0}", snapshot.ServerVersion), "✓ 正常"));
+
+                    snapshot.Rows.Add(ToRow("字符集", GetCharacterSet(connection), "✓ 正常", "⚠ 获取失败"));
+                    snapshot.Rows.Add(ToRow("时区", GetTimeZone(connection), "✓ 正常", "⚠ 获取失败"));
+                    snapshot.Rows.Add(new DiagnosisRow("最大连接数", maxConn > 0 ? maxConn.ToString() : "未知", maxConn > 0 ? "✓ 正常" : "⚠ 未知"));
+
+                    snapshot.Rows.Add(BuildConnectionUtilizationRow(snapshot.ConnectionCount, maxConn));
+                    snapshot.Rows.Add(BuildQueryCacheRow(cacheStatus));
+                    snapshot.Rows.Add(ToRow("InnoDB状态", GetInnoDBStatus(connection), "✓ 正常", "⚠ 获取失败"));
+
+                    snapshot.Rows.Add(new DiagnosisRow("上次检查时间", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "ℹ 信息"));
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                snapshot.IsConnected = false;
+                snapshot.ErrorMessage = ex.Message;
+                snapshot.Rows.Add(new DiagnosisRow("数据库连接", "连接失败", "✗ 异常"));
+                snapshot.Rows.Add(new DiagnosisRow("错误信息", ex.Message, "⚠ 注意"));
+                LogManager.Error("采集数据库诊断信息失败", ex);
+            }
+
+            return snapshot;
+        }
+
+        private void ApplyDiagnosisSnapshot(DiagnosisSnapshot snapshot)
+        {
+            if (snapshot == null)
+            {
+                return;
+            }
+
+            _isConnected = snapshot.IsConnected;
+            UpdateConnectionStatus();
+
+            if (snapshot.IsConnected)
+            {
+                lblServerInfoValue.Text = string.Format("MySQL {0}", snapshot.ServerVersion ?? "未知");
+                lblDatabaseNameValue.Text = snapshot.DatabaseName ?? "未知";
+                lblConnectionCountValue.Text = snapshot.ConnectionCount.ToString();
+                lblDatabaseSizeValue.Text = string.Format("{0:F2} MB", snapshot.DatabaseSizeMb);
+                lblTableCountValue.Text = snapshot.TableCount.ToString();
+            }
+            else
+            {
+                lblServerInfoValue.Text = "无法连接";
+                lblDatabaseNameValue.Text = "无法连接";
+                lblConnectionCountValue.Text = "0";
+                lblDatabaseSizeValue.Text = "0 MB";
+                lblTableCountValue.Text = "0";
+
+                if (!string.IsNullOrWhiteSpace(snapshot.ErrorMessage))
+                {
+                    toolStripStatusLabel.Text = string.Format("连接失败：{0}", snapshot.ErrorMessage);
+                }
+            }
+
+            dgvDiagnosticInfo.Rows.Clear();
+            if (snapshot.Rows != null)
+            {
+                foreach (var row in snapshot.Rows)
+                {
+                    if (row == null) continue;
+                    AddDiagnosticRow(row.Property, row.Value, row.Status);
+                }
+            }
+        }
+
+        private static DiagnosisRow ToRow(string property, string value, string okStatus, string failStatus)
+        {
+            if (string.IsNullOrWhiteSpace(value) || value == "获取失败")
+            {
+                return new DiagnosisRow(property, string.IsNullOrWhiteSpace(value) ? "未知" : value, failStatus);
+            }
+
+            return new DiagnosisRow(property, value, okStatus);
+        }
+
+        private static DiagnosisRow BuildConnectionUtilizationRow(int connectionCount, int maxConn)
+        {
+            if (maxConn <= 0)
+            {
+                return new DiagnosisRow("连接占用", "未知", "ℹ 信息");
+            }
+
+            double ratio = Math.Min(1.0, Math.Max(0.0, (double)connectionCount / (double)maxConn));
+            string value = string.Format("{0:P0}（{1}/{2}）", ratio, connectionCount, maxConn);
+
+            if (ratio >= 0.95)
+            {
+                return new DiagnosisRow("连接占用", value, "✗ 过高");
+            }
+
+            if (ratio >= 0.80)
+            {
+                return new DiagnosisRow("连接占用", value, "⚠ 偏高");
+            }
+
+            return new DiagnosisRow("连接占用", value, "✓ 正常");
+        }
+
+        private static DiagnosisRow BuildQueryCacheRow(string cacheStatus)
+        {
+            if (string.IsNullOrWhiteSpace(cacheStatus))
+            {
+                return new DiagnosisRow("查询缓存", "未知", "ℹ 信息");
+            }
+
+            if (cacheStatus.IndexOf("不支持", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return new DiagnosisRow("查询缓存", cacheStatus, "ℹ 不适用");
+            }
+
+            if (cacheStatus == "0" || cacheStatus.Equals("OFF", StringComparison.OrdinalIgnoreCase))
+            {
+                return new DiagnosisRow("查询缓存", "关闭", "ℹ 关闭");
+            }
+
+            return new DiagnosisRow("查询缓存", cacheStatus, "ℹ 信息");
+        }
+
+        private static string GetStartStatusText(DiagnosisTrigger trigger)
+        {
+            switch (trigger)
+            {
+                case DiagnosisTrigger.InitialLoad:
+                    return "正在初始化诊断信息...";
+                case DiagnosisTrigger.ManualRefresh:
+                    return "正在刷新诊断信息...";
+                case DiagnosisTrigger.AutoRefresh:
+                    return "正在自动刷新诊断信息...";
+                default:
+                    return "正在诊断...";
+            }
+        }
 
         /// <summary>
         /// 执行数据库诊断
@@ -358,15 +660,16 @@ namespace MES.UI.Forms.SystemManagement
         {
             try
             {
+                var colors = UIThemeManager.Colors;
                 if (_isConnected)
                 {
                     lblConnectionStatusValue.Text = "正常";
-                    lblConnectionStatusValue.ForeColor = Color.Green;
+                    lblConnectionStatusValue.ForeColor = colors.Success;
                 }
                 else
                 {
                     lblConnectionStatusValue.Text = "断开";
-                    lblConnectionStatusValue.ForeColor = Color.Red;
+                    lblConnectionStatusValue.ForeColor = colors.Error;
                 }
             }
             catch (Exception ex)
@@ -438,12 +741,19 @@ namespace MES.UI.Forms.SystemManagement
         {
             try
             {
-                var command = new MySqlCommand("SHOW STATUS LIKE 'Threads_connected'", connection);
-                var result = command.ExecuteScalar();
-                int count;
-                if (result != null && int.TryParse(result.ToString(), out count))
+                using (var command = new MySqlCommand("SHOW STATUS LIKE 'Threads_connected'", connection))
+                using (var reader = command.ExecuteReader())
                 {
-                    return count;
+                    if (reader.Read())
+                    {
+                        // SHOW STATUS 返回两列：Variable_name, Value
+                        object result = reader.FieldCount > 1 ? reader.GetValue(1) : null;
+                        int count;
+                        if (result != null && int.TryParse(result.ToString(), out count))
+                        {
+                            return count;
+                        }
+                    }
                 }
                 return 0;
             }
@@ -457,14 +767,17 @@ namespace MES.UI.Forms.SystemManagement
         /// <summary>
         /// 获取数据库大小（MB）
         /// </summary>
-        private double GetDatabaseSize(MySqlConnection connection)
+        private double GetDatabaseSize(MySqlConnection connection)        
         {
             try
             {
                 var sql = "SELECT ROUND(SUM(data_length + index_length) / 1024 / 1024, 2) AS 'DB Size in MB' " +
                          "FROM information_schema.tables WHERE table_schema = DATABASE()";
-                var command = new MySqlCommand(sql, connection);
-                var result = command.ExecuteScalar();
+                object result;
+                using (var command = new MySqlCommand(sql, connection))
+                {
+                    result = command.ExecuteScalar();
+                }
                 double size;
                 if (result != null && result != DBNull.Value && double.TryParse(result.ToString(), out size))
                 {
@@ -487,8 +800,11 @@ namespace MES.UI.Forms.SystemManagement
             try
             {
                 var sql = "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE()";
-                var command = new MySqlCommand(sql, connection);
-                var result = command.ExecuteScalar();
+                object result;
+                using (var command = new MySqlCommand(sql, connection))
+                {
+                    result = command.ExecuteScalar();
+                }
                 int count;
                 if (result != null && int.TryParse(result.ToString(), out count))
                 {
@@ -547,17 +863,22 @@ namespace MES.UI.Forms.SystemManagement
                 dgvDiagnosticInfo.Rows[row].Cells[2].Value = status;
 
                 // 根据状态设置行颜色
+                var colors = UIThemeManager.Colors;
                 if (status.Contains("✗"))
                 {
-                    dgvDiagnosticInfo.Rows[row].DefaultCellStyle.ForeColor = Color.Red;
+                    dgvDiagnosticInfo.Rows[row].DefaultCellStyle.ForeColor = colors.Error;
                 }
                 else if (status.Contains("⚠"))
                 {
-                    dgvDiagnosticInfo.Rows[row].DefaultCellStyle.ForeColor = Color.Orange;
+                    dgvDiagnosticInfo.Rows[row].DefaultCellStyle.ForeColor = colors.Warning;
+                }
+                else if (status.Contains("ℹ"))
+                {
+                    dgvDiagnosticInfo.Rows[row].DefaultCellStyle.ForeColor = colors.TextSecondary;
                 }
                 else
                 {
-                    dgvDiagnosticInfo.Rows[row].DefaultCellStyle.ForeColor = Color.Green;
+                    dgvDiagnosticInfo.Rows[row].DefaultCellStyle.ForeColor = colors.Success;
                 }
             }
             catch (Exception ex)
@@ -569,13 +890,16 @@ namespace MES.UI.Forms.SystemManagement
         /// <summary>
         /// 获取字符集
         /// </summary>
-        private string GetCharacterSet(MySqlConnection connection)
+        private string GetCharacterSet(MySqlConnection connection)        
         {
             try
             {
-                var command = new MySqlCommand("SELECT @@character_set_database", connection);
-                var result = command.ExecuteScalar();
-                return result != null ? result.ToString() : "未知";
+                object result;
+                using (var command = new MySqlCommand("SELECT @@character_set_database", connection))
+                {
+                    result = command.ExecuteScalar();
+                }
+                return result != null ? result.ToString() : "未知";       
             }
             catch (Exception ex)
             {
@@ -591,9 +915,12 @@ namespace MES.UI.Forms.SystemManagement
         {
             try
             {
-                var command = new MySqlCommand("SELECT @@time_zone", connection);
-                var result = command.ExecuteScalar();
-                return result != null ? result.ToString() : "未知";
+                object result;
+                using (var command = new MySqlCommand("SELECT @@time_zone", connection))
+                {
+                    result = command.ExecuteScalar();
+                }
+                return result != null ? result.ToString() : "未知";       
             }
             catch (Exception ex)
             {
@@ -609,8 +936,11 @@ namespace MES.UI.Forms.SystemManagement
         {
             try
             {
-                var command = new MySqlCommand("SELECT @@max_connections", connection);
-                var result = command.ExecuteScalar();
+                object result;
+                using (var command = new MySqlCommand("SELECT @@max_connections", connection))
+                {
+                    result = command.ExecuteScalar();
+                }
                 int maxConn;
                 if (result != null && int.TryParse(result.ToString(), out maxConn))
                 {
@@ -632,9 +962,23 @@ namespace MES.UI.Forms.SystemManagement
         {
             try
             {
-                var command = new MySqlCommand("SELECT @@query_cache_type", connection);
-                var result = command.ExecuteScalar();
+                object result;
+                using (var command = new MySqlCommand("SELECT @@query_cache_type", connection))
+                {
+                    result = command.ExecuteScalar();
+                }
                 return result != null ? result.ToString() : "未知";
+            }
+            catch (MySqlException ex)
+            {
+                // MySQL 8+ 已移除 query cache，Unknown system variable 属于“正常的不适用”
+                if (ex != null && ex.Message != null && ex.Message.IndexOf("Unknown system variable", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    return "不支持（MySQL 8+ 已移除）";
+                }
+
+                LogManager.Error("获取查询缓存状态失败", ex);
+                return "获取失败";
             }
             catch (Exception ex)
             {
@@ -646,12 +990,15 @@ namespace MES.UI.Forms.SystemManagement
         /// <summary>
         /// 获取InnoDB状态
         /// </summary>
-        private string GetInnoDBStatus(MySqlConnection connection)
+        private string GetInnoDBStatus(MySqlConnection connection)        
         {
             try
             {
-                var command = new MySqlCommand("SELECT @@innodb_version", connection);
-                var result = command.ExecuteScalar();
+                object result;
+                using (var command = new MySqlCommand("SELECT @@innodb_version", connection))
+                {
+                    result = command.ExecuteScalar();
+                }
                 return result != null ? string.Format("版本 {0}", result.ToString()) : "未知";
             }
             catch (Exception ex)
@@ -732,6 +1079,41 @@ namespace MES.UI.Forms.SystemManagement
                 LogManager.Error("导出诊断报告失败", ex);
                 throw;
             }
+        }
+
+        private void DatabaseDiagnosticForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            try
+            {
+                try { timerRefresh.Stop(); } catch { }
+                TryCancelLifetime();
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
+        private void TryCancelLifetime()
+        {
+            try
+            {
+                if (_lifetimeCts != null && !_lifetimeCts.IsCancellationRequested)
+                {
+                    _lifetimeCts.Cancel();
+                }
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
+        private void SetUiBusy(bool busy)
+        {
+            try { btnRefresh.Enabled = !busy; } catch { }
+            try { btnTestConnection.Enabled = !busy; } catch { }
+            try { btnExportReport.Enabled = !busy; } catch { }
         }
 
         #endregion

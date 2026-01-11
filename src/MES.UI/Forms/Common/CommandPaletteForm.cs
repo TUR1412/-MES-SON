@@ -49,6 +49,9 @@ namespace MES.UI.Forms.Common
             InitializeWindow();
             BuildLayout();
             WireEvents();
+
+            UIThemeManager.OnThemeChanged += HandleThemeChanged;
+            ApplyThemeToPalette();
         }
 
         public void SetItems(IEnumerable<CommandPaletteItem> items)
@@ -88,10 +91,6 @@ namespace MES.UI.Forms.Common
 
             Width = 760;
             Height = 460;
-
-            BackColor = UIThemeManager.Colors.Background;
-            ForeColor = UIThemeManager.Colors.Text;
-            Font = UIThemeManager.GetFont(9f);
         }
 
         private void BuildLayout()
@@ -108,9 +107,6 @@ namespace MES.UI.Forms.Common
 
             _query.Dock = DockStyle.Fill;
             _query.BorderStyle = BorderStyle.FixedSingle;
-            _query.Font = UIThemeManager.GetTitleFont(11f);
-            _query.BackColor = UIThemeManager.Colors.Surface;
-            _query.ForeColor = UIThemeManager.Colors.Text;
             layout.Controls.Add(_query, 0, 0);
 
             _list.Dock = DockStyle.Fill;
@@ -118,14 +114,11 @@ namespace MES.UI.Forms.Common
             _list.IntegralHeight = false;
             _list.DrawMode = DrawMode.OwnerDrawFixed;
             _list.ItemHeight = 56;
-            _list.BackColor = UIThemeManager.Colors.Surface;
-            _list.ForeColor = UIThemeManager.Colors.Text;
             layout.Controls.Add(_list, 0, 1);
 
             _hint.Dock = DockStyle.Fill;
             _hint.TextAlign = ContentAlignment.MiddleLeft;
             _hint.Text = "Enter 执行 · Esc 关闭 · ↑↓ 选择";
-            _hint.ForeColor = UIThemeManager.Colors.TextSecondary;
             layout.Controls.Add(_hint, 0, 2);
         }
 
@@ -252,9 +245,11 @@ namespace MES.UI.Forms.Common
             if (!string.IsNullOrWhiteSpace(query))
             {
                 items = _allItems
-                    .Where(i => i.SearchText.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0)
-                    .OrderByDescending(i => Score(i, query))
-                    .ThenBy(i => i.Title);
+                    .Select(i => new { Item = i, Score = Score(i, query) })
+                    .Where(x => x.Score > 0)
+                    .OrderByDescending(x => x.Score)
+                    .ThenBy(x => x.Item.Title)
+                    .Select(x => x.Item);
             }
 
             var list = items.ToList();
@@ -286,16 +281,132 @@ namespace MES.UI.Forms.Common
 
             var title = item.Title ?? string.Empty;
             var subtitle = item.Subtitle ?? string.Empty;
-            var q = query.Trim();
+            var keywords = item.Keywords ?? string.Empty;
 
-            // 轻量打分：更偏向标题命中，兼顾关键词
+            var q = query.Trim();
+            var tokens = q.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (tokens.Length == 0) return 0;
+
+            int total = 0;
+            foreach (var token in tokens)
+            {
+                var tokenScore = ScoreToken(title, subtitle, keywords, item.SearchText, token);
+                if (tokenScore <= 0) return 0;
+                total += tokenScore;
+            }
+
+            return total;
+        }
+
+        private static int ScoreToken(string title, string subtitle, string keywords, string searchText, string token)
+        {
+            if (string.IsNullOrWhiteSpace(token)) return 0;
+
             int score = 0;
-            if (title.StartsWith(q, StringComparison.OrdinalIgnoreCase)) score += 100;
-            if (title.IndexOf(q, StringComparison.OrdinalIgnoreCase) >= 0) score += 60;
-            if (subtitle.IndexOf(q, StringComparison.OrdinalIgnoreCase) >= 0) score += 20;
-            if (!string.IsNullOrWhiteSpace(item.Keywords) &&
-                item.Keywords.IndexOf(q, StringComparison.OrdinalIgnoreCase) >= 0) score += 15;
+
+            if (title.Equals(token, StringComparison.OrdinalIgnoreCase)) score += 1200;
+            if (title.StartsWith(token, StringComparison.OrdinalIgnoreCase)) score += 700;
+            if (title.IndexOf(token, StringComparison.OrdinalIgnoreCase) >= 0) score += 500;
+
+            if (subtitle.IndexOf(token, StringComparison.OrdinalIgnoreCase) >= 0) score += 180;
+            if (keywords.IndexOf(token, StringComparison.OrdinalIgnoreCase) >= 0) score += 150;
+
+            int fuzzyTitle = FuzzyScore(title, token);
+            if (fuzzyTitle >= 0) score += 120 + fuzzyTitle;
+
+            int fuzzySearch = FuzzyScore(searchText, token);
+            if (fuzzySearch >= 0) score += 40 + fuzzySearch;
+
             return score;
+        }
+
+        private static int FuzzyScore(string text, string query)
+        {
+            if (string.IsNullOrWhiteSpace(text)) return -1;
+            if (string.IsNullOrWhiteSpace(query)) return -1;
+
+            var t = text.ToLowerInvariant();
+            var q = query.ToLowerInvariant();
+
+            int score = 0;
+            int tIndex = 0;
+            int consecutive = 0;
+
+            for (int i = 0; i < q.Length; i++)
+            {
+                char c = q[i];
+                if (char.IsWhiteSpace(c)) continue;
+
+                int found = t.IndexOf(c, tIndex);
+                if (found < 0) return -1;
+
+                // 连续命中更高分，越靠前越高分
+                if (found == tIndex) consecutive++;
+                else consecutive = 1;
+
+                score += 2 + consecutive * 3;
+                if (found == 0) score += 6;
+                else
+                {
+                    char prev = t[found - 1];
+                    if (prev == ' ' || prev == '_' || prev == '-' || prev == '/') score += 5;
+                }
+
+                tIndex = found + 1;
+            }
+
+            // 更短的跨度略加分
+            score += Math.Max(0, 16 - (tIndex - q.Length));
+            return score;
+        }
+
+        private void HandleThemeChanged()
+        {
+            try
+            {
+                if (IsDisposed) return;
+                if (InvokeRequired)
+                {
+                    BeginInvoke(new Action(ApplyThemeToPalette));
+                    return;
+                }
+
+                ApplyThemeToPalette();
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
+        private void ApplyThemeToPalette()
+        {
+            var colors = UIThemeManager.Colors;
+
+            BackColor = colors.Background;
+            ForeColor = colors.Text;
+            Font = UIThemeManager.GetFont(9f);
+
+            _query.Font = UIThemeManager.GetTitleFont(11f);
+            _query.BackColor = colors.Surface;
+            _query.ForeColor = colors.Text;
+
+            _list.BackColor = colors.Surface;
+            _list.ForeColor = colors.Text;
+
+            _hint.ForeColor = colors.TextSecondary;
+
+            try { Invalidate(true); } catch { }
+            try { _list.Invalidate(); } catch { }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                try { UIThemeManager.OnThemeChanged -= HandleThemeChanged; } catch { }
+            }
+            base.Dispose(disposing);
         }
 
         private void List_DrawItem(object sender, DrawItemEventArgs e)

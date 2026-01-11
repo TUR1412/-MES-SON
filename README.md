@@ -1,23 +1,27 @@
 # MES-SON · Nova Command Center
 
-> 一个基于 **.NET Framework 4.8 + WinForms** 的桌面端 MES 示例工程，主打“分层清晰 + 运营洞察 + 未来感 UI”。
+中文：一个基于 **.NET Framework 4.8 + WinForms** 的桌面端 MES 示例工程，强调 **分层清晰**、**可观测诊断** 与 **键盘优先** 的现代化 UI（Nova / LoL 主题）。
+English: A **.NET Framework 4.8 + WinForms** MES sample focused on **clean layering**, **diagnostics/observability**, and a **keyboard-first** modern UI (Nova / LoL themes).
 
-A WinForms MES sample focused on **clean layering + operational insight + futuristic UI**.
-
----
-
-## ✨ 关键特性 | Highlights
-
-- **运营洞察 / Operational Insight**：生产风险预警、在制品老化、设备健康、库存告警、质量缺陷、批次良率一屏聚合
-- **分层架构 / Clean Layers**：UI → BLL → DAL → MySQL，避免 UI 直连数据库
-- **未来感主题 / Nova Theme**：统一设计 Token、卡片化入口、轻量动效
-- **快捷命令面板 / Command Palette**：`Ctrl+K` 快速跳转模块/工具，支持主题切换
-- **安全默认值 / Secure Defaults**：连接串优先从环境变量读取，避免明文密码
-- **可观测诊断 / Diagnostics**：内置数据库诊断与环境检查
+- [中文](#中文)
+- [English](#english)
 
 ---
 
-## 🧱 目录结构 | Structure
+## 中文
+
+### ✨ 关键特性
+
+- **运营洞察**：生产风险预警、在制品老化、设备健康、库存告警、质量缺陷、批次良率一屏聚合
+- **分层架构（守门）**：`UI → BLL → DAL → MySQL`，避免 UI 直连数据库（UI 禁止依赖 DAL）
+- **未来感主题（Nova / LoL）**：统一 Design Tokens，卡片化入口与高对比可读性
+- **快捷命令面板（Ctrl+K）**：支持模糊匹配/多词搜索，快速跳转模块/工具，支持运行态主题切换
+- **数据库诊断（不阻塞 UI）**：后台采集、单连接聚合查询、展示连接占用率；诊断输出默认脱敏连接串
+- **工程化脚本**：`scripts/restore.ps1` 自动下载 `nuget.exe` 并还原 `packages.config` 依赖，`build.ps1` 一键构建
+
+---
+
+### 🧱 目录结构
 
 ```text
 src/
@@ -31,94 +35,198 @@ src/
 tests/               # 测试与验证工具
 docs/                # 项目文档
 database/            # 数据库脚本
-helloagents/         # SSOT（架构/模块/方案包）
+helloagents/         # SSOT（架构/模块/变更与方案包）
 ```
 
 ---
 
-## 🚀 快速开始 | Quick Start
+### 🚀 快速开始
 
-### 环境要求 | Requirements
+#### 环境要求
+
 - Windows 10/11
 - Visual Studio 2022（建议）或 Build Tools
-- .NET Framework 4.8 开发包
-- MySQL 8.x
+- .NET Framework 4.8 Developer Pack
+- MySQL 8.x（示例默认）
 
-### 构建 | Build
-推荐（无需预装 nuget 命令，脚本会自动下载并还原 `packages/`）：
-Recommended (no need to pre-install NuGet; the script downloads `nuget.exe` and restores `packages/`):
+#### 依赖还原与构建（推荐）
+
+无需预装 NuGet CLI：脚本会自动下载 `nuget.exe` 并还原 `packages/`。
+
 ```powershell
 ./scripts/restore.ps1
 ./build.ps1 -Configuration Release -BuildSolution
 ```
 
-或使用你本机已安装的 NuGet/MSBuild：
-Or use your installed NuGet/MSBuild:
+或使用本机已安装的 NuGet/MSBuild（更贴近 CI）：
+
 ```powershell
 nuget restore MES.sln
 msbuild MES.sln /t:Build /p:Configuration=Release /p:Platform="Any CPU" /p:GenerateResourceMSBuildArchitecture=x64
 ```
 
-或使用脚本：
-```powershell
-./build.ps1
-```
+#### 运行
 
-### 运行 | Run
 - 运行 `src/MES.UI` 生成的可执行文件
 - 默认主题：`Nova`
-- 按 `Ctrl+K` 打开命令面板（快速跳转/主题切换）
+- 按 `Ctrl+K` 打开命令面板（模糊搜索/快速跳转/主题切换）
 
 ---
 
-## 🔑 数据库连接 | Database
+### 🔑 数据库连接配置（安全优先）
 
 推荐使用环境变量（避免仓库写入真实密码）：
-Recommended: use environment variables to avoid committing secrets:
-- `MES_CONNECTION_STRING`
+
+- `MES_CONNECTION_STRING`（推荐）
 - `MES_TEST_CONNECTION_STRING`（可选）
 - `MES_PROD_CONNECTION_STRING`（可选）
 
-如果需要本机配置，可修改 `src/MES.UI/App.config`（仅本机使用，不提交）。
+示例（仅示意，禁止提交真实密码）：
+
+```text
+Server=127.0.0.1;Port=3306;Database=mes;User Id=root;Password=******;SslMode=None;
+```
+
+说明：
+
+- 当环境变量未设置时，才回退读取 `src/MES.UI/App.config`（仅本机/开发机使用，不提交含真实密码的配置）。
+- MySQL 8+ 默认认证可能触发 “Public Key Retrieval is not allowed”，项目已在连接串层做兼容增强（自动补齐 `AllowPublicKeyRetrieval=True`）。
 
 ---
 
-## 🛰️ 运营洞察 | Operational Insight
+### ⌨️ 快捷键
 
-洞察模块提供以下指标：
-- 生产订单风险分级与延期提醒
-- 在制品老化与瓶颈提示
-- 设备维护到期与健康评分
-- 物料安全库存与最低库存告警
-- 质量缺陷热点与良率趋势
-- 批次良率偏差识别
+- `Ctrl+K`：打开命令面板（Command Palette）
+- `Enter`：执行选中命令
+- `Esc`：关闭命令面板
+- `↑/↓`：选择命令
 
 ---
 
-## 🎨 UI 设计语言 | UI Design
+### 🧭 架构边界与开发约定
 
-- 统一 Design Tokens（字号/圆角/动效）
-- 卡片化信息密度与分组
-- 轻量渐变与高对比文本提升可读性
-- `Ctrl+K` 打开命令面板（快速跳转/主题切换）
-- Press `Ctrl+K` to open the command palette (navigation/theme toggle)
+- **UI 层（MES.UI）只允许依赖**：`MES.BLL` / `MES.Common` / `MES.Models` / `MES.UI.Framework`
+- **UI 层禁止依赖**：`MES.DAL`（所有数据访问必须经由 BLL 门面）
+- 连接字符串与脱敏展示统一走：`MES.Common.Configuration.ConnectionStringHelper`
+- 新窗体/新控件样式优先从 `DesignTokens` 获取，避免新增硬编码视觉债务
+- 工程多数使用 `LangVersion=5`，请避免引入更高版本 C# 语法（例如 `nameof`、表达式体成员等）
 
 ---
 
-## 📚 文档与 SSOT | Documentation
+### 📚 文档与 SSOT
 
 - `docs/`：项目说明文档
-- `helloagents/`：架构/模块/变更与方案包（SSOT）
+- `helloagents/`：架构/模块/变更与方案包（SSOT；当文档与代码不一致时以代码为准并同步）
 
 ---
 
-## ✅ 建议体验路径 | Suggested Flow
+## English
 
-1. 启动主界面 → 进入 **运营洞察**
-2. 查看风险摘要 → 快速跳转模块
-3. 使用系统管理进行数据库诊断
+### ✨ Highlights
+
+- **Operational Insight**: risk alerts, WIP aging, equipment health, inventory alarms, quality defects, batch yield overview
+- **Clean Layering (guard rails)**: `UI → BLL → DAL → MySQL` (UI must NOT reference DAL)
+- **Modern Themes (Nova / LoL)**: design tokens + card-based layout with high readability
+- **Command Palette (`Ctrl+K`)**: fuzzy/multi-token search, fast navigation, runtime theme toggle
+- **Database Diagnostics (non-blocking)**: background collection, single-connection aggregation, connection utilization insight; redacted diagnostics by default
+- **Engineering Scripts**: `scripts/restore.ps1` downloads `nuget.exe` and restores `packages.config`, `build.ps1` builds the solution
 
 ---
 
-如需定制化扩展或批量脚本能力，可基于 BLL/DAL 层快速演进。
+### 🧱 Structure
+
+```text
+src/
+  MES.UI              # WinForms client (forms)
+  MES.UI.Framework    # design system / themes / controls
+  MES.BLL             # business logic layer (UI calls this only)
+  MES.DAL             # data access layer (SQL/connection management)
+  MES.Models          # domain models / DTOs
+  MES.Common          # config / logging / shared utilities
+
+tests/               # test & verification tools
+docs/                # documentation
+database/            # database scripts
+helloagents/         # SSOT (architecture/modules/changelog/plan packages)
+```
+
+---
+
+### 🚀 Getting Started
+
+#### Requirements
+
+- Windows 10/11
+- Visual Studio 2022 (recommended) or Build Tools
+- .NET Framework 4.8 Developer Pack
+- MySQL 8.x (default target)
+
+#### Restore & Build (recommended)
+
+No need to pre-install NuGet CLI. The script downloads `nuget.exe` and restores `packages/`.
+
+```powershell
+./scripts/restore.ps1
+./build.ps1 -Configuration Release -BuildSolution
+```
+
+Or use your installed NuGet/MSBuild (closer to CI):
+
+```powershell
+nuget restore MES.sln
+msbuild MES.sln /t:Build /p:Configuration=Release /p:Platform="Any CPU" /p:GenerateResourceMSBuildArchitecture=x64
+```
+
+#### Run
+
+- Run the executable produced by `src/MES.UI`
+- Default theme: `Nova`
+- Press `Ctrl+K` to open the Command Palette (fuzzy search / navigation / theme toggle)
+
+---
+
+### 🔑 Database Configuration (security first)
+
+Use environment variables to avoid committing secrets:
+
+- `MES_CONNECTION_STRING` (recommended)
+- `MES_TEST_CONNECTION_STRING` (optional)
+- `MES_PROD_CONNECTION_STRING` (optional)
+
+Example (placeholder only; never commit real passwords):
+
+```text
+Server=127.0.0.1;Port=3306;Database=mes;User Id=root;Password=******;SslMode=None;
+```
+
+Notes:
+
+- If env vars are not set, the app falls back to `src/MES.UI/App.config` (local/dev only; never commit real secrets).
+- MySQL 8+ auth may trigger “Public Key Retrieval is not allowed”; the project includes a compatibility guard that auto-adds `AllowPublicKeyRetrieval=True`.
+
+---
+
+### ⌨️ Keyboard Shortcuts
+
+- `Ctrl+K`: open Command Palette
+- `Enter`: run selected command
+- `Esc`: close palette
+- `↑/↓`: navigate commands
+
+---
+
+### 🧭 Architecture Rules
+
+- UI (`MES.UI`) may depend on: `MES.BLL` / `MES.Common` / `MES.Models` / `MES.UI.Framework`
+- UI (`MES.UI`) must NOT depend on: `MES.DAL` (all DB access goes through BLL facades)
+- Connection string handling / redaction is centralized in `MES.Common.Configuration.ConnectionStringHelper`
+- For UI styling, prefer `DesignTokens` and avoid new hard-coded visual debt
+- Many projects compile with `LangVersion=5`; avoid newer C# language features (e.g. `nameof`, expression-bodied members)
+
+---
+
+### 📚 Docs / SSOT
+
+- `docs/`: documentation
+- `helloagents/`: architecture/modules/changelog/plan packages (SSOT; code is the source of truth)
 
