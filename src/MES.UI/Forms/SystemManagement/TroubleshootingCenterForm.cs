@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -19,6 +20,11 @@ namespace MES.UI.Forms.SystemManagement
     /// </summary>
     public class TroubleshootingCenterForm : ThemedForm
     {
+        private const int AutoRefreshIntervalMs = 2500;
+        private const int HighlightMaxMatchesPerToken = 200;
+        private const string LogTitleBase = "日志文件（MES_yyyyMMdd.log）";
+        private const string CrashTitleBase = "崩溃报告（MES_Crash_*.txt）";
+
         private class FileEntry
         {
             public string DisplayName { get; set; }
@@ -32,31 +38,46 @@ namespace MES.UI.Forms.SystemManagement
             }
         }
 
+        private readonly Timer _autoRefreshTimer = new Timer();
         private readonly ThemedTabControl _tabs = new ThemedTabControl();
 
         // Logs tab
+        private readonly Label _logListTitle = new Label();
+        private readonly ThemedTextBox _logFilter = new ThemedTextBox();
         private readonly ThemedListBox _logFiles = new ThemedListBox();
-        private readonly ThemedRichTextBox _logText = new ThemedRichTextBox();
-        private readonly NumericUpDown _logTailLines = new NumericUpDown();
+        private readonly ThemedRichTextBox _logText = new ThemedRichTextBox();  
+        private readonly NumericUpDown _logTailLines = new NumericUpDown();     
         private readonly ModernButton _logRefresh = new ModernButton();
         private readonly ModernButton _logOpenFolder = new ModernButton();
         private readonly ModernButton _logOpenExternal = new ModernButton();
         private readonly ModernButton _logCopyAll = new ModernButton();
-        private readonly ModernButton _logExportBundle = new ModernButton();
+        private readonly ModernButton _logExportBundle = new ModernButton();    
+        private readonly ModernButton _logFollowTail = new ModernButton();
+        private readonly ModernButton _logHighlight = new ModernButton();
         private readonly Label _logMeta = new Label();
+        private readonly List<FileEntry> _logAllEntries = new List<FileEntry>();
         private int _logLoadVersion = 0;
+        private bool _logFollowTailEnabled = false;
+        private bool _logHighlightEnabled = true;
 
         // CrashReports tab
-        private readonly ThemedListBox _crashFiles = new ThemedListBox();
+        private readonly Label _crashListTitle = new Label();
+        private readonly ThemedTextBox _crashFilter = new ThemedTextBox();
+        private readonly ThemedListBox _crashFiles = new ThemedListBox();       
         private readonly ThemedRichTextBox _crashText = new ThemedRichTextBox();
-        private readonly NumericUpDown _crashTailLines = new NumericUpDown();
-        private readonly ModernButton _crashRefresh = new ModernButton();
+        private readonly NumericUpDown _crashTailLines = new NumericUpDown();   
+        private readonly ModernButton _crashRefresh = new ModernButton();       
         private readonly ModernButton _crashOpenFolder = new ModernButton();
-        private readonly ModernButton _crashOpenExternal = new ModernButton();
-        private readonly ModernButton _crashCopyAll = new ModernButton();
-        private readonly ModernButton _crashExportBundle = new ModernButton();
+        private readonly ModernButton _crashOpenExternal = new ModernButton();  
+        private readonly ModernButton _crashCopyAll = new ModernButton();       
+        private readonly ModernButton _crashExportBundle = new ModernButton();  
+        private readonly ModernButton _crashFollowTail = new ModernButton();
+        private readonly ModernButton _crashHighlight = new ModernButton();
         private readonly Label _crashMeta = new Label();
+        private readonly List<FileEntry> _crashAllEntries = new List<FileEntry>();
         private int _crashLoadVersion = 0;
+        private bool _crashFollowTailEnabled = false;
+        private bool _crashHighlightEnabled = true;
 
         public TroubleshootingCenterForm()
         {
@@ -70,6 +91,8 @@ namespace MES.UI.Forms.SystemManagement
 
             BuildLayout();
             WireEvents();
+            ConfigureAutoRefresh();
+            UpdateToggleButtons();
 
             UIThemeManager.OnThemeChanged += HandleThemeChanged;
             ApplyLocalTheme();
@@ -86,6 +109,15 @@ namespace MES.UI.Forms.SystemManagement
             if (disposing)
             {
                 try { UIThemeManager.OnThemeChanged -= HandleThemeChanged; } catch { }
+                try
+                {
+                    _autoRefreshTimer.Stop();
+                    _autoRefreshTimer.Dispose();
+                }
+                catch
+                {
+                    // ignore
+                }
             }
 
             base.Dispose(disposing);
@@ -122,20 +154,25 @@ namespace MES.UI.Forms.SystemManagement
             var left = new TableLayoutPanel();
             left.Dock = DockStyle.Fill;
             left.ColumnCount = 1;
-            left.RowCount = 2;
+            left.RowCount = 3;
             left.RowStyles.Add(new RowStyle(SizeType.Absolute, 22));
+            left.RowStyles.Add(new RowStyle(SizeType.Absolute, 32));
             left.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
 
-            var leftTitle = new Label();
-            leftTitle.Dock = DockStyle.Fill;
-            leftTitle.Text = "日志文件（MES_yyyyMMdd.log）";
-            leftTitle.TextAlign = ContentAlignment.MiddleLeft;
-            left.Controls.Add(leftTitle, 0, 0);
+            _logListTitle.Dock = DockStyle.Fill;
+            _logListTitle.Text = LogTitleBase;
+            _logListTitle.TextAlign = ContentAlignment.MiddleLeft;
+            left.Controls.Add(_logListTitle, 0, 0);
+
+            _logFilter.Dock = DockStyle.Fill;
+            _logFilter.Margin = new Padding(0, 4, 0, 4);
+            _logFilter.PlaceholderText = "筛选 / Filter...";
+            left.Controls.Add(_logFilter, 0, 1);
 
             _logFiles.Dock = DockStyle.Fill;
             _logFiles.IntegralHeight = false;
             _logFiles.BorderStyle = BorderStyle.FixedSingle;
-            left.Controls.Add(_logFiles, 0, 1);
+            left.Controls.Add(_logFiles, 0, 2);
 
             root.Controls.Add(left, 0, 0);
 
@@ -170,7 +207,7 @@ namespace MES.UI.Forms.SystemManagement
         {
             var bar = new TableLayoutPanel();
             bar.Dock = DockStyle.Fill;
-            bar.ColumnCount = 11;
+            bar.ColumnCount = 10;
             bar.RowCount = 1;
 
             bar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 90));  // refresh
@@ -178,12 +215,11 @@ namespace MES.UI.Forms.SystemManagement
             bar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 110)); // open external
             bar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 90));  // copy all
             bar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120)); // export
+            bar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 100)); // follow tail
+            bar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 90));  // highlight
             bar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 70));  // label
             bar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 90));  // numeric
             bar.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-            bar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 0));
-            bar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 0));
-            bar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 0));
 
             _logRefresh.Text = "刷新";
             _logRefresh.Style = ModernButton.ButtonStyle.Secondary;
@@ -210,18 +246,28 @@ namespace MES.UI.Forms.SystemManagement
             _logExportBundle.Dock = DockStyle.Fill;
             bar.Controls.Add(_logExportBundle, 4, 0);
 
+            _logFollowTail.Text = "跟随: 关";
+            _logFollowTail.Style = ModernButton.ButtonStyle.Outline;
+            _logFollowTail.Dock = DockStyle.Fill;
+            bar.Controls.Add(_logFollowTail, 5, 0);
+
+            _logHighlight.Text = "高亮: 开";
+            _logHighlight.Style = ModernButton.ButtonStyle.Secondary;
+            _logHighlight.Dock = DockStyle.Fill;
+            bar.Controls.Add(_logHighlight, 6, 0);
+
             var tailLabel = new Label();
             tailLabel.Dock = DockStyle.Fill;
             tailLabel.TextAlign = ContentAlignment.MiddleRight;
             tailLabel.Text = "尾部行数";
-            bar.Controls.Add(tailLabel, 5, 0);
+            bar.Controls.Add(tailLabel, 7, 0);
 
             _logTailLines.Dock = DockStyle.Fill;
             _logTailLines.Minimum = 200;
             _logTailLines.Maximum = 20000;
             _logTailLines.Increment = 200;
             _logTailLines.Value = 2000;
-            bar.Controls.Add(_logTailLines, 6, 0);
+            bar.Controls.Add(_logTailLines, 8, 0);
 
             return bar;
         }
@@ -239,20 +285,25 @@ namespace MES.UI.Forms.SystemManagement
             var left = new TableLayoutPanel();
             left.Dock = DockStyle.Fill;
             left.ColumnCount = 1;
-            left.RowCount = 2;
+            left.RowCount = 3;
             left.RowStyles.Add(new RowStyle(SizeType.Absolute, 22));
+            left.RowStyles.Add(new RowStyle(SizeType.Absolute, 32));
             left.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
 
-            var leftTitle = new Label();
-            leftTitle.Dock = DockStyle.Fill;
-            leftTitle.Text = "崩溃报告（MES_Crash_*.txt）";
-            leftTitle.TextAlign = ContentAlignment.MiddleLeft;
-            left.Controls.Add(leftTitle, 0, 0);
+            _crashListTitle.Dock = DockStyle.Fill;
+            _crashListTitle.Text = CrashTitleBase;
+            _crashListTitle.TextAlign = ContentAlignment.MiddleLeft;
+            left.Controls.Add(_crashListTitle, 0, 0);
+
+            _crashFilter.Dock = DockStyle.Fill;
+            _crashFilter.Margin = new Padding(0, 4, 0, 4);
+            _crashFilter.PlaceholderText = "筛选 / Filter...";
+            left.Controls.Add(_crashFilter, 0, 1);
 
             _crashFiles.Dock = DockStyle.Fill;
             _crashFiles.IntegralHeight = false;
             _crashFiles.BorderStyle = BorderStyle.FixedSingle;
-            left.Controls.Add(_crashFiles, 0, 1);
+            left.Controls.Add(_crashFiles, 0, 2);
 
             root.Controls.Add(left, 0, 0);
 
@@ -287,7 +338,7 @@ namespace MES.UI.Forms.SystemManagement
         {
             var bar = new TableLayoutPanel();
             bar.Dock = DockStyle.Fill;
-            bar.ColumnCount = 11;
+            bar.ColumnCount = 10;
             bar.RowCount = 1;
 
             bar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 90));  // refresh
@@ -295,12 +346,11 @@ namespace MES.UI.Forms.SystemManagement
             bar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 110)); // open external
             bar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 90));  // copy all
             bar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120)); // export
+            bar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 100)); // follow tail
+            bar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 90));  // highlight
             bar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 70));  // label
             bar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 90));  // numeric
             bar.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-            bar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 0));
-            bar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 0));
-            bar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 0));
 
             _crashRefresh.Text = "刷新";
             _crashRefresh.Style = ModernButton.ButtonStyle.Secondary;
@@ -323,22 +373,32 @@ namespace MES.UI.Forms.SystemManagement
             bar.Controls.Add(_crashCopyAll, 3, 0);
 
             _crashExportBundle.Text = "导出诊断包";
-            _crashExportBundle.Style = ModernButton.ButtonStyle.Outline;
+            _crashExportBundle.Style = ModernButton.ButtonStyle.Outline;        
             _crashExportBundle.Dock = DockStyle.Fill;
             bar.Controls.Add(_crashExportBundle, 4, 0);
+
+            _crashFollowTail.Text = "跟随: 关";
+            _crashFollowTail.Style = ModernButton.ButtonStyle.Outline;
+            _crashFollowTail.Dock = DockStyle.Fill;
+            bar.Controls.Add(_crashFollowTail, 5, 0);
+
+            _crashHighlight.Text = "高亮: 开";
+            _crashHighlight.Style = ModernButton.ButtonStyle.Secondary;
+            _crashHighlight.Dock = DockStyle.Fill;
+            bar.Controls.Add(_crashHighlight, 6, 0);
 
             var tailLabel = new Label();
             tailLabel.Dock = DockStyle.Fill;
             tailLabel.TextAlign = ContentAlignment.MiddleRight;
             tailLabel.Text = "尾部行数";
-            bar.Controls.Add(tailLabel, 5, 0);
+            bar.Controls.Add(tailLabel, 7, 0);
 
             _crashTailLines.Dock = DockStyle.Fill;
             _crashTailLines.Minimum = 200;
             _crashTailLines.Maximum = 20000;
             _crashTailLines.Increment = 200;
             _crashTailLines.Value = 4000;
-            bar.Controls.Add(_crashTailLines, 6, 0);
+            bar.Controls.Add(_crashTailLines, 8, 0);
 
             return bar;
         }
@@ -350,16 +410,166 @@ namespace MES.UI.Forms.SystemManagement
             _logOpenExternal.Click += (s, e) => OpenSelectedFileExternal(_logFiles);
             _logCopyAll.Click += (s, e) => CopyTextSafe(_logText.Text, "日志内容已复制。");
             _logExportBundle.Click += (s, e) => ExportSupportBundle();
+            _logFilter.TextChanged += (s, e) => ApplyLogFilter(null);
+            _logFollowTail.Click += (s, e) => ToggleLogFollowTail();
+            _logHighlight.Click += (s, e) => ToggleLogHighlight();
             _logTailLines.ValueChanged += (s, e) => LoadSelectedLog();
-            _logFiles.SelectedIndexChanged += (s, e) => LoadSelectedLog();
+            _logFiles.SelectedIndexChanged += (s, e) => LoadSelectedLog();      
 
             _crashRefresh.Click += (s, e) => ReloadCrashReports();
             _crashOpenFolder.Click += (s, e) => OpenFolderSafe(GetCrashReportsDirectory());
             _crashOpenExternal.Click += (s, e) => OpenSelectedFileExternal(_crashFiles);
             _crashCopyAll.Click += (s, e) => CopyTextSafe(_crashText.Text, "崩溃报告已复制。");
-            _crashExportBundle.Click += (s, e) => ExportSupportBundle();
+            _crashExportBundle.Click += (s, e) => ExportSupportBundle();        
+            _crashFilter.TextChanged += (s, e) => ApplyCrashFilter(null);
+            _crashFollowTail.Click += (s, e) => ToggleCrashFollowTail();
+            _crashHighlight.Click += (s, e) => ToggleCrashHighlight();
             _crashTailLines.ValueChanged += (s, e) => LoadSelectedCrashReport();
             _crashFiles.SelectedIndexChanged += (s, e) => LoadSelectedCrashReport();
+        }
+
+        private void ConfigureAutoRefresh()
+        {
+            try
+            {
+                _autoRefreshTimer.Interval = AutoRefreshIntervalMs;
+                _autoRefreshTimer.Tick += (s, e) => HandleAutoRefreshTick();
+                UpdateAutoRefreshTimerState();
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
+        private void HandleAutoRefreshTick()
+        {
+            try
+            {
+                if (IsDisposed) return;
+
+                // 仅刷新当前页，避免后台不断读盘占用 IO
+                if (_tabs.SelectedIndex == 0)
+                {
+                    if (_logFollowTailEnabled) LoadSelectedLog();
+                }
+                else if (_tabs.SelectedIndex == 1)
+                {
+                    if (_crashFollowTailEnabled) LoadSelectedCrashReport();
+                }
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
+        private void UpdateAutoRefreshTimerState()
+        {
+            try
+            {
+                bool anyEnabled = _logFollowTailEnabled || _crashFollowTailEnabled;
+                if (anyEnabled)
+                {
+                    if (!_autoRefreshTimer.Enabled) _autoRefreshTimer.Start();
+                }
+                else
+                {
+                    if (_autoRefreshTimer.Enabled) _autoRefreshTimer.Stop();
+                }
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
+        private void UpdateToggleButtons()
+        {
+            try
+            {
+                _logFollowTail.Text = _logFollowTailEnabled ? "跟随: 开" : "跟随: 关";
+                _logFollowTail.Style = _logFollowTailEnabled
+                    ? ModernButton.ButtonStyle.Secondary
+                    : ModernButton.ButtonStyle.Outline;
+
+                _crashFollowTail.Text = _crashFollowTailEnabled ? "跟随: 开" : "跟随: 关";
+                _crashFollowTail.Style = _crashFollowTailEnabled
+                    ? ModernButton.ButtonStyle.Secondary
+                    : ModernButton.ButtonStyle.Outline;
+
+                _logHighlight.Text = _logHighlightEnabled ? "高亮: 开" : "高亮: 关";
+                _logHighlight.Style = _logHighlightEnabled
+                    ? ModernButton.ButtonStyle.Secondary
+                    : ModernButton.ButtonStyle.Outline;
+
+                _crashHighlight.Text = _crashHighlightEnabled ? "高亮: 开" : "高亮: 关";
+                _crashHighlight.Style = _crashHighlightEnabled
+                    ? ModernButton.ButtonStyle.Secondary
+                    : ModernButton.ButtonStyle.Outline;
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
+        private void ToggleLogFollowTail()
+        {
+            try
+            {
+                _logFollowTailEnabled = !_logFollowTailEnabled;
+                UpdateToggleButtons();
+                UpdateAutoRefreshTimerState();
+                if (_logFollowTailEnabled) LoadSelectedLog();
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
+        private void ToggleCrashFollowTail()
+        {
+            try
+            {
+                _crashFollowTailEnabled = !_crashFollowTailEnabled;
+                UpdateToggleButtons();
+                UpdateAutoRefreshTimerState();
+                if (_crashFollowTailEnabled) LoadSelectedCrashReport();
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
+        private void ToggleLogHighlight()
+        {
+            try
+            {
+                _logHighlightEnabled = !_logHighlightEnabled;
+                UpdateToggleButtons();
+                LoadSelectedLog();
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
+        private void ToggleCrashHighlight()
+        {
+            try
+            {
+                _crashHighlightEnabled = !_crashHighlightEnabled;
+                UpdateToggleButtons();
+                LoadSelectedCrashReport();
+            }
+            catch
+            {
+                // ignore
+            }
         }
 
         private void HandleThemeChanged()
@@ -413,44 +623,35 @@ namespace MES.UI.Forms.SystemManagement
             try
             {
                 var dir = LogManager.LogDirectory;
-                if (string.IsNullOrWhiteSpace(dir) || !Directory.Exists(dir))
+                if (string.IsNullOrWhiteSpace(dir) || !Directory.Exists(dir))   
                 {
+                    _logAllEntries.Clear();
                     _logFiles.Items.Clear();
+                    UpdateLogListTitle(0, 0);
                     _logText.Text = "未找到日志目录。";
                     return;
                 }
 
                 var selected = GetSelectedFilePath(_logFiles);
 
-                _logFiles.BeginUpdate();
-                try
+                _logAllEntries.Clear();
+
+                var info = new DirectoryInfo(dir);
+                var files = info.GetFiles("MES_*.log");
+                Array.Sort(files, (a, b) => b.LastWriteTime.CompareTo(a.LastWriteTime));
+
+                foreach (var f in files)
                 {
-                    _logFiles.Items.Clear();
-
-                    var info = new DirectoryInfo(dir);
-                    var files = info.GetFiles("MES_*.log");
-                    Array.Sort(files, (a, b) => b.LastWriteTime.CompareTo(a.LastWriteTime));
-
-                    foreach (var f in files)
+                    _logAllEntries.Add(new FileEntry
                     {
-                        _logFiles.Items.Add(new FileEntry
-                        {
-                            FullPath = f.FullName,
-                            LastWriteTime = f.LastWriteTime,
-                            LengthBytes = f.Length,
-                            DisplayName = string.Format("{0}  ({1:MM-dd HH:mm}, {2} KB)", f.Name, f.LastWriteTime, Math.Max(1, f.Length / 1024))
-                        });
-                    }
-                }
-                finally
-                {
-                    _logFiles.EndUpdate();
+                        FullPath = f.FullName,
+                        LastWriteTime = f.LastWriteTime,
+                        LengthBytes = f.Length,
+                        DisplayName = string.Format("{0}  ({1:MM-dd HH:mm}, {2} KB)", f.Name, f.LastWriteTime, Math.Max(1, f.Length / 1024))
+                    });
                 }
 
-                if (!TryReselect(_logFiles, selected))
-                {
-                    TrySelectDefaultLog(_logFiles);
-                }
+                ApplyLogFilter(selected);
             }
             catch (Exception ex)
             {
@@ -466,7 +667,9 @@ namespace MES.UI.Forms.SystemManagement
                 var dir = GetCrashReportsDirectory();
                 if (string.IsNullOrWhiteSpace(dir))
                 {
+                    _crashAllEntries.Clear();
                     _crashFiles.Items.Clear();
+                    UpdateCrashListTitle(0, 0);
                     _crashText.Text = "未找到崩溃报告目录。";
                     return;
                 }
@@ -478,30 +681,116 @@ namespace MES.UI.Forms.SystemManagement
 
                 var selected = GetSelectedFilePath(_crashFiles);
 
+                _crashAllEntries.Clear();
+
+                var info = new DirectoryInfo(dir);
+                var files = info.GetFiles("MES_Crash_*.txt");
+                Array.Sort(files, (a, b) => b.LastWriteTime.CompareTo(a.LastWriteTime));
+
+                foreach (var f in files)
+                {
+                    _crashAllEntries.Add(new FileEntry
+                    {
+                        FullPath = f.FullName,
+                        LastWriteTime = f.LastWriteTime,
+                        LengthBytes = f.Length,
+                        DisplayName = string.Format("{0}  ({1:MM-dd HH:mm}, {2} KB)", f.Name, f.LastWriteTime, Math.Max(1, f.Length / 1024))
+                    });
+                }
+
+                ApplyCrashFilter(selected);
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("刷新崩溃报告列表失败", ex);
+                _crashText.Text = string.Format("刷新崩溃报告列表失败：{0}", ex.Message);
+            }
+        }
+
+        private void ApplyLogFilter(string preferredSelectionPath)
+        {
+            try
+            {
+                string selected = !string.IsNullOrWhiteSpace(preferredSelectionPath)
+                    ? preferredSelectionPath
+                    : GetSelectedFilePath(_logFiles);
+
+                string filterText = _logFilter != null ? _logFilter.Text : string.Empty;
+
+                int shownCount = 0;
+                _logFiles.BeginUpdate();
+                try
+                {
+                    _logFiles.Items.Clear();
+                    foreach (var entry in _logAllEntries)
+                    {
+                        if (!MatchesFilter(entry, filterText)) continue;
+                        _logFiles.Items.Add(entry);
+                        shownCount++;
+                    }
+                }
+                finally
+                {
+                    _logFiles.EndUpdate();
+                }
+
+                UpdateLogListTitle(shownCount, _logAllEntries.Count);
+
+                if (!TryReselect(_logFiles, selected))
+                {
+                    TrySelectDefaultLog(_logFiles);
+                }
+
+                if (_logFiles.Items.Count == 0)
+                {
+                    _logText.Text = _logAllEntries.Count == 0
+                        ? "暂无日志文件。"
+                        : "未找到匹配的日志文件。";
+
+                    try
+                    {
+                        _logMeta.Text = "提示：可调整筛选条件或点击“刷新”。";
+                    }
+                    catch
+                    {
+                        // ignore
+                    }
+                }
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
+        private void ApplyCrashFilter(string preferredSelectionPath)
+        {
+            try
+            {
+                string selected = !string.IsNullOrWhiteSpace(preferredSelectionPath)
+                    ? preferredSelectionPath
+                    : GetSelectedFilePath(_crashFiles);
+
+                string filterText = _crashFilter != null ? _crashFilter.Text : string.Empty;
+
+                int shownCount = 0;
                 _crashFiles.BeginUpdate();
                 try
                 {
                     _crashFiles.Items.Clear();
-
-                    var info = new DirectoryInfo(dir);
-                    var files = info.GetFiles("MES_Crash_*.txt");
-                    Array.Sort(files, (a, b) => b.LastWriteTime.CompareTo(a.LastWriteTime));
-
-                    foreach (var f in files)
+                    foreach (var entry in _crashAllEntries)
                     {
-                        _crashFiles.Items.Add(new FileEntry
-                        {
-                            FullPath = f.FullName,
-                            LastWriteTime = f.LastWriteTime,
-                            LengthBytes = f.Length,
-                            DisplayName = string.Format("{0}  ({1:MM-dd HH:mm}, {2} KB)", f.Name, f.LastWriteTime, Math.Max(1, f.Length / 1024))
-                        });
+                        if (!MatchesFilter(entry, filterText)) continue;
+                        _crashFiles.Items.Add(entry);
+                        shownCount++;
                     }
                 }
                 finally
                 {
                     _crashFiles.EndUpdate();
                 }
+
+                UpdateCrashListTitle(shownCount, _crashAllEntries.Count);
 
                 if (!TryReselect(_crashFiles, selected))
                 {
@@ -511,14 +800,92 @@ namespace MES.UI.Forms.SystemManagement
                     }
                     else
                     {
-                        _crashText.Text = "暂无崩溃报告（CrashReports 为空）。";
+                        _crashText.Text = _crashAllEntries.Count == 0
+                            ? "暂无崩溃报告（CrashReports 为空）。"
+                            : "未找到匹配的崩溃报告。";
+
+                        try
+                        {
+                            _crashMeta.Text = "提示：可调整筛选条件或点击“刷新”。";
+                        }
+                        catch
+                        {
+                            // ignore
+                        }
                     }
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                LogManager.Error("刷新崩溃报告列表失败", ex);
-                _crashText.Text = string.Format("刷新崩溃报告列表失败：{0}", ex.Message);
+                // ignore
+            }
+        }
+
+        private void UpdateLogListTitle(int shownCount, int totalCount)
+        {
+            try
+            {
+                if (totalCount <= 0)
+                {
+                    _logListTitle.Text = LogTitleBase;
+                }
+                else
+                {
+                    _logListTitle.Text = string.Format("{0}  ({1}/{2})", LogTitleBase, shownCount, totalCount);
+                }
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
+        private void UpdateCrashListTitle(int shownCount, int totalCount)
+        {
+            try
+            {
+                if (totalCount <= 0)
+                {
+                    _crashListTitle.Text = CrashTitleBase;
+                }
+                else
+                {
+                    _crashListTitle.Text = string.Format("{0}  ({1}/{2})", CrashTitleBase, shownCount, totalCount);
+                }
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
+        private static bool MatchesFilter(FileEntry entry, string filterText)
+        {
+            if (entry == null) return false;
+            if (string.IsNullOrWhiteSpace(filterText)) return true;
+
+            try
+            {
+                string[] tokens = filterText.Trim().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                if (tokens == null || tokens.Length == 0) return true;
+
+                string name = string.Empty;
+                try { name = Path.GetFileName(entry.FullPath) ?? string.Empty; } catch { }
+
+                string display = entry.DisplayName ?? string.Empty;
+                string haystack = name + " " + display;
+
+                foreach (var token in tokens)
+                {
+                    if (string.IsNullOrWhiteSpace(token)) continue;
+                    if (haystack.IndexOf(token, StringComparison.OrdinalIgnoreCase) < 0) return false;
+                }
+
+                return true;
+            }
+            catch
+            {
+                return true;
             }
         }
 
@@ -531,8 +898,9 @@ namespace MES.UI.Forms.SystemManagement
                 return;
             }
 
-            int tailLines = SafeGetTailLines(_logTailLines, 2000);
-            LoadFileTailAsync(entry, _logText, _logMeta, tailLines, "日志");
+            int tailLines = SafeGetTailLines(_logTailLines, 2000);        
+            LoadFileTailAsync(entry, _logText, _logMeta, tailLines, "日志",
+                _logFollowTailEnabled, _logHighlightEnabled);
         }
 
         private void LoadSelectedCrashReport()
@@ -544,11 +912,19 @@ namespace MES.UI.Forms.SystemManagement
                 return;
             }
 
-            int tailLines = SafeGetTailLines(_crashTailLines, 4000);
-            LoadFileTailAsync(entry, _crashText, _crashMeta, tailLines, "崩溃报告");
+            int tailLines = SafeGetTailLines(_crashTailLines, 4000);      
+            LoadFileTailAsync(entry, _crashText, _crashMeta, tailLines, "崩溃报告",
+                _crashFollowTailEnabled, _crashHighlightEnabled);
         }
 
-        private void LoadFileTailAsync(FileEntry entry, ThemedRichTextBox viewer, Label metaLabel, int tailLines, string kind)
+        private void LoadFileTailAsync(
+            FileEntry entry,
+            ThemedRichTextBox viewer,
+            Label metaLabel,
+            int tailLines,
+            string kind,
+            bool followTail,
+            bool highlight)
         {
             if (entry == null || viewer == null) return;
 
@@ -576,6 +952,22 @@ namespace MES.UI.Forms.SystemManagement
 
             Task.Run(() =>
             {
+                DateTime lastWriteTime = entry.LastWriteTime;
+                long lengthBytes = entry.LengthBytes;
+                try
+                {
+                    var fi = new FileInfo(entry.FullPath);
+                    if (fi.Exists)
+                    {
+                        lastWriteTime = fi.LastWriteTime;
+                        lengthBytes = fi.Length;
+                    }
+                }
+                catch
+                {
+                    // ignore
+                }
+
                 string text = TextFileTailReader.ReadTailText(entry.FullPath, tailLines, maxBytes);
                 if (string.IsNullOrWhiteSpace(text))
                 {
@@ -586,8 +978,8 @@ namespace MES.UI.Forms.SystemManagement
                     "{0}：{1} · {2:yyyy-MM-dd HH:mm:ss} · {3} KB · 显示尾部 {4} 行",
                     kind,
                     Path.GetFileName(entry.FullPath),
-                    entry.LastWriteTime,
-                    Math.Max(1, entry.LengthBytes / 1024),
+                    lastWriteTime,
+                    Math.Max(1, lengthBytes / 1024),
                     tailLines);
 
                 return new object[] { text, meta };
@@ -617,8 +1009,18 @@ namespace MES.UI.Forms.SystemManagement
 
                     BeginInvoke(new Action(() =>
                     {
-                        viewer.Text = result[0] as string ?? string.Empty;
+                        viewer.Text = result[0] as string ?? string.Empty;      
                         if (metaLabel != null) metaLabel.Text = result[1] as string ?? string.Empty;
+
+                        if (highlight)
+                        {
+                            ApplyHighlights(viewer);
+                        }
+
+                        if (followTail)
+                        {
+                            ScrollToEnd(viewer);
+                        }
                     }));
                 }
                 catch
@@ -626,6 +1028,129 @@ namespace MES.UI.Forms.SystemManagement
                     // ignore
                 }
             });
+        }
+
+        private void ApplyHighlights(ThemedRichTextBox viewer)
+        {
+            if (viewer == null) return;
+
+            try
+            {
+                var colors = UIThemeManager.Colors;
+
+                int selStart = 0;
+                int selLength = 0;
+                bool hideSelection = true;
+
+                try
+                {
+                    selStart = viewer.SelectionStart;
+                    selLength = viewer.SelectionLength;
+                    hideSelection = viewer.HideSelection;
+                }
+                catch
+                {
+                    // ignore
+                }
+
+                try { viewer.HideSelection = true; } catch { }
+
+                viewer.SuspendLayout();
+                try
+                {
+                    // 先把整段恢复为默认色，再做关键字着色
+                    try
+                    {
+                        viewer.SelectAll();
+                        viewer.SelectionColor = colors.Text;
+                        viewer.SelectionLength = 0;
+                    }
+                    catch
+                    {
+                        // ignore
+                    }
+
+                    HighlightToken(viewer, "[perf]", colors.Primary);
+
+                    HighlightToken(viewer, "FATAL", colors.Error);
+                    HighlightToken(viewer, "ERROR", colors.Error);
+                    HighlightToken(viewer, "EXCEPTION", colors.Error);
+                    HighlightToken(viewer, "Exception", colors.Error);
+
+                    HighlightToken(viewer, "WARNING", colors.Warning);
+                    HighlightToken(viewer, "WARN", colors.Warning);
+                }
+                finally
+                {
+                    viewer.ResumeLayout();
+                }
+
+                try
+                {
+                    viewer.SelectionStart = selStart;
+                    viewer.SelectionLength = selLength;
+                }
+                catch
+                {
+                    // ignore
+                }
+
+                try { viewer.HideSelection = hideSelection; } catch { }
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
+        private static void HighlightToken(ThemedRichTextBox viewer, string token, Color color)
+        {
+            if (viewer == null) return;
+            if (string.IsNullOrWhiteSpace(token)) return;
+
+            string text;
+            try { text = viewer.Text; }
+            catch { return; }
+
+            if (string.IsNullOrEmpty(text)) return;
+
+            int index = 0;
+            int matches = 0;
+            while (index < text.Length)
+            {
+                index = text.IndexOf(token, index, StringComparison.OrdinalIgnoreCase);
+                if (index < 0) break;
+
+                try
+                {
+                    viewer.Select(index, token.Length);
+                    viewer.SelectionColor = color;
+                }
+                catch
+                {
+                    break;
+                }
+
+                index += token.Length;
+                matches++;
+                if (matches >= HighlightMaxMatchesPerToken) break;
+            }
+        }
+
+        private static void ScrollToEnd(RichTextBox viewer)
+        {
+            if (viewer == null) return;
+
+            try
+            {
+                viewer.SelectionStart = viewer.TextLength;
+                viewer.SelectionLength = 0;
+                viewer.ScrollToCaret();
+            }
+            catch
+            {
+                // ignore
+            }
         }
 
         private static int EstimateMaxBytes(int tailLines)

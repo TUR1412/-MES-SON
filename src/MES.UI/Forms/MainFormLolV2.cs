@@ -1471,6 +1471,27 @@ namespace MES.UI.Forms
                     },
                     new CommandPaletteForm.CommandPaletteItem
                     {
+                        Title = "打开崩溃报告目录",
+                        Subtitle = "CrashReports",
+                        Keywords = "crash crashreport report folder",
+                        Action = () => OpenCrashReportsDirectory()
+                    },
+                    new CommandPaletteForm.CommandPaletteItem
+                    {
+                        Title = "打开最新崩溃报告",
+                        Subtitle = "Latest CrashReport",
+                        Keywords = "crash latest report",
+                        Action = () => OpenLatestCrashReport()
+                    },
+                    new CommandPaletteForm.CommandPaletteItem
+                    {
+                        Title = "打开最新诊断包",
+                        Subtitle = "Latest Support Bundle (.zip)",
+                        Keywords = "support bundle zip diagnostic",
+                        Action = () => OpenLatestSupportBundleZip()
+                    },
+                    new CommandPaletteForm.CommandPaletteItem
+                    {
                         Title = "关于",
                         Subtitle = "版本 / 架构 / 版权说明",
                         Keywords = "about version",
@@ -1544,6 +1565,107 @@ namespace MES.UI.Forms
             {
                 LogManager.Error("打开今日日志失败", ex);
                 MessageBox.Show(string.Format("打开今日日志失败：{0}", ex.Message), "错误",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private static void OpenCrashReportsDirectory()
+        {
+            try
+            {
+                var logDir = LogManager.LogDirectory;
+                if (string.IsNullOrWhiteSpace(logDir))
+                {
+                    MessageBox.Show("未找到日志目录。", "崩溃报告", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                var dir = Path.Combine(logDir, "CrashReports");
+                if (!Directory.Exists(dir))
+                {
+                    Directory.CreateDirectory(dir);
+                }
+
+                Process.Start("explorer.exe", dir);
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("打开崩溃报告目录失败", ex);
+                MessageBox.Show(string.Format("打开崩溃报告目录失败：{0}", ex.Message), "错误",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private static void OpenLatestCrashReport()
+        {
+            try
+            {
+                var logDir = LogManager.LogDirectory;
+                if (string.IsNullOrWhiteSpace(logDir))
+                {
+                    MessageBox.Show("未找到日志目录。", "崩溃报告", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                var dir = Path.Combine(logDir, "CrashReports");
+                if (!Directory.Exists(dir))
+                {
+                    MessageBox.Show("崩溃报告目录不存在（尚未产生 CrashReports）。", "崩溃报告", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                var info = new DirectoryInfo(dir);
+                var files = info.GetFiles("MES_Crash_*.txt");
+                if (files == null || files.Length == 0)
+                {
+                    MessageBox.Show("暂无崩溃报告文件。", "崩溃报告", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                Array.Sort(files, (a, b) => b.LastWriteTime.CompareTo(a.LastWriteTime));
+                Process.Start(files[0].FullName);
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("打开最新崩溃报告失败", ex);
+                MessageBox.Show(string.Format("打开最新崩溃报告失败：{0}", ex.Message), "错误",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private static void OpenLatestSupportBundleZip()
+        {
+            try
+            {
+                var logDir = LogManager.LogDirectory;
+                if (string.IsNullOrWhiteSpace(logDir))
+                {
+                    MessageBox.Show("未找到日志目录。", "诊断包", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                var dir = Path.Combine(logDir, "SupportBundles");
+                if (!Directory.Exists(dir))
+                {
+                    MessageBox.Show("诊断包目录不存在（尚未导出 Support Bundle）。", "诊断包", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                var info = new DirectoryInfo(dir);
+                var files = info.GetFiles("MES_Support_*.zip");
+                if (files == null || files.Length == 0)
+                {
+                    MessageBox.Show("暂无诊断包（zip）文件。", "诊断包", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                Array.Sort(files, (a, b) => b.LastWriteTime.CompareTo(a.LastWriteTime));
+                Process.Start(files[0].FullName);
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("打开最新诊断包失败", ex);
+                MessageBox.Show(string.Format("打开最新诊断包失败：{0}", ex.Message), "错误",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }

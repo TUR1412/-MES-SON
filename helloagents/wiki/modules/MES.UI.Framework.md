@@ -31,3 +31,4 @@
 - 日志/报告类展示建议使用 `DesignTokens.Typography.CreateCodeFont()` 以获得更好的可读性
 - 主题应用覆盖容器控件：包含 TabControl/TabPage 等常见容器（避免部分界面“漏主题”）
 - 允许渐进式替换历史硬编码，但禁止新增新的硬编码风格债务
+- RichTextBox 类控件如需关键字高亮，可使用 SelectionColor 渐进增强，但应限制匹配次数以避免性能回退
