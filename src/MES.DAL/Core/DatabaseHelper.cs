@@ -136,7 +136,7 @@ namespace MES.DAL.Core
                     {
                         var serverVersion = connection.ServerVersion;
                         var database = connection.Database;
-                        var connectionString = GetConnectionString();
+                        var connectionString = ConnectionStringHelper.MaskSecrets(GetConnectionString());
                         return string.Format("连接成功！\n服务器版本: {0}\n数据库: {1}\n连接字符串: {2}",
                             serverVersion, database, connectionString);
                     }
@@ -149,8 +149,77 @@ namespace MES.DAL.Core
             catch (Exception ex)
             {
                 LogManager.Error("数据库连接测试失败", ex);
-                var connectionString = GetConnectionString();
+                string connectionString;
+                try { connectionString = ConnectionStringHelper.MaskSecrets(GetConnectionString()); }
+                catch { connectionString = string.Empty; }
                 return string.Format("连接失败！错误信息: {0}\n连接字符串: {1}", ex.Message, connectionString);
+            }
+        }
+
+        /// <summary>
+        /// 测试指定连接字符串（用于 UI“配置/诊断”场景）
+        /// </summary>
+        public static bool TestConnection(string connectionString)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(connectionString))
+                {
+                    return false;
+                }
+
+                connectionString = EnsureAllowPublicKeyRetrieval(connectionString);
+                using (var connection = new MySqlConnection(connectionString))
+                {
+                    connection.Open();
+                    LogManager.Info("数据库连接测试成功");
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("数据库连接测试失败", ex);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 测试指定连接字符串并返回详细信息（默认脱敏）
+        /// </summary>
+        public static string TestConnectionWithDetails(string connectionString)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                return "连接失败！错误信息: 连接字符串为空";
+            }
+
+            var effective = EnsureAllowPublicKeyRetrieval(connectionString);
+            var masked = ConnectionStringHelper.MaskSecrets(effective);
+
+            try
+            {
+                using (var connection = new MySqlConnection(effective))
+                {
+                    connection.Open();
+                    if (connection.State == ConnectionState.Open)
+                    {
+                        return string.Format("连接成功！\n服务器版本: {0}\n数据库: {1}\n连接字符串: {2}",
+                            connection.ServerVersion,
+                            connection.Database,
+                            masked);
+                    }
+
+                    return string.Format("连接失败！连接状态: {0}\n连接字符串: {1}",
+                        connection.State,
+                        masked);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("数据库连接测试失败", ex);
+                return string.Format("连接失败！错误信息: {0}\n连接字符串: {1}",
+                    ex.Message,
+                    masked);
             }
         }
 

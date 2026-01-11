@@ -13,6 +13,7 @@ using MES.UI.Forms.SystemManagement;
 using MES.UI.Forms.WorkOrder;
 using MES.UI.Forms.Workshop;
 using MES.UI.Forms.Insight;
+using MES.UI.Forms.Common;
 using MES.UI.Framework.Controls;
 using MES.UI.Framework.Themes;
 
@@ -192,11 +193,13 @@ namespace MES.UI.Forms
             BackColor = UIThemeManager.Colors.Background;
             ForeColor = UIThemeManager.Colors.Text;
             Font = UIThemeManager.GetFont(9f);
+            KeyPreview = true;
 
             // 双缓冲减少闪烁
             DoubleBuffered = true;
 
             FormClosing += MainFormLolV2_FormClosing;
+            KeyDown += MainFormLolV2_KeyDown;
         }
 
         private void BuildLayout()
@@ -1341,6 +1344,136 @@ namespace MES.UI.Forms
             catch
             {
                 // ignore
+            }
+        }
+
+        private void MainFormLolV2_KeyDown(object sender, KeyEventArgs e)
+        {
+            try
+            {
+                if (e == null) return;
+
+                // Command Palette：Ctrl+K 快速打开模块/工具
+                if (e.Control && e.KeyCode == Keys.K)
+                {
+                    e.Handled = true;
+                    e.SuppressKeyPress = true;
+                    ShowCommandPalette();
+                }
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
+        private void ShowCommandPalette()
+        {
+            try
+            {
+                // 防重复打开
+                foreach (Form open in Application.OpenForms)
+                {
+                    if (open is CommandPaletteForm)
+                    {
+                        try { open.Activate(); } catch { }
+                        return;
+                    }
+                }
+
+                var palette = new CommandPaletteForm();
+                palette.SetItems(new[]
+                {
+                    new CommandPaletteForm.CommandPaletteItem
+                    {
+                        Title = "返回大厅",
+                        Subtitle = "Home / Lobby",
+                        Keywords = "home lobby dashboard",
+                        Action = () => ShowHome()
+                    },
+                    new CommandPaletteForm.CommandPaletteItem
+                    {
+                        Title = "运营洞察",
+                        Subtitle = "风险预警 / 指标快照 / 趋势洞察",
+                        Keywords = "insight ops risk dashboard",
+                        Action = () => ShowModule("运营洞察", new OperationsInsightForm(), _navInsight)
+                    },
+                    new CommandPaletteForm.CommandPaletteItem
+                    {
+                        Title = "物料管理",
+                        Subtitle = "物料 / BOM / 工艺路线",
+                        Keywords = "material bom route",
+                        Action = () => ShowModule<MaterialManagementForm>("物料管理", _navMaterial)
+                    },
+                    new CommandPaletteForm.CommandPaletteItem
+                    {
+                        Title = "生产管理",
+                        Subtitle = "生产订单 / 执行",
+                        Keywords = "production order execute",
+                        Action = () => ShowModule<ProductionOrderManagementForm>("生产管理", _navProduction)
+                    },
+                    new CommandPaletteForm.CommandPaletteItem
+                    {
+                        Title = "工单管理",
+                        Subtitle = "工单创建 / 提交 / 取消",
+                        Keywords = "workorder wo",
+                        Action = () => ShowModule<WorkOrderManagementForm>("工单管理", _navWorkOrder)
+                    },
+                    new CommandPaletteForm.CommandPaletteItem
+                    {
+                        Title = "批次管理",
+                        Subtitle = "批次创建 / 取消 / 查询",
+                        Keywords = "batch lot",
+                        Action = () => ShowModule<BatchManagementForm>("批次管理", _navBatch)
+                    },
+                    new CommandPaletteForm.CommandPaletteItem
+                    {
+                        Title = "车间管理",
+                        Subtitle = "车间 / WIP / 设备状态",
+                        Keywords = "workshop wip equipment",
+                        Action = () => ShowModule<WorkshopManagementForm>("车间管理", _navWorkshop)
+                    },
+                    new CommandPaletteForm.CommandPaletteItem
+                    {
+                        Title = "数据库诊断",
+                        Subtitle = "连接检测 / 性能概览 / 报告导出",
+                        Keywords = "database diagnostic mysql",
+                        Action = () => OpenSingletonForm<DatabaseDiagnosticForm>()
+                    },
+                    new CommandPaletteForm.CommandPaletteItem
+                    {
+                        Title = "系统配置",
+                        Subtitle = "主题切换 / 基础配置",
+                        Keywords = "system config settings theme",
+                        Action = () => OpenSingletonForm<SystemConfigForm>()
+                    },
+                    new CommandPaletteForm.CommandPaletteItem
+                    {
+                        Title = "关于",
+                        Subtitle = "版本 / 架构 / 版权说明",
+                        Keywords = "about version",
+                        Action = () => OpenSingletonForm<AboutForm>()
+                    },
+                    new CommandPaletteForm.CommandPaletteItem
+                    {
+                        Title = "切换主题",
+                        Subtitle = "Nova ⇄ LoL（运行态切换）",
+                        Keywords = "theme toggle nova lol",
+                        Action = () =>
+                        {
+                            UIThemeManager.CurrentTheme =
+                                UIThemeManager.CurrentTheme == UIThemeManager.ThemeType.Nova
+                                    ? UIThemeManager.ThemeType.Lol
+                                    : UIThemeManager.ThemeType.Nova;
+                        }
+                    }
+                });
+
+                palette.ShowDialog(this);
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("打开命令面板失败", ex);
             }
         }
     }

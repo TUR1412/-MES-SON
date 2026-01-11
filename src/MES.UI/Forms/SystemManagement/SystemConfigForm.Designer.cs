@@ -364,7 +364,9 @@ namespace MES.UI.Forms.SystemManagement
             this.themeComboBox.Items.AddRange(new object[] {
             "默认主题",
             "蓝色主题",
-            "深色主题"});
+            "深色主题",
+            "LoL 暗金",
+            "Nova 未来感"});
             this.themeComboBox.Location = new System.Drawing.Point(120, 105);
             this.themeComboBox.Name = "themeComboBox";
             this.themeComboBox.Size = new System.Drawing.Size(180, 25);

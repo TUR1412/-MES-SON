@@ -11,6 +11,7 @@ A WinForms MES sample focused on **clean layering + operational insight + futuri
 - **运营洞察 / Operational Insight**：生产风险预警、在制品老化、设备健康、库存告警、质量缺陷、批次良率一屏聚合
 - **分层架构 / Clean Layers**：UI → BLL → DAL → MySQL，避免 UI 直连数据库
 - **未来感主题 / Nova Theme**：统一设计 Token、卡片化入口、轻量动效
+- **快捷命令面板 / Command Palette**：`Ctrl+K` 快速跳转模块/工具，支持主题切换
 - **安全默认值 / Secure Defaults**：连接串优先从环境变量读取，避免明文密码
 - **可观测诊断 / Diagnostics**：内置数据库诊断与环境检查
 
@@ -27,10 +28,10 @@ src/
   MES.Models          # 领域模型/DTO
   MES.Common          # 配置/日志/通用能力
 
-tests/                # 测试与验证工具
- docs/                # 项目文档
- database/            # 数据库脚本
- helloagents/         # SSOT（架构/模块/方案包）
+tests/               # 测试与验证工具
+docs/                # 项目文档
+database/            # 数据库脚本
+helloagents/         # SSOT（架构/模块/方案包）
 ```
 
 ---
@@ -44,6 +45,15 @@ tests/                # 测试与验证工具
 - MySQL 8.x
 
 ### 构建 | Build
+推荐（无需预装 nuget 命令，脚本会自动下载并还原 `packages/`）：
+Recommended (no need to pre-install NuGet; the script downloads `nuget.exe` and restores `packages/`):
+```powershell
+./scripts/restore.ps1
+./build.ps1 -Configuration Release -BuildSolution
+```
+
+或使用你本机已安装的 NuGet/MSBuild：
+Or use your installed NuGet/MSBuild:
 ```powershell
 nuget restore MES.sln
 msbuild MES.sln /t:Build /p:Configuration=Release /p:Platform="Any CPU" /p:GenerateResourceMSBuildArchitecture=x64
@@ -57,12 +67,14 @@ msbuild MES.sln /t:Build /p:Configuration=Release /p:Platform="Any CPU" /p:Gener
 ### 运行 | Run
 - 运行 `src/MES.UI` 生成的可执行文件
 - 默认主题：`Nova`
+- 按 `Ctrl+K` 打开命令面板（快速跳转/主题切换）
 
 ---
 
 ## 🔑 数据库连接 | Database
 
 推荐使用环境变量（避免仓库写入真实密码）：
+Recommended: use environment variables to avoid committing secrets:
 - `MES_CONNECTION_STRING`
 - `MES_TEST_CONNECTION_STRING`（可选）
 - `MES_PROD_CONNECTION_STRING`（可选）
@@ -88,6 +100,8 @@ msbuild MES.sln /t:Build /p:Configuration=Release /p:Platform="Any CPU" /p:Gener
 - 统一 Design Tokens（字号/圆角/动效）
 - 卡片化信息密度与分组
 - 轻量渐变与高对比文本提升可读性
+- `Ctrl+K` 打开命令面板（快速跳转/主题切换）
+- Press `Ctrl+K` to open the command palette (navigation/theme toggle)
 
 ---
 

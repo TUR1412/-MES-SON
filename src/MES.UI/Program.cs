@@ -210,15 +210,7 @@ namespace MES.UI
             }
 
             // 兼容 MySQL 8/9 caching_sha2_password 的 RSA Key 获取限制
-            if (connectionString.IndexOf("AllowPublicKeyRetrieval", StringComparison.OrdinalIgnoreCase) < 0 &&
-                connectionString.IndexOf("SslMode=none", StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-                if (!connectionString.TrimEnd().EndsWith(";"))
-                {
-                    connectionString += ";";
-                }
-                connectionString += "AllowPublicKeyRetrieval=true;";
-            }
+            connectionString = ConnectionStringHelper.EnsureAllowPublicKeyRetrieval(connectionString);
 
             return connectionString;
         }

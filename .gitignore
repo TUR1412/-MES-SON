@@ -60,6 +60,8 @@ bld/
 
 # NuGet 包文件夹
 packages/
+# 本地工具缓存（例如 scripts/restore.ps1 下载的 nuget.exe）
+.tools/
 # NuGet Symbol 包
 *.snupkg
 # NuGet 包配置文件

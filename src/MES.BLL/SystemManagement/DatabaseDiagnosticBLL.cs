@@ -12,9 +12,19 @@ namespace MES.BLL.SystemManagement
             return DatabaseHelper.TestConnection();
         }
 
+        public bool TestConnection(string connectionString)
+        {
+            return DatabaseHelper.TestConnection(connectionString);
+        }
+
         public string TestConnectionWithDetails()
         {
             return DatabaseHelper.TestConnectionWithDetails();
+        }
+
+        public string TestConnectionWithDetails(string connectionString)
+        {
+            return DatabaseHelper.TestConnectionWithDetails(connectionString);
         }
     }
 }

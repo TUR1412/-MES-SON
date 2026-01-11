@@ -85,15 +85,7 @@ namespace MES.UI.Forms.SystemManagement
             }
 
             // 兼容 MySQL 8/9 的默认认证（caching_sha2_password）在非 SSL 连接下的 RSA Key 获取限制
-            if (connectionString.IndexOf("AllowPublicKeyRetrieval", StringComparison.OrdinalIgnoreCase) < 0 &&
-                connectionString.IndexOf("SslMode=none", StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-                if (!connectionString.TrimEnd().EndsWith(";"))
-                {
-                    connectionString += ";";
-                }
-                connectionString += "AllowPublicKeyRetrieval=true;";
-            }
+            connectionString = ConnectionStringHelper.EnsureAllowPublicKeyRetrieval(connectionString);
 
             return connectionString;
         }

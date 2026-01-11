@@ -12,10 +12,20 @@ namespace MES.BLL.SystemManagement
         bool TestConnection();
 
         /// <summary>
+        /// 测试指定连接字符串是否可连接（用于 UI“配置/诊断”场景）
+        /// </summary>
+        bool TestConnection(string connectionString);
+
+        /// <summary>
         /// 测试数据库连接并返回诊断详情
         /// </summary>
         /// <returns>诊断详情字符串</returns>
         string TestConnectionWithDetails();
+
+        /// <summary>
+        /// 测试指定连接字符串并返回诊断详情（默认脱敏）
+        /// </summary>
+        string TestConnectionWithDetails(string connectionString);
     }
 }
 

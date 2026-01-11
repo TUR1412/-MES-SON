@@ -12,10 +12,14 @@
 - 主窗体：
   - `src/MES.UI/Forms/MainForm.cs`
   - `src/MES.UI/Forms/MainFormLolV2.cs`
+- 快捷命令面板（Ctrl+K）：
+  - `src/MES.UI/Forms/Common/CommandPaletteForm.cs`
 - 运营洞察：
   - `src/MES.UI/Forms/Insight/OperationsInsightForm.cs`
 - 数据库诊断：
   - `src/MES.UI/Forms/SystemManagement/DatabaseDiagnosticForm.cs`
+- 系统配置：
+  - `src/MES.UI/Forms/SystemManagement/SystemConfigForm.cs`
 
 ## 依赖关系（守门）
 
@@ -27,3 +31,4 @@
 - 高 DPI：`src/MES.UI/app.manifest`（PerMonitorV2）
 - 字体/间距/配色优先从 `DesignTokens` 获取
 - 默认主题：`Nova`（可通过配置切换）
+- 交互入口：`Ctrl+K` 打开命令面板（跳转模块/工具/主题切换）

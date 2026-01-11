@@ -109,6 +109,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\ConfigManager.cs" />
+    <Compile Include="Configuration\ConnectionStringHelper.cs" />
     <Compile Include="Logging\LogManager.cs" />
     <Compile Include="Logging\LogLevel.cs" />
     <Compile Include="Exceptions\MESException.cs" />

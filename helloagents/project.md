@@ -31,7 +31,8 @@
 
 ### 4.1 依赖还原（packages.config）
 
-- `nuget restore MES.sln`
+- 推荐（无需预装 nuget 命令）：`./scripts/restore.ps1`
+- 或使用本机 NuGet CLI：`nuget restore MES.sln`
 
 ### 4.2 编译（MSBuild）
 

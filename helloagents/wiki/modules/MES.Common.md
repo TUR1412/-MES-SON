@@ -9,6 +9,8 @@
 
 - 连接字符串统一读取：
   - `src/MES.Common/Configuration/ConfigManager.cs`
+- 连接字符串兼容与脱敏：
+  - `src/MES.Common/Configuration/ConnectionStringHelper.cs`
 
 ## 开发约定
 
