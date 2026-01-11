@@ -6,6 +6,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MES.Common.Configuration;
+using MES.Common.IO;
 using MES.Common.Logging;
 using MES.UI.Forms.Batch;
 using MES.UI.Forms.Material;
@@ -1471,6 +1472,13 @@ namespace MES.UI.Forms
                     },
                     new CommandPaletteForm.CommandPaletteItem
                     {
+                        Title = "复制今日日志尾部",
+                        Subtitle = "Copy log tail to clipboard",
+                        Keywords = "copy log tail clipboard today",
+                        Action = () => CopyTodayLogTailToClipboard()
+                    },
+                    new CommandPaletteForm.CommandPaletteItem
+                    {
                         Title = "打开崩溃报告目录",
                         Subtitle = "CrashReports",
                         Keywords = "crash crashreport report folder",
@@ -1565,6 +1573,42 @@ namespace MES.UI.Forms
             {
                 LogManager.Error("打开今日日志失败", ex);
                 MessageBox.Show(string.Format("打开今日日志失败：{0}", ex.Message), "错误",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private static void CopyTodayLogTailToClipboard()
+        {
+            try
+            {
+                var path = LogManager.GetTodayLogFilePath();
+                if (string.IsNullOrWhiteSpace(path))
+                {
+                    MessageBox.Show("未找到日志文件路径。", "日志", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                if (!File.Exists(path))
+                {
+                    MessageBox.Show(string.Format("今日日志尚未生成：{0}", path), "日志",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                var tail = TextFileTailReader.ReadTailText(path, 2500, 512 * 1024);
+                if (string.IsNullOrWhiteSpace(tail))
+                {
+                    MessageBox.Show("日志内容为空。", "日志", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                Clipboard.SetText(tail);
+                MessageBox.Show("已复制今日日志尾部内容。", "日志", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                LogManager.Error("复制今日日志尾部失败", ex);
+                MessageBox.Show(string.Format("复制今日日志尾部失败：{0}", ex.Message), "错误",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }

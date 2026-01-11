@@ -22,8 +22,8 @@ namespace MES.UI.Forms.SystemManagement
     {
         private const int AutoRefreshIntervalMs = 2500;
         private const int HighlightMaxMatchesPerToken = 200;
-        private const string LogTitleBase = "日志文件（MES_yyyyMMdd.log）";
-        private const string CrashTitleBase = "崩溃报告（MES_Crash_*.txt）";
+        private const string LogTitleBase = "日志文件（MES_yyyyMMdd.log）";     
+        private const string CrashTitleBase = "崩溃报告（MES_Crash_*.txt）";    
 
         private class FileEntry
         {
@@ -43,13 +43,19 @@ namespace MES.UI.Forms.SystemManagement
 
         // Logs tab
         private readonly Label _logListTitle = new Label();
-        private readonly ThemedTextBox _logFilter = new ThemedTextBox();
+        private readonly ThemedTextBox _logFilter = new ThemedTextBox();        
         private readonly ThemedListBox _logFiles = new ThemedListBox();
         private readonly ThemedRichTextBox _logText = new ThemedRichTextBox();  
+        private readonly ThemedTextBox _logSearch = new ThemedTextBox();
+        private readonly ModernButton _logSearchPrev = new ModernButton();
+        private readonly ModernButton _logSearchNext = new ModernButton();
+        private readonly ModernButton _logSearchCase = new ModernButton();
+        private readonly ModernButton _logJumpLatestIssue = new ModernButton();
+        private readonly Label _logSearchCount = new Label();
         private readonly NumericUpDown _logTailLines = new NumericUpDown();     
         private readonly ModernButton _logRefresh = new ModernButton();
-        private readonly ModernButton _logOpenFolder = new ModernButton();
-        private readonly ModernButton _logOpenExternal = new ModernButton();
+        private readonly ModernButton _logOpenFolder = new ModernButton();      
+        private readonly ModernButton _logOpenExternal = new ModernButton();    
         private readonly ModernButton _logCopyAll = new ModernButton();
         private readonly ModernButton _logExportBundle = new ModernButton();    
         private readonly ModernButton _logFollowTail = new ModernButton();
@@ -59,15 +65,23 @@ namespace MES.UI.Forms.SystemManagement
         private int _logLoadVersion = 0;
         private bool _logFollowTailEnabled = false;
         private bool _logHighlightEnabled = true;
+        private bool _logSearchCaseSensitive = false;
+        private int _logSearchCountVersion = 0;
 
         // CrashReports tab
         private readonly Label _crashListTitle = new Label();
-        private readonly ThemedTextBox _crashFilter = new ThemedTextBox();
+        private readonly ThemedTextBox _crashFilter = new ThemedTextBox();      
         private readonly ThemedListBox _crashFiles = new ThemedListBox();       
         private readonly ThemedRichTextBox _crashText = new ThemedRichTextBox();
+        private readonly ThemedTextBox _crashSearch = new ThemedTextBox();
+        private readonly ModernButton _crashSearchPrev = new ModernButton();
+        private readonly ModernButton _crashSearchNext = new ModernButton();
+        private readonly ModernButton _crashSearchCase = new ModernButton();
+        private readonly ModernButton _crashJumpLatestIssue = new ModernButton();
+        private readonly Label _crashSearchCount = new Label();
         private readonly NumericUpDown _crashTailLines = new NumericUpDown();   
         private readonly ModernButton _crashRefresh = new ModernButton();       
-        private readonly ModernButton _crashOpenFolder = new ModernButton();
+        private readonly ModernButton _crashOpenFolder = new ModernButton();    
         private readonly ModernButton _crashOpenExternal = new ModernButton();  
         private readonly ModernButton _crashCopyAll = new ModernButton();       
         private readonly ModernButton _crashExportBundle = new ModernButton();  
@@ -78,6 +92,8 @@ namespace MES.UI.Forms.SystemManagement
         private int _crashLoadVersion = 0;
         private bool _crashFollowTailEnabled = false;
         private bool _crashHighlightEnabled = true;
+        private bool _crashSearchCaseSensitive = false;
+        private int _crashSearchCountVersion = 0;
 
         public TroubleshootingCenterForm()
         {
@@ -93,6 +109,8 @@ namespace MES.UI.Forms.SystemManagement
             WireEvents();
             ConfigureAutoRefresh();
             UpdateToggleButtons();
+            UpdateLogSearchCountAsync();
+            UpdateCrashSearchCountAsync();
 
             UIThemeManager.OnThemeChanged += HandleThemeChanged;
             ApplyLocalTheme();
@@ -180,23 +198,25 @@ namespace MES.UI.Forms.SystemManagement
             var right = new TableLayoutPanel();
             right.Dock = DockStyle.Fill;
             right.ColumnCount = 1;
-            right.RowCount = 3;
+            right.RowCount = 4;
             right.RowStyles.Add(new RowStyle(SizeType.Absolute, 44));
+            right.RowStyles.Add(new RowStyle(SizeType.Absolute, 34));
             right.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
             right.RowStyles.Add(new RowStyle(SizeType.Absolute, 22));
 
             right.Controls.Add(BuildLogsToolbar(), 0, 0);
+            right.Controls.Add(BuildLogSearchBar(), 0, 1);
 
             _logText.Dock = DockStyle.Fill;
             _logText.ReadOnly = true;
             _logText.WordWrap = false;
             _logText.ScrollBars = RichTextBoxScrollBars.Vertical;
-            right.Controls.Add(_logText, 0, 1);
+            right.Controls.Add(_logText, 0, 2);
 
             _logMeta.Dock = DockStyle.Fill;
             _logMeta.TextAlign = ContentAlignment.MiddleLeft;
             _logMeta.Text = "提示：默认只加载尾部内容；如需完整文件请使用“外部打开”。";
-            right.Controls.Add(_logMeta, 0, 2);
+            right.Controls.Add(_logMeta, 0, 3);
 
             root.Controls.Add(right, 1, 0);
 
@@ -236,7 +256,7 @@ namespace MES.UI.Forms.SystemManagement
             _logOpenExternal.Dock = DockStyle.Fill;
             bar.Controls.Add(_logOpenExternal, 2, 0);
 
-            _logCopyAll.Text = "复制";
+            _logCopyAll.Text = "复制尾部";
             _logCopyAll.Style = ModernButton.ButtonStyle.Outline;
             _logCopyAll.Dock = DockStyle.Fill;
             bar.Controls.Add(_logCopyAll, 3, 0);
@@ -268,6 +288,53 @@ namespace MES.UI.Forms.SystemManagement
             _logTailLines.Increment = 200;
             _logTailLines.Value = 2000;
             bar.Controls.Add(_logTailLines, 8, 0);
+
+            return bar;
+        }
+
+        private Control BuildLogSearchBar()
+        {
+            var bar = new TableLayoutPanel();
+            bar.Dock = DockStyle.Fill;
+            bar.ColumnCount = 6;
+            bar.RowCount = 1;
+
+            bar.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+            bar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 74)); // prev
+            bar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 74)); // next
+            bar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 70)); // case
+            bar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 90)); // latest
+            bar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 90)); // count
+
+            _logSearch.Dock = DockStyle.Fill;
+            _logSearch.Margin = new Padding(0, 4, 6, 4);
+            _logSearch.PlaceholderText = "搜索文本 / Search...";
+            bar.Controls.Add(_logSearch, 0, 0);
+
+            _logSearchPrev.Text = "上一个";
+            _logSearchPrev.Style = ModernButton.ButtonStyle.Outline;
+            _logSearchPrev.Dock = DockStyle.Fill;
+            bar.Controls.Add(_logSearchPrev, 1, 0);
+
+            _logSearchNext.Text = "下一个";
+            _logSearchNext.Style = ModernButton.ButtonStyle.Outline;
+            _logSearchNext.Dock = DockStyle.Fill;
+            bar.Controls.Add(_logSearchNext, 2, 0);
+
+            _logSearchCase.Text = "Aa: 关";
+            _logSearchCase.Style = ModernButton.ButtonStyle.Outline;
+            _logSearchCase.Dock = DockStyle.Fill;
+            bar.Controls.Add(_logSearchCase, 3, 0);
+
+            _logJumpLatestIssue.Text = "最新错误";
+            _logJumpLatestIssue.Style = ModernButton.ButtonStyle.Outline;
+            _logJumpLatestIssue.Dock = DockStyle.Fill;
+            bar.Controls.Add(_logJumpLatestIssue, 4, 0);
+
+            _logSearchCount.Dock = DockStyle.Fill;
+            _logSearchCount.TextAlign = ContentAlignment.MiddleRight;
+            _logSearchCount.Text = string.Empty;
+            bar.Controls.Add(_logSearchCount, 5, 0);
 
             return bar;
         }
@@ -311,23 +378,25 @@ namespace MES.UI.Forms.SystemManagement
             var right = new TableLayoutPanel();
             right.Dock = DockStyle.Fill;
             right.ColumnCount = 1;
-            right.RowCount = 3;
+            right.RowCount = 4;
             right.RowStyles.Add(new RowStyle(SizeType.Absolute, 44));
+            right.RowStyles.Add(new RowStyle(SizeType.Absolute, 34));
             right.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
             right.RowStyles.Add(new RowStyle(SizeType.Absolute, 22));
 
             right.Controls.Add(BuildCrashToolbar(), 0, 0);
+            right.Controls.Add(BuildCrashSearchBar(), 0, 1);
 
             _crashText.Dock = DockStyle.Fill;
             _crashText.ReadOnly = true;
             _crashText.WordWrap = false;
             _crashText.ScrollBars = RichTextBoxScrollBars.Vertical;
-            right.Controls.Add(_crashText, 0, 1);
+            right.Controls.Add(_crashText, 0, 2);
 
             _crashMeta.Dock = DockStyle.Fill;
             _crashMeta.TextAlign = ContentAlignment.MiddleLeft;
             _crashMeta.Text = "提示：崩溃报告默认写入日志目录下的 CrashReports/。";
-            right.Controls.Add(_crashMeta, 0, 2);
+            right.Controls.Add(_crashMeta, 0, 3);
 
             root.Controls.Add(right, 1, 0);
 
@@ -367,7 +436,7 @@ namespace MES.UI.Forms.SystemManagement
             _crashOpenExternal.Dock = DockStyle.Fill;
             bar.Controls.Add(_crashOpenExternal, 2, 0);
 
-            _crashCopyAll.Text = "复制";
+            _crashCopyAll.Text = "复制尾部";
             _crashCopyAll.Style = ModernButton.ButtonStyle.Outline;
             _crashCopyAll.Dock = DockStyle.Fill;
             bar.Controls.Add(_crashCopyAll, 3, 0);
@@ -403,6 +472,53 @@ namespace MES.UI.Forms.SystemManagement
             return bar;
         }
 
+        private Control BuildCrashSearchBar()
+        {
+            var bar = new TableLayoutPanel();
+            bar.Dock = DockStyle.Fill;
+            bar.ColumnCount = 6;
+            bar.RowCount = 1;
+
+            bar.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+            bar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 74)); // prev
+            bar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 74)); // next
+            bar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 70)); // case
+            bar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 90)); // latest
+            bar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 90)); // count
+
+            _crashSearch.Dock = DockStyle.Fill;
+            _crashSearch.Margin = new Padding(0, 4, 6, 4);
+            _crashSearch.PlaceholderText = "搜索文本 / Search...";
+            bar.Controls.Add(_crashSearch, 0, 0);
+
+            _crashSearchPrev.Text = "上一个";
+            _crashSearchPrev.Style = ModernButton.ButtonStyle.Outline;
+            _crashSearchPrev.Dock = DockStyle.Fill;
+            bar.Controls.Add(_crashSearchPrev, 1, 0);
+
+            _crashSearchNext.Text = "下一个";
+            _crashSearchNext.Style = ModernButton.ButtonStyle.Outline;
+            _crashSearchNext.Dock = DockStyle.Fill;
+            bar.Controls.Add(_crashSearchNext, 2, 0);
+
+            _crashSearchCase.Text = "Aa: 关";
+            _crashSearchCase.Style = ModernButton.ButtonStyle.Outline;
+            _crashSearchCase.Dock = DockStyle.Fill;
+            bar.Controls.Add(_crashSearchCase, 3, 0);
+
+            _crashJumpLatestIssue.Text = "最新错误";
+            _crashJumpLatestIssue.Style = ModernButton.ButtonStyle.Outline;
+            _crashJumpLatestIssue.Dock = DockStyle.Fill;
+            bar.Controls.Add(_crashJumpLatestIssue, 4, 0);
+
+            _crashSearchCount.Dock = DockStyle.Fill;
+            _crashSearchCount.TextAlign = ContentAlignment.MiddleRight;
+            _crashSearchCount.Text = string.Empty;
+            bar.Controls.Add(_crashSearchCount, 5, 0);
+
+            return bar;
+        }
+
         private void WireEvents()
         {
             _logRefresh.Click += (s, e) => ReloadLogs();
@@ -413,17 +529,29 @@ namespace MES.UI.Forms.SystemManagement
             _logFilter.TextChanged += (s, e) => ApplyLogFilter(null);
             _logFollowTail.Click += (s, e) => ToggleLogFollowTail();
             _logHighlight.Click += (s, e) => ToggleLogHighlight();
+            _logSearch.TextChanged += (s, e) => UpdateLogSearchCountAsync();
+            _logSearchPrev.Click += (s, e) => FindLogPrevious();
+            _logSearchNext.Click += (s, e) => FindLogNext();
+            _logSearchCase.Click += (s, e) => ToggleLogSearchCase();
+            _logJumpLatestIssue.Click += (s, e) => JumpLogLatestIssue();
+            _logSearch.KeyDown += LogSearch_KeyDown;
             _logTailLines.ValueChanged += (s, e) => LoadSelectedLog();
-            _logFiles.SelectedIndexChanged += (s, e) => LoadSelectedLog();      
+            _logFiles.SelectedIndexChanged += (s, e) => LoadSelectedLog();
 
             _crashRefresh.Click += (s, e) => ReloadCrashReports();
             _crashOpenFolder.Click += (s, e) => OpenFolderSafe(GetCrashReportsDirectory());
             _crashOpenExternal.Click += (s, e) => OpenSelectedFileExternal(_crashFiles);
             _crashCopyAll.Click += (s, e) => CopyTextSafe(_crashText.Text, "崩溃报告已复制。");
-            _crashExportBundle.Click += (s, e) => ExportSupportBundle();        
+            _crashExportBundle.Click += (s, e) => ExportSupportBundle();
             _crashFilter.TextChanged += (s, e) => ApplyCrashFilter(null);
             _crashFollowTail.Click += (s, e) => ToggleCrashFollowTail();
             _crashHighlight.Click += (s, e) => ToggleCrashHighlight();
+            _crashSearch.TextChanged += (s, e) => UpdateCrashSearchCountAsync();
+            _crashSearchPrev.Click += (s, e) => FindCrashPrevious();
+            _crashSearchNext.Click += (s, e) => FindCrashNext();
+            _crashSearchCase.Click += (s, e) => ToggleCrashSearchCase();
+            _crashJumpLatestIssue.Click += (s, e) => JumpCrashLatestIssue();
+            _crashSearch.KeyDown += CrashSearch_KeyDown;
             _crashTailLines.ValueChanged += (s, e) => LoadSelectedCrashReport();
             _crashFiles.SelectedIndexChanged += (s, e) => LoadSelectedCrashReport();
         }
@@ -507,6 +635,16 @@ namespace MES.UI.Forms.SystemManagement
                 _crashHighlight.Style = _crashHighlightEnabled
                     ? ModernButton.ButtonStyle.Secondary
                     : ModernButton.ButtonStyle.Outline;
+
+                _logSearchCase.Text = _logSearchCaseSensitive ? "Aa: 开" : "Aa: 关";
+                _logSearchCase.Style = _logSearchCaseSensitive
+                    ? ModernButton.ButtonStyle.Secondary
+                    : ModernButton.ButtonStyle.Outline;
+
+                _crashSearchCase.Text = _crashSearchCaseSensitive ? "Aa: 开" : "Aa: 关";
+                _crashSearchCase.Style = _crashSearchCaseSensitive
+                    ? ModernButton.ButtonStyle.Secondary
+                    : ModernButton.ButtonStyle.Outline;
             }
             catch
             {
@@ -570,6 +708,420 @@ namespace MES.UI.Forms.SystemManagement
             {
                 // ignore
             }
+        }
+
+        private void ToggleLogSearchCase()
+        {
+            try
+            {
+                _logSearchCaseSensitive = !_logSearchCaseSensitive;
+                UpdateToggleButtons();
+                UpdateLogSearchCountAsync();
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
+        private void ToggleCrashSearchCase()
+        {
+            try
+            {
+                _crashSearchCaseSensitive = !_crashSearchCaseSensitive;
+                UpdateToggleButtons();
+                UpdateCrashSearchCountAsync();
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
+        private void LogSearch_KeyDown(object sender, KeyEventArgs e)
+        {
+            try
+            {
+                if (e == null) return;
+
+                if (e.KeyCode == Keys.Enter)
+                {
+                    e.Handled = true;
+                    e.SuppressKeyPress = true;
+
+                    if (e.Shift) FindLogPrevious();
+                    else FindLogNext();
+                }
+                else if (e.KeyCode == Keys.Escape)
+                {
+                    e.Handled = true;
+                    e.SuppressKeyPress = true;
+                    try { _logSearch.Text = string.Empty; } catch { }
+                }
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
+        private void CrashSearch_KeyDown(object sender, KeyEventArgs e)
+        {
+            try
+            {
+                if (e == null) return;
+
+                if (e.KeyCode == Keys.Enter)
+                {
+                    e.Handled = true;
+                    e.SuppressKeyPress = true;
+
+                    if (e.Shift) FindCrashPrevious();
+                    else FindCrashNext();
+                }
+                else if (e.KeyCode == Keys.Escape)
+                {
+                    e.Handled = true;
+                    e.SuppressKeyPress = true;
+                    try { _crashSearch.Text = string.Empty; } catch { }
+                }
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
+        private void FindLogNext()
+        {
+            try
+            {
+                if (!TryFindInViewer(_logText, _logSearch.Text, _logSearchCaseSensitive, true))
+                {
+                    try { System.Media.SystemSounds.Beep.Play(); } catch { }
+                }
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
+        private void FindLogPrevious()
+        {
+            try
+            {
+                if (!TryFindInViewer(_logText, _logSearch.Text, _logSearchCaseSensitive, false))
+                {
+                    try { System.Media.SystemSounds.Beep.Play(); } catch { }
+                }
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
+        private void FindCrashNext()
+        {
+            try
+            {
+                if (!TryFindInViewer(_crashText, _crashSearch.Text, _crashSearchCaseSensitive, true))
+                {
+                    try { System.Media.SystemSounds.Beep.Play(); } catch { }
+                }
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
+        private void FindCrashPrevious()
+        {
+            try
+            {
+                if (!TryFindInViewer(_crashText, _crashSearch.Text, _crashSearchCaseSensitive, false))
+                {
+                    try { System.Media.SystemSounds.Beep.Play(); } catch { }
+                }
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
+        private void JumpLogLatestIssue()
+        {
+            TryJumpLatestIssue(_logText);
+        }
+
+        private void JumpCrashLatestIssue()
+        {
+            TryJumpLatestIssue(_crashText);
+        }
+
+        private void UpdateLogSearchCountAsync()
+        {
+            try
+            {
+                string q = _logSearch.Text != null ? _logSearch.Text.Trim() : string.Empty;
+                bool hasQuery = !string.IsNullOrWhiteSpace(q);
+
+                _logSearchPrev.Enabled = hasQuery;
+                _logSearchNext.Enabled = hasQuery;
+                _logJumpLatestIssue.Enabled = true;
+
+                if (!hasQuery)
+                {
+                    _logSearchCount.Text = string.Empty;
+                    return;
+                }
+
+                string text = _logText.Text ?? string.Empty;
+                bool caseSensitive = _logSearchCaseSensitive;
+
+                _logSearchCountVersion++;
+                int currentVersion = _logSearchCountVersion;
+
+                Task.Run(() =>
+                {
+                    return CountOccurrences(text, q, caseSensitive, 9999);
+                }).ContinueWith(t =>
+                {
+                    try
+                    {
+                        if (IsDisposed) return;
+                        if (currentVersion != _logSearchCountVersion) return;
+
+                        int count = 0;
+                        if (t != null && t.Status == TaskStatus.RanToCompletion)
+                        {
+                            count = t.Result;
+                        }
+
+                        BeginInvoke(new Action(() =>
+                        {
+                            try { _logSearchCount.Text = string.Format("匹配: {0}", count); } catch { }
+                        }));
+                    }
+                    catch
+                    {
+                        // ignore
+                    }
+                });
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
+        private void UpdateCrashSearchCountAsync()
+        {
+            try
+            {
+                string q = _crashSearch.Text != null ? _crashSearch.Text.Trim() : string.Empty;
+                bool hasQuery = !string.IsNullOrWhiteSpace(q);
+
+                _crashSearchPrev.Enabled = hasQuery;
+                _crashSearchNext.Enabled = hasQuery;
+                _crashJumpLatestIssue.Enabled = true;
+
+                if (!hasQuery)
+                {
+                    _crashSearchCount.Text = string.Empty;
+                    return;
+                }
+
+                string text = _crashText.Text ?? string.Empty;
+                bool caseSensitive = _crashSearchCaseSensitive;
+
+                _crashSearchCountVersion++;
+                int currentVersion = _crashSearchCountVersion;
+
+                Task.Run(() =>
+                {
+                    return CountOccurrences(text, q, caseSensitive, 9999);
+                }).ContinueWith(t =>
+                {
+                    try
+                    {
+                        if (IsDisposed) return;
+                        if (currentVersion != _crashSearchCountVersion) return;
+
+                        int count = 0;
+                        if (t != null && t.Status == TaskStatus.RanToCompletion)
+                        {
+                            count = t.Result;
+                        }
+
+                        BeginInvoke(new Action(() =>
+                        {
+                            try { _crashSearchCount.Text = string.Format("匹配: {0}", count); } catch { }
+                        }));
+                    }
+                    catch
+                    {
+                        // ignore
+                    }
+                });
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
+        private static int CountOccurrences(string text, string token, bool caseSensitive, int maxCount)
+        {
+            if (string.IsNullOrEmpty(text)) return 0;
+            if (string.IsNullOrEmpty(token)) return 0;
+            if (maxCount <= 0) maxCount = int.MaxValue;
+
+            var comparison = caseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
+
+            int count = 0;
+            int index = 0;
+            while (index < text.Length)
+            {
+                index = text.IndexOf(token, index, comparison);
+                if (index < 0) break;
+                count++;
+                if (count >= maxCount) break;
+                index += token.Length;
+            }
+
+            return count;
+        }
+
+        private static bool TryFindInViewer(RichTextBox viewer, string query, bool caseSensitive, bool forward)
+        {
+            if (viewer == null) return false;
+
+            string q = query != null ? query.Trim() : string.Empty;
+            if (string.IsNullOrEmpty(q)) return false;
+
+            string text;
+            try { text = viewer.Text; }
+            catch { return false; }
+
+            if (string.IsNullOrEmpty(text)) return false;
+
+            var comparison = caseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
+
+            int start;
+            try
+            {
+                if (forward)
+                {
+                    start = viewer.SelectionStart + viewer.SelectionLength;
+                }
+                else
+                {
+                    start = viewer.SelectionStart - 1;
+                }
+            }
+            catch
+            {
+                start = forward ? 0 : text.Length - 1;
+            }
+
+            if (start < 0) start = 0;
+            if (start >= text.Length) start = text.Length - 1;
+
+            int index;
+            if (forward)
+            {
+                index = text.IndexOf(q, start, comparison);
+                if (index < 0)
+                {
+                    // wrap-around
+                    index = text.IndexOf(q, 0, comparison);
+                }
+            }
+            else
+            {
+                index = text.LastIndexOf(q, start, comparison);
+                if (index < 0)
+                {
+                    // wrap-around
+                    index = text.LastIndexOf(q, text.Length - 1, comparison);
+                }
+            }
+
+            if (index < 0) return false;
+
+            try
+            {
+                viewer.SelectionStart = index;
+                viewer.SelectionLength = q.Length;
+                viewer.ScrollToCaret();
+                viewer.Focus();
+            }
+            catch
+            {
+                // ignore
+            }
+
+            return true;
+        }
+
+        private static void TryJumpLatestIssue(RichTextBox viewer)
+        {
+            if (viewer == null) return;
+
+            try
+            {
+                string text = viewer.Text;
+                if (string.IsNullOrEmpty(text))
+                {
+                    try { System.Media.SystemSounds.Beep.Play(); } catch { }
+                    return;
+                }
+
+                string matched;
+                int index = FindLastIndexOfAny(text, new[] { "FATAL", "ERROR", "EXCEPTION", "Exception", "WARNING", "WARN" }, out matched);
+                if (index < 0 || string.IsNullOrEmpty(matched))
+                {
+                    try { System.Media.SystemSounds.Beep.Play(); } catch { }
+                    return;
+                }
+
+                viewer.SelectionStart = index;
+                viewer.SelectionLength = matched.Length;
+                viewer.ScrollToCaret();
+                viewer.Focus();
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
+        private static int FindLastIndexOfAny(string text, string[] tokens, out string matchedToken)
+        {
+            matchedToken = string.Empty;
+            if (string.IsNullOrEmpty(text)) return -1;
+            if (tokens == null || tokens.Length == 0) return -1;
+
+            int bestIndex = -1;
+            string bestToken = string.Empty;
+
+            foreach (var token in tokens)
+            {
+                if (string.IsNullOrEmpty(token)) continue;
+                int idx = text.LastIndexOf(token, StringComparison.OrdinalIgnoreCase);
+                if (idx > bestIndex)
+                {
+                    bestIndex = idx;
+                    bestToken = token;
+                }
+            }
+
+            matchedToken = bestToken;
+            return bestIndex;
         }
 
         private void HandleThemeChanged()
@@ -1020,6 +1572,16 @@ namespace MES.UI.Forms.SystemManagement
                         if (followTail)
                         {
                             ScrollToEnd(viewer);
+                        }
+
+                        try
+                        {
+                            if (viewer == _logText) UpdateLogSearchCountAsync();
+                            else if (viewer == _crashText) UpdateCrashSearchCountAsync();
+                        }
+                        catch
+                        {
+                            // ignore
                         }
                     }));
                 }
